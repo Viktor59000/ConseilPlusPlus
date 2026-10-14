@@ -1,5 +1,8 @@
 <?php
 // Copier ce fichier en db.php et renseigner les identifiants MySQL.
+// Fuseau horaire du site (le « jour » du mot du jour doit être le même pour PHP et MySQL)
+date_default_timezone_set('Europe/Paris');
+
 $servername = "localhost";
 $dbname = "site";
 $user = "root";
@@ -40,6 +43,17 @@ try {
             source ENUM('generateur', 'ia', 'secours') NOT NULL DEFAULT 'generateur',
             date_classement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS mots_du_jour (
+            jour DATE PRIMARY KEY,
+            mot VARCHAR(80) NOT NULL,
+            nature VARCHAR(80) NOT NULL,
+            definition VARCHAR(300) NOT NULL,
+            exemple VARCHAR(300) NOT NULL,
+            synonyme VARCHAR(120) NOT NULL,
+            certitude TINYINT UNSIGNED NOT NULL,
+            source ENUM('banque', 'ia') NOT NULL DEFAULT 'banque'
         );
 
         CREATE TABLE IF NOT EXISTS api_logs (

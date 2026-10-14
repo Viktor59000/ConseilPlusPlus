@@ -2,11 +2,13 @@
 session_start();
 include("db.php");
 include("includes/tirage.php");
+include("includes/mot-du-jour.php");
 
 $titre = 'Accueil';
 $description = 'ConseilPlus+, le conseiller moyen : un cabinet qui répond à vos problèmes par des conseils absurdes, avec le plus grand sérieux.';
 $page = 'accueil';
 $conseil = tirer_conseil($bdd);
+$mot = mot_du_jour($bdd);
 include("includes/header.php");
 ?>
 
@@ -34,6 +36,16 @@ include("includes/header.php");
     <span class="tampon" aria-hidden="true">Validé</span>
     <p class="fiche-pied mono">Offert. Non remboursable.</p>
   </article>
+</section>
+
+<section class="conteneur mot-du-jour" aria-labelledby="titre-mot">
+  <div class="mot-du-jour-intro">
+    <p class="etiquette">Le Petit Moyen</p>
+    <h2 id="titre-mot">Le mot (presque) du jour</h2>
+    <p>Extrait du dictionnaire officieux du cabinet. Un nouveau mot chaque jour, défini avec une précision moyenne.</p>
+    <a class="btn btn-clair" href="petit-moyen.php">Consulter Le Petit Moyen</a>
+  </div>
+<?php $titre_niveau = 'h3'; include("includes/carte-mot.php"); ?>
 </section>
 
 <section class="bande">
@@ -66,5 +78,7 @@ include("includes/header.php");
   </div>
   <a class="btn btn-clair" href="contact.php">Nous contacter</a>
 </section>
+
+<script src="js/mot-du-jour.js" defer></script>
 
 <?php include("includes/footer.php"); ?>

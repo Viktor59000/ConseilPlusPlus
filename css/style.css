@@ -188,6 +188,22 @@ section { padding-block: 56px; }
 .liste-info { padding-left: 1.2em; margin: 0 0 20px; }
 .liste-info li { margin-bottom: 8px; }
 
+/* ---------- Le Petit Moyen (mot du jour) ---------- */
+.mot-du-jour { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; align-items: center; }
+.mot-du-jour-intro p:not(.etiquette) { color: var(--encre-douce); max-width: 36ch; }
+.entree-mot { background: var(--carte); border: var(--bord); box-shadow: var(--ombre); padding: 24px 28px; }
+.entree-date { margin: 0 0 8px; color: var(--encre-douce); }
+.entree-titre { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 12px; }
+.entree-nature { font: italic 400 1rem var(--texte); color: var(--encre-douce); margin-left: 6px; }
+.entree-definition { font-size: 1.15rem; font-weight: 600; margin-bottom: 10px; }
+.entree-exemple { font-style: italic; color: var(--encre-douce); }
+.entree-infos { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 16px 0 0; padding-top: 12px; border-top: 1px dashed var(--encre); }
+.entree-infos dt { display: inline; text-transform: uppercase; color: var(--encre-douce); }
+.entree-infos dt::after { content: " : "; }
+.entree-infos dd { display: inline; margin: 0; }
+.archives { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
+.pied-lien { font-weight: 600; }
+
 /* ---------- Sous-menu de l'espace client ---------- */
 .espace-nav { background: var(--encre); color: var(--papier); }
 .espace-nav-in { display: flex; align-items: center; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; padding: 6px 0; }
@@ -245,7 +261,7 @@ kbd { font-family: var(--mono); font-size: .85em; padding: 1px 6px; border: 1px 
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-  .hero, .guichets { grid-template-columns: 1fr; }
+  .hero, .guichets, .mot-du-jour { grid-template-columns: 1fr; }
   .formules, .etapes, .coordonnees { grid-template-columns: 1fr; }
   .formule-phare { transform: none; }
   .fiche { transform: none; }
