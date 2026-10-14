@@ -8,7 +8,7 @@
 <?php else: ?>
         <li class="replique replique-<?= $qui ?><?= $role ? " replique-$role" : '' ?>" data-qui="<?= $qui ?>">
           <span class="replique-qui mono"><?= $noms[$qui] ?></span>
-          <span class="replique-texte"><?= htmlspecialchars($texte) ?></span>
+          <span class="replique-texte"><?= $role === 'chute' ? '<mark>' . htmlspecialchars($texte) . '</mark>' : htmlspecialchars($texte) ?></span>
         </li>
 <?php endif; ?>
 <?php endforeach; ?>

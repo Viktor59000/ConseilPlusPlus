@@ -28,49 +28,41 @@ const OUVERTURES = [
 const CONSIGNE_SKETCH = <<<TXT
 # RÔLE
 Tu écris le sketch du jour du « Petit Moyen », le dictionnaire officieux du cabinet ConseilPlus+,
-dans le style des « Mots » d'Éric et Ramzy (M6, 1997) : hommage non officiel.
-Deux personnages naïfs prétendent apprendre au public un mot que personne ne connaît, puis en donnent
-une fausse définition par une scène du quotidien qui se termine sur un calembour tordu.
+dans l'esprit des « Mots » d'Éric et Ramzy (M6, 1997) : hommage non officiel, tout est inventé par toi.
+Deux personnages sûrs d'eux prétendent apprendre au public un mot savant. Le rire vient du décalage entre
+leur assurance totale et la faiblesse du jeu de mots qui sert d'« explication ».
 
 # PERSONNAGES
-- LE CONSEILLER : maître de cérémonie solennel et ampoulé, se croit pédagogue.
-- LE STAGIAIRE : enthousiaste et à côté de la plaque, propose de fausses pistes, ajoute souvent une remarque inutile à la fin.
+- LE CONSEILLER : présentateur solennel ; tire les conclusions, gravement.
+- LE STAGIAIRE : enthousiaste, lit le mot de travers, et justifie tout avec aplomb.
 
-# MÉTHODE (dans cet ordre)
-0. Découpage : avant tout, trouve comment le mot SONNE comme une phrase ou une expression banale, en le cassant
-   en morceaux (« non / chat / lance » pour nonchalance, « bal / d'ac / un » pour baldaquin,
-   « la vis / ici / si tu » pour vicissitude, « cafard / nan / hum » pour capharnaüm). Écris-le dans la clé "decoupage".
-   La chute du sketch sera construite avec ce découpage.
-
-# DÉROULÉ (l'ouverture et la formule finale sont ajoutées par le site, ne les écris pas)
-1. Fausses pistes du stagiaire : 1 à 3 mots ou noms propres connus qui commencent comme le mot cible.
-2. Épellation du mot par le conseiller, avec une erreur ou une précision inutile (lettre muette qu'on « ne compte pas », accent qu'on « n'entend pas »).
-3. Scène : une didascalie très courte (120 caractères au plus), un moment du quotidien (famille, voisinage, travail, fête, commerce, petit accident sans gravité).
-   Le conseiller et le stagiaire y jouent des rôles.
-4. Répliques : 1 à 3, courtes. La dernière est la chute : une phrase banale où une expression courante, un découpage syllabique,
-   un prénom, une onomatopée ou une prononciation ratée SONNE approximativement comme le mot cible.
-   Le personnage la dit naturellement, sans la souligner.
-5. Relance (facultative) : une remarque inutile du stagiaire après la formule finale.
+# MÉTHODE
+0. Découpage : trouve comment le mot SONNE comme 2 ou 3 morceaux de phrase banale
+   (« miro · bol · an » pour mirobolant, « Mélanie · colle · y » pour mélancolie, « hurle · Hubert · lu » pour hurluberlu).
+   Approximatif, voire laborieux : c'est voulu. Écris-le dans la clé "decoupage" (morceaux séparés par « · »).
+1. Pistes : 1 ou 2 mots courants qui commencent comme le mot cible, que le stagiaire lit à la place, avec aplomb.
+2. Épellation par le conseiller, avec une erreur ou une précision inutile.
+3. Scène : une didascalie d'UNE phrase (120 caractères au plus), un moment banal du quotidien qui rend le découpage plausible.
+4. Répliques, exactement 2 :
+   a. LE CONSEILLER conclut gravement en employant le mot comme un mot ordinaire, sans rien expliquer :
+      « C'est donc un … », « Il lui faudrait donc un … », « Il fait donc preuve de … ».
+   b. LE STAGIAIRE commence par « C'est vrai. » et justifie avec le découpage : il raconte la scène avec les morceaux
+      sonores, les répète une fois comme une évidence (« Miro, bol, an. »), et ajoute un détail bête
+      ou « comme par hasard ». Cette réplique est la chute : elle ne contient jamais le mot cible lui-même.
+5. Relance : une phrase du stagiaire qui file la blague ou ajoute un détail matériel absurde.
 
 # RÈGLES
-- La chute ne contient JAMAIS le mot cible lui-même, ni un mot de sa famille : elle contient seulement le découpage sonore.
-  « Ton chat est nonchalant » est un échec (c'est la vraie définition) ; « Non, chat… Lance ! » est réussi.
-- Invente tes propres calembours : ne reprends JAMAIS une chute des sketchs originaux d'Éric et Ramzy.
-- Dans la scène, les personnages ignorent qu'on cherche un mot : ils ne parlent jamais de mot, de dictionnaire,
-  d'épellation ni de sens. Ils vivent leur moment du quotidien, et la chute arrive « par hasard ».
-- Le calembour doit être approximatif, voire laborieux. Un jeu de mots trop propre est un échec.
-- Scène réaliste et banale ; l'absurde vient uniquement du rapprochement sonore. Pas de fantastique.
-- Personne ne donne la vraie définition. Personne n'explique la blague.
+- Tout est inventé par toi : n'utilise aucun mot, aucune situation ni aucun calembour de l'émission originale.
+- Personne ne donne la vraie définition du mot.
 - Phrases courtes, langage oral, français correct.
-- Rien de sexuel, haineux, violent ou humiliant. Pas d'alcool fort ni de drogue.
+- Rien de sexuel, haineux, violent, politique ou humiliant. Pas d'alcool fort ni de drogue. Humour bienveillant.
 
 # EXEMPLE (format attendu)
-{"mot":"Baldaquin","nature":"n. m.","decoupage":"bal · d'ac · un","pistes":["Balcon","Baladeur"],"epellation":"B, A, L, D, A, Q, U, I, N. Le U accompagne le Q, il ne travaille pas.","scene":"Fête du village. Le conseiller vend les tickets de la soirée dansante. Le stagiaire arrive, seul.","repliques":[{"qui":"conseiller","texte":"C'est deux euros l'entrée pour le bal. Je vous en mets combien ?"},{"qui":"stagiaire","texte":"Le bal ? D'ac… Un."}],"relance":"Je danse seul, mais je danse bien.","certitude":44}
+{"mot":"Mirobolant","nature":"adj.","decoupage":"miro · bol · an","pistes":["Mirabelle"],"epellation":"M, I, R, O, B, O, L, A, N, T. Le T est muet, il a été prévenu.","scene":"Le matin du 1er janvier. Le stagiaire, sans ses lunettes, cherche son bol de café.","repliques":[{"qui":"conseiller","texte":"C'est donc un réveil mirobolant."},{"qui":"stagiaire","texte":"C'est vrai. Je suis miro, j'ai pas vu le bol, et c'était le premier de l'an. Miro, bol, an. Le café est sur le chat."}],"relance":"Bonne année quand même. Surtout au chat.","certitude":61}
 
 # SORTIE
 Uniquement un objet JSON sur une ligne, avec exactement ces clés : mot, nature, decoupage, pistes, epellation, scene, repliques, relance, certitude
-(qui ∈ conseiller | stagiaire ; certitude entre 1 et 100 ; relance peut être une chaîne vide ;
-decoupage au format « morceau · morceau · morceau », il sera affiché en fin de sketch).
+(qui ∈ conseiller | stagiaire ; certitude entre 1 et 100).
 TXT;
 
 function mots_banque(): array
@@ -201,7 +193,12 @@ function valider_sketch(string $json, array $deja): ?array
     $pistes = array_values(array_filter($s['pistes'], fn($p) => $chaine($p, 40)));
     $repliques = array_values(array_filter($s['repliques'], fn($r) => is_array($r)
         && in_array($r['qui'] ?? '', ['conseiller', 'stagiaire'], true) && $chaine($r['texte'] ?? null, 200)));
-    if (count($pistes) < 1 || count($pistes) > 3 || count($repliques) < 1 || count($repliques) > 3 || !$chaine($s['decoupage'] ?? null, 120)) {
+    if (count($pistes) < 1 || count($pistes) > 3 || count($repliques) !== 2 || !$chaine($s['decoupage'] ?? null, 120)) {
+        return null;
+    }
+    // Schéma imposé : conclusion du conseiller, puis justification du stagiaire (« C'est vrai. … »)
+    if ($repliques[0]['qui'] !== 'conseiller' || $repliques[1]['qui'] !== 'stagiaire'
+        || !preg_match("/^C['’]est vrai/u", trim($repliques[1]['texte']))) {
         return null;
     }
     // La chute ne doit pas contenir le mot lui-même (ni sa racine) : sinon c'est la vraie définition, pas un calembour
@@ -232,7 +229,8 @@ function preparer_mot(PDO $bdd, string $jour): bool
         return false;
     }
 
-    $deja = array_unique([...mots_recents($bdd, 365), ...array_column(mots_banque(), 'mot'), ...array_column(sketchs_banque()['sketchs'], 'mot')]);
+    $deja = array_unique([...mots_recents($bdd, 365), ...array_column(mots_banque(), 'mot'), ...array_column(sketchs_banque()['sketchs'], 'mot'),
+        ...sketchs_banque()['mots_emission']]);
     $candidats = array_diff(sketchs_banque()['mots_savants'], array_map('mb_strtolower', $deja));
     $proposes = (array) array_rand(array_flip($candidats), min(6, count($candidats)));
     $demande = 'Choisis UN de ces mots (celui qui offre le meilleur calembour) : ' . implode(', ', $proposes)

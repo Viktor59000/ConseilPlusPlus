@@ -6,7 +6,6 @@
     <string name="widget_titre">Le Petit Moyen</string>
     <string name="widget_description">Une carte à deux faces : le conseil du jour et le mot (presque) du jour.</string>
     <string name="face_conseil">Conseil du jour</string>
-    <string name="valide">VALIDÉ</string>
     <string name="widget_retourner">Retourner la carte</string>
     <string name="widget_reflexion">Le conseiller réfléchit…</string>
     <string name="widget_chargement">Chargement…</string>

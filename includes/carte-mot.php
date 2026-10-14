@@ -17,8 +17,9 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
     $s = $mot['sketch'];
     $ouverture = OUVERTURES[crc32($mot['jour'] ?? $mot['mot']) % count(OUVERTURES)];
     // Le sketch sous forme de script : [qui, texte, rôle] — qui ∈ conseiller | stagiaire | duo | scene
-    // Version courte (affichée et jouée) : la scène et sa chute. Le rituel (ouverture, fausses pistes,
-    // épellation, formule finale) reste disponible dans un volet, pour les amateurs.
+    // Version courte (affichée et jouée) : la fausse lecture, la scène, la conclusion du conseiller
+    // (« C'est donc un… ») et la justification du stagiaire (la chute). Le rituel (ouverture, toutes les
+    // fausses pistes, épellation, formule finale) reste disponible dans un volet, pour les amateurs.
     $rituel = [['conseiller', $ouverture, '']];
     foreach ($s['pistes'] as $i => $piste) {
         $rituel[] = ['stagiaire', $piste . ' !', ''];
@@ -28,7 +29,11 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
     }
     $rituel[] = ['conseiller', 'Non. ' . $mot['mot'] . '. ' . $s['epellation'], ''];
     $rituel[] = ['duo', FORMULE_FINALE, 'formule'];
-    $court = [['scene', $s['scene'], '']];
+    $court = [
+        ['stagiaire', $s['pistes'][0] . ' !', 'lecture'],
+        ['conseiller', 'Non. ' . $mot['mot'] . '.', ''],
+        ['scene', $s['scene'], ''],
+    ];
     foreach ($s['repliques'] as $i => $r) {
         $court[] = [$r['qui'], $r['texte'], $i === count($s['repliques']) - 1 ? 'chute' : ''];
     }

@@ -149,7 +149,6 @@ class MotDuJourWidget : AppWidgetProvider() {
                     R.id.conseil,
                     messageConseil ?: p.getString(CLE_CONSEIL, null) ?: context.getString(R.string.widget_chargement_conseil)
                 )
-                vues.setTextViewText(R.id.dossier, p.getString(CLE_DOSSIER, null)?.let { "N° $it" } ?: "")
                 // Face mot
                 if (json != null) {
                     vues.setTextViewText(R.id.date, json.optString("date").uppercase())

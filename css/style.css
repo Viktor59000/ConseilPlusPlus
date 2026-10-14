@@ -210,7 +210,9 @@ section { padding-block: 56px; }
 .replique { display: grid; grid-template-columns: 9.5em 1fr; gap: 4px 16px; align-items: baseline; }
 .replique-qui { text-transform: uppercase; letter-spacing: .06em; font-size: .72rem; color: var(--encre-douce); }
 .replique-stagiaire .replique-texte { margin-left: 1.25em; }
-.replique-chute .replique-texte { font-weight: 600; font-size: 1.15rem; background: linear-gradient(transparent 52%, var(--surligneur) 52%) no-repeat; justify-self: start; }
+.replique-chute .replique-texte { font-weight: 600; font-size: 1.15rem; }
+/* Surlignage ligne par ligne, même quand la chute tient sur plusieurs lignes */
+.replique-chute mark { background: linear-gradient(transparent 52%, var(--surligneur) 52%) no-repeat; -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 .1em; }
 .replique-formule .replique-texte { font-weight: 600; }
 .sketch-scene { font-style: italic; color: var(--encre-douce); margin: 6px 0; padding: 4px 0 4px 12px; border-left: 3px solid var(--surligneur); }
 .sketch-decoupage {
@@ -229,7 +231,7 @@ section { padding-block: 56px; }
 /* Pendant la lecture : seules les lignes déjà jouées sont visibles */
 .sketch.en-scene .sketch-court [data-qui]:not(.vu) { display: none; }
 .sketch.en-scene .vu { animation: apparition 260ms ease-out; }
-.sketch.en-scene .replique-chute.vu .replique-texte { animation: surlignage 700ms ease-out both; background-size: 100% 100%; }
+.sketch.en-scene .replique-chute.vu mark { animation: surlignage 700ms ease-out both; background-size: 100% 100%; }
 .sketch.en-scene .sketch-decoupage.vu { animation: tampon-pose 380ms cubic-bezier(.2, 1.6, .4, 1) both; }
 .replique.parle .replique-qui { color: var(--tampon); }
 @keyframes apparition { from { opacity: 0; transform: translateY(6px); } }
@@ -240,7 +242,7 @@ section { padding-block: 56px; }
   .replique-stagiaire .replique-texte { margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sketch.en-scene .vu, .sketch.en-scene .replique-chute.vu .replique-texte, .sketch.en-scene .sketch-decoupage.vu { animation: none; }
+  .sketch.en-scene .vu, .sketch.en-scene .replique-chute.vu mark, .sketch.en-scene .sketch-decoupage.vu { animation: none; }
 }
 .archives { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
 .feuilleter { scroll-margin-top: 16px; }
