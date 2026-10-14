@@ -218,8 +218,16 @@ section { padding-block: 56px; }
   border: 2px solid var(--tampon); color: var(--tampon); text-transform: uppercase; letter-spacing: .06em;
 }
 .sketch-decoupage strong { font-weight: 500; }
+.sketch-relance { margin: 14px 0 0; color: var(--encre-douce); }
+.sketch-relance .replique-qui { margin-right: 8px; }
+.sketch-rituel { margin-top: 20px; border-top: 1px dashed var(--encre); padding-top: 8px; }
+.sketch-rituel summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 10px; list-style: none; color: var(--encre-douce); font-weight: 600; }
+.sketch-rituel summary::-webkit-details-marker { display: none; }
+.sketch-rituel summary::before { content: "▸"; }
+.sketch-rituel[open] summary::before { content: "▾"; }
+.sketch-rituel .sketch-script { margin: 8px 0 4px; }
 /* Pendant la lecture : seules les lignes déjà jouées sont visibles */
-.sketch.en-scene [data-qui]:not(.vu) { display: none; }
+.sketch.en-scene .sketch-court [data-qui]:not(.vu) { display: none; }
 .sketch.en-scene .vu { animation: apparition 260ms ease-out; }
 .sketch.en-scene .replique-chute.vu .replique-texte { animation: surlignage 700ms ease-out both; background-size: 100% 100%; }
 .sketch.en-scene .sketch-decoupage.vu { animation: tampon-pose 380ms cubic-bezier(.2, 1.6, .4, 1) both; }

@@ -17,21 +17,20 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
     $s = $mot['sketch'];
     $ouverture = OUVERTURES[crc32($mot['jour'] ?? $mot['mot']) % count(OUVERTURES)];
     // Le sketch sous forme de script : [qui, texte, rôle] — qui ∈ conseiller | stagiaire | duo | scene
-    $lignes = [['conseiller', $ouverture, '']];
+    // Version courte (affichée et jouée) : la scène et sa chute. Le rituel (ouverture, fausses pistes,
+    // épellation, formule finale) reste disponible dans un volet, pour les amateurs.
+    $rituel = [['conseiller', $ouverture, '']];
     foreach ($s['pistes'] as $i => $piste) {
-        $lignes[] = ['stagiaire', $piste . ' !', ''];
+        $rituel[] = ['stagiaire', $piste . ' !', ''];
         if ($i < count($s['pistes']) - 1) {
-            $lignes[] = ['conseiller', 'Non.', ''];
+            $rituel[] = ['conseiller', 'Non.', ''];
         }
     }
-    $lignes[] = ['conseiller', 'Non. ' . $mot['mot'] . '. ' . $s['epellation'], ''];
-    $lignes[] = ['scene', $s['scene'], ''];
+    $rituel[] = ['conseiller', 'Non. ' . $mot['mot'] . '. ' . $s['epellation'], ''];
+    $rituel[] = ['duo', FORMULE_FINALE, 'formule'];
+    $court = [['scene', $s['scene'], '']];
     foreach ($s['repliques'] as $i => $r) {
-        $lignes[] = [$r['qui'], $r['texte'], $i === count($s['repliques']) - 1 ? 'chute' : ''];
-    }
-    $lignes[] = ['duo', FORMULE_FINALE, 'formule'];
-    if ($s['relance'] !== '') {
-        $lignes[] = ['stagiaire', $s['relance'], ''];
+        $court[] = [$r['qui'], $r['texte'], $i === count($s['repliques']) - 1 ? 'chute' : ''];
     }
     $noms['duo'] = 'Le conseiller et le stagiaire';
 ?>
@@ -40,21 +39,19 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
       <button type="button" class="btn btn-tampon btn-petit" data-jouer>▶ Jouer la scène</button>
       <label class="sketch-voix"><input type="checkbox" data-voix> Avec les voix</label>
     </div>
-    <ol class="sketch-script">
-<?php foreach ($lignes as [$qui, $texte, $role]): ?>
-<?php if ($qui === 'scene'): ?>
-      <li class="sketch-scene" data-qui="scene"><?= htmlspecialchars($texte) ?></li>
-<?php else: ?>
-      <li class="replique replique-<?= $qui ?><?= $role ? " replique-$role" : '' ?>" data-qui="<?= $qui ?>">
-        <span class="replique-qui mono"><?= $noms[$qui] ?></span>
-        <span class="replique-texte"><?= htmlspecialchars($texte) ?></span>
-      </li>
-<?php endif; ?>
-<?php endforeach; ?>
-    </ol>
+    <div class="sketch-court">
+<?php $lignes = $court; include __DIR__ . '/script-sketch.php'; ?>
 <?php if (!empty($s['decoupage'])): ?>
-    <p class="sketch-decoupage mono" data-qui="decoupage">Découpage officiel : <strong><?= htmlspecialchars($s['decoupage']) ?></strong></p>
+      <p class="sketch-decoupage mono" data-qui="decoupage">Découpage officiel : <strong><?= htmlspecialchars($s['decoupage']) ?></strong></p>
 <?php endif; ?>
+<?php if ($s['relance'] !== ''): ?>
+      <p class="sketch-relance" data-qui="relance"><span class="replique-qui mono">Le stagiaire, après coup</span> <span class="replique-texte"><?= htmlspecialchars($s['relance']) ?></span></p>
+<?php endif; ?>
+    </div>
+    <details class="sketch-rituel">
+      <summary>Le rituel intégral (ouverture, fausses pistes, épellation)</summary>
+<?php $lignes = $rituel; include __DIR__ . '/script-sketch.php'; ?>
+    </details>
   </div>
   <dl class="entree-infos mono">
     <div><dt>Certitude</dt><dd><?= (int) $mot['certitude'] ?> %</dd></div>

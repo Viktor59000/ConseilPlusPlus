@@ -45,9 +45,9 @@ une fausse définition par une scène du quotidien qui se termine sur un calembo
 # DÉROULÉ (l'ouverture et la formule finale sont ajoutées par le site, ne les écris pas)
 1. Fausses pistes du stagiaire : 1 à 3 mots ou noms propres connus qui commencent comme le mot cible.
 2. Épellation du mot par le conseiller, avec une erreur ou une précision inutile (lettre muette qu'on « ne compte pas », accent qu'on « n'entend pas »).
-3. Scène : une didascalie courte, un moment du quotidien (famille, voisinage, travail, fête, commerce, petit accident sans gravité).
+3. Scène : une didascalie très courte (120 caractères au plus), un moment du quotidien (famille, voisinage, travail, fête, commerce, petit accident sans gravité).
    Le conseiller et le stagiaire y jouent des rôles.
-4. Répliques : 1 à 4. La dernière est la chute : une phrase banale où une expression courante, un découpage syllabique,
+4. Répliques : 1 à 3, courtes. La dernière est la chute : une phrase banale où une expression courante, un découpage syllabique,
    un prénom, une onomatopée ou une prononciation ratée SONNE approximativement comme le mot cible.
    Le personnage la dit naturellement, sans la souligner.
 5. Relance (facultative) : une remarque inutile du stagiaire après la formule finale.
@@ -192,7 +192,7 @@ function valider_sketch(string $json, array $deja): ?array
     }
     $chaine = fn($v, int $max) => is_string($v) && trim($v) !== '' && mb_strlen($v) <= $max;
     if (!$chaine($s['mot'] ?? null, 60) || !$chaine($s['nature'] ?? null, 40) || !$chaine($s['epellation'] ?? null, 200)
-        || !$chaine($s['scene'] ?? null, 300) || !is_array($s['pistes'] ?? null) || !is_array($s['repliques'] ?? null)) {
+        || !$chaine($s['scene'] ?? null, 160) || !is_array($s['pistes'] ?? null) || !is_array($s['repliques'] ?? null)) {
         return null;
     }
     if (in_array(mb_strtolower($s['mot']), array_map('mb_strtolower', $deja), true)) {
@@ -201,7 +201,7 @@ function valider_sketch(string $json, array $deja): ?array
     $pistes = array_values(array_filter($s['pistes'], fn($p) => $chaine($p, 40)));
     $repliques = array_values(array_filter($s['repliques'], fn($r) => is_array($r)
         && in_array($r['qui'] ?? '', ['conseiller', 'stagiaire'], true) && $chaine($r['texte'] ?? null, 200)));
-    if (count($pistes) < 1 || count($pistes) > 3 || count($repliques) < 1 || count($repliques) > 4 || !$chaine($s['decoupage'] ?? null, 120)) {
+    if (count($pistes) < 1 || count($pistes) > 3 || count($repliques) < 1 || count($repliques) > 3 || !$chaine($s['decoupage'] ?? null, 120)) {
         return null;
     }
     // La chute ne doit pas contenir le mot lui-même (ni sa racine) : sinon c'est la vraie définition, pas un calembour

@@ -12,6 +12,7 @@ const REGLAGES = {
   conseiller: { voix: 0, pitch: 0.75, rate: 0.9 },
   stagiaire: { voix: 1, pitch: 1.35, rate: 1.08 },
   duo: { voix: 0, pitch: 1, rate: 0.85 },
+  relance: { voix: 1, pitch: 1.35, rate: 1.08 },
 };
 
 /** Lit une réplique à voix haute ; se termine à la fin de la lecture (ou après un délai de sécurité). */
@@ -37,7 +38,7 @@ for (const sketch of document.querySelectorAll('[data-sketch]')) {
   const commandes = sketch.querySelector('.sketch-commandes');
   const bouton = sketch.querySelector('[data-jouer]');
   const caseVoix = sketch.querySelector('[data-voix]');
-  const lignes = [...sketch.querySelectorAll('[data-qui]')];
+  const lignes = [...sketch.querySelectorAll('.sketch-court [data-qui]')];
   let seance = 0; // incrémenté à chaque lancement : arrête proprement une lecture en cours
 
   commandes.hidden = false;
@@ -65,7 +66,7 @@ for (const sketch of document.querySelectorAll('[data-sketch]')) {
       if (ma !== seance) return;
       const qui = ligne.dataset.qui;
       const texte = (ligne.querySelector('.replique-texte') || ligne).textContent.trim();
-      if (ligne.classList.contains('replique-chute')) await pause(1300); // le silence avant la chute
+      if (ligne.classList.contains('replique-chute')) await pause(900); // le silence avant la chute
       if (ma !== seance) return;
       ligne.classList.add('vu');
       ligne.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -75,7 +76,7 @@ for (const sketch of document.querySelectorAll('[data-sketch]')) {
         ligne.classList.remove('parle');
         await pause(250);
       } else {
-        await pause(qui === 'scene' ? duree(texte) + 600 : duree(texte));
+        await pause(qui === 'scene' ? Math.min(3200, duree(texte)) : duree(texte));
       }
     }
     if (ma === seance) {
