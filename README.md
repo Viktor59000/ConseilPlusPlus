@@ -2,6 +2,8 @@
 
 Site vitrine PHP/MySQL (PDO) d'un faux cabinet de conseil qui délivre des conseils absurdes.
 
+**En ligne : https://conseilplus.onrender.com** (mis à jour automatiquement à chaque push, voir [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md)).
+
 > **Reprendre le projet sur un autre PC** : [docs/REPRISE.md](docs/REPRISE.md) (installation + passage d'un PC à l'autre).
 > **Où en est-on ?** : [docs/JOURNAL.md](docs/JOURNAL.md). Instructions pour Claude Code : [CLAUDE.md](CLAUDE.md).
 

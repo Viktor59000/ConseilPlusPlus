@@ -1,0 +1,20 @@
+# Visite quotidienne du site en ligne (offres gratuites Render + Aiven) :
+# - réveille le site et interroge la base, pour qu'Aiven ne l'éteigne pas faute d'activité ;
+# - fait préparer par l'IA le mot (presque) du jour du lendemain.
+name: Réveil quotidien
+
+on:
+  schedule:
+    - cron: '17 5 * * *'   # 5 h 17 UTC, chaque jour
+  workflow_dispatch:        # lancement à la main depuis l'onglet Actions
+
+jobs:
+  reveil:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Réveiller le site (jusqu'à 2 minutes)
+        run: curl --fail --silent --show-error --retry 5 --retry-delay 20 --retry-all-errors --max-time 120 -o /dev/null https://conseilplus.onrender.com/
+      - name: Mot du jour (lit la base)
+        run: curl --fail --silent --show-error --max-time 60 https://conseilplus.onrender.com/api/mot-du-jour.php
+      - name: Préparer le mot de demain
+        run: curl --silent --show-error --max-time 90 -X POST https://conseilplus.onrender.com/api/mot-du-jour.php

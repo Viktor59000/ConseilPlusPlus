@@ -6,6 +6,8 @@ L'entrée la plus récente est en haut de l'historique.
 ## État actuel (14/10/2026)
 
 Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pages (profil mobile).
+**En ligne** sur https://conseilplus.onrender.com (Render gratuit + MySQL Aiven gratuit), redéployé à chaque push
+(`docs/DEPLOIEMENT.md`).
 
 - **Pages publiques** : accueil (conseil du jour + mot du jour), formules, contact (passe par l'API), espace client, Le Petit Moyen.
 - **Espace client** : Mon conseil (sans rechargement), Consultation (questionnaire tournant + verdict IA),
@@ -21,19 +23,30 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 1. **Le Bureau** (logiciel de gestion, attendu par le cours) : 2e application avec sa propre base `gestion`,
    qui importe les demandes via `GET /api/contacts.php?statut=nouveau` puis `PATCH ?id=` (statut `importe`),
    gère les dossiers et y répond automatiquement par un conseil absurde. Attendre les consignes du prof (séance du 16/10).
-2. **Conseil du jour sur téléphone** (widget KWGT/Scriptable puis PWA + notifications) : voir `docs/IDEES.md`.
-   Nécessite un hébergement HTTPS. L'API `mot-du-jour.php` est déjà prête.
+2. **Conseil du jour sur téléphone** (PWA installable + widget) : voir `docs/IDEES.md`.
+   L'hébergement HTTPS est en place ; l'API `mot-du-jour.php` est prête. Prévoir un cache côté widget
+   (le site gratuit met ~1 min à se réveiller).
 3. Améliorations possibles de l'API : une clé par application, webhook, pagination, documentation OpenAPI.
 
 ## Points ouverts
 
-- **Régénérer la clé Groq** (elle a transité par une conversation) et la mettre dans `config.php` sur chaque PC.
+- **Régénérer la clé Groq** (elle a transité par une conversation) et la mettre dans `config.php` sur chaque PC
+  et dans Render (variable `GROQ_API_KEY`, absente pour l'instant : le site en ligne utilise les générateurs locaux).
+- **Régénérer `API_KEY` dans Render** (bouton *Generate*) : la valeur actuelle a transité par la conversation.
+- Formulaire de contact en ligne (appel interne de l'API via `URL_INTERNE`) pas encore testé de bout en bout.
 - Affichage mobile du sous-menu de l'espace client non vérifié visuellement (audit Lighthouse mobile OK).
 - La qualité des sketchs générés par l'IA est variable (calembours parfois faibles) : surveiller, ajuster
   `CONSIGNE_SKETCH` dans `includes/mot-du-jour.php` si besoin.
 - `db.php` et `config.php` ne sont pas dans Git : à recréer sur chaque PC (`docs/REPRISE.md`).
 
 ## Historique des sessions
+
+### 14/10/2026 — Second PC (D:\Conseil++)
+- Installation sur ce PC : clone dans `D:\Conseil++`, jonction `C:\wamp64\www\Site`, `db.php` / `config.php` recréés, tests OK.
+- Le Petit Moyen : sketchs repris des « Mots » originaux remplacés par des chutes inventées (9 sketchs),
+  18 nouvelles définitions (68 mots), section « Feuilleter le dictionnaire » (page au hasard + sommaire).
+- Mise en ligne : Dockerfile, réglages par variables d'environnement, Render (Frankfurt, Free) + Aiven MySQL (Free),
+  visite quotidienne `reveil.yml`, `docs/DEPLOIEMENT.md`.
 
 ### 14/10/2026 — PC principal (session fondatrice)
 - Import du dépôt BaraQuiz, tri, puis transformation en **ConseilPlus+** (nouveau dépôt ConseilPlusPlus).

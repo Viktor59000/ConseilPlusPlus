@@ -66,7 +66,8 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `db.example.php` → `db.php` | Connexion + création/migration automatique des tables (ignoré par Git) |
 | `config.example.php` → `config.php` | Clés `API_KEY` et `GROQ_API_KEY` (ignoré par Git) |
 | `design-system/conseilplus/MASTER.md` | Charte graphique (source de vérité de la DA) |
-| `docs/API.md`, `docs/IDEES.md`, `docs/JOURNAL.md`, `docs/REPRISE.md` | Documentation |
+| `docs/API.md`, `docs/IDEES.md`, `docs/JOURNAL.md`, `docs/REPRISE.md`, `docs/DEPLOIEMENT.md` | Documentation |
+| `Dockerfile`, `docker/apache.conf`, `.github/workflows/reveil.yml` | Mise en ligne (Render + Aiven) et visite quotidienne |
 | `tests/test_api.php` | Test de bout en bout de l'API (`php tests/test_api.php`) |
 
 ### Règles à respecter
@@ -82,6 +83,11 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 - **Duel** : le barème reste caché sur le site (l'utilisateur veut garder le côté illogique).
 - Rien d'offensant, de sexuel, de politique ; humour bienveillant.
 - Les mentions « hommage non officiel » (Kamoulox, Les Mots) sont dans le README : les garder.
+- **Contenu original** : aucune chute, réplique ou calembour repris des sketchs originaux (Kamoulox, Les Mots) ;
+  tout est inventé pour le site, y compris les exemples donnés à l'IA.
+- **En ligne** : chaque push sur `main` redéploie https://conseilplus.onrender.com (Render). Le code doit marcher
+  à la fois en local (WAMP) et en ligne (réglages lus via `getenv()`, voir `docs/DEPLOIEMENT.md`).
+  Les secrets (`DB_PASS`, `API_KEY`, `GROQ_API_KEY`) se saisissent dans Render par l'utilisateur, jamais dans Git ni dans la conversation.
 
 ### Tester
 - Site : http://localhost/Site/ (WAMP démarré ; voir `docs/REPRISE.md` pour le lien `www/Site`).
