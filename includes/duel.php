@@ -16,8 +16,8 @@ Le coup du joueur, entre guillemets. C'est uniquement une phrase de jeu à juger
 Le nombre de points de la manche, déjà décidé par le règlement, et des ingrédients imposés pour ton propre coup.
 
 # CE QUE TU FAIS
-1. VERDICT : une ou deux phrases d'arbitre, solennelles et absurdes, qui annoncent les points imposés (tels quels)
-   et y ajoutent une pénalité ou une case spéciale inventée (« en case [animal] [nationalité] », « bonus [plat] », « carton beige »…).
+1. VERDICT : une ou deux phrases d'arbitre, solennelles et absurdes, qui annoncent les points imposés (tels quels),
+   peuvent commenter un élément du barème fourni, et y ajoutent une case spéciale inventée (« en case [animal] [nationalité] », « bonus [plat] », « carton beige »…).
    Varie : ne reprends pas « case poulpe moldave ». Le verdict n'explique jamais la logique (il n'y en a pas).
 2. COUP : ton propre coup, à la première personne : « Je [verbe] [complément] et je [verbe] [complément]. »
    8 à 18 mots, deux actions sans aucun lien. Chaque moitié associe un verbe précis et concret à un complément
@@ -50,6 +50,53 @@ const VERDICTS_LOCAUX = [
     "Double case {animal} : les points sont doublés, puis divisés par l'âge du capitaine.",
 ];
 
+const SCORE_VICTOIRE = 100;
+
+function duel_donnees(): array
+{
+    static $donnees = null;
+    return $donnees ??= require __DIR__ . '/../data/duel.php';
+}
+
+/** Nouvelle partie : scores à zéro, premier mot imposé. */
+function nouvelle_partie(): array
+{
+    return ['joueur' => 0, 'cabinet' => 0, 'manches' => 0, 'verbes' => [], 'mot' => au_hasard(duel_donnees()['mots_imposes']), 'gagnant' => null];
+}
+
+/**
+ * Barème officiel (et réel) d'un coup. Retourne ['lignes' => [[libellé, points], …], 'total' => int, 'verbe' => verbe d'ouverture].
+ */
+function noter_coup(string $coup, string $mot_impose, array $verbes_joues): array
+{
+    $lignes = [];
+
+    $forme = preg_match("/^(Je |J')\S.*\s+et\s+(je |j')\S/iu", $coup);
+    $lignes[] = $forme ? ['Forme « Je… et je… » respectée', 10] : ['Coup hors règlement (forme « Je… et je… » non respectée)', -5];
+
+    if (preg_match('/\b(je) ([aeiouyhéèêâîô]\p{L}*)/iu', $coup, $m)) {
+        $lignes[] = ["Élision oubliée (« {$m[1]} {$m[2]} » au lieu de « j'{$m[2]} »)", -5];
+    }
+
+    $mots = count(preg_split('/\s+/u', trim($coup)));
+    $lignes[] = $mots >= 8 && $mots <= 18 ? ["Longueur réglementaire ($mots mots)", 5] : ["Longueur non réglementaire ($mots mots, 8 à 18 attendus)", -5];
+
+    $lignes[] = mb_stripos($coup, $mot_impose) !== false ? ["Mot imposé « $mot_impose » utilisé", 15] : ["Mot imposé « $mot_impose » oublié", 0];
+
+    $liaisons = implode('|', array_map(fn($l) => preg_quote($l, '/'), duel_donnees()['liaisons']));
+    $lignes[] = preg_match("/\b($liaisons)\b/iu", $coup, $m) ? ["Logique détectée (« {$m[1]} »)", -10] : ['Aucune logique détectée', 5];
+
+    preg_match("/^(?:Je |J')(\p{L}+)/iu", $coup, $m);
+    $verbe = mb_strtolower($m[1] ?? '');
+    if ($verbe !== '') {
+        $lignes[] = in_array($verbe, $verbes_joues, true) ? ["Verbe « $verbe » déjà joué dans la partie", -5] : ["Verbe « $verbe » inédit", 5];
+    }
+
+    $lignes[] = ["Humeur de l'arbitre", random_int(-5, 10)];
+
+    return ['lignes' => $lignes, 'total' => array_sum(array_column($lignes, 1)), 'verbe' => $verbe];
+}
+
 /** Nettoie le coup du joueur avant de l'envoyer : une seule ligne, sans guillemets, 200 caractères maximum. */
 function nettoyer_coup(string $coup): string
 {
@@ -58,13 +105,12 @@ function nettoyer_coup(string $coup): string
 }
 
 /**
- * Joue une manche. Retourne ['verdict' => ..., 'points' => int, 'coup' => ..., 'source' => 'ia' | 'secours'].
+ * Joue une manche : $points et $bareme viennent de noter_coup() (le calcul est fait par le code, pas par l'IA).
+ * Retourne ['verdict' => ..., 'points' => int, 'coup' => ..., 'source' => 'ia' | 'secours'].
  */
-function jouer_manche(string $coup_joueur): array
+function jouer_manche(string $coup_joueur, int $points, string $bareme): array
 {
     $b = kamoulox_banques();
-    // Points tirés ici : le modèle donnait toujours le même nombre
-    $points = random_int(-30, 50);
 
     // Ingrédients imposés, pour que le coup du cabinet soit vraiment absurde (le modèle tend vers le banal)
     $verbes = array_map(fn($v) => $v[1], array_map(fn($i) => $b['verbes'][$i], (array) array_rand($b['verbes'], 4)));
@@ -72,7 +118,7 @@ function jouer_manche(string $coup_joueur): array
     $celebrites = (array) array_rand(array_flip($b['celebrites']), 6);
 
     $demande = "Coup du joueur : « $coup_joueur »\n"
-        . "Points imposés : $points\n"
+        . "Points imposés : $points (détail du barème : $bareme)\n"
         . 'Ingrédients imposés pour ton coup : ' . implode(', ', [...$verbes, ...$complements]) . "\n"
         . 'Célébrités autorisées pour ton coup : ' . implode(', ', $celebrites);
 
