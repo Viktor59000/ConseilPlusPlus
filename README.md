@@ -2,6 +2,9 @@
 
 Site vitrine PHP/MySQL (PDO) d'un faux cabinet de conseil qui délivre des conseils absurdes.
 
+> **Reprendre le projet sur un autre PC** : [docs/REPRISE.md](docs/REPRISE.md) (installation + passage d'un PC à l'autre).
+> **Où en est-on ?** : [docs/JOURNAL.md](docs/JOURNAL.md). Instructions pour Claude Code : [CLAUDE.md](CLAUDE.md).
+
 ## Installation
 
 1. Placer le dossier dans le `www` de WAMP (ou équivalent).
@@ -15,11 +18,12 @@ Site vitrine PHP/MySQL (PDO) d'un faux cabinet de conseil qui délivre des conse
 | Accueil | `index.php` |
 | Produit / service | `produit.php` |
 | Contact | `contact.php` (enregistré dans `contacts`, statut `nouveau`) |
+| Le Petit Moyen | `petit-moyen.php` (mot du jour : fausse définition ou sketch) |
 | Espace client | `login.php` → `conseil.php` → `consultation.php` (questionnaire + IA) → `carnet.php` (conseils classés) → `duel.php` (mode Duel contre l'arbitre IA), réservés aux connectés |
 
 ## API
 
-Voir [docs/API.md](docs/API.md) : `api/contacts.php` (REST, site → logiciel de gestion), `api/mes-conseils.php` (carnet) et `api/conseils.php`. Chaque échange est journalisé dans `api_logs`.
+Voir [docs/API.md](docs/API.md) : `api/contacts.php` (REST, site → logiciel de gestion), `api/mes-conseils.php` (carnet), `api/conseils.php` et `api/mot-du-jour.php`. Chaque échange est journalisé dans `api_logs`.
 
 ## Base de données
 
