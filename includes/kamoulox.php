@@ -94,7 +94,7 @@ function composer_situation(): string
     return match (random_int(1, 4)) {
         1 => 'Si votre ' . au_hasard($c['choses']) . ' ' . au_hasard($c['problemes']) . ',',
         2 => 'Avant ' . de(au_hasard($c['activites'])) . ',',
-        3 => 'En cas de ' . au_hasard($c['evenements']) . ',',
+        3 => 'En cas ' . de(au_hasard($c['evenements'])) . ',',
         4 => 'Pour ' . au_hasard($c['objectifs']) . ',',
     };
 }

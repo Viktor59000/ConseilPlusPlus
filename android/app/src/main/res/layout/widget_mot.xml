@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Widget à deux faces, comme une carte : « Conseil du jour » et « Le Petit Moyen » (mot du jour).
-     ⇄ retourne la carte ; une seule face est visible à la fois (MotDuJourWidget.afficher). -->
+     Une seule face visible à la fois (MotDuJourWidget.afficher). Les boutons sont en haut, hors de la zone
+     qui ouvre l'appli (corps_*), pour qu'un toucher ne déclenche jamais les deux. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/racine"
     android:layout_width="match_parent"
@@ -13,10 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingStart="14dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="14dp"
-        android:paddingBottom="14dp">
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,32 +26,25 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
+                android:maxLines="1"
                 android:text="@string/face_conseil"
                 android:textColor="@color/encre"
                 android:textSize="15sp" />
 
             <TextView
-                android:id="@+id/dossier"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:fontFamily="monospace"
-                android:gravity="end"
-                android:maxLines="1"
-                android:textColor="@color/encre_douce"
-                android:textSize="10sp" />
-
-            <TextView
                 android:id="@+id/rafraichir"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="36dp"
+                android:background="@drawable/bouton"
                 android:contentDescription="@string/widget_rafraichir"
-                android:paddingStart="12dp"
-                android:paddingEnd="4dp"
+                android:gravity="center"
+                android:minWidth="40dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="12dp"
                 android:text="↻"
                 android:textColor="@color/tampon"
                 android:textSize="18sp"
@@ -59,64 +53,76 @@
             <TextView
                 android:id="@+id/retourner_conseil"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bouton"
                 android:contentDescription="@string/widget_retourner"
-                android:paddingStart="8dp"
-                android:paddingEnd="2dp"
-                android:text="⇄"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="12dp"
+                android:text="@string/vers_mot"
                 android:textColor="@color/encre"
-                android:textSize="18sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="8dp"
-            android:background="@color/encre" />
-
-        <TextView
-            android:id="@+id/conseil"
+        <LinearLayout
+            android:id="@+id/corps_conseil"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:ellipsize="end"
-            android:maxLines="6"
-            android:textColor="@color/encre"
-            android:textSize="14sp" />
+            android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/encre" />
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:id="@+id/conseil"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:fontFamily="monospace"
-                android:text="@string/offert"
-                android:textColor="@color/encre_douce"
-                android:textSize="10sp" />
+                android:ellipsize="end"
+                android:maxLines="6"
+                android:textColor="@color/encre"
+                android:textSize="14sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/tampon"
-                android:fontFamily="monospace"
-                android:letterSpacing="0.1"
-                android:paddingStart="6dp"
-                android:paddingTop="1dp"
-                android:paddingEnd="6dp"
-                android:paddingBottom="1dp"
-                android:rotation="-4"
-                android:text="@string/valide"
-                android:textColor="@color/tampon"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/dossier"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="monospace"
+                    android:maxLines="1"
+                    android:textColor="@color/encre_douce"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/tampon"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.1"
+                    android:paddingStart="6dp"
+                    android:paddingTop="1dp"
+                    android:paddingEnd="6dp"
+                    android:paddingBottom="1dp"
+                    android:rotation="-4"
+                    android:text="@string/valide"
+                    android:textColor="@color/tampon"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
@@ -126,10 +132,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingStart="14dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="14dp"
-        android:paddingBottom="14dp"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="12dp"
         android:visibility="gone">
 
         <LinearLayout
@@ -152,68 +158,79 @@
             <TextView
                 android:id="@+id/retourner_mot"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bouton"
                 android:contentDescription="@string/widget_retourner"
-                android:paddingStart="12dp"
-                android:paddingEnd="2dp"
-                android:text="⇄"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="12dp"
+                android:text="@string/vers_conseil"
                 android:textColor="@color/encre"
-                android:textSize="18sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/corps_mot"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:gravity="bottom"
-            android:orientation="horizontal">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/mot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/surligne"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-black"
+                    android:maxLines="1"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:textColor="@color/encre"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:id="@+id/nature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:maxLines="1"
+                    android:paddingBottom="3dp"
+                    android:textColor="@color/encre_douce"
+                    android:textSize="12sp"
+                    android:textStyle="italic" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/mot"
-                android:layout_width="wrap_content"
+                android:id="@+id/ligne1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/surligne"
+                android:layout_marginTop="6dp"
                 android:ellipsize="end"
-                android:fontFamily="sans-serif-black"
-                android:maxLines="1"
-                android:paddingStart="2dp"
-                android:paddingEnd="2dp"
+                android:maxLines="3"
                 android:textColor="@color/encre"
-                android:textSize="22sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/nature"
-                android:layout_width="wrap_content"
+                android:id="@+id/ligne2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:maxLines="1"
-                android:paddingBottom="3dp"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:textColor="@color/encre_douce"
                 android:textSize="12sp"
                 android:textStyle="italic" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/ligne1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:textColor="@color/encre"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/ligne2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textColor="@color/encre_douce"
-            android:textSize="12sp"
-            android:textStyle="italic" />
     </LinearLayout>
 </FrameLayout>

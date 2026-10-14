@@ -13,6 +13,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import android.widget.TextView
+import fr.conseilplus.app.widget.MiseAJourWorker
 
 /**
  * L'appli : affiche le site ConseilPlus+ en plein écran.
@@ -66,6 +67,9 @@ class MainActivity : Activity() {
         } else {
             web.loadUrl(adresse(intent))
         }
+
+        // Appli au premier plan : Android laisse le réseau passer, on en profite pour recharger le widget
+        MiseAJourWorker.maintenant(this)
     }
 
     override fun onNewIntent(intent: Intent) {

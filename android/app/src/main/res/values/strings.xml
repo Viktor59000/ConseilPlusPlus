@@ -6,11 +6,13 @@
     <string name="widget_titre">Le Petit Moyen</string>
     <string name="widget_description">Une carte à deux faces : le conseil du jour et le mot (presque) du jour.</string>
     <string name="face_conseil">Conseil du jour</string>
-    <string name="offert">Offert. Non remboursable.</string>
     <string name="valide">VALIDÉ</string>
     <string name="widget_retourner">Retourner la carte</string>
     <string name="widget_reflexion">Le conseiller réfléchit…</string>
     <string name="widget_chargement">Chargement…</string>
     <string name="widget_chargement_detail">Le conseiller cherche le mot du jour. Cela peut prendre une minute.</string>
     <string name="widget_rafraichir">Nouveau conseil</string>
+    <string name="vers_mot">⇄ Mot</string>
+    <string name="vers_conseil">⇄ Conseil</string>
+    <string name="widget_chargement_conseil">Le conseiller prépare vos conseils. Cela peut prendre une minute.</string>
 </resources>
