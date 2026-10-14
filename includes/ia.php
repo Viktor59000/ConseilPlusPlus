@@ -1,58 +1,64 @@
 <?php
 /**
- * Conseiller IA : envoie les réponses du questionnaire à l'API gratuite de Groq
- * (format compatible OpenAI) et renvoie un conseil volontairement tordu.
+ * Conseiller IA : envoie le dossier du questionnaire à l'API gratuite de Groq
+ * (format compatible OpenAI) et renvoie un conseil Kamoulox.
  * Sans clé, ou si l'API ne répond pas, le générateur local prend le relais.
  *
- * Pour empêcher l'IA d'être trop logique, on brouille le dossier avant de l'envoyer :
- * réponses mélangées et rattachées aux mauvaises questions, ingrédient imposé sans rapport,
- * style imposé au hasard.
+ * Prompt adapté du document « Générateur de phrases Kamoulox — Act-like » :
+ * gabarit imposé au hasard, niveau 2 ou 3, historique des derniers conseils pour éviter
+ * les répétitions, dossier brouillé pour que l'IA ne suive pas le formulaire.
+ * Hommage non officiel au Kamoulox de Kad Merad et Olivier Baroux.
  */
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/http.php';
 require_once __DIR__ . '/tirage.php';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const HISTORIQUE_IA = 10;
 
 const CONSIGNE_IA = <<<TXT
-Tu es « le conseiller moyen » du cabinet ConseilPlus+, un faux cabinet de conseil.
-On te transmet le dossier d'un client. Le dossier a été mal classé : les réponses ne correspondent pas aux questions, et c'est très bien comme ça.
+# RÔLE
+Tu es le conseiller moyen du cabinet ConseilPlus+, ancien Grand Maître du Kamoulox reconverti dans le conseil.
+Chaque conseil que tu rends est un « coup » de Kamoulox : une recommandation absurde, énoncée avec le sérieux d'un expert qui vient de résoudre le dossier du siècle.
 
-Rédige UN conseil complètement absurde, façon Kamoulox, en français, avec vouvoiement : deux phrases courtes, 45 mots maximum.
-Règles :
-- Enchaîne des actions qui n'ont strictement aucun rapport entre elles (« faites ceci, puis faites cela »).
-- Utilise les éléments du dossier à contre-emploi : un nombre devient un objet, une couleur devient une personne, un meuble devient un sentiment.
-- Les liens de cause à effet sont faux, assumés et inventés pour l'occasion (jamais la même excuse). Ne justifie jamais rien, n'explique jamais, ne cherche aucune harmonie, aucun équilibre, aucune énergie.
-- Termine par une conséquence qui n'a rien à voir avec le reste.
-- Ton : un fonctionnaire très sérieux qui récite un règlement, sans jamais rire.
-- Interdits : récapituler le dossier, commencer par « Conformément », les mots « harmonie », « équilibre », « énergie », « optimiser ».
-- Inoffensif : rien de dangereux, de médical, de financier, d'illégal ni de vexant.
-Réponds uniquement par le conseil, en texte brut, sans titre, sans liste, sans markdown.
+# FORME D'UN CONSEIL
+- Deux actions à l'impératif, avec vouvoiement, SANS AUCUN lien logique entre elles : « [Verbe] [complément] et [verbe] [complément]. »
+- 10 à 25 mots au total. Une seule phrase, deux au maximum.
+- Verbe précis et concret (raboter, photocopier, savonner, agrafer, déglacer, tutoyer, privatiser) appliqué à un complément qui ne le supporte pas.
+- Vocabulaire du quotidien français : objets banals, lieux ordinaires (pressing, PMU, déchetterie, rayon fromage), produits connus, animaux communs.
+- Au plus un ou deux noms propres : célébrités françaises un peu datées (variété, télé des années 80-2000) ou pays voisins.
+- Utilise un ou deux éléments du dossier client, à contre-emploi : un nombre devient un objet, une couleur devient une personne. Ne suis jamais l'ordre du dossier.
 
-Exemples du ton attendu (ne pas les recopier) :
-« Classez vos dix-sept verts par ordre de taille, puis offrez votre tartine à la préfecture. Votre perceuse sera prévenue par courrier. »
-« Le jaune moutarde ayant refusé de signer, remplacez votre soupe par une chaise pliante jusqu'à jeudi. Les pigeons apprécieront le geste. »
+# INTERDITS
+- Expliquer, justifier, conclure par une morale, récapituler le dossier, commenter, rire, émojis.
+- Rimes, jeux de mots, symétries astucieuses.
+- Absurde « random » sans ancrage (licornes, arcs-en-ciel, quantique, cosmique).
+- Les mots « harmonie », « équilibre », « énergie », « optimiser », « afin de ».
+- Réutiliser un verbe d'ouverture ou une célébrité des conseils précédents.
+- Contenu sexuel, violent, haineux, ou visant une origine, une religion, un handicap, une orientation. Les célébrités ne subissent que des actions inoffensives (tutoyer, saluer, faxer, ressembler à).
+
+# EXEMPLES DE TON (à ne pas recopier)
+- Poncez une endive et vouvoyez le Luxembourg.
+- Agrafez un ragondin et repassez les rideaux de Patrick Sabatier.
+- Farcissez un rond-point et réclamez votre minitel en case loutre finlandaise.
+- Privatisez un pluviomètre et tutoyez le facteur de Jean-Pierre Foucault.
+- Le coefficient de friture recommande de vernir la moustache d'un douanier andorran.
+
+# SORTIE
+Uniquement le conseil, en texte brut. Aucun titre, aucune explication, aucune question.
 TXT;
 
-// Style imposé, tiré au hasard à chaque consultation
-const STYLES_IA = [
-    'comme une notice de montage de meuble',
-    'comme un horoscope du jour',
-    "comme le message d'un répondeur téléphonique",
-    "comme un article de loi inventé, avec son numéro",
-    'comme une annonce en gare',
-    'comme une recette de cuisine',
-    'comme un bulletin météo',
-    "comme une consigne de sécurité d'avion",
-    'comme une prophétie de voyante de foire',
-    'comme le compte rendu d\'une réunion de copropriété',
-    'comme un SMS de rappel de rendez-vous',
-    'comme une petite annonce',
+// Gabarits du document, adaptés au conseil (un est imposé au hasard à chaque consultation)
+const GABARITS_IA = [
+    '« [Verbe] [objet] et [verbe] [objet ou personne]. »',
+    '« [Verbe] [objet] et [verbe inoffensif] [célébrité un peu datée]. »',
+    '« [Verbe] [objet] et habillez-vous comme [célébrité]. »',
+    '« [Concept savant inventé] recommande de [verbe] [détail ridicule]. »',
+    '« Inventez [objet impossible] et déclarez la guerre à [pays voisin]. »',
+    '« [Verbe] [objet] et [verbe] [objet] en case [animal] [nationalité]. »',
 ];
 
-/**
- * Brouille le dossier : les réponses sont redistribuées au hasard sur les questions.
- */
+/** Brouille le dossier : les réponses sont redistribuées au hasard sur les questions. */
 function brouiller_dossier(array $reponses): string
 {
     $questions = array_keys($reponses);
@@ -73,11 +79,13 @@ function brouiller_dossier(array $reponses): string
 function demander_conseil_ia(array $reponses, PDO $bdd): array
 {
     if (GROQ_API_KEY !== '') {
-        $ingredient = tirer_conseil($bdd)['action'];
-        $style = STYLES_IA[array_rand(STYLES_IA)];
-        $demande = "Dossier du client (mal classé) :\n" . brouiller_dossier($reponses)
-            . "\nIngrédient imposé, à glisser tel quel ou presque : « $ingredient ».\n"
-            . "Style imposé : rédige le conseil $style.";
+        $historique = $_SESSION['historique_ia'] ?? [];
+        $demande = "Dossier client (mal classé) :\n" . brouiller_dossier($reponses)
+            . "\nGabarit imposé : " . GABARITS_IA[array_rand(GABARITS_IA)]
+            . "\nNiveau : " . random_int(2, 3) . " (2 = Kamoulox classique, 3 = surenchère)";
+        if ($historique) {
+            $demande .= "\n\nConseils déjà donnés (ne pas réutiliser leurs verbes ni leurs célébrités) :\n- " . implode("\n- ", $historique);
+        }
 
         // 3 tentatives : le modèle renvoie parfois une réponse vide ou coupée après avoir trop « réfléchi »
         for ($essai = 1; $essai <= 3; $essai++) {
@@ -87,7 +95,7 @@ function demander_conseil_ia(array $reponses, PDO $bdd): array
                     ['role' => 'system', 'content' => CONSIGNE_IA],
                     ['role' => 'user', 'content' => $demande],
                 ],
-                'temperature' => 1.2,
+                'temperature' => 1.0,
                 'max_tokens' => 800,
                 // gpt-oss « réfléchit » avant de répondre : réflexion courte et non renvoyée
                 'reasoning_effort' => 'low',
@@ -95,10 +103,12 @@ function demander_conseil_ia(array $reponses, PDO $bdd): array
             ], ['Authorization: Bearer ' . GROQ_API_KEY], 15);
 
             $choix = $resultat['data']['choices'][0] ?? [];
-            $texte = trim($choix['message']['content'] ?? '');
+            $texte = trim($choix['message']['content'] ?? '', " \n\r\t\"«»");
             // Réponse acceptée seulement si le modèle a terminé normalement (pas de phrase coupée)
             if ($resultat['code'] === 200 && $texte !== '' && ($choix['finish_reason'] ?? '') === 'stop') {
-                return ['conseil' => raccourcir($texte), 'source' => 'ia'];
+                $texte = raccourcir($texte);
+                $_SESSION['historique_ia'] = array_slice([...$historique, $texte], -HISTORIQUE_IA);
+                return ['conseil' => $texte, 'source' => 'ia'];
             }
             if ($resultat['code'] !== 200) {
                 break; // erreur de l'API (clé, quota, réseau) : inutile de réessayer

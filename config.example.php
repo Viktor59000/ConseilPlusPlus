@@ -6,4 +6,4 @@ const API_KEY = 'changez-moi';
 
 // IA gratuite : Groq (https://console.groq.com/keys). Laisser vide pour utiliser le générateur local.
 const GROQ_API_KEY = '';
-const GROQ_MODEL = 'openai/gpt-oss-20b';
+const GROQ_MODEL = 'openai/gpt-oss-120b';
