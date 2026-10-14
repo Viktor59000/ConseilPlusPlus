@@ -72,6 +72,7 @@ include("includes/header.php");
   <div class="actions">
     <a class="btn btn-tampon" href="conseil.php">Obtenir un conseil</a>
     <a class="btn btn-clair" href="consultation.php">Consultation approfondie (IA)</a>
+    <a class="btn btn-clair" href="duel.php">Le Duel</a>
   </div>
 </section>
 

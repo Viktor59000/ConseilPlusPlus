@@ -97,51 +97,69 @@ function demander_conseil_ia(array $reponses, PDO $bdd): array
             $demande .= "\n\nConseils déjà donnés (ne pas réutiliser leurs verbes ni leurs célébrités) :\n- " . implode("\n- ", $historique);
         }
 
-        // Mots interdits que le modèle laisse parfois passer : la réponse est alors redemandée
-        $interdits = '/(quantique|cosmique|licorne|arc-en-ciel|harmonie|équilibre|énergie|optimis)/iu';
-
-        // 3 tentatives : le modèle renvoie parfois une réponse vide ou coupée après avoir trop « réfléchi »
-        $modele = GROQ_MODEL;
-        for ($essai = 1; $essai <= 3; $essai++) {
-            $resultat = appeler_api('POST', GROQ_URL, [
-                'model' => $modele,
-                'messages' => [
-                    ['role' => 'system', 'content' => CONSIGNE_IA],
-                    ['role' => 'user', 'content' => $demande],
-                ],
-                'temperature' => 1.0,
-                'max_tokens' => 800,
-                // gpt-oss « réfléchit » avant de répondre : réflexion courte et non renvoyée
-                'reasoning_effort' => 'low',
-                'include_reasoning' => false,
-            ], ['Authorization: Bearer ' . GROQ_API_KEY], 15);
-
-            $choix = $resultat['data']['choices'][0] ?? [];
-            $texte = trim($choix['message']['content'] ?? '', " \n\r\t\"«»");
-            // Réponse acceptée seulement si le modèle a terminé normalement (pas de phrase coupée)
-            $valide = $texte !== '' && ($choix['finish_reason'] ?? '') === 'stop'
-                && !preg_match($interdits, $texte)
-                && !preg_match('/^\p{L}+(er|ir)\b/u', $texte) // pas d'infinitif en ouverture (« Raboter » au lieu de « Rabotez »)
-                && noms_propres_autorises($texte);
-            if ($resultat['code'] === 200 && $valide) {
-                $texte = raccourcir($texte);
-                $_SESSION['historique_ia'] = array_slice([...$historique, $texte], -HISTORIQUE_IA);
-                return ['conseil' => $texte, 'source' => 'ia'];
-            }
-            if ($resultat['code'] === 429 && $modele !== MODELE_REPLI) {
-                $modele = MODELE_REPLI; // quota dépassé : on bascule sur le modèle de repli
-                continue;
-            }
-            if ($resultat['code'] !== 200) {
-                break; // autre erreur de l'API (clé, réseau) : inutile de réessayer
-            }
+        $texte = groq_completer(CONSIGNE_IA, $demande, fn(string $t) =>
+            !preg_match('/^\p{L}+(er|ir)\b/u', $t) // pas d'infinitif en ouverture (« Raboter » au lieu de « Rabotez »)
+            && noms_propres_autorises($t));
+        if ($texte !== null) {
+            $texte = raccourcir($texte);
+            $_SESSION['historique_ia'] = array_slice([...$historique, $texte], -HISTORIQUE_IA);
+            return ['conseil' => $texte, 'source' => 'ia'];
         }
-        error_log('ConseilPlus+ : échec de l\'API Groq (HTTP ' . $resultat['code'] . ')');
     }
 
     // Générateur local de secours
     $c = tirer_conseil($bdd);
     return ['conseil' => "{$c['situation']} {$c['action']} {$c['resultat']}", 'source' => 'secours'];
+}
+
+/**
+ * Envoie une demande à Groq et renvoie le texte de la réponse, ou null en cas d'échec.
+ * - 3 tentatives : le modèle renvoie parfois une réponse vide ou coupée après avoir trop « réfléchi » ;
+ * - réponse rejetée si elle contient un mot interdit ou si $valider la refuse ;
+ * - bascule sur le modèle de repli si le quota gratuit est dépassé (HTTP 429).
+ */
+function groq_completer(string $systeme, string $demande, ?callable $valider = null): ?string
+{
+    if (GROQ_API_KEY === '') {
+        return null;
+    }
+    // Mots que le modèle laisse parfois passer malgré la consigne
+    $interdits = '/(quantique|cosmique|licorne|arc-en-ciel|harmonie|équilibre|énergie|optimis)/iu';
+
+    $modele = GROQ_MODEL;
+    for ($essai = 1; $essai <= 3; $essai++) {
+        $resultat = appeler_api('POST', GROQ_URL, [
+            'model' => $modele,
+            'messages' => [
+                ['role' => 'system', 'content' => $systeme],
+                ['role' => 'user', 'content' => $demande],
+            ],
+            'temperature' => 1.0,
+            'max_tokens' => 800,
+            // gpt-oss « réfléchit » avant de répondre : réflexion courte et non renvoyée
+            'reasoning_effort' => 'low',
+            'include_reasoning' => false,
+        ], ['Authorization: Bearer ' . GROQ_API_KEY], 15);
+
+        $choix = $resultat['data']['choices'][0] ?? [];
+        $texte = trim($choix['message']['content'] ?? '', " \n\r\t\"«»");
+        // Réponse acceptée seulement si le modèle a terminé normalement (pas de phrase coupée)
+        $valide = $texte !== '' && ($choix['finish_reason'] ?? '') === 'stop'
+            && !preg_match($interdits, $texte)
+            && ($valider === null || $valider($texte));
+        if ($resultat['code'] === 200 && $valide) {
+            return $texte;
+        }
+        if ($resultat['code'] === 429 && $modele !== MODELE_REPLI) {
+            $modele = MODELE_REPLI; // quota dépassé : on bascule sur le modèle de repli
+            continue;
+        }
+        if ($resultat['code'] !== 200) {
+            break; // autre erreur de l'API (clé, réseau) : inutile de réessayer
+        }
+    }
+    error_log("ConseilPlus+ : échec de l'API Groq (HTTP {$resultat['code']})");
+    return null;
 }
 
 /**

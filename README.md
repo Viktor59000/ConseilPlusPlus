@@ -15,7 +15,7 @@ Site vitrine PHP/MySQL (PDO) d'un faux cabinet de conseil qui délivre des conse
 | Accueil | `index.php` |
 | Produit / service | `produit.php` |
 | Contact | `contact.php` (enregistré dans `contacts`, statut `nouveau`) |
-| Espace client | `login.php` → `conseil.php` → `consultation.php` (questionnaire + IA) → `carnet.php` (conseils classés), réservés aux connectés |
+| Espace client | `login.php` → `conseil.php` → `consultation.php` (questionnaire + IA) → `carnet.php` (conseils classés) → `duel.php` (mode Duel contre l'arbitre IA), réservés aux connectés |
 
 ## API
 

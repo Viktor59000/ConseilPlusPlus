@@ -43,6 +43,7 @@ include("includes/header.php");
     <a class="btn btn-tampon" id="autre-conseil" href="conseil.php#recommandation">Demander un autre conseil</a>
     <button class="btn btn-clair" type="button" data-classer="#recommandation" data-source="generateur" hidden>Classer au dossier</button>
     <a class="btn btn-clair" href="consultation.php">Consultation approfondie (IA)</a>
+    <a class="btn btn-clair" href="duel.php">Le Duel</a>
   </div>
 </section>
 

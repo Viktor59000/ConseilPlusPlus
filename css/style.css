@@ -183,6 +183,14 @@ section { padding-block: 56px; }
 .liste-info { padding-left: 1.2em; margin: 0 0 20px; }
 .liste-info li { margin-bottom: 8px; }
 
+/* ---------- Duel ---------- */
+.score { margin: 0; padding: 8px 12px; display: inline-block; background: var(--surligneur); border: var(--bord); }
+.duel-deroule { margin: 0 0 40px; display: grid; gap: 18px; }
+.duel-deroule dt { text-transform: uppercase; color: var(--encre-douce); margin-bottom: 4px; }
+.duel-deroule dd { margin: 0; }
+.duel-verdict { font-style: italic; }
+.duel .fiche-conseil { margin-bottom: 0; }
+
 /* ---------- Carnet ---------- */
 .carnet { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; }
 .carnet-item { background: var(--carte); border: var(--bord); box-shadow: var(--ombre); padding: 20px 24px; }
