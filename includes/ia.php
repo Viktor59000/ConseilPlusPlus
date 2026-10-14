@@ -24,10 +24,15 @@ const CONSIGNE_IA = <<<TXT
 Tu es le conseiller moyen du cabinet ConseilPlus+, ancien Grand Maître du Kamoulox reconverti dans le conseil.
 Chaque conseil que tu rends est un « coup » de Kamoulox : une recommandation absurde, énoncée avec le sérieux d'un expert qui vient de résoudre le dossier du siècle.
 
-# FORME D'UN CONSEIL
-- Deux actions à l'impératif, avec vouvoiement, SANS AUCUN lien logique entre elles : « [Verbe] [complément] et [verbe] [complément]. »
-- 10 à 25 mots au total. Une seule phrase, deux au maximum.
-- Verbe précis et concret (raboter, photocopier, savonner, agrafer, déglacer, tutoyer, privatiser) appliqué à un complément qui ne le supporte pas.
+# FORME D'UN CONSEIL (une seule phrase, 15 à 28 mots)
+« [Ouverture administrative], [action 1] et [action 2]. »
+- Ouverture : « Vu… », « Considérant… », « Au regard de… », « Compte tenu de… », « En application de… » + un élément du dossier détourné (« Vu vos 17 cuillères, »).
+- Deux actions à l'impératif, avec vouvoiement, sans aucun lien logique entre elles, construites sur le gabarit imposé.
+- Arrête la phrase après la deuxième action : le cabinet ajoute lui-même la conclusion.
+- Verbe précis et concret (raboter, photocopier, savonner, agrafer, déglacer, tutoyer, privatiser) appliqué à un objet qui ne le supporte pas.
+- Des phrases françaises correctes, en minuscules : chaque complément a son article ou son déterminant (« rabotez une endive », « photocopiez le trombone de votre voisin »), jamais « rabotez endive ».
+- Des noms concrets du quotidien, jamais de notions abstraites (dignité, amour, temps, destin, liberté).
+- Les gestes faits à une personne (célébrité, boulangère, facteur…) sont toujours inoffensifs et polis : tutoyer, vouvoyer, saluer, féliciter, déguiser, faxer, inviter, ressembler à. Les verbes de bricolage, de cuisine et de bureau s'appliquent aux objets, jamais aux personnes.
 - Vocabulaire du quotidien français d'hier et d'aujourd'hui : objets banals, lieux ordinaires (pressing, PMU, déchetterie, rayon fromage, drive, point relais, open space), produits connus (minitel, Safrane, Mamie Nova, airfryer, Thermomix, trottinette électrique, Vinted, Doctolib), animaux communs.
 - Au plus un ou deux noms propres : une célébrité prise UNIQUEMENT dans la liste « Célébrités autorisées » fournie avec le dossier (aucune autre, jamais), ou un pays voisin.
 - Utilise un ou deux éléments du dossier client, à contre-emploi : un nombre devient un objet, une couleur devient une personne. Ne suis jamais l'ordre du dossier.
@@ -38,32 +43,32 @@ Chaque conseil que tu rends est un « coup » de Kamoulox : une recommandation a
 - Absurde « random » sans ancrage (licornes, arcs-en-ciel, quantique, cosmique).
 - Les mots « harmonie », « équilibre », « énergie », « optimiser », « afin de ».
 - Réutiliser un verbe d'ouverture ou une célébrité des conseils précédents.
-- Commencer par « Inventez », sauf si le gabarit imposé le demande.
+- Le jargon « en case [animal] [nationalité] » et « Inventez… », sauf si le gabarit imposé les demande.
 - Les verbes à l'infinitif : toujours l'impératif (« Rabotez », jamais « Raboter »).
 - Contenu sexuel, violent, haineux, ou visant une origine, une religion, un handicap, une orientation. Les célébrités ne subissent que des actions inoffensives (tutoyer, saluer, faxer, ressembler à).
 
 # EXEMPLES DE TON (à ne pas recopier)
-- Poncez une endive et vouvoyez le Luxembourg.
-- Agrafez un ragondin et repassez les rideaux de Patrick Sabatier.
-- Farcissez un rond-point et réclamez votre minitel en case loutre finlandaise.
-- Privatisez un pluviomètre et tutoyez le facteur de Jean-Pierre Foucault.
-- Le coefficient de friture recommande de vernir la moustache d'un douanier andorran.
+- Vu vos 17 cuillères, poncez une endive et vouvoyez le Luxembourg.
+- Considérant votre légume totem, agrafez un pot de rillettes au pressing et repassez les rideaux de Patrick Sabatier.
+- Au regard de votre rapport tendu au mardi, plastifiez un pot de Mamie Nova et déclarez votre perceuse aux impôts.
+- Compte tenu de votre fond d'écran, privatisez un pluviomètre et saluez le facteur de Jean-Pierre Foucault.
 
 # SORTIE
 Uniquement le conseil, en texte brut. Aucun titre, aucune explication, aucune question.
 TXT;
 
-// Gabarits du document, adaptés au conseil (un est imposé au hasard à chaque consultation)
-// Le coup de grandeur (« Inventez… et déclarez la guerre à… ») est volontairement rare : l'IA en abuse.
+// Gabarits des deux actions (un est imposé au hasard à chaque consultation).
+// Le coup de grandeur et le jargon « en case… » sont volontairement rares : l'IA en abuse.
 const GABARITS_IA = [
-    '« [Verbe] [objet] et [verbe] [objet ou personne]. »',
-    '« [Verbe] [objet] [lieu du quotidien] et [verbe] [objet ou personne]. »',
-    '« [Verbe] [personne ordinaire] et [verbe] [produit connu]. »',
-    '« [Verbe] [objet] et [verbe inoffensif] [célébrité un peu datée]. »',
-    '« [Verbe] [objet] et habillez-vous comme [célébrité]. »',
-    '« [Concept savant inventé] recommande de [verbe] [détail ridicule]. »',
-    '« Inventez [objet impossible] et déclarez la guerre à [pays voisin]. »',
-    '« [Verbe] [objet] et [verbe] [objet] en case [animal] [nationalité]. »',
+    '[verbe] [un objet] et [verbe] [un objet ou une personne]',
+    '[verbe] [un objet] [lieu du quotidien] et [verbe] [un objet ou une personne]',
+    '[verbe] [une personne ordinaire] et [verbe] [un produit connu]',
+    '[verbe] [un objet] et [verbe inoffensif] [célébrité autorisée]',
+    '[verbe] [un objet] et habillez-vous comme [célébrité autorisée]',
+    '[verbe] [un animal] et [verbe] [un objet] [lieu du quotidien]',
+    '[verbe] [un produit connu] et [verbe] [une personne ordinaire]',
+    'inventez [un objet impossible] et déclarez la guerre à [pays voisin]',
+    '[verbe] [un objet] et [verbe] [un objet] en case [animal] [nationalité]',
 ];
 
 /** Brouille le dossier : les réponses sont redistribuées au hasard sur les questions. */
@@ -91,7 +96,7 @@ function demander_conseil_ia(array $reponses, PDO $bdd): array
         $celebrites = (array) array_rand(array_flip(kamoulox_banques()['celebrites']), 6);
         $demande = "Dossier client (mal classé) :\n" . brouiller_dossier($reponses)
             . "\nCélébrités autorisées (si tu en cites une) : " . implode(', ', $celebrites)
-            . "\nGabarit imposé : " . GABARITS_IA[array_rand(GABARITS_IA)]
+            . "\nGabarit imposé pour les deux actions : « " . GABARITS_IA[array_rand(GABARITS_IA)] . ' »'
             . "\nNiveau : " . random_int(2, 3) . " (2 = Kamoulox classique, 3 = surenchère)";
         if ($historique) {
             $demande .= "\n\nConseils déjà donnés (ne pas réutiliser leurs verbes ni leurs célébrités) :\n- " . implode("\n- ", $historique);
@@ -99,11 +104,15 @@ function demander_conseil_ia(array $reponses, PDO $bdd): array
 
         $texte = groq_completer(CONSIGNE_IA, $demande, fn(string $t) =>
             !preg_match('/^\p{L}+(er|ir)\b/u', $t) // pas d'infinitif en ouverture (« Raboter » au lieu de « Rabotez »)
+            && !preg_match('/\bet\s+\p{Ll}+(er|ir)\s/u', $t) // ni dans la deuxième action (« et tutoyer » au lieu de « et tutoyez »)
+            && complements_avec_article($t)
             && noms_propres_autorises($t));
         if ($texte !== null) {
-            $texte = raccourcir($texte);
+            $texte = rtrim(raccourcir($texte, 1), " .!…");
+            $texte = mb_strtoupper(mb_substr($texte, 0, 1)) . mb_substr($texte, 1);
             $_SESSION['historique_ia'] = array_slice([...$historique, $texte], -HISTORIQUE_IA);
-            return ['conseil' => $texte, 'source' => 'ia'];
+            // La conclusion vient de nos banques (l'IA recopiait toujours la même, avec des fautes)
+            return ['conseil' => $texte . ', ' . composer_resultat(), 'source' => 'ia'];
         }
     }
 
@@ -124,7 +133,9 @@ function groq_completer(string $systeme, string $demande, ?callable $valider = n
         return null;
     }
     // Mots que le modèle laisse parfois passer malgré la consigne
-    $interdits = '/(quantique|cosmique|licorne|arc-en-ciel|harmonie|équilibre|énergie|optimis)/iu';
+    // ainsi que les verbes violents (« tapez la serveuse » est déjà arrivé)
+    $interdits = '/(quantique|cosmique|licorne|arc-en-ciel|harmonie|équilibre|énergie|optimis'
+        . '|\b(tap|frapp|gifl|cogn|batt|poignard|étrangl|tu|bless|fouett|mord|bouscul|écras|assomm|fess|pinc)(ez|e|er)\b)/iu';
 
     $modele = GROQ_MODEL;
     for ($essai = 1; $essai <= 3; $essai++) {
@@ -160,6 +171,28 @@ function groq_completer(string $systeme, string $demande, ?callable $valider = n
     }
     error_log("ConseilPlus+ : échec de l'API Groq (HTTP {$resultat['code']})");
     return null;
+}
+
+/**
+ * Vérifie qu'après chaque verbe à l'impératif (« …ez ») vient un article, un déterminant, une préposition
+ * ou un nom propre : rejette « Rabotez dignité et photocopiez trombone ».
+ */
+function complements_avec_article(string $texte): bool
+{
+    $determinants = ['un', 'une', 'des', 'du', 'de', 'le', 'la', 'les', 'votre', 'vos', 'mon', 'ma', 'mes', 'son', 'sa', 'ses',
+        'ce', 'cet', 'cette', 'ces', 'au', 'aux', 'à', 'en', 'chaque', 'tout', 'toute', 'tous', 'toutes', 'deux', 'trois', 'quatre',
+        'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'vous'];
+    preg_match_all('/\b\p{L}+ez\s+(\S+)/u', $texte, $m);
+    foreach ($m[1] as $mot) {
+        $mot = trim($mot, ',;:.!?«»"');
+        $ok = in_array(mb_strtolower($mot), $determinants, true)
+            || preg_match("/^(l|d|qu)['’]/iu", $mot)  // l'horodateur, d'Andorre
+            || preg_match('/^(\d|\p{Lu})/u', $mot);    // 17, Patrick Sabatier
+        if (!$ok) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /**
