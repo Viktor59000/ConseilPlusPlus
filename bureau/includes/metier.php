@@ -1,0 +1,98 @@
+<?php
+/**
+ * Le Bureau — règles métier : relevé du courrier (import via l'API), réponses, libellés.
+ */
+require_once __DIR__ . '/api.php';
+
+const STATUTS_DOSSIER = [
+    'a_traiter' => 'À traiter',
+    'en_cours' => 'En cours d\'examen',
+    'classe' => 'Classé',
+];
+
+/**
+ * Relève le courrier : récupère les demandes « nouveau » du site, les enregistre dans la base du Bureau,
+ * puis les marque « importe » sur le site. Sans risque de doublon : un dossier déjà présent (id_site unique)
+ * n'est pas recréé, et une demande dont le marquage a échoué sera simplement re-marquée au relevé suivant.
+ * Retourne ['importes' => n, 'erreurs' => n, 'detail' => texte].
+ */
+function relever_courrier(PDO $bdd, ?int $id_agent): array
+{
+    $liste = api('GET', 'contacts.php?statut=nouveau');
+    if ($liste['code'] !== 200 || !isset($liste['data']['contacts'])) {
+        $detail = $liste['code'] === 401 ? 'Clé d\'API refusée par le site.' : 'Site injoignable (code ' . $liste['code'] . ').';
+        return journaliser_releve($bdd, 0, 1, $detail, $id_agent);
+    }
+
+    $inserer = $bdd->prepare('INSERT IGNORE INTO dossiers (id_site, nom, email, type_demande, message, date_demande)
+                              VALUES (:id_site, :nom, :email, :type_demande, :message, :date_demande)');
+    $importes = 0;
+    $erreurs = 0;
+    foreach ($liste['data']['contacts'] as $c) {
+        $inserer->execute([
+            'id_site' => (int) $c['id'], 'nom' => $c['nom'], 'email' => $c['email'], 'type_demande' => $c['type_demande'],
+            'message' => $c['message'], 'date_demande' => $c['date_creation'],
+        ]);
+        $nouveau = $inserer->rowCount() > 0;
+        $marque = api('PATCH', 'contacts.php?id=' . (int) $c['id'], ['statut' => 'importe']);
+        if ($marque['code'] !== 200) {
+            $erreurs++;
+        } elseif ($nouveau) {
+            $importes++;
+        }
+    }
+
+    $total = count($liste['data']['contacts']);
+    $detail = $total === 0 ? 'Boîte aux lettres vide.' : "$total demande(s) trouvée(s) sur le site.";
+    return journaliser_releve($bdd, $importes, $erreurs, $detail, $id_agent);
+}
+
+function journaliser_releve(PDO $bdd, int $importes, int $erreurs, string $detail, ?int $id_agent): array
+{
+    $bdd->prepare('INSERT INTO releves (importes, erreurs, detail, id_agent) VALUES (?, ?, ?, ?)')
+        ->execute([$importes, $erreurs, mb_substr($detail, 0, 255), $id_agent]);
+    return ['importes' => $importes, 'erreurs' => $erreurs, 'detail' => $detail];
+}
+
+/** Un conseil du cabinet, tiré par l'API publique du site (texte de secours si le site ne répond pas). */
+function conseil_du_cabinet(): string
+{
+    $r = api('GET', 'conseils.php', null, false);
+    return $r['data']['conseil'] ?? 'Patientez. Si cela ne suffit pas, patientez davantage.';
+}
+
+/** Projet de réponse officielle, à relire et modifier par l'agent avant envoi. */
+function rediger_reponse(array $dossier, string $agent): string
+{
+    $date = (new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE, 'Europe/Paris'))
+        ->format(new DateTime($dossier['date_demande']));
+    $objet = match ($dossier['type_demande']) {
+        'Réclamation' => 'Nous avons bien noté votre mécontentement, qui a été classé par ordre d\'arrivée.',
+        'Devis Premium' => 'Votre demande de devis Premium a retenu toute notre attention, ce qui est rare.',
+        'Demande de conseil' => 'Votre demande de conseil a été examinée par un conseiller moyennement qualifié.',
+        default => 'Votre demande, dont la nature nous échappe encore, a été examinée avec le plus grand sérieux.',
+    };
+    return "Madame, Monsieur {$dossier['nom']},\n\n"
+        . "Le cabinet ConseilPlus+ accuse réception de votre demande n° {$dossier['id_site']} du $date.\n"
+        . "$objet\n\n"
+        . "Après délibération, voici notre recommandation :\n"
+        . '« ' . conseil_du_cabinet() . " »\n\n"
+        . "Nous restons à votre disposition, dans la limite de nos disponibilités, qui sont limitées.\n"
+        . "Veuillez agréer l'expression de nos salutations moyennes.\n\n"
+        . "$agent, pour le cabinet ConseilPlus+\n"
+        . 'Le conseiller moyen';
+}
+
+/** Délai de traitement « estimé », toujours le même pour un dossier donné. */
+function delai_estime(int $id): string
+{
+    $delais = ['entre 3 jours et jamais', 'sous 48 h, ouvrables, hors jours ouvrables', 'dès que possible, voire après',
+        'avant la fin de l\'année (sans précision)', 'aussitôt que le stagiaire revient', 'quelques semaines, à la louche'];
+    return $delais[$id % count($delais)];
+}
+
+/** Date courte à la française (« 14/10/2026 à 13 h 36 »). */
+function date_courte(?string $date): string
+{
+    return $date ? (new DateTime($date))->format('d/m/Y \à H \h i') : '—';
+}

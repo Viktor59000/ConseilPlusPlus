@@ -21,6 +21,7 @@ Site vitrine PHP/MySQL (PDO) d'un faux cabinet de conseil qui délivre des conse
 | Produit / service | `produit.php` |
 | Contact | `contact.php` (enregistré dans `contacts`, statut `nouveau`) |
 | Le Petit Moyen | `petit-moyen.php` (mot du jour : fausse définition ou sketch) |
+| Le Bureau (logiciel de gestion) | `bureau/` : relève les demandes via l'API, dossiers, réponses (voir [docs/BUREAU.md](docs/BUREAU.md)) |
 | Espace client | `login.php` → `conseil.php` → `consultation.php` (questionnaire + IA) → `carnet.php` (conseils classés) → `duel.php` (mode Duel contre l'arbitre IA), réservés aux connectés |
 
 ## API

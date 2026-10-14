@@ -5,6 +5,7 @@
 .idea
 db.php
 config.php
+bureau/config.php
 tests
 branding
 android

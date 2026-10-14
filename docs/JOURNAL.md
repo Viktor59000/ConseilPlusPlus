@@ -20,9 +20,8 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 
 ## Prochaines étapes
 
-1. **Le Bureau** (logiciel de gestion, attendu par le cours) : 2e application avec sa propre base `gestion`,
-   qui importe les demandes via `GET /api/contacts.php?statut=nouveau` puis `PATCH ?id=` (statut `importe`),
-   gère les dossiers et y répond automatiquement par un conseil absurde. Attendre les consignes du prof (séance du 16/10).
+1. **Le Bureau** : fait (`bureau/`, `docs/BUREAU.md`). À confronter aux consignes du prof (séance du 16/10).
+   Créer le premier agent en ligne (clé d'API demandée).
 2. **Appli Android** : tester l'APK et le widget sur un vrai téléphone ; Play Store plus tard (25 $, clé de signature secrète).
 3. Améliorations possibles de l'API : une clé par application, webhook, pagination, documentation OpenAPI.
 
@@ -38,6 +37,12 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 - `db.php` et `config.php` ne sont pas dans Git : à recréer sur chaque PC (`docs/REPRISE.md`).
 
 ## Historique des sessions
+
+### 14/10/2026 (soir) — Second PC
+- **Le Bureau** : logiciel de gestion séparé (base `gestion`) : relevé du courrier via l'API (GET puis PATCH `importe`),
+  dossiers, réponse officielle générée avec un conseil de l'API, classement, journal des relevés. Testé de bout en bout.
+- Sketchs refaits sur la mécanique des « Mots » (étude de 44 sketchs) ; mots de l'émission libres, calembours interdits.
+- Widget Android épuré ; gabarit Kamoulox « déclarez la guerre » remplacé par « offrez ça à [pays] ».
 
 ### 14/10/2026 — Second PC (D:\Conseil++)
 - Installation sur ce PC : clone dans `D:\Conseil++`, jonction `C:\wamp64\www\Site`, `db.php` / `config.php` recréés, tests OK.

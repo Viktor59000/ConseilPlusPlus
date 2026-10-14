@@ -15,7 +15,8 @@ COPY . /var/www/html/
 
 # Les fichiers de configuration lisent les variables d'environnement (valeurs locales par défaut)
 RUN cp /var/www/html/db.example.php /var/www/html/db.php \
-    && cp /var/www/html/config.example.php /var/www/html/config.php
+    && cp /var/www/html/config.example.php /var/www/html/config.php \
+    && cp /var/www/html/bureau/config.example.php /var/www/html/bureau/config.php
 
 # Le formulaire de contact appelle l'API à l'intérieur du conteneur
 ENV URL_INTERNE=http://127.0.0.1

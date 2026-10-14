@@ -9,7 +9,7 @@
  *   B — People          : [verbe social] [célébrité]            « Tutoyez Patrick Sabatier »
  *   C — Comparaison     : habillez-vous / coiffez-vous comme…   « Coiffez-vous comme Tex »
  *   D — Pseudo-savant   : [concept] recommande de [infinitif]   « Le coefficient de friture recommande de vernir un douanier »
- *   E — Coup de grandeur: inventez [objet impossible] et déclarez la guerre à [pays]
+ *   E — Coup de grandeur: inventez [objet impossible] et offrez ça à [pays]
  *   F — Lieu            : [verbe] [objet] [lieu]                « Agrafez un ragondin au pressing »
  * Un jargon de jeu fantôme (« en case poulpe moldave ») est parfois ajouté.
  */
@@ -68,7 +68,7 @@ function composer_action(array $exclure = [], bool $jargon = true): array
         'B' => au_hasard($b['verbes_sociaux'])[0] . ' ' . au_hasard($b['celebrites']),
         'C' => au_hasard(['habillez-vous comme', 'coiffez-vous comme', 'parlez comme', 'marchez comme']) . ' ' . au_hasard($b['celebrites']),
         'D' => minuscule_initiale(au_hasard($b['concepts'])) . ' recommande ' . de(au_hasard($b['verbes'])[1]) . ' ' . $complement(),
-        'E' => 'inventez ' . au_hasard($b['objets_nus']) . ' ' . au_hasard($b['qualificatifs']) . ' et déclarez la guerre ' . au_hasard($b['pays']),
+        'E' => 'inventez ' . au_hasard($b['objets_nus']) . ' ' . au_hasard($b['qualificatifs']) . ' et offrez ça ' . au_hasard($b['pays']),
         'F' => au_hasard($b['verbes'])[0] . ' ' . $complement() . ' ' . au_hasard($b['lieux']),
     };
 

@@ -67,7 +67,7 @@ const GABARITS_IA = [
     '[verbe] [un objet] et habillez-vous comme [célébrité autorisée]',
     '[verbe] [un animal] et [verbe] [un objet] [lieu du quotidien]',
     '[verbe] [un produit connu] et [verbe] [une personne ordinaire]',
-    'inventez [un objet impossible] et déclarez la guerre à [pays voisin]',
+    'inventez [un objet impossible] et offrez ça à [pays voisin]',
     '[verbe] [un objet] et [verbe] [un objet] en case [animal] [nationalité]',
 ];
 

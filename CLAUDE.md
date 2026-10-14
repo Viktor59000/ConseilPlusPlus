@@ -69,6 +69,7 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `docs/API.md`, `docs/IDEES.md`, `docs/JOURNAL.md`, `docs/REPRISE.md`, `docs/DEPLOIEMENT.md` | Documentation |
 | `Dockerfile`, `docker/apache.conf`, `.github/workflows/reveil.yml` | Mise en ligne (Render + Aiven) et visite quotidienne |
 | `android/`, `.github/workflows/android.yml` | Appli Android (WebView + widget « Le Petit Moyen » via `api/widget.php`), APK construit par GitHub à chaque push touchant `android/` |
+| `bureau/` | **Le Bureau**, logiciel de gestion séparé (base `gestion`), consomme l'API (`docs/BUREAU.md`) |
 | `tests/test_api.php` | Test de bout en bout de l'API (`php tests/test_api.php`) |
 
 ### Règles à respecter

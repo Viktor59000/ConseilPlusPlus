@@ -123,6 +123,7 @@ return [
         'Laure Manaudou', 'Tony Parker', 'Omar Sy', 'Florent Pagny', 'Vianney',
     ],
     // avec la préposition déjà accordée (« au Luxembourg », pas « à le Luxembourg »)
+    // « offrez ça à [pays] » (gabarit E du coup de grandeur)
     'pays' => [
         'à la Suisse', 'au Luxembourg', 'à la Moldavie', 'à la République tchèque', 'à la Belgique', 'à Andorre',
         'au Liechtenstein', 'à Monaco', 'à l\'Estonie', 'à Malte', 'à la Slovénie', 'à l\'Islande', 'au Portugal',
