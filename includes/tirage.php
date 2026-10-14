@@ -15,8 +15,9 @@ function tirer_conseil(PDO $bdd): array
         $stmt->execute();
         $conseil[$type] = $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
-    $conseil['situation'] = $conseil['situation'][0];
-    $conseil['resultat'] = $conseil['resultat'][0];
+    // Début et fin : écrits à la main ou composés par gabarit, une fois sur deux chacun
+    $conseil['situation'] = random_int(0, 1) ? $conseil['situation'][0] : composer_situation();
+    $conseil['resultat'] = random_int(0, 1) ? $conseil['resultat'][0] : composer_resultat();
 
     // 1re action : écrite à la main (banque fragments) ou composée par un gabarit Kamoulox, une fois sur deux
     $gabarit = null;

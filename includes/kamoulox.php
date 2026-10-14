@@ -20,6 +20,18 @@ function kamoulox_banques(): array
     return $banques ??= require __DIR__ . '/../data/kamoulox.php';
 }
 
+/** « de » + mot, avec élision devant une voyelle ou un h muet (« d'ouvrir », « d'éplucher »). */
+function de(string $mot): string
+{
+    return preg_match('/^[aeiouyhéèêàâîôû]/iu', $mot) ? "d'$mot" : "de $mot";
+}
+
+/** Met seulement la première lettre en minuscule (garde « Genève », « Kinder Bueno »…). */
+function minuscule_initiale(string $texte): string
+{
+    return mb_strtolower(mb_substr($texte, 0, 1)) . mb_substr($texte, 1);
+}
+
 function au_hasard(array $liste)
 {
     return $liste[array_rand($liste)];
@@ -55,7 +67,7 @@ function composer_action(array $exclure = [], bool $jargon = true): array
         'A' => au_hasard($b['verbes'])[0] . ' ' . $complement(),
         'B' => au_hasard($b['verbes_sociaux'])[0] . ' ' . au_hasard($b['celebrites']),
         'C' => au_hasard(['habillez-vous comme', 'coiffez-vous comme', 'parlez comme', 'marchez comme']) . ' ' . au_hasard($b['celebrites']),
-        'D' => mb_strtolower(au_hasard($b['concepts'])) . ' recommande de ' . au_hasard($b['verbes'])[1] . ' ' . $complement(),
+        'D' => minuscule_initiale(au_hasard($b['concepts'])) . ' recommande ' . de(au_hasard($b['verbes'])[1]) . ' ' . $complement(),
         'E' => 'inventez ' . au_hasard($b['objets_nus']) . ' ' . au_hasard($b['qualificatifs']) . ' et déclarez la guerre ' . au_hasard($b['pays']),
         'F' => au_hasard($b['verbes'])[0] . ' ' . $complement() . ' ' . au_hasard($b['lieux']),
     };
@@ -67,4 +79,34 @@ function composer_action(array $exclure = [], bool $jargon = true): array
     }
 
     return [$action, $gabarit, $avec_jargon];
+}
+
+function cadres_banques(): array
+{
+    static $cadres = null;
+    return $cadres ??= require __DIR__ . '/../data/cadres.php';
+}
+
+/** Compose un début de conseil (avec majuscule et virgule finale). */
+function composer_situation(): string
+{
+    $c = cadres_banques();
+    return match (random_int(1, 4)) {
+        1 => 'Si votre ' . au_hasard($c['choses']) . ' ' . au_hasard($c['problemes']) . ',',
+        2 => 'Avant ' . de(au_hasard($c['activites'])) . ',',
+        3 => 'En cas de ' . au_hasard($c['evenements']) . ',',
+        4 => 'Pour ' . au_hasard($c['objectifs']) . ',',
+    };
+}
+
+/** Compose une fin de conseil (sans majuscule, avec point final). */
+function composer_resultat(): string
+{
+    $c = cadres_banques();
+    return match (random_int(1, 4)) {
+        1 => 'et ' . au_hasard($c['quelquun']) . ' vous ' . au_hasard($c['reactions']) . '.',
+        2 => 'ce qui ' . au_hasard($c['effets']) . '.',
+        3 => 'pour que votre ' . au_hasard($c['choses']) . ' ' . au_hasard($c['reactions_choses']) . '.',
+        4 => 'et vous serez nommé ' . au_hasard($c['titres']) . ' ' . au_hasard($c['domaines']) . '.',
+    };
 }

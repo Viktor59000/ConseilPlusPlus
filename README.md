@@ -30,8 +30,8 @@ Voir [docs/API.md](docs/API.md) : `api/contacts.php` (REST, site → logiciel de
 | `fragments` | Morceaux de conseils (situation / action / résultat), synchronisés automatiquement avec `data/fragments.php` |
 
 Banques de contenu à enrichir librement :
-- `data/fragments.php` : 70 situations, 90 actions, 65 résultats (≈ 37 millions de conseils, une action sur deux est doublée).
-- `data/questions.php` : 30 questions absurdes, 4 tirées au hasard à chaque consultation.
+- `data/fragments.php` : 110 situations, 120 actions, 95 conclusions écrites à la main, combinées aux actions composées par les gabarits Kamoulox.
+- `data/questions.php` : 40 questions absurdes, 4 tirées au hasard à chaque consultation.
 - `data/kamoulox.php` : banques lexicales (verbes, objets, lieux, animaux, célébrités, pays, jargon de jeu) utilisées par les gabarits Kamoulox de `includes/kamoulox.php`.
 
 ## Crédits
