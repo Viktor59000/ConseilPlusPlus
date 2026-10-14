@@ -83,6 +83,54 @@ function rediger_reponse(array $dossier, string $agent): string
         . 'Le conseiller moyen';
 }
 
+/** Vrai si l'envoi d'emails est configuré (clé Brevo + adresse d'expédition). */
+function envoi_actif(): bool
+{
+    return BREVO_API_KEY !== '' && filter_var(BUREAU_EXPEDITEUR, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+/**
+ * Envoie la réponse au demandeur par l'API de Brevo.
+ * Retourne [true, ''] si l'email est parti, sinon [false, raison lisible].
+ */
+function envoyer_reponse(array $dossier, string $texte): array
+{
+    if (!envoi_actif()) {
+        return [false, 'envoi par email non configuré'];
+    }
+    $html = '<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#1B2440;max-width:600px">'
+        . '<p style="font-weight:bold;font-size:18px;margin:0 0 16px">ConseilPlus+ <span style="font-weight:normal;color:#4A5270">— le conseiller moyen</span></p>'
+        . nl2br(htmlspecialchars($texte))
+        . '<p style="margin-top:24px;font-size:12px;color:#4A5270">Dossier n° ' . sprintf('%04d', $dossier['id_site'])
+        . '. Aucun conseil délivré par ConseilPlus+ ne doit être suivi. Sérieusement.</p></div>';
+    $corps = [
+        'sender' => ['name' => BUREAU_EXPEDITEUR_NOM, 'email' => BUREAU_EXPEDITEUR],
+        'to' => [['email' => $dossier['email'], 'name' => $dossier['nom']]],
+        'replyTo' => ['email' => BUREAU_EXPEDITEUR],
+        'subject' => 'Votre demande n° ' . sprintf('%04d', $dossier['id_site']) . ' — réponse du cabinet ConseilPlus+',
+        'textContent' => $texte,
+        'htmlContent' => $html,
+    ];
+    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($corps, JSON_UNESCAPED_UNICODE),
+        CURLOPT_HTTPHEADER => ['api-key: ' . BREVO_API_KEY, 'Content-Type: application/json', 'Accept: application/json'],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 20,
+        CURLOPT_CAINFO => __DIR__ . '/../../certs/cacert.pem',
+    ]);
+    $reponse = curl_exec($ch);
+    $code = $reponse === false ? 0 : curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($code >= 200 && $code < 300) {
+        return [true, ''];
+    }
+    $message = json_decode((string) $reponse, true)['message'] ?? ($code ? "erreur $code" : 'service injoignable');
+    error_log("Le Bureau : envoi Brevo impossible ($code) : $message");
+    return [false, $message];
+}
+
 /** Délai de traitement « estimé », toujours le même pour un dossier donné. */
 function delai_estime(int $id): string
 {

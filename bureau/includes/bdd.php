@@ -55,6 +55,11 @@ try {
             FOREIGN KEY (id_agent) REFERENCES agents(id) ON DELETE SET NULL
         );
     ");
+
+    // Migration : suivi de l'envoi de la réponse par email (envoye | archive | echec)
+    if (!$bdd->query("SHOW COLUMNS FROM dossiers LIKE 'envoi'")->fetch()) {
+        $bdd->exec("ALTER TABLE dossiers ADD COLUMN envoi VARCHAR(20) NULL AFTER date_reponse");
+    }
 } catch (PDOException $e) {
     error_log('Le Bureau : base de données indisponible (' . $e->getMessage() . ')');
     http_response_code(503);

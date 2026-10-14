@@ -24,9 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_valide()) {
         annoncer('Session expirée : action annulée.', 'erreur');
     } else {
-        $maj = $bdd->prepare('UPDATE dossiers SET statut = :statut, reponse = :reponse, date_reponse = :date_reponse, id_agent = :agent WHERE id = :id');
+        $maj = $bdd->prepare('UPDATE dossiers SET statut = :statut, reponse = :reponse, date_reponse = :date_reponse, envoi = :envoi,
+                              id_agent = :agent WHERE id = :id');
         $valeurs = ['statut' => $dossier['statut'], 'reponse' => $dossier['reponse'], 'date_reponse' => $dossier['date_reponse'],
-            'agent' => $agent['id'], 'id' => $dossier['id']];
+            'envoi' => $dossier['envoi'], 'agent' => $agent['id'], 'id' => $dossier['id']];
         $texte = trim((string) ($_POST['reponse'] ?? ''));
         switch ($_POST['action'] ?? '') {
             case 'examiner':
@@ -48,9 +49,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     break;
                 }
                 $valeurs['reponse'] = mb_substr($texte, 0, 5000);
+                [$parti, $raison] = envoyer_reponse($dossier, $valeurs['reponse']);
+                if (!$parti && envoi_actif()) {
+                    // L'envoi a échoué : la réponse est gardée, le dossier reste ouvert pour réessayer
+                    $valeurs['statut'] = 'en_cours';
+                    $valeurs['envoi'] = 'echec';
+                    annoncer("L'email n'est pas parti ($raison). La réponse est enregistrée : réessayez plus tard.", 'erreur');
+                    break;
+                }
                 $valeurs['statut'] = 'classe';
                 $valeurs['date_reponse'] = date('Y-m-d H:i:s');
-                annoncer('Réponse envoyée au demandeur (par pigeon voyageur) et dossier classé.');
+                $valeurs['envoi'] = $parti ? 'envoye' : 'archive';
+                annoncer($parti
+                    ? "Réponse envoyée par email à {$dossier['email']}. Dossier classé."
+                    : "Réponse archivée et dossier classé (envoi par email non configuré : aucun mail n'est parti).");
                 break;
             case 'rouvrir':
                 $valeurs['statut'] = 'en_cours';
@@ -104,7 +116,7 @@ include("includes/haut.php");
   <section class="carte">
     <h2>Réponse officielle</h2>
 <?php if ($classe): ?>
-    <p class="aide mono">Envoyée le <?= date_courte($dossier['date_reponse']) ?>.</p>
+    <p class="aide mono"><?= $dossier['envoi'] === 'envoye' ? 'Envoyée par email' : "Archivée (pas d'email envoyé)" ?> le <?= date_courte($dossier['date_reponse']) ?>.</p>
     <pre class="lettre"><?= htmlspecialchars($dossier['reponse']) ?></pre>
     <form method="post">
       <?= csrf_champ() ?>
@@ -118,8 +130,13 @@ include("includes/haut.php");
       <div class="actions">
         <button class="btn btn-clair" name="action" value="rediger" type="submit" formnovalidate><?= $reponse ? 'Proposer une autre réponse' : 'Rédiger une réponse' ?></button>
         <button class="btn btn-clair" name="action" value="enregistrer" type="submit">Enregistrer le brouillon</button>
-        <button class="btn btn-tampon" name="action" value="classer" type="submit">Envoyer et classer</button>
+        <button class="btn btn-tampon" name="action" value="classer" type="submit"><?= envoi_actif() ? 'Envoyer par email et classer' : 'Archiver et classer' ?></button>
       </div>
+<?php if (!envoi_actif()): ?>
+      <p class="aide">L'envoi par email n'est pas configuré : la réponse sera seulement archivée (voir docs/BUREAU.md).</p>
+<?php elseif ($dossier['envoi'] === 'echec'): ?>
+      <p class="aide alerte">Le dernier envoi a échoué. Vérifiez l'adresse du demandeur, puis réessayez.</p>
+<?php endif; ?>
 <?php if ($brouillon !== null): ?>
       <p class="aide">Projet de réponse généré (conseil tiré de l'API du site). Il n'est pas encore enregistré.</p>
 <?php endif; ?>
