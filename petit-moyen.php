@@ -8,8 +8,8 @@ require("db.php");
 require("includes/mot-du-jour.php");
 
 $mot_jour = mot_du_jour($bdd);
-$stmt = $bdd->query('SELECT jour, mot, nature, definition, exemple, synonyme, certitude, source FROM mots_du_jour WHERE jour < CURDATE() ORDER BY jour DESC LIMIT 60');
-$archives = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$jours = $bdd->query('SELECT jour FROM mots_du_jour WHERE jour < CURDATE() ORDER BY jour DESC LIMIT 60')->fetchAll(PDO::FETCH_COLUMN);
+$archives = array_map(fn($j) => lire_mot($bdd, $j), $jours);
 
 $titre = 'Le Petit Moyen';
 $description = 'Le Petit Moyen, dictionnaire officieux de ConseilPlus+ : un mot (presque) du jour, défini avec une précision moyenne.';
@@ -20,7 +20,7 @@ include("includes/header.php");
 <section class="conteneur entete-page">
   <p class="etiquette">Dictionnaire officieux</p>
   <h1>Le Petit Moyen</h1>
-  <p class="chapo">Le dictionnaire du cabinet. Un mot par jour, parfois un jeu de mots, parfois pas, toujours défini avec une précision moyenne.</p>
+  <p class="chapo">Le dictionnaire du cabinet. Un mot par jour, parfois un jeu de mots, parfois pas, toujours défini avec une précision moyenne. Certains jours, le conseiller et son stagiaire tentent même une démonstration.</p>
 </section>
 
 <section class="conteneur" aria-labelledby="titre-aujourdhui">

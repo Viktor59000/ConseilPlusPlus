@@ -4,7 +4,7 @@
  *
  * GET                    Le mot du jour                                     → 200
  * GET  ?date=2026-10-14  Le mot d'un jour passé                             → 200 | 400 | 404
- * POST                   Fait préparer par l'IA le mot de demain (s'il n'existe pas encore)
+ * POST                   Fait préparer par l'IA le sketch de demain (s'il n'existe pas encore)
  *                        → 201 créé | 200 déjà prêt ou IA indisponible (la banque prendra le relais)
  *
  * Public, sans clé : prévu aussi pour un futur widget téléphone. POST limité à 3 appels par minute et par IP.
@@ -15,16 +15,11 @@ require("../includes/mot-du-jour.php");
 /** Format public d'une entrée. */
 function presenter(array $e): array
 {
-    return [
-        'jour' => $e['jour'],
-        'mot' => $e['mot'],
-        'nature' => $e['nature'],
-        'definition' => $e['definition'],
-        'exemple' => $e['exemple'],
-        'synonyme' => $e['synonyme'],
-        'certitude' => (int) $e['certitude'],
-        'source' => $e['source'],
-    ];
+    $base = ['jour' => $e['jour'], 'mot' => $e['mot'], 'nature' => $e['nature'], 'format' => $e['format']];
+    $contenu = $e['format'] === 'sketch'
+        ? ['sketch' => $e['sketch'] + ['formule' => FORMULE_FINALE]]
+        : ['definition' => $e['definition'], 'exemple' => $e['exemple'], 'synonyme' => $e['synonyme']];
+    return $base + $contenu + ['certitude' => (int) $e['certitude'], 'source' => $e['source']];
 }
 
 switch ($_SERVER['REQUEST_METHOD']) {
@@ -42,9 +37,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             repondre(200, presenter(mot_du_jour($bdd)));
         }
         // Jour passé : uniquement s'il a été publié (on ne réécrit pas l'histoire)
-        $stmt = $bdd->prepare('SELECT * FROM mots_du_jour WHERE jour = :jour');
-        $stmt->execute(['jour' => $jour]);
-        $entree = $stmt->fetch(PDO::FETCH_ASSOC);
+        $entree = lire_mot($bdd, $jour);
         $entree ? repondre(200, presenter($entree)) : repondre(404, ['erreur' => 'Aucun mot publié ce jour-là.']);
 
     case 'POST':

@@ -49,9 +49,11 @@ try {
             jour DATE PRIMARY KEY,
             mot VARCHAR(80) NOT NULL,
             nature VARCHAR(80) NOT NULL,
-            definition VARCHAR(300) NOT NULL,
-            exemple VARCHAR(300) NOT NULL,
-            synonyme VARCHAR(120) NOT NULL,
+            format ENUM('definition', 'sketch') NOT NULL DEFAULT 'definition',
+            definition VARCHAR(300) NULL,
+            exemple VARCHAR(300) NULL,
+            synonyme VARCHAR(120) NULL,
+            sketch JSON NULL,
             certitude TINYINT UNSIGNED NOT NULL,
             source ENUM('banque', 'ia') NOT NULL DEFAULT 'banque'
         );
@@ -73,6 +75,16 @@ try {
             texte VARCHAR(255) NOT NULL
         );
     ");
+
+    // Migration : ajout du format « sketch » au mot du jour (bases créées avant cette version)
+    if (!$bdd->query("SHOW COLUMNS FROM mots_du_jour LIKE 'format'")->fetch()) {
+        $bdd->exec("ALTER TABLE mots_du_jour
+            ADD COLUMN format ENUM('definition', 'sketch') NOT NULL DEFAULT 'definition' AFTER nature,
+            MODIFY definition VARCHAR(300) NULL,
+            MODIFY exemple VARCHAR(300) NULL,
+            MODIFY synonyme VARCHAR(120) NULL,
+            ADD COLUMN sketch JSON NULL AFTER synonyme");
+    }
 
     // Synchronise la table fragments avec data/fragments.php (au premier lancement ou si le fichier a changé)
     $fragments = require __DIR__ . '/data/fragments.php';

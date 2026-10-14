@@ -201,6 +201,11 @@ section { padding-block: 56px; }
 .entree-infos dt { display: inline; text-transform: uppercase; color: var(--encre-douce); }
 .entree-infos dt::after { content: " : "; }
 .entree-infos dd { display: inline; margin: 0; }
+.sketch { display: grid; gap: 6px; margin-top: 4px; }
+.sketch p { margin: 0; }
+.sketch strong { font-weight: 600; }
+.sketch-scene { font-style: italic; color: var(--encre-douce); margin: 8px 0 !important; padding-left: 12px; border-left: 3px solid var(--surligneur); }
+.sketch-formule { margin-top: 8px !important; }
 .archives { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
 .pied-lien { font-weight: 600; }
 

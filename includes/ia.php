@@ -128,7 +128,7 @@ function demander_conseil_ia(array $reponses, PDO $bdd): array
  * - réponse rejetée si elle contient un mot interdit ou si $valider la refuse ;
  * - bascule sur le modèle de repli si le quota gratuit est dépassé (HTTP 429).
  */
-function groq_completer(string $systeme, string $demande, ?callable $valider = null): ?string
+function groq_completer(string $systeme, string $demande, ?callable $valider = null, string $effort = 'low', float $temperature = 1.0): ?string
 {
     if (GROQ_API_KEY === '') {
         return null;
@@ -146,12 +146,12 @@ function groq_completer(string $systeme, string $demande, ?callable $valider = n
                 ['role' => 'system', 'content' => $systeme],
                 ['role' => 'user', 'content' => $demande],
             ],
-            'temperature' => 1.0,
-            'max_tokens' => 800,
+            'temperature' => $temperature,
+            'max_tokens' => $effort === 'low' ? 800 : 3000, // plus de réflexion = plus de jetons
             // gpt-oss « réfléchit » avant de répondre : réflexion courte et non renvoyée
-            'reasoning_effort' => 'low',
+            'reasoning_effort' => $effort,
             'include_reasoning' => false,
-        ], ['Authorization: Bearer ' . GROQ_API_KEY], 15);
+        ], ['Authorization: Bearer ' . GROQ_API_KEY], $effort === 'low' ? 15 : 40);
 
         $choix = $resultat['data']['choices'][0] ?? [];
         $texte = trim($choix['message']['content'] ?? '', " \n\r\t\"«»");
