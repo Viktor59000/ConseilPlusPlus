@@ -1,5 +1,10 @@
 /* ConseilPlus+ — brutalisme administratif. Charte : design-system/conseilplus/MASTER.md */
 
+/* Polices hébergées sur le site (sous-ensemble latin, licence SIL OFL) */
+@font-face { font-family: "Archivo Black"; font-style: normal; font-weight: 400; font-display: swap; src: url("../assets/fonts/archivo-black.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400 600; font-display: swap; src: url("../assets/fonts/ibm-plex-sans.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url("../assets/fonts/ibm-plex-mono-500.woff2") format("woff2"); }
+
 :root {
   --papier: #F4EFE4;
   --carte: #FFFDF7;
@@ -104,12 +109,12 @@ section { padding-block: 56px; }
   position: absolute; right: 20px; bottom: 44px;
   padding: 4px 12px; border: 3px double var(--tampon); color: var(--tampon);
   font: 500 1.05rem var(--mono); letter-spacing: .2em; text-transform: uppercase;
-  transform: rotate(-10deg); opacity: .9;
+  transform: rotate(-10deg);
 }
 .tampon-anime { animation: clac 250ms ease-out both; }
 @keyframes clac {
   from { transform: rotate(-10deg) scale(1.6); opacity: 0; }
-  to { transform: rotate(-10deg) scale(1); opacity: .9; }
+  to { transform: rotate(-10deg) scale(1); opacity: 1; }
 }
 
 .bande { background: var(--encre); color: var(--papier); }
@@ -183,6 +188,17 @@ section { padding-block: 56px; }
 .liste-info { padding-left: 1.2em; margin: 0 0 20px; }
 .liste-info li { margin-bottom: 8px; }
 
+/* ---------- Sous-menu de l'espace client ---------- */
+.espace-nav { background: var(--encre); color: var(--papier); }
+.espace-nav-in { display: flex; align-items: center; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; padding: 6px 0; }
+.espace-nav-titre { color: #D9D4C7; }
+.espace-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 20px; }
+.espace-nav a { display: inline-block; padding: 10px 0; color: var(--papier); font-weight: 600; text-decoration: none; }
+.espace-nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+.espace-nav a[aria-current="page"] { box-shadow: inset 0 -4px 0 var(--surligneur); }
+.espace-nav .espace-nav-sortie { color: #D9D4C7; font-weight: 400; }
+.espace-nav :focus-visible { outline-color: var(--surligneur); }
+
 /* ---------- Duel ---------- */
 .tableau-score { display: inline-grid; grid-template-columns: repeat(3, auto); border: var(--bord); background: var(--carte); box-shadow: var(--ombre); }
 .tableau-score div { padding: 10px 22px; text-align: center; }
@@ -195,13 +211,6 @@ section { padding-block: 56px; }
 .duel-deroule dd { margin: 0; }
 .duel-verdict { font-style: italic; }
 .duel .fiche-conseil { margin-bottom: 0; }
-.bareme { width: 100%; border-collapse: collapse; font-size: .95rem; }
-.bareme td { padding: 6px 0; border-bottom: 1px dashed var(--encre); }
-.bareme td.mono { text-align: right; white-space: nowrap; padding-left: 12px; }
-.bareme .bonus td.mono { color: var(--ok); }
-.bareme .malus td.mono { color: var(--tampon); }
-.bareme .total td { font-weight: 600; border-bottom: 0; border-top: var(--bord); }
-.formulaire-info .bareme { margin-bottom: 16px; }
 .mot-impose { padding: 10px 14px; background: var(--surligneur); border: var(--bord); }
 .aide { margin: 6px 0 0; font-size: .9rem; color: var(--encre-douce); }
 kbd { font-family: var(--mono); font-size: .85em; padding: 1px 6px; border: 1px solid var(--encre); border-bottom-width: 2px; background: var(--carte); }

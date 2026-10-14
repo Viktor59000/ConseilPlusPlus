@@ -105,6 +105,7 @@ function demander_conseil_ia(array $reponses, PDO $bdd): array
         $texte = groq_completer(CONSIGNE_IA, $demande, fn(string $t) =>
             !preg_match('/^\p{L}+(er|ir)\b/u', $t) // pas d'infinitif en ouverture (« Raboter » au lieu de « Rabotez »)
             && !preg_match('/\bet\s+\p{Ll}+(er|ir)\s/u', $t) // ni dans la deuxième action (« et tutoyer » au lieu de « et tutoyez »)
+            && !preg_match('/\p{L}+erz\b/u', $t) // coquilles du type « saluerz »
             && complements_avec_article($t)
             && noms_propres_autorises($t));
         if ($texte !== null) {

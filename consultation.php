@@ -83,8 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $titre = 'Consultation approfondie';
-$page = 'client';
+$description = 'Répondez à un questionnaire sans rapport avec votre situation et recevez un verdict officiel de notre intelligence artificielle moyenne.';
+$page = 'espace';
+$onglet = 'consultation';
 include("includes/header.php");
+include("includes/espace-nav.php");
 
 /** Affiche le message d'erreur d'un champ, s'il y en a un. */
 function erreur_champ(array $erreurs, string $champ): void
@@ -122,7 +125,6 @@ function aria_erreur(array $erreurs, string $champ): string
   <div class="actions">
     <a class="btn btn-tampon" href="consultation.php">Nouvelle consultation</a>
     <button class="btn btn-clair" type="button" data-classer="#verdict" data-source="<?= $resultat['source'] ?>" hidden>Classer au dossier</button>
-    <a class="btn btn-clair" href="carnet.php">Mon carnet</a>
   </div>
 </section>
 <script src="js/carnet.js" defer></script>

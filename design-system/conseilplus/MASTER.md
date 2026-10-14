@@ -49,6 +49,16 @@ Pas de dégradés. Pas d'autres couleurs.
 - Cibles tactiles ≥ 44px, pas de défilement horizontal, testé à 375 / 768 / 1440px.
 - Pas d'emoji en guise d'icône.
 
+## Navigation
+- Menu principal (toutes les pages) : Accueil · Nos formules · Contact · [Espace client] / [Mon espace] une fois connecté.
+- Sous-menu de l'espace client (bandeau marine, `includes/espace-nav.php`) : Mon conseil · Consultation · Le Duel · Mon carnet · Déconnexion.
+- Chaque page ne garde que ses propres actions (pas de boutons de navigation en double).
+
+## Performance et qualité
+- Lighthouse : 100 / 100 / 100 / 100 (performance, accessibilité, bonnes pratiques, SEO) sur les 8 pages, profil mobile.
+- Polices hébergées sur le site (`assets/fonts`, sous-ensemble latin, préchargées), feuille de style intégrée à la page.
+- Chaque page définit `$description` (meta description).
+
 ## Pages
 | Page | Fichier | Rôle |
 |---|---|---|
@@ -57,3 +67,6 @@ Pas de dégradés. Pas d'autres couleurs.
 | Contact | `contact.php` | Formulaire enregistré dans la table `contacts` (source de l'API) |
 | Espace client | `login.php` | Connexion / inscription |
 | Mon conseil | `conseil.php` | Générateur réservé aux clients connectés |
+| Consultation | `consultation.php` | Questionnaire inutile + verdict IA |
+| Le Duel | `duel.php` | Partie en 100 points contre le cabinet (barème caché) |
+| Mon carnet | `carnet.php` | Conseils classés |

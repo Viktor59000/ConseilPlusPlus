@@ -32,8 +32,11 @@ $conseils = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $sources = ['generateur' => 'Le conseiller moyen', 'ia' => "L'intelligence artificielle moyenne", 'secours' => 'Le stagiaire'];
 
 $titre = 'Mon carnet';
-$page = 'carnet';
+$description = 'Les conseils que vous avez classés au dossier.';
+$page = 'espace';
+$onglet = 'carnet';
 include("includes/header.php");
+include("includes/espace-nav.php");
 ?>
 
 <section class="conteneur entete-page">
@@ -68,12 +71,11 @@ include("includes/header.php");
     </li>
 <?php endforeach; ?>
   </ul>
-<?php endif; ?>
+<?php else: ?>
   <div class="actions">
-    <a class="btn btn-tampon" href="conseil.php">Obtenir un conseil</a>
-    <a class="btn btn-clair" href="consultation.php">Consultation approfondie (IA)</a>
-    <a class="btn btn-clair" href="duel.php">Le Duel</a>
+    <a class="btn btn-tampon" href="conseil.php">Obtenir un premier conseil</a>
   </div>
+<?php endif; ?>
 </section>
 
 <?php include("includes/footer.php"); ?>

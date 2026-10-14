@@ -2,6 +2,7 @@
 session_start();
 
 $titre = 'Nos formules';
+$description = 'Conseil Unique, Conseil Illimité ou Conseil Premium : comparez les formules de ConseilPlus+, toutes garanties sans aucune garantie.';
 $page = 'formules';
 $lien_client = isset($_SESSION['user_id']) ? 'conseil.php' : 'login.php';
 include("includes/header.php");

@@ -63,15 +63,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $suggestion = au_hasard(duel_donnees()['suggestions']);
-$titre = 'Duel';
-$page = 'client';
+$titre = 'Le Duel';
+$description = 'Affrontez le cabinet ConseilPlus+ en 100 points, à coups de phrases absurdes. Règlement disponible sur demande, puis égaré.';
+$page = 'espace';
+$onglet = 'duel';
 include("includes/header.php");
+include("includes/espace-nav.php");
 ?>
 
 <section class="conteneur entete-page">
   <p class="etiquette">Salle des duels</p>
   <h1>Le Duel</h1>
-  <p class="chapo">Affrontez le cabinet en 100 points. Jouez des coups absurdes, respectez le barème, utilisez le mot imposé : le premier à 100 points l'emporte.</p>
+  <p class="chapo">Affrontez le cabinet en 100 points. Jouez un coup absurde : l'arbitre rend son verdict selon un règlement que personne n'a lu.</p>
   <div class="tableau-score" aria-label="Score">
     <div><span class="mono">Vous</span><strong><?= $partie['joueur'] ?></strong></div>
     <div><span class="mono">Le cabinet</span><strong><?= $partie['cabinet'] ?></strong></div>
@@ -107,17 +110,6 @@ include("includes/header.php");
         <dd><?= htmlspecialchars($coup) ?></dd>
       </div>
       <div>
-        <dt class="mono">Barème</dt>
-        <dd>
-          <table class="bareme">
-<?php foreach ($note['lignes'] as [$libelle, $pts]): ?>
-            <tr class="<?= $pts > 0 ? 'bonus' : ($pts < 0 ? 'malus' : '') ?>"><td><?= htmlspecialchars($libelle) ?></td><td class="mono"><?= sprintf('%+d', $pts) ?></td></tr>
-<?php endforeach; ?>
-            <tr class="total"><td>Total de la manche</td><td class="mono"><?= sprintf('%+d', $note['total']) ?></td></tr>
-          </table>
-        </dd>
-      </div>
-      <div>
         <dt class="mono">Verdict de l'arbitre</dt>
         <dd class="duel-verdict"><?= htmlspecialchars($manche['verdict']) ?></dd>
       </div>
@@ -139,7 +131,7 @@ include("includes/header.php");
   <form class="formulaire" action="duel.php" method="POST" aria-labelledby="titre-coup">
     <?= csrf_champ() ?>
     <h2 id="titre-coup"><?= $manche ? 'Manche suivante' : 'Votre coup' ?></h2>
-    <p class="mot-impose">Mot imposé : <strong><?= htmlspecialchars($partie['mot']) ?></strong> <span class="mono">(+15)</span></p>
+    <p class="mot-impose">Mot imposé : <strong><?= htmlspecialchars($partie['mot']) ?></strong></p>
 <?php if ($erreur): ?>
     <p class="alerte alerte-erreur" role="alert"><?= htmlspecialchars($erreur) ?></p>
 <?php endif; ?>
@@ -152,18 +144,14 @@ include("includes/header.php");
   </form>
 <?php endif; ?>
 
-  <aside class="formulaire formulaire-info" aria-label="Barème">
-    <h2>Barème officiel</h2>
-    <table class="bareme">
-      <tr><td>Forme « Je… et je… »</td><td class="mono">+10 / −5</td></tr>
-      <tr><td>Entre 8 et 18 mots</td><td class="mono">+5 / −5</td></tr>
-      <tr><td>Mot imposé utilisé</td><td class="mono">+15</td></tr>
-      <tr><td>Aucune logique (car, donc, pour…)</td><td class="mono">+5 / −10</td></tr>
-      <tr><td>Verbe d'ouverture inédit</td><td class="mono">+5 / −5</td></tr>
-      <tr><td>Élision oubliée (« Je agrafe »)</td><td class="mono">−5</td></tr>
-      <tr><td>Humeur de l'arbitre</td><td class="mono">−5 à +10</td></tr>
-    </table>
-    <p class="mono">Le cabinet marque entre 10 et 35 points par manche. Premier à 100 points.</p>
+  <aside class="formulaire formulaire-info" aria-label="Règlement">
+    <h2>Règlement (extrait)</h2>
+    <ol class="liste-info">
+      <li>Le coup se joue à la première personne.</li>
+      <li>Les points sont attribués selon un barème confidentiel, y compris pour l'arbitre.</li>
+      <li>Le mot imposé est imposé.</li>
+      <li>Toute réclamation est examinée, puis égarée.</li>
+    </ol>
     <form action="duel.php" method="POST">
       <?= csrf_champ() ?>
       <button class="lien-action" type="submit" name="nouvelle_partie" value="1">Recommencer la partie</button>

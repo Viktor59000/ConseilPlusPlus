@@ -13,9 +13,12 @@ include("db.php");
 include("includes/tirage.php");
 
 $titre = 'Mon conseil';
-$page = 'client';
+$description = 'Votre recommandation officielle du jour, tamponnée par le conseiller moyen.';
+$page = 'espace';
+$onglet = 'conseil';
 $conseil = tirer_conseil($bdd);
 include("includes/header.php");
+include("includes/espace-nav.php");
 ?>
 
 <section class="conteneur entete-page">
@@ -42,8 +45,6 @@ include("includes/header.php");
   <div class="actions">
     <a class="btn btn-tampon" id="autre-conseil" href="conseil.php#recommandation">Demander un autre conseil</a>
     <button class="btn btn-clair" type="button" data-classer="#recommandation" data-source="generateur" hidden>Classer au dossier</button>
-    <a class="btn btn-clair" href="consultation.php">Consultation approfondie (IA)</a>
-    <a class="btn btn-clair" href="duel.php">Le Duel</a>
   </div>
 </section>
 

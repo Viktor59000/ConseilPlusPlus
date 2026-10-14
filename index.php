@@ -4,6 +4,7 @@ include("db.php");
 include("includes/tirage.php");
 
 $titre = 'Accueil';
+$description = 'ConseilPlus+, le conseiller moyen : un cabinet qui répond à vos problèmes par des conseils absurdes, avec le plus grand sérieux.';
 $page = 'accueil';
 $conseil = tirer_conseil($bdd);
 include("includes/header.php");

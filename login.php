@@ -15,6 +15,7 @@ if (isset($_SESSION['user_id'])) {
 require("includes/csrf.php");
 
 $titre = 'Espace client';
+$description = 'Connectez-vous à votre espace client ConseilPlus+ ou créez un compte pour accéder à des conseils absurdes illimités.';
 $page = 'client';
 $erreur = $_GET['error'] ?? null;
 include("includes/header.php");

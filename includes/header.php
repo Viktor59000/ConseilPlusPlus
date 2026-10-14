@@ -1,5 +1,8 @@
 <?php
-// Attend $titre (titre de l'onglet) et $page (accueil | formules | contact | client | carnet) définis par la page.
+// Attend, définis par la page :
+//   $titre       titre de l'onglet
+//   $description résumé pour les moteurs de recherche (meta description)
+//   $page        accueil | formules | contact | client | espace
 require_once __DIR__ . '/csrf.php';
 $connecte = isset($_SESSION['user_id']);
 ?>
@@ -9,6 +12,7 @@ $connecte = isset($_SESSION['user_id']);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= htmlspecialchars($titre) ?> — ConseilPlus+</title>
+  <meta name="description" content="<?= htmlspecialchars($description ?? 'ConseilPlus+, le conseiller moyen : des conseils absurdes, délivrés avec le plus grand sérieux.') ?>">
   <link rel="icon" href="assets/icons/favicon.ico" sizes="48x48">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
@@ -16,10 +20,11 @@ $connecte = isset($_SESSION['user_id']);
 <?php if ($connecte): ?>
   <meta name="csrf" content="<?= csrf_jeton() ?>">
 <?php endif; ?>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Polices hébergées sur le site (pas de requête vers un service tiers, affichage plus rapide) -->
+  <link rel="preload" href="assets/fonts/archivo-black.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Feuille de style intégrée à la page : un aller-retour réseau en moins avant le premier affichage -->
+  <style><?= str_replace('../assets/', 'assets/', file_get_contents(__DIR__ . '/../css/style.css')) ?></style>
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
@@ -33,9 +38,7 @@ $connecte = isset($_SESSION['user_id']);
       <a href="produit.php"<?= $page === 'formules' ? ' aria-current="page"' : '' ?>>Nos formules</a>
       <a href="contact.php"<?= $page === 'contact' ? ' aria-current="page"' : '' ?>>Contact</a>
 <?php if ($connecte): ?>
-      <a class="btn btn-petit" href="conseil.php"<?= $page === 'client' ? ' aria-current="page"' : '' ?>>Mon conseil</a>
-      <a href="carnet.php"<?= $page === 'carnet' ? ' aria-current="page"' : '' ?>>Mon carnet</a>
-      <a href="auth/logout.php">Déconnexion</a>
+      <a class="btn btn-petit" href="conseil.php"<?= $page === 'espace' ? ' aria-current="true"' : '' ?>>Mon espace</a>
 <?php else: ?>
       <a class="btn btn-petit" href="login.php"<?= $page === 'client' ? ' aria-current="page"' : '' ?>>Espace client</a>
 <?php endif; ?>
