@@ -23,9 +23,7 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 1. **Le Bureau** (logiciel de gestion, attendu par le cours) : 2e application avec sa propre base `gestion`,
    qui importe les demandes via `GET /api/contacts.php?statut=nouveau` puis `PATCH ?id=` (statut `importe`),
    gère les dossiers et y répond automatiquement par un conseil absurde. Attendre les consignes du prof (séance du 16/10).
-2. **Conseil du jour sur téléphone** (PWA installable + widget) : voir `docs/IDEES.md`.
-   L'hébergement HTTPS est en place ; l'API `mot-du-jour.php` est prête. Prévoir un cache côté widget
-   (le site gratuit met ~1 min à se réveiller).
+2. **Appli Android** : tester l'APK et le widget sur un vrai téléphone ; Play Store plus tard (25 $, clé de signature secrète).
 3. Améliorations possibles de l'API : une clé par application, webhook, pagination, documentation OpenAPI.
 
 ## Points ouverts
@@ -47,6 +45,11 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
   18 nouvelles définitions (68 mots), section « Feuilleter le dictionnaire » (page au hasard + sommaire).
 - Mise en ligne : Dockerfile, réglages par variables d'environnement, Render (Frankfurt, Free) + Aiven MySQL (Free),
   visite quotidienne `reveil.yml`, `docs/DEPLOIEMENT.md`.
+- Sketchs : format court par défaut (scène + chute + tampon du découpage), lecture animée et voix de synthèse,
+  rituel complet dans un volet.
+- Site installable (manifest + service worker + page `application.php`), API `api/widget.php`.
+- Appli Android (`android/`) : site en WebView + widget mot du jour / conseil ; APK publié par GitHub Actions :
+  https://github.com/Viktor59000/ConseilPlusPlus/releases/download/android/conseilplus.apk (pas encore testé sur un vrai téléphone).
 
 ### 14/10/2026 — PC principal (session fondatrice)
 - Import du dépôt BaraQuiz, tri, puis transformation en **ConseilPlus+** (nouveau dépôt ConseilPlusPlus).
