@@ -1,5 +1,6 @@
 <?php
-// Attend $titre (titre de l'onglet) et $page (accueil | formules | contact | client) définis par la page.
+// Attend $titre (titre de l'onglet) et $page (accueil | formules | contact | client | carnet) définis par la page.
+require_once __DIR__ . '/csrf.php';
 $connecte = isset($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
@@ -12,6 +13,9 @@ $connecte = isset($_SESSION['user_id']);
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <meta name="theme-color" content="#1B2440">
+<?php if ($connecte): ?>
+  <meta name="csrf" content="<?= csrf_jeton() ?>">
+<?php endif; ?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -30,6 +34,7 @@ $connecte = isset($_SESSION['user_id']);
       <a href="contact.php"<?= $page === 'contact' ? ' aria-current="page"' : '' ?>>Contact</a>
 <?php if ($connecte): ?>
       <a class="btn btn-petit" href="conseil.php"<?= $page === 'client' ? ' aria-current="page"' : '' ?>>Mon conseil</a>
+      <a href="carnet.php"<?= $page === 'carnet' ? ' aria-current="page"' : '' ?>>Mon carnet</a>
       <a href="auth/logout.php">Déconnexion</a>
 <?php else: ?>
       <a class="btn btn-petit" href="login.php"<?= $page === 'client' ? ' aria-current="page"' : '' ?>>Espace client</a>

@@ -19,6 +19,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -181,6 +182,17 @@ section { padding-block: 56px; }
 .champ-case .champ-msg { grid-column: 1 / -1; }
 .liste-info { padding-left: 1.2em; margin: 0 0 20px; }
 .liste-info li { margin-bottom: 8px; }
+
+/* ---------- Carnet ---------- */
+.carnet { list-style: none; padding: 0; margin: 0; display: grid; gap: 20px; }
+.carnet-item { background: var(--carte); border: var(--bord); box-shadow: var(--ombre); padding: 20px 24px; }
+.carnet-entete, .carnet-pied { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.carnet-entete { color: var(--encre-douce); border-bottom: 1px dashed var(--encre); padding-bottom: 10px; }
+.carnet-texte { font-size: 1.15rem; font-weight: 600; margin: 14px 0; }
+.carnet-pied .mono { color: var(--encre-douce); }
+.carnet-pied form { margin: 0; }
+.lien-action { background: none; border: 0; padding: 10px 0; min-height: 44px; font: 600 .95rem var(--texte); color: var(--tampon); text-decoration: underline; cursor: pointer; }
+.btn:disabled { opacity: .7; cursor: default; transform: none; box-shadow: var(--ombre-basse); }
 
 /* Champ piège anti-robots : hors écran, ignoré par les lecteurs d'écran */
 .piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

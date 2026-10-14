@@ -28,7 +28,7 @@ include("includes/header.php");
   <article class="fiche fiche-grande" id="recommandation" aria-labelledby="fiche-titre">
     <header class="fiche-entete">
       <h2 id="fiche-titre">Recommandation officielle</h2>
-      <span class="mono">Dossier n° <span data-conseil="dossier"><?= $conseil['dossier'] ?></span></span>
+      <span class="mono">Dossier n° <span data-conseil="dossier" data-dossier><?= $conseil['dossier'] ?></span></span>
     </header>
     <p class="fiche-conseil" aria-live="polite">
       <span data-conseil="situation"><?= htmlspecialchars($conseil['situation']) ?></span>
@@ -41,10 +41,12 @@ include("includes/header.php");
 
   <div class="actions">
     <a class="btn btn-tampon" id="autre-conseil" href="conseil.php#recommandation">Demander un autre conseil</a>
+    <button class="btn btn-clair" type="button" data-classer="#recommandation" data-source="generateur" hidden>Classer au dossier</button>
     <a class="btn btn-clair" href="consultation.php">Consultation approfondie (IA)</a>
   </div>
 </section>
 
 <script src="js/conseil.js" defer></script>
+<script src="js/carnet.js" defer></script>
 
 <?php include("includes/footer.php"); ?>

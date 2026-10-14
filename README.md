@@ -15,11 +15,11 @@ Site vitrine PHP/MySQL (PDO) d'un faux cabinet de conseil qui délivre des conse
 | Accueil | `index.php` |
 | Produit / service | `produit.php` |
 | Contact | `contact.php` (enregistré dans `contacts`, statut `nouveau`) |
-| Espace client | `login.php` → `conseil.php` → `consultation.php` (questionnaire + IA, réservé aux connectés) |
+| Espace client | `login.php` → `conseil.php` → `consultation.php` (questionnaire + IA) → `carnet.php` (conseils classés), réservés aux connectés |
 
 ## API
 
-Voir [docs/API.md](docs/API.md) : `api/contacts.php` (REST, site → logiciel de gestion) et `api/conseils.php`.
+Voir [docs/API.md](docs/API.md) : `api/contacts.php` (REST, site → logiciel de gestion), `api/mes-conseils.php` (carnet) et `api/conseils.php`. Chaque échange est journalisé dans `api_logs`.
 
 ## Base de données
 
@@ -27,6 +27,8 @@ Voir [docs/API.md](docs/API.md) : `api/contacts.php` (REST, site → logiciel de
 |---|---|
 | `contacts` | Demandes du formulaire de contact (`nom`, `email`, `message`, `type_demande`, `statut` nouveau/importe, `date_creation`) — source de la future API |
 | `utilisateurs` | Comptes clients (mot de passe salé + SHA-512) |
+| `carnet` | Conseils classés par chaque utilisateur |
+| `api_logs` | Journal des échanges de l'API (méthode, ressource, code, IP, application) |
 | `fragments` | Morceaux de conseils (situation / action / résultat), synchronisés automatiquement avec `data/fragments.php` |
 
 Banques de contenu à enrichir librement :

@@ -22,6 +22,9 @@ bouton.addEventListener('click', async (evenement) => {
     tampon.classList.remove('tampon-anime');
     void tampon.offsetWidth;
     tampon.classList.add('tampon-anime');
+
+    // Prévient les autres scripts (ex. bouton « Classer au dossier ») qu'un nouveau conseil est affiché
+    fiche.dispatchEvent(new Event('conseil:nouveau'));
   } catch (erreur) {
     window.location.href = bouton.href; // en cas de problème, rechargement classique
   } finally {

@@ -32,6 +32,16 @@ try {
             date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
 
+        CREATE TABLE IF NOT EXISTS carnet (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            id_utilisateur INT NOT NULL,
+            texte VARCHAR(500) NOT NULL,
+            dossier VARCHAR(20) NOT NULL,
+            source ENUM('generateur', 'ia', 'secours') NOT NULL DEFAULT 'generateur',
+            date_classement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
+        );
+
         CREATE TABLE IF NOT EXISTS api_logs (
             id INT AUTO_INCREMENT PRIMARY KEY,
             date_appel DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

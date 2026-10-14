@@ -108,10 +108,10 @@ function aria_erreur(array $erreurs, string $champ): string
 
 <?php if ($resultat): ?>
 <section class="conteneur">
-  <article class="fiche fiche-grande" aria-labelledby="verdict-titre">
+  <article class="fiche fiche-grande" id="verdict" aria-labelledby="verdict-titre">
     <header class="fiche-entete">
       <h2 id="verdict-titre">Verdict de l'expertise</h2>
-      <span class="mono">Dossier n° <?= $dossier ?></span>
+      <span class="mono">Dossier n° <span data-dossier><?= $dossier ?></span></span>
     </header>
     <p class="fiche-conseil"><?= nl2br(htmlspecialchars($resultat['conseil'])) ?></p>
     <span class="tampon tampon-anime" aria-hidden="true">Validé</span>
@@ -121,9 +121,11 @@ function aria_erreur(array $erreurs, string $champ): string
   </article>
   <div class="actions">
     <a class="btn btn-tampon" href="consultation.php">Nouvelle consultation</a>
-    <a class="btn btn-clair" href="conseil.php">Retour à mon espace</a>
+    <button class="btn btn-clair" type="button" data-classer="#verdict" data-source="<?= $resultat['source'] ?>" hidden>Classer au dossier</button>
+    <a class="btn btn-clair" href="carnet.php">Mon carnet</a>
   </div>
 </section>
+<script src="js/carnet.js" defer></script>
 <?php else: ?>
 <section class="conteneur guichets">
   <form class="formulaire" action="consultation.php" method="POST" novalidate aria-labelledby="titre-questionnaire">

@@ -33,6 +33,19 @@ Corps du `POST` (JSON ou formulaire) :
 
 Corps du `PATCH` (facultatif) : `{ "statut": "importe" }`.
 
+## Carnet — `api/mes-conseils.php`
+
+Conseils classés par l'utilisateur connecté. Authentification par la session du site (cookie) ;
+`POST` et `DELETE` exigent le jeton CSRF de la page dans l'en-tête `X-CSRF-Token`.
+
+| Méthode | URL | Rôle | Réponses |
+|---|---|---|---|
+| `GET` | `/mes-conseils.php` | Liste des conseils classés | `200` · `401` |
+| `POST` | `/mes-conseils.php` | Classe un conseil `{texte, dossier, source}` | `201` · `200` (déjà classé) · `403` · `409` (carnet plein) · `422` |
+| `DELETE` | `/mes-conseils.php?id=42` | Retire un conseil du carnet | `204` · `404` |
+
+`source` ∈ `generateur`, `ia`, `secours`. `dossier` au format `4821-K`.
+
 ## Conseils — `api/conseils.php`
 
 | Méthode | URL | Clé | Rôle |
