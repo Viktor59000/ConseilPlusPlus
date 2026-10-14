@@ -85,7 +85,10 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 - Rien d'offensant, de sexuel, de politique ; humour bienveillant.
 - Les mentions « hommage non officiel » (Kamoulox, Les Mots) sont dans le README : les garder.
 - **Contenu original** : aucune chute, réplique ou calembour repris des sketchs originaux (Kamoulox, Les Mots) ;
-  tout est inventé pour le site, y compris les exemples donnés à l'IA.
+  tout est inventé pour le site, y compris les exemples donnés à l'IA. Les **mots** traités dans « Les Mots » restent
+  libres (choix de l'utilisateur) ; leurs **calembours** sont listés dans `data/sketchs.php` (`calembours_emission`)
+  et refusés automatiquement. Format d'un sketch : fausse lecture → scène (1 ligne) → « C'est donc un … »
+  (conseiller) → « C'est vrai. » + calembour assumé (stagiaire) → relance.
 - **En ligne** : chaque push sur `main` redéploie https://conseilplus.onrender.com (Render). Le code doit marcher
   à la fois en local (WAMP) et en ligne (réglages lus via `getenv()`, voir `docs/DEPLOIEMENT.md`).
   Les secrets (`DB_PASS`, `API_KEY`, `GROQ_API_KEY`) se saisissent dans Render par l'utilisateur, jamais dans Git ni dans la conversation.

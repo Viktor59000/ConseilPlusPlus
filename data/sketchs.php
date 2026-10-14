@@ -9,7 +9,7 @@
 //   4. le stagiaire JUSTIFIE avec le calembour : « C'est vrai. » + le découpage sonore, répété, assumé ;
 //   5. une relance qui file la blague. Le rire vient de l'assurance face à un jeu de mots laborieux.
 // L'ouverture, l'épellation et la formule finale sont dans le « rituel intégral » (volet replié sur le site).
-// Aucun mot ni calembour de l'émission n'est repris (voir « mots_emission », interdits aussi à l'IA).
+// Les mots de l'émission sont libres, jamais leurs calembours (voir « calembours_emission », vérifié aussi pour l'IA).
 return [
     'sketchs' => [
         [
@@ -22,6 +22,50 @@ return [
                 ['qui' => 'stagiaire', 'texte' => "C'est vrai. Je suis miro, j'ai pas vu le bol, et c'était le premier de l'an. Miro, bol, an. Le café est sur le chat."],
             ],
             'relance' => "Bonne année quand même. Surtout au chat.",
+        ],
+        [
+            'mot' => 'Labrador', 'decoupage' => "là · bras · dort", 'nature' => 'n. m.', 'certitude' => 52,
+            'pistes' => ['Labyrinthe'],
+            'epellation' => "L, A, B, R, A, D, O, R. Le premier A est là pour l'équilibre.",
+            'scene' => "Trois heures du matin. Le stagiaire, jeune papa, berce le bébé debout dans le salon.",
+            'repliques' => [
+                ['qui' => 'conseiller', 'texte' => "C'est donc un labrador."],
+                ['qui' => 'stagiaire', 'texte' => "C'est vrai. Le petit, il dort pas dans son lit. Il dort là, sur le bras. Là, bras, dort. Toujours le même bras, comme par hasard."],
+            ],
+            'relance' => "Maintenant mon bras dort aussi. On est deux à dormir, sauf moi.",
+        ],
+        [
+            'mot' => 'Insulaire', 'decoupage' => "un sou · l'air", 'nature' => 'adj.', 'certitude' => 46,
+            'pistes' => ['Insuline', 'Insulte'],
+            'epellation' => "I, N, S, U, L, A, I, R, E. Le E final, on ne l'entend pas, mais il paie quand même.",
+            'scene' => "Une station-service. Le stagiaire veut regonfler ses pneus ; la machine réclame une pièce.",
+            'repliques' => [
+                ['qui' => 'conseiller', 'texte' => "Il est donc devenu insulaire."],
+                ['qui' => 'stagiaire', 'texte' => "C'est vrai. Avant, l'air c'était gratuit. Maintenant, un sou, l'air. Un sou, l'air ! Bientôt ils vont faire payer le vent."],
+            ],
+            'relance' => "Je suis reparti à plat. Mais j'ai gardé mon sou.",
+        ],
+        [
+            'mot' => 'Colocataire', 'decoupage' => "Coco · la cata · terre", 'nature' => 'n.', 'certitude' => 63,
+            'pistes' => ['Chocolat'],
+            'epellation' => "C, O, L, O, C, A, T, A, I, R, E. Deux O, un pour chaque colocataire.",
+            'scene' => "Un appartement. Le perroquet du stagiaire, Coco, vient de renverser le vase.",
+            'repliques' => [
+                ['qui' => 'conseiller', 'texte' => "Il vit donc avec un colocataire."],
+                ['qui' => 'stagiaire', 'texte' => "C'est vrai. J'ai crié « Coco ! La cata ! Par terre ! » Et maintenant il le répète toute la journée. Coco, la cata, terre."],
+            ],
+            'relance' => "Il dit aussi « Bonjour » au facteur. Le facteur répond. Ça me fait de la compagnie.",
+        ],
+        [
+            'mot' => 'Moisissure', 'decoupage' => "mois · six · sœurs", 'nature' => 'n. f.', 'certitude' => 41,
+            'pistes' => ['Moissonneuse'],
+            'epellation' => "M, O, I, S, I, S, S, U, R, E. Deux S au milieu, ils se tiennent compagnie.",
+            'scene' => "Juin. Le stagiaire repasse sa chemise pour la sixième fois du mois.",
+            'repliques' => [
+                ['qui' => 'conseiller', 'texte' => "Il traverse donc une période de moisissure."],
+                ['qui' => 'stagiaire', 'texte' => "C'est vrai. Ce mois-ci, six sœurs se marient. Mois, six sœurs. Six mariages, une seule chemise. Et je suis fils unique."],
+            ],
+            'relance' => "Ce sont les sœurs de ma femme. Elle, elle a trois robes.",
         ],
         [
             'mot' => 'Mélancolie', 'decoupage' => "Mélanie · colle · y", 'nature' => 'n. f.', 'certitude' => 57,
@@ -135,16 +179,65 @@ return [
         ],
     ],
 
-    // Mots traités dans l'émission : jamais repris, ni dans la banque ni par l'IA
-    'mots_emission' => [
-        'boogie-woogie', 'atypique', 'labrador', 'pléonasme', 'pilosité', 'spasme', 'cruciforme', 'psychisme',
-        'moisissure', 'despotique', 'hypermétrope', 'juguler', 'insulaire', 'soliloque', 'diflogatul', 'philatéliste',
-        'spartakisme', 'conciliabule', 'péridurale', 'caracoler', 'colocataire', 'parapente', 'liminal', 'ecchymose',
-        'macchabée', 'œcuménique', 'villégiature', 'malicieux', 'parcimonieux', 'parcimonie', 'myocarde', 'péremptoire',
-        'restituer', 'intérimaire', 'hyperbole', 'sécrétion', 'sommité', 'jubilé', 'palabre', 'œsophage',
-        'contrepèterie', 'apanage', 'séquestration', 'globule', 'chauvinisme', 'magnanime', 'pernicieux', 'licencieux',
-        'paradoxe', 'philanthrope', 'portatif', 'sarcasme', 'claustrophobe', 'castagnettes', 'libido',
-        'atermoiement', 'tergiverser',
+    // Mots traités dans l'émission : le MOT est libre (il n'appartient à personne), mais le CALEMBOUR du duo ne
+    // doit jamais revenir. Pour chaque mot, les morceaux sonores déjà utilisés (sans accents ni ponctuation à la
+    // comparaison) : un sketch, de la banque ou de l'IA, qui les contient est refusé. Liste vide = calembour inconnu.
+    'calembours_emission' => [
+        'boogie-woogie' => ['bouddh', 'yogisme'],
+        'atypique' => ['tu piques', 'tu pique'],
+        'labrador' => ["la d'abord", 'la dabord'],
+        'pléonasme' => ['aux nasmes', 'nasme'],
+        'pilosité' => ['pile au', 'pile poil'],
+        'spasme' => ['espace me', 'espaceme'],
+        'cruciforme' => ['cru si fort'],
+        'psychisme' => ['cheese'],
+        'moisissure' => ['moi si sur', 'si sur'],
+        'despotique' => ['post it', 'postit'],
+        'hypermétrope' => ["m'est trompe", 'hyper trop'],
+        'juguler' => ['je gueul'],
+        'insulaire' => ['deux r'],
+        'soliloque' => ['il laque'],
+        'diflogatul' => ['dif foule', 'diffoule'],
+        'philatéliste' => [],
+        'spartakisme' => ['sport a ski'],
+        'conciliabule' => [],
+        'péridurale' => ['pere ideal'],
+        'caracoler' => [],
+        'colocataire' => ['cratere'],
+        'parapente' => ['pas tres bon'],
+        'liminal' => ['animal'],
+        'ecchymose' => ['esquimo'],
+        'macchabée' => ['mccartney'],
+        'œcuménique' => ['economique'],
+        'villégiature' => ['tueur'],
+        'malicieux' => ['mal aux yeux', "mal l'yeux"],
+        'parcimonieux' => ['par ici mon', 'par ci mon'],
+        'parcimonie' => ['par ici mon', 'par ci mon'],
+        'myocarde' => [],
+        'péremptoire' => ['paix en moi'],
+        'restituer' => ['re situer', 'ou es tu'],
+        'intérimaire' => ['inter maire', 'terre mer'],
+        'hyperbole' => ['bol'],
+        'sécrétion' => ['secretaire'],
+        'sommité' => [],
+        'jubilé' => ["j'ai oublie"],
+        'palabre' => [],
+        'œsophage' => [],
+        'contrepèterie' => ['contre petrie'],
+        'apanage' => ['lapins nagent', 'lapin'],
+        'séquestration' => [],
+        'globule' => ['pull'],
+        'chauvinisme' => [],
+        'magnanime' => ['miami'],
+        'pernicieux' => ['permis'],
+        'licencieux' => [],
+        'paradoxe' => ['pas de rock'],
+        'philanthrope' => ['fille en trop', 'en trop'],
+        'portatif' => [],
+        'sarcasme' => [],
+        'claustrophobe' => ['cause trop'],
+        'castagnettes' => [],
+        'libido' => [],
     ],
 
     // Mots savants proposés à l'IA pour ses sketchs (3 syllabes ou plus : plus de matière sonore à découper)
@@ -158,5 +251,6 @@ return [
         'acrobatie', 'bâtonnet', 'calamité', 'diabolo', 'entourloupe', 'formalité', 'gargouille', 'hospitalité',
         'kaléidoscope', 'lampadaire', 'marmelade', 'nostalgie', 'opportunité', 'pamplemousse', 'quiproquo', 'ritournelle',
         'saperlipopette', 'tintouin', 'vaudeville', 'zigouigoui',
+        // + les mots de l'émission (calembour original interdit) : ajoutés par preparer_mot()
     ],
 ];

@@ -208,6 +208,10 @@ function valider_sketch(string $json, array $deja): ?array
     if (str_contains(str_replace([' ', '-', '…', '.'], '', $chute), $racine)) {
         return null;
     }
+    // Mot de l'émission : son calembour original ne doit pas revenir (ni dans la chute ni dans le découpage)
+    if (calembour_interdit($s['mot'], end($repliques)['texte'] . ' ' . $s['decoupage'])) {
+        return null;
+    }
     $relance = is_string($s['relance'] ?? null) ? mb_substr(trim($s['relance']), 0, 150) : '';
     return [
         'format' => 'sketch',
@@ -217,6 +221,36 @@ function valider_sketch(string $json, array $deja): ?array
         'relance' => $relance, 'decoupage' => trim($s['decoupage']),
         'certitude' => max(1, min(100, (int) ($s['certitude'] ?? 50))),
     ];
+}
+
+/** Texte réduit à des lettres sans accents, séparées par des espaces (« Là d'abord ! » → « la d abord »). */
+function texte_compare(string $t): string
+{
+    $t = mb_strtolower(transliterator_transliterate('Any-Latin; Latin-ASCII', $t));
+    return trim(preg_replace('/[^a-z]+/', ' ', $t));
+}
+
+/** Calembours du duo déjà faits sur ce mot (vide si le mot n'a pas été traité dans l'émission). */
+function calembours_emission(string $mot): array
+{
+    foreach (sketchs_banque()['calembours_emission'] as $m => $morceaux) {
+        if (texte_compare($m) === texte_compare($mot)) {
+            return $morceaux;
+        }
+    }
+    return [];
+}
+
+/** Vrai si le texte reprend un calembour de l'émission pour ce mot. */
+function calembour_interdit(string $mot, string $texte): bool
+{
+    $texte = ' ' . texte_compare($texte) . ' ';
+    foreach (calembours_emission($mot) as $morceau) {
+        if (str_contains($texte, ' ' . texte_compare($morceau))) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -229,12 +263,18 @@ function preparer_mot(PDO $bdd, string $jour): bool
         return false;
     }
 
-    $deja = array_unique([...mots_recents($bdd, 365), ...array_column(mots_banque(), 'mot'), ...array_column(sketchs_banque()['sketchs'], 'mot'),
-        ...sketchs_banque()['mots_emission']]);
-    $candidats = array_diff(sketchs_banque()['mots_savants'], array_map('mb_strtolower', $deja));
+    $deja = array_unique([...mots_recents($bdd, 365), ...array_column(mots_banque(), 'mot'), ...array_column(sketchs_banque()['sketchs'], 'mot')]);
+    // Candidats : nos mots savants + ceux de l'émission (le mot est libre, son calembour original ne l'est pas)
+    $tous = array_unique([...sketchs_banque()['mots_savants'], ...array_keys(sketchs_banque()['calembours_emission'])]);
+    $candidats = array_diff($tous, array_map('mb_strtolower', $deja));
     $proposes = (array) array_rand(array_flip($candidats), min(6, count($candidats)));
+    $deja_faits = array_filter(array_map(
+        fn($m) => calembours_emission($m) ? "$m (pas : " . implode(', ', calembours_emission($m)) . ')' : null,
+        $proposes
+    ));
     $demande = 'Choisis UN de ces mots (celui qui offre le meilleur calembour) : ' . implode(', ', $proposes)
-        . ". Écris son sketch.\nMots interdits (déjà publiés) : " . implode(', ', $deja) . '.';
+        . ". Écris son sketch.\nMots interdits (déjà publiés) : " . implode(', ', $deja) . '.'
+        . ($deja_faits ? "\nCalembours déjà faits par d'autres, à ne pas reprendre (trouve un autre découpage) : " . implode(' ; ', $deja_faits) . '.' : '');
 
     $entree = null;
     // Effort de réflexion « medium » : un seul appel par jour, en arrière-plan, et le calembour demande de chercher
