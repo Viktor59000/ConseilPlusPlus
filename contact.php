@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     } else {
         // L'adresse IP du visiteur est transmise à l'API pour sa limite d'envois (l'appel part du serveur)
-        $reponse = appeler_api('POST', url_site() . '/api/contacts.php', $valeurs, ['X-Client-IP: ' . $_SERVER['REMOTE_ADDR']]);
+        $reponse = appeler_api('POST', url_interne() . '/api/contacts.php', $valeurs, ['X-Client-IP: ' . $_SERVER['REMOTE_ADDR']]);
     }
 
     if ($erreur_session) {

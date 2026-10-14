@@ -32,9 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $mdpc = hash('sha512', $mdp);
 
     try {
-        $bdd = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $user, $pass);
-        $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
         // Requête préparée pour éviter les injections SQL
         $stmt = $bdd->prepare('SELECT id, prenom FROM utilisateurs WHERE mail=:mail AND mdp=:mdp');
         $stmt->execute(['mail' => $email, 'mdp' => $mdpc]);

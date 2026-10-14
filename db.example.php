@@ -1,20 +1,30 @@
 <?php
-// Copier ce fichier en db.php et renseigner les identifiants MySQL.
+// Copier ce fichier en db.php. En local (WAMP), les valeurs par défaut suffisent.
+// En ligne (Render), les identifiants viennent des variables d'environnement DB_* (voir docs/DEPLOIEMENT.md).
 // Fuseau horaire du site (le « jour » du mot du jour doit être le même pour PHP et MySQL)
 date_default_timezone_set('Europe/Paris');
 
-$servername = "localhost";
-$dbname = "site";
-$user = "root";
-$pass = "";
+$servername = getenv('DB_HOST') ?: 'localhost';
+$port = getenv('DB_PORT') ?: '3306';
+$dbname = getenv('DB_NAME') ?: 'site';
+$user = getenv('DB_USER') ?: 'root';
+$pass = getenv('DB_PASS') ?: '';
+
+$options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
+// Base distante (Aiven) : connexion chiffrée, vérifiée avec le certificat public de l'hébergeur
+// (DB_SSL_CA = chemin depuis la racine du site, par exemple certs/aiven-ca.pem)
+if ($ca = getenv('DB_SSL_CA')) {
+    $options[PDO::MYSQL_ATTR_SSL_CA] = __DIR__ . '/' . $ca;
+}
 
 try {
-    $bdd_init = new PDO("mysql:host=$servername", $user, $pass);
-    $bdd_init->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $bdd_init = new PDO("mysql:host=$servername;port=$port", $user, $pass, $options);
     $bdd_init->exec("CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    $bdd_init = null;
 
-    $bdd = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $user, $pass);
-    $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $bdd = new PDO("mysql:host=$servername;port=$port;dbname=$dbname;charset=utf8mb4", $user, $pass, $options);
+    // MySQL suit le même fuseau que PHP (un serveur distant est souvent en UTC)
+    $bdd->exec("SET time_zone = '" . date('P') . "'");
 
     $bdd->exec("
         CREATE TABLE IF NOT EXISTS utilisateurs (

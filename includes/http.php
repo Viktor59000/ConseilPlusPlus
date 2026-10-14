@@ -32,3 +32,14 @@ function url_site(): string
     $protocole = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http';
     return $protocole . '://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 }
+
+/**
+ * URL pour que le site appelle sa propre API depuis le serveur.
+ * En ligne (conteneur Render), URL_INTERNE vaut http://127.0.0.1 : l'appel reste dans le conteneur
+ * et l'API le reconnaît comme venant du site (adresse locale).
+ */
+function url_interne(): string
+{
+    $interne = getenv('URL_INTERNE');
+    return $interne ? rtrim($interne, '/') . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') : url_site();
+}

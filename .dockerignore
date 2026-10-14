@@ -1,0 +1,9 @@
+# Jamais dans l'image : secrets locaux, Git, outils
+.git
+.gitignore
+.vscode
+.idea
+db.php
+config.php
+tests
+branding
