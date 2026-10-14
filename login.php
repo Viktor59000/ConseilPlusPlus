@@ -12,6 +12,8 @@ if (isset($_SESSION['user_id'])) {
     exit();
 }
 
+require("includes/csrf.php");
+
 $titre = 'Espace client';
 $page = 'client';
 $erreur = $_GET['error'] ?? null;
@@ -26,9 +28,12 @@ include("includes/header.php");
 
 <section class="conteneur guichets">
   <form class="formulaire" action="auth/connexion.php" method="POST" aria-labelledby="titre-connexion">
+    <?= csrf_champ() ?>
     <h2 id="titre-connexion">Connexion</h2>
 <?php if (isset($_GET['success'])): ?>
     <p class="alerte alerte-ok" role="status">Inscription enregistrée. Vous pouvez vous connecter.</p>
+<?php elseif ($erreur === 'session'): ?>
+    <p class="alerte alerte-erreur" role="alert">Le formulaire a expiré. Merci de le renvoyer.</p>
 <?php elseif ($erreur === '1'): ?>
     <p class="alerte alerte-erreur" role="alert">Email ou mot de passe incorrect. Vérifiez votre saisie, ou créez un compte ci-contre.</p>
 <?php endif; ?>
@@ -44,6 +49,7 @@ include("includes/header.php");
   </form>
 
   <form class="formulaire" action="auth/inscription.php" method="POST" aria-labelledby="titre-inscription">
+    <?= csrf_champ() ?>
     <h2 id="titre-inscription">Ouvrir un dossier</h2>
 <?php if ($erreur === 'mail'): ?>
     <p class="alerte alerte-erreur" role="alert">Cet email possède déjà un dossier. Connectez-vous avec, ou utilisez une autre adresse.</p>

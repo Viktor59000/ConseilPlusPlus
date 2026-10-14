@@ -32,6 +32,17 @@ try {
             date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
 
+        CREATE TABLE IF NOT EXISTS api_logs (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            date_appel DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            methode VARCHAR(10) NOT NULL,
+            ressource VARCHAR(100) NOT NULL,
+            code SMALLINT NOT NULL,
+            ip VARCHAR(45) NOT NULL,
+            application VARCHAR(50) NOT NULL,
+            INDEX (ip, date_appel)
+        );
+
         CREATE TABLE IF NOT EXISTS fragments (
             id INT AUTO_INCREMENT PRIMARY KEY,
             type ENUM('situation', 'action', 'resultat') NOT NULL,

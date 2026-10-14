@@ -9,14 +9,15 @@
  * DELETE ?id=42             Supprime une demande traitée (clé requise)                     → 204 | 404
  *
  * Clé : en-tête X-API-Key (voir config.php).
+ * POST est limité à 5 demandes par minute et par IP (429 au-delà).
  */
 require("../includes/api.php");
 require("../includes/contacts.php");
-require("../db.php");
 
 switch ($_SERVER['REQUEST_METHOD']) {
 
     case 'POST':
+        limiter(5); // 5 demandes par minute et par visiteur (anti-spam)
         [$valeurs, $erreurs] = valider_contact(lire_corps());
         if ($erreurs) {
             repondre(422, ['erreur' => 'Champs invalides.', 'champs' => $erreurs]);

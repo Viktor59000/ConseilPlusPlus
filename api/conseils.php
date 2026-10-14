@@ -7,7 +7,6 @@
  */
 require("../includes/api.php");
 require("../includes/tirage.php");
-require("../db.php");
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     header('Allow: GET');

@@ -15,7 +15,15 @@
 session_start();
 include("../db.php");
 
+require("../includes/csrf.php");
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Jeton CSRF : le formulaire doit venir de notre site
+    if (!csrf_valide()) {
+        header('location: ../login.php?error=session');
+        exit();
+    }
+
     $email = $_POST['email'];
     $mdp = $_POST['mdp'];
 
@@ -35,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $bdd = null;   
 
         if ($user_data) {
+            // Nouvel identifiant de session à la connexion (protection contre la fixation de session)
+            session_regenerate_id(true);
             // Création de la session utilisateur
             $_SESSION['user_id'] = $user_data['id'];
             $_SESSION['prenom'] = $user_data['prenom'];

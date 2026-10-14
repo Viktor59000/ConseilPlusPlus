@@ -7,20 +7,36 @@
 session_start();
 require("includes/contacts.php");
 require("includes/http.php");
+require("includes/csrf.php");
 
 $types = TYPES_DEMANDE;
 $valeurs = ['nom' => '', 'email' => '', 'message' => '', 'type_demande' => ''];
 $erreurs = [];
 $erreur_api = false;
+$erreur_session = false;
+$trop_de_demandes = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($valeurs as $champ => $_) {
         $valeurs[$champ] = trim((string) ($_POST[$champ] ?? ''));
     }
 
-    $reponse = appeler_api('POST', url_site() . '/api/contacts.php', $valeurs);
+    if (!csrf_valide()) {
+        $erreur_session = true;
+    } elseif (($_POST['site_web'] ?? '') !== '') {
+        // Champ piège invisible rempli : c'est un robot. On fait semblant d'accepter sans rien enregistrer.
+        header('location: contact.php?envoye=1');
+        exit();
+    } else {
+        // L'adresse IP du visiteur est transmise à l'API pour sa limite d'envois (l'appel part du serveur)
+        $reponse = appeler_api('POST', url_site() . '/api/contacts.php', $valeurs, ['X-Client-IP: ' . $_SERVER['REMOTE_ADDR']]);
+    }
 
-    if ($reponse['code'] === 201) {
+    if ($erreur_session) {
+        // message affiché plus bas
+    } elseif ($reponse['code'] === 429) {
+        $trop_de_demandes = true;
+    } elseif ($reponse['code'] === 201) {
         // Redirection après envoi pour éviter un double enregistrement au rechargement
         header('location: contact.php?envoye=1');
         exit();
@@ -44,9 +60,19 @@ include("includes/header.php");
 
 <section class="conteneur guichets">
   <form class="formulaire" action="contact.php" method="POST" novalidate aria-labelledby="titre-contact">
+    <?= csrf_champ() ?>
+    <!-- Champ piège : invisible pour les humains, rempli par les robots -->
+    <div class="piege" aria-hidden="true">
+      <label for="ct-site">Ne pas remplir</label>
+      <input id="ct-site" type="text" name="site_web" tabindex="-1" autocomplete="off">
+    </div>
     <h2 id="titre-contact">Formulaire de demande</h2>
 <?php if (isset($_GET['envoye'])): ?>
     <p class="alerte alerte-ok" role="status">Demande enregistrée sous le statut « nouveau ». Nous la traiterons avec la lenteur qui nous caractérise.</p>
+<?php elseif ($erreur_session): ?>
+    <p class="alerte alerte-erreur" role="alert">Le formulaire a expiré. Merci de le renvoyer.</p>
+<?php elseif ($trop_de_demandes): ?>
+    <p class="alerte alerte-erreur" role="alert">Vous avez envoyé beaucoup de demandes en peu de temps. Même nous, nous avons des limites : réessayez dans une minute.</p>
 <?php elseif ($erreur_api): ?>
     <p class="alerte alerte-erreur" role="alert">Notre guichet est momentanément fermé (service indisponible). Réessayez dans quelques instants.</p>
 <?php elseif ($erreurs): ?>

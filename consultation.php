@@ -14,6 +14,7 @@ if (!isset($_SESSION['user_id'])) {
 
 require("db.php");
 require("includes/ia.php");
+require("includes/csrf.php");
 
 const NB_QUESTIONS = 4;
 $banque = require("data/questions.php");
@@ -35,7 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Les questions affichées sont celles gardées en session (pas celles envoyées par le navigateur)
     $tirees = array_values(array_intersect($_SESSION['questionnaire'] ?? [], array_keys($banque)));
 
-    if (count($tirees) !== NB_QUESTIONS) {
+    if (!csrf_valide()) {
+        $tirees = tirer_questions($banque);
+        $erreurs['session'] = 'Le formulaire a expiré. Voici de nouvelles questions, tout aussi inutiles.';
+    } elseif (count($tirees) !== NB_QUESTIONS) {
         $tirees = tirer_questions($banque);
         $erreurs['session'] = 'Le questionnaire a expiré. Voici de nouvelles questions, tout aussi inutiles.';
     } else {
@@ -123,6 +127,7 @@ function aria_erreur(array $erreurs, string $champ): string
 <?php else: ?>
 <section class="conteneur guichets">
   <form class="formulaire" action="consultation.php" method="POST" novalidate aria-labelledby="titre-questionnaire">
+    <?= csrf_champ() ?>
     <h2 id="titre-questionnaire">Questionnaire</h2>
 <?php if (isset($erreurs['session'])): ?>
     <p class="alerte alerte-erreur" role="alert"><?= htmlspecialchars($erreurs['session']) ?></p>

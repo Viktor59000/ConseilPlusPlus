@@ -13,7 +13,15 @@
 session_start();
 include("../db.php");
 
+require("../includes/csrf.php");
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Jeton CSRF : le formulaire doit venir de notre site
+    if (!csrf_valide()) {
+        header('location: ../login.php?error=session');
+        exit();
+    }
+
     $prenom = $_POST['prenom'];
     $nom = $_POST['nom'];
     $email = $_POST['email'];

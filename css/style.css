@@ -182,6 +182,9 @@ section { padding-block: 56px; }
 .liste-info { padding-left: 1.2em; margin: 0 0 20px; }
 .liste-info li { margin-bottom: 8px; }
 
+/* Champ piège anti-robots : hors écran, ignoré par les lecteurs d'écran */
+.piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
 /* ---------- Pied ---------- */
 .pied { border-top: var(--bord); background: var(--carte); margin-top: 40px; }
 .pied-in { padding: 24px 0; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }

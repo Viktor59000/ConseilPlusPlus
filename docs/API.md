@@ -16,6 +16,13 @@ Base : `http://localhost/Site/api` — réponses en JSON (UTF-8).
 
 **Clé** : en-tête `X-API-Key`, valeur `API_KEY` de `config.php`.
 
+**Limite** : `POST` est limité à 5 demandes par minute et par IP (`429 Too Many Requests` au-delà, en-tête `Retry-After`).
+
+## Journal des échanges
+
+Chaque appel à l'API est enregistré dans la table `api_logs` : date, méthode, ressource, code HTTP, IP du client
+et application appelante (`gestion` si la clé est valide, `site` pour les appels du site lui-même, `public` sinon).
+
 Corps du `POST` (JSON ou formulaire) :
 
 ```json
