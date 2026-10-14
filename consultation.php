@@ -67,7 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($tirees as $cle) {
             $reponses[$banque[$cle]['libelle']] = $valeurs[$cle];
         }
-        $reponses['Son problème'] = $valeurs['probleme'] !== '' ? $valeurs['probleme'] : '(non renseigné)';
+        if ($valeurs['probleme'] !== '') {
+            $reponses['Son problème'] = $valeurs['probleme'];
+        }
         $resultat = demander_conseil_ia($reponses, $bdd);
         $dossier = sprintf('%04d-IA', random_int(1, 9999));
         unset($_SESSION['questionnaire']);
