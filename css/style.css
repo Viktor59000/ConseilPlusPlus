@@ -1,0 +1,207 @@
+/* ConseilPlus+ — brutalisme administratif. Charte : design-system/conseilplus/MASTER.md */
+
+:root {
+  --papier: #F4EFE4;
+  --carte: #FFFDF7;
+  --encre: #1B2440;
+  --encre-douce: #4A5270;
+  --tampon: #C8102E;
+  --surligneur: #FFE14D;
+  --ok: #1E6B3A;
+
+  --titre: "Archivo Black", "Arial Black", sans-serif;
+  --texte: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --bord: 2px solid var(--encre);
+  --ombre: 4px 4px 0 var(--encre);
+  --ombre-basse: 2px 2px 0 var(--encre);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--encre);
+  font: 400 1.0625rem/1.55 var(--texte);
+}
+
+h1, h2, h3 { font-family: var(--titre); font-weight: 400; line-height: 1.1; margin: 0 0 .5em; }
+h1 { font-size: clamp(2.4rem, 6vw, 4.25rem); letter-spacing: -.02em; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+h3 { font-size: 1.2rem; }
+p { margin: 0 0 1em; }
+a { color: inherit; }
+
+:focus-visible { outline: 3px solid var(--tampon); outline-offset: 3px; }
+
+.mono { font-family: var(--mono); font-size: .85rem; letter-spacing: .02em; }
+
+.conteneur { width: min(1120px, 100% - 32px); margin-inline: auto; }
+
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 16px; top: 16px; z-index: 10; background: var(--carte); padding: 8px 12px; border: var(--bord); }
+
+/* ---------- En-tête ---------- */
+.entete { border-bottom: var(--bord); background: var(--carte); }
+.entete-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; flex-wrap: wrap; }
+
+.logo { display: block; line-height: 0; }
+.logo img { display: block; width: clamp(200px, 26vw, 300px); height: auto; }
+
+.nav { display: flex; align-items: center; gap: 4px 20px; flex-wrap: wrap; }
+.nav a { font-weight: 600; text-decoration: none; padding: 10px 0; }
+.nav a:not(.btn)[aria-current="page"] { box-shadow: inset 0 -4px 0 var(--surligneur); }
+.nav a:not(.btn):hover { text-decoration: underline; text-decoration-thickness: 2px; }
+
+/* ---------- Boutons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 48px; padding: 10px 22px;
+  border: var(--bord); box-shadow: var(--ombre);
+  font: 600 1rem var(--texte); text-decoration: none; cursor: pointer;
+  transition: transform 80ms, box-shadow 80ms;
+}
+.btn:hover { transform: translate(2px, 2px); box-shadow: var(--ombre-basse); }
+.btn:active { transform: translate(4px, 4px); box-shadow: none; }
+.btn-tampon { background: var(--tampon); color: #fff; }
+.btn-clair { background: var(--carte); color: var(--encre); }
+.btn-petit { min-height: 44px; padding: 8px 16px; }
+.nav .btn { padding: 8px 16px; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 28px; }
+
+/* ---------- Éléments communs ---------- */
+.etiquette {
+  display: inline-block; margin-bottom: 16px; padding: 4px 10px;
+  border: var(--bord); background: var(--carte);
+  font: 500 .78rem var(--mono); letter-spacing: .12em; text-transform: uppercase;
+}
+.chapo { font-size: 1.2rem; max-width: 38ch; color: var(--encre-douce); }
+.surligne, mark { background: linear-gradient(transparent 52%, var(--surligneur) 52%); color: inherit; padding: 0 .1em; }
+
+section { padding-block: 56px; }
+.entete-page { padding-bottom: 24px; }
+
+/* ---------- Accueil ---------- */
+.hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: center; padding-block: 72px; }
+.hero .chapo { max-width: 34ch; }
+
+.fiche {
+  position: relative; background: var(--carte); border: var(--bord); box-shadow: 8px 8px 0 var(--encre);
+  padding: 24px; transform: rotate(1.5deg);
+}
+.fiche-entete { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: var(--bord); padding-bottom: 12px; margin-bottom: 20px; }
+.fiche-entete h2 { font-size: 1.1rem; margin: 0; }
+.fiche-conseil { font-size: 1.35rem; line-height: 1.45; font-weight: 600; margin-bottom: 40px; }
+.fiche-pied { margin: 0; color: var(--encre-douce); border-top: 1px dashed var(--encre); padding-top: 12px; }
+.fiche-grande { transform: none; max-width: 780px; }
+.fiche-grande .fiche-conseil { font-size: clamp(1.4rem, 3vw, 1.9rem); }
+
+.tampon {
+  position: absolute; right: 20px; bottom: 44px;
+  padding: 4px 12px; border: 3px double var(--tampon); color: var(--tampon);
+  font: 500 1.05rem var(--mono); letter-spacing: .2em; text-transform: uppercase;
+  transform: rotate(-10deg); opacity: .9;
+}
+.tampon-anime { animation: clac 250ms ease-out both; }
+@keyframes clac {
+  from { transform: rotate(-10deg) scale(1.6); opacity: 0; }
+  to { transform: rotate(-10deg) scale(1); opacity: .9; }
+}
+
+.bande { background: var(--encre); color: var(--papier); }
+.bande h2 { color: var(--papier); }
+.etapes { list-style: none; padding: 0; margin: 24px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.etapes li { border: 2px solid var(--papier); padding: 24px; }
+.etapes p { margin: 0; color: #D9D4C7; }
+.etape-num { display: inline-block; background: var(--surligneur); color: var(--encre); padding: 2px 8px; margin-bottom: 14px; }
+
+.coordonnees { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin: 24px 0 0; }
+.coordonnees div { border-top: var(--bord); padding-top: 14px; }
+.coordonnees dt { text-transform: uppercase; color: var(--encre-douce); margin-bottom: 6px; }
+.coordonnees dd { margin: 0; }
+
+/* ---------- Formules ---------- */
+.formules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; align-items: stretch; padding-top: 24px; }
+.formule { position: relative; display: flex; flex-direction: column; background: var(--carte); border: var(--bord); box-shadow: var(--ombre); padding: 28px 24px; }
+.formule h2 { font-size: 1.4rem; }
+.formule ul { list-style: none; padding: 0; margin: 0 0 28px; flex: 1; }
+.formule li { padding: 8px 0; border-bottom: 1px dashed var(--encre); }
+.formule .btn { align-self: stretch; }
+.formule-phare { background: var(--surligneur); box-shadow: 8px 8px 0 var(--encre); transform: translateY(-12px); }
+.formule-phare li { border-color: var(--encre); }
+.badge { position: absolute; top: -16px; left: 20px; margin: 0; background: var(--tampon); color: #fff; padding: 4px 10px; border: var(--bord); transform: rotate(-3deg); }
+.prix { font-family: var(--titre); font-size: 2.2rem; margin-bottom: 16px; }
+.prix span { font: 500 .85rem var(--mono); margin-left: 6px; color: var(--encre-douce); }
+.formule-phare .prix span { color: var(--encre); }
+
+.tableau-defile { overflow-x: auto; border: var(--bord); background: var(--carte); }
+.comparatif { width: 100%; border-collapse: collapse; min-width: 560px; }
+.comparatif th, .comparatif td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--encre); }
+.comparatif thead th { font: 500 .8rem var(--mono); text-transform: uppercase; letter-spacing: .08em; background: var(--encre); color: var(--papier); }
+.comparatif tbody tr:last-child > * { border-bottom: 0; }
+
+.faq details { border: var(--bord); background: var(--carte); margin-bottom: 12px; }
+.faq summary { cursor: pointer; padding: 16px 20px; font-weight: 600; min-height: 48px; }
+.faq details p { padding: 0 20px 16px; margin: 0; }
+
+/* ---------- Espace client ---------- */
+.guichets { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; padding-top: 16px; }
+.formulaire { background: var(--carte); border: var(--bord); box-shadow: var(--ombre); padding: 28px; }
+.formulaire h2 { font-size: 1.4rem; }
+.champ { margin-bottom: 18px; }
+.champ-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.champ label { display: block; font: 500 .82rem var(--mono); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.champ input, .champ select, .champ textarea {
+  width: 100%; min-height: 48px; padding: 10px 12px;
+  border: var(--bord); background: #fff; color: var(--encre); font: 400 1rem var(--texte);
+}
+.champ textarea { resize: vertical; min-height: 140px; }
+.champ :is(input, select, textarea):focus-visible { outline-offset: 0; box-shadow: var(--ombre-basse); }
+.champ-erreur :is(input, select, textarea) { border-color: var(--tampon); }
+.champ-msg { margin: 6px 0 0; color: var(--tampon); font-weight: 600; font-size: .92rem; }
+.formulaire-info { background: var(--papier); box-shadow: none; }
+.coordonnees-pile { grid-template-columns: 1fr; margin-top: 8px; }
+.appel { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; border-top: var(--bord); }
+.appel h2, .appel .chapo { margin-bottom: 0; }
+.pied img { display: block; width: 190px; height: auto; }
+.pied-in { align-items: center; }
+.formulaire .btn { width: 100%; margin-top: 8px; }
+
+.alerte { padding: 12px 14px; border: var(--bord); font-weight: 600; }
+.alerte-erreur { border-color: var(--tampon); color: var(--tampon); background: #FCEBEE; }
+.alerte-ok { border-color: var(--ok); color: var(--ok); background: #E8F3EC; }
+
+.facultatif { text-transform: none; letter-spacing: 0; color: var(--encre-douce); }
+.champ-case { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 12px; }
+.champ-case input { width: 24px; height: 24px; min-height: 0; margin: 0; accent-color: var(--tampon); }
+.champ-case label { margin: 0; text-transform: none; letter-spacing: 0; font: 600 1rem var(--texte); }
+.champ-case .champ-msg { grid-column: 1 / -1; }
+.liste-info { padding-left: 1.2em; margin: 0 0 20px; }
+.liste-info li { margin-bottom: 8px; }
+
+/* ---------- Pied ---------- */
+.pied { border-top: var(--bord); background: var(--carte); margin-top: 40px; }
+.pied-in { padding: 24px 0; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.pied p { margin: 0; }
+.pied .mono { color: var(--encre-douce); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .hero, .guichets { grid-template-columns: 1fr; }
+  .formules, .etapes, .coordonnees { grid-template-columns: 1fr; }
+  .formule-phare { transform: none; }
+  .fiche { transform: none; }
+}
+@media (max-width: 480px) {
+  .champ-duo { grid-template-columns: 1fr; gap: 0; }
+  .nav { gap: 4px 14px; }
+  section { padding-block: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tampon-anime { animation: none; }
+  .btn { transition: none; }
+}
