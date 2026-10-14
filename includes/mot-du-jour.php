@@ -13,6 +13,9 @@
  */
 require_once __DIR__ . '/ia.php';
 
+// Champs d'un sketch enregistrés en base (colonne JSON « sketch »)
+const CHAMPS_SKETCH = ['pistes', 'epellation', 'scene', 'repliques', 'relance', 'decoupage'];
+
 const FORMULE_FINALE = "Le cabinet ne voit pas d'autre explication.";
 
 const OUVERTURES = [
@@ -62,11 +65,12 @@ une fausse définition par une scène du quotidien qui se termine sur un calembo
 - Rien de sexuel, haineux, violent ou humiliant. Pas d'alcool fort ni de drogue.
 
 # EXEMPLE (format attendu)
-{"mot":"Baldaquin","nature":"n. m.","decoupage":"bal / d'ac / un","pistes":["Balcon","Baladeur"],"epellation":"B, A, L, D, A, Q, U, I, N. Le U accompagne le Q, il ne travaille pas.","scene":"Fête du village. Le conseiller vend les tickets de la soirée dansante. Le stagiaire arrive, seul.","repliques":[{"qui":"conseiller","texte":"C'est deux euros l'entrée pour le bal. Je vous en mets combien ?"},{"qui":"stagiaire","texte":"Le bal ? D'ac… Un."}],"relance":"Je danse seul, mais je danse bien.","certitude":44}
+{"mot":"Baldaquin","nature":"n. m.","decoupage":"bal · d'ac · un","pistes":["Balcon","Baladeur"],"epellation":"B, A, L, D, A, Q, U, I, N. Le U accompagne le Q, il ne travaille pas.","scene":"Fête du village. Le conseiller vend les tickets de la soirée dansante. Le stagiaire arrive, seul.","repliques":[{"qui":"conseiller","texte":"C'est deux euros l'entrée pour le bal. Je vous en mets combien ?"},{"qui":"stagiaire","texte":"Le bal ? D'ac… Un."}],"relance":"Je danse seul, mais je danse bien.","certitude":44}
 
 # SORTIE
 Uniquement un objet JSON sur une ligne, avec exactement ces clés : mot, nature, decoupage, pistes, epellation, scene, repliques, relance, certitude
-(qui ∈ conseiller | stagiaire ; certitude entre 1 et 100 ; relance peut être une chaîne vide).
+(qui ∈ conseiller | stagiaire ; certitude entre 1 et 100 ; relance peut être une chaîne vide ;
+decoupage au format « morceau · morceau · morceau », il sera affiché en fin de sketch).
 TXT;
 
 function mots_banque(): array
@@ -95,7 +99,7 @@ function pages_dictionnaire(): array
     foreach (sketchs_banque()['sketchs'] as $s) {
         $pages[] = [
             'mot' => $s['mot'], 'nature' => $s['nature'], 'format' => 'sketch', 'certitude' => $s['certitude'],
-            'sketch' => array_intersect_key($s, array_flip(['pistes', 'epellation', 'scene', 'repliques', 'relance'])),
+            'sketch' => array_intersect_key($s, array_flip(CHAMPS_SKETCH)),
         ];
     }
     $collator = new Collator('fr_FR');
@@ -116,7 +120,7 @@ function mots_recents(PDO $bdd, int $jours = 60): array
 function enregistrer_mot(PDO $bdd, string $jour, array $e, string $source): bool
 {
     $sketch = $e['format'] === 'sketch'
-        ? json_encode(array_intersect_key($e, array_flip(['pistes', 'epellation', 'scene', 'repliques', 'relance'])), JSON_UNESCAPED_UNICODE)
+        ? json_encode(array_intersect_key($e, array_flip(CHAMPS_SKETCH)), JSON_UNESCAPED_UNICODE)
         : null;
     $stmt = $bdd->prepare('INSERT IGNORE INTO mots_du_jour (jour, mot, nature, format, definition, exemple, synonyme, sketch, certitude, source)
                            VALUES (:jour, :mot, :nature, :format, :definition, :exemple, :synonyme, :sketch, :certitude, :source)');
@@ -213,7 +217,7 @@ function valider_sketch(string $json, array $deja): ?array
         'mot' => mb_strtoupper(mb_substr(trim($s['mot']), 0, 1)) . mb_substr(trim($s['mot']), 1), 'nature' => trim($s['nature']),
         'pistes' => $pistes, 'epellation' => trim($s['epellation']), 'scene' => trim($s['scene']),
         'repliques' => array_map(fn($r) => ['qui' => $r['qui'], 'texte' => trim($r['texte'])], $repliques),
-        'relance' => $relance,
+        'relance' => $relance, 'decoupage' => trim($s['decoupage']),
         'certitude' => max(1, min(100, (int) ($s['certitude'] ?? 50))),
     ];
 }

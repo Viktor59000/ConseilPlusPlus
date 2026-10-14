@@ -201,11 +201,39 @@ section { padding-block: 56px; }
 .entree-infos dt { display: inline; text-transform: uppercase; color: var(--encre-douce); }
 .entree-infos dt::after { content: " : "; }
 .entree-infos dd { display: inline; margin: 0; }
-.sketch { display: grid; gap: 6px; margin-top: 4px; }
-.sketch p { margin: 0; }
-.sketch strong { font-weight: 600; }
-.sketch-scene { font-style: italic; color: var(--encre-douce); margin: 8px 0 !important; padding-left: 12px; border-left: 3px solid var(--surligneur); }
-.sketch-formule { margin-top: 8px !important; }
+/* Sketch : présenté comme un script, jouable réplique par réplique (js/sketch.js) */
+.sketch { margin-top: 4px; }
+.sketch-commandes:not([hidden]) { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 16px; }
+.sketch-voix { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 600; cursor: pointer; }
+.sketch-voix input { width: 20px; height: 20px; accent-color: var(--tampon); }
+.sketch-script { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.replique { display: grid; grid-template-columns: 9.5em 1fr; gap: 4px 16px; align-items: baseline; }
+.replique-qui { text-transform: uppercase; letter-spacing: .06em; font-size: .72rem; color: var(--encre-douce); }
+.replique-stagiaire .replique-texte { margin-left: 1.25em; }
+.replique-chute .replique-texte { font-weight: 600; font-size: 1.15rem; background: linear-gradient(transparent 52%, var(--surligneur) 52%) no-repeat; justify-self: start; }
+.replique-formule .replique-texte { font-weight: 600; }
+.sketch-scene { font-style: italic; color: var(--encre-douce); margin: 6px 0; padding: 4px 0 4px 12px; border-left: 3px solid var(--surligneur); }
+.sketch-decoupage {
+  display: inline-block; margin: 20px 0 0; padding: 6px 12px; transform: rotate(-1.5deg);
+  border: 2px solid var(--tampon); color: var(--tampon); text-transform: uppercase; letter-spacing: .06em;
+}
+.sketch-decoupage strong { font-weight: 500; }
+/* Pendant la lecture : seules les lignes déjà jouées sont visibles */
+.sketch.en-scene [data-qui]:not(.vu) { display: none; }
+.sketch.en-scene .vu { animation: apparition 260ms ease-out; }
+.sketch.en-scene .replique-chute.vu .replique-texte { animation: surlignage 700ms ease-out both; background-size: 100% 100%; }
+.sketch.en-scene .sketch-decoupage.vu { animation: tampon-pose 380ms cubic-bezier(.2, 1.6, .4, 1) both; }
+.replique.parle .replique-qui { color: var(--tampon); }
+@keyframes apparition { from { opacity: 0; transform: translateY(6px); } }
+@keyframes surlignage { from { background-size: 0 100%; } }
+@keyframes tampon-pose { from { opacity: 0; transform: rotate(-1.5deg) scale(1.6); } }
+@media (max-width: 560px) {
+  .replique { grid-template-columns: 1fr; gap: 2px; }
+  .replique-stagiaire .replique-texte { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sketch.en-scene .vu, .sketch.en-scene .replique-chute.vu .replique-texte, .sketch.en-scene .sketch-decoupage.vu { animation: none; }
+}
 .archives { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
 .feuilleter { scroll-margin-top: 16px; }
 .sommaire { margin-top: 28px; border: var(--bord); background: var(--carte); padding: 12px 20px; }
@@ -218,6 +246,14 @@ section { padding-block: 56px; }
 .sommaire-liste a[aria-current="page"] { font-weight: 600; background: linear-gradient(transparent 52%, var(--surligneur) 52%); }
 .sommaire-sketch { color: var(--encre-douce); font-size: .9rem; }
 .pied-lien { font-weight: 600; }
+
+/* ---------- Application mobile ---------- */
+.installation-etat { font-weight: 600; min-height: 1.5em; margin-top: 16px; }
+.installation-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+.installation-carte { background: var(--carte); border: var(--bord); box-shadow: var(--ombre); padding: 20px 24px; }
+.installation-carte h3 { font-size: 1.3rem; }
+.installation-carte ol { margin: 0; padding-left: 1.3em; display: grid; gap: 10px; }
+.installation-note { margin-top: 24px; color: var(--encre-douce); }
 
 /* ---------- Sous-menu de l'espace client ---------- */
 .espace-nav { background: var(--encre); color: var(--papier); }

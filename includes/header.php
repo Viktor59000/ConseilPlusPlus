@@ -17,6 +17,8 @@ $connecte = isset($_SESSION['user_id']);
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <meta name="theme-color" content="#1B2440">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-title" content="ConseilPlus+">
 <?php if ($connecte): ?>
   <meta name="csrf" content="<?= csrf_jeton() ?>">
 <?php endif; ?>

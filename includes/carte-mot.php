@@ -16,23 +16,44 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
 <?php if ($mot['format'] === 'sketch' && $mot['sketch']):
     $s = $mot['sketch'];
     $ouverture = OUVERTURES[crc32($mot['jour'] ?? $mot['mot']) % count(OUVERTURES)];
+    // Le sketch sous forme de script : [qui, texte, rôle] — qui ∈ conseiller | stagiaire | duo | scene
+    $lignes = [['conseiller', $ouverture, '']];
+    foreach ($s['pistes'] as $i => $piste) {
+        $lignes[] = ['stagiaire', $piste . ' !', ''];
+        if ($i < count($s['pistes']) - 1) {
+            $lignes[] = ['conseiller', 'Non.', ''];
+        }
+    }
+    $lignes[] = ['conseiller', 'Non. ' . $mot['mot'] . '. ' . $s['epellation'], ''];
+    $lignes[] = ['scene', $s['scene'], ''];
+    foreach ($s['repliques'] as $i => $r) {
+        $lignes[] = [$r['qui'], $r['texte'], $i === count($s['repliques']) - 1 ? 'chute' : ''];
+    }
+    $lignes[] = ['duo', FORMULE_FINALE, 'formule'];
+    if ($s['relance'] !== '') {
+        $lignes[] = ['stagiaire', $s['relance'], ''];
+    }
+    $noms['duo'] = 'Le conseiller et le stagiaire';
 ?>
-  <div class="sketch">
-    <p><strong>Le conseiller :</strong> <?= htmlspecialchars($ouverture) ?></p>
-<?php foreach ($s['pistes'] as $i => $piste): ?>
-    <p><strong>Le stagiaire :</strong> <?= htmlspecialchars($piste) ?> !</p>
-<?php if ($i < count($s['pistes']) - 1): ?>
-    <p><strong>Le conseiller :</strong> Non.</p>
+  <div class="sketch" data-sketch>
+    <div class="sketch-commandes" hidden>
+      <button type="button" class="btn btn-tampon btn-petit" data-jouer>▶ Jouer la scène</button>
+      <label class="sketch-voix"><input type="checkbox" data-voix> Avec les voix</label>
+    </div>
+    <ol class="sketch-script">
+<?php foreach ($lignes as [$qui, $texte, $role]): ?>
+<?php if ($qui === 'scene'): ?>
+      <li class="sketch-scene" data-qui="scene"><?= htmlspecialchars($texte) ?></li>
+<?php else: ?>
+      <li class="replique replique-<?= $qui ?><?= $role ? " replique-$role" : '' ?>" data-qui="<?= $qui ?>">
+        <span class="replique-qui mono"><?= $noms[$qui] ?></span>
+        <span class="replique-texte"><?= htmlspecialchars($texte) ?></span>
+      </li>
 <?php endif; ?>
 <?php endforeach; ?>
-    <p><strong>Le conseiller :</strong> Non. <?= htmlspecialchars($mot['mot']) ?>. <?= htmlspecialchars($s['epellation']) ?></p>
-    <p class="sketch-scene"><?= htmlspecialchars($s['scene']) ?></p>
-<?php foreach ($s['repliques'] as $r): ?>
-    <p><strong><?= $noms[$r['qui']] ?> :</strong> <?= htmlspecialchars($r['texte']) ?></p>
-<?php endforeach; ?>
-    <p class="sketch-formule"><strong>Le conseiller et le stagiaire :</strong> <?= htmlspecialchars(FORMULE_FINALE) ?></p>
-<?php if ($s['relance'] !== ''): ?>
-    <p><strong>Le stagiaire :</strong> <?= htmlspecialchars($s['relance']) ?></p>
+    </ol>
+<?php if (!empty($s['decoupage'])): ?>
+    <p class="sketch-decoupage mono" data-qui="decoupage">Découpage officiel : <strong><?= htmlspecialchars($s['decoupage']) ?></strong></p>
 <?php endif; ?>
   </div>
   <dl class="entree-infos mono">

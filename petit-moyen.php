@@ -64,4 +64,5 @@ include("includes/header.php");
 </section>
 <?php endif; ?>
 
+<script src="js/sketch.js" defer></script>
 <?php include("includes/footer.php"); ?>

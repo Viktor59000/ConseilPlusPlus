@@ -1,0 +1,22 @@
+{
+  "name": "ConseilPlus+ — Le conseiller moyen",
+  "short_name": "ConseilPlus+",
+  "description": "Des conseils. C'est déjà ça. Le conseil et le mot (presque) du jour, dans votre poche.",
+  "lang": "fr",
+  "id": "./",
+  "start_url": "./index.php?source=appli",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4EFE4",
+  "theme_color": "#1B2440",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Le mot (presque) du jour", "short_name": "Mot du jour", "url": "./petit-moyen.php", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Mon conseil", "short_name": "Conseil", "url": "./conseil.php", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

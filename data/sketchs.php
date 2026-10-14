@@ -7,7 +7,7 @@
 return [
     'sketchs' => [
         [
-            'mot' => 'Nonchalance', 'nature' => 'n. f.', 'certitude' => 58,
+            'mot' => 'Nonchalance', 'decoupage' => "non · chat · lance", 'nature' => 'n. f.', 'certitude' => 58,
             'pistes' => ['Nounours', 'Nonante'],
             'epellation' => 'N, O, N, C, H, A, L, A, N, C, E. Deux N au début, pour la symétrie.',
             'scene' => "Dans un jardin. Le stagiaire tient une balle de tennis et essaie d'apprendre à son chat à la rapporter. Le chat le regarde. Le voisin (le conseiller) observe par-dessus la haie.",
@@ -18,7 +18,7 @@ return [
             'relance' => "C'est moi qui suis allé la chercher.",
         ],
         [
-            'mot' => 'Baldaquin', 'nature' => 'n. m.', 'certitude' => 44,
+            'mot' => 'Baldaquin', 'decoupage' => "bal · d'ac · un", 'nature' => 'n. m.', 'certitude' => 44,
             'pistes' => ['Balcon', 'Baladeur'],
             'epellation' => 'B, A, L, D, A, Q, U, I, N. Le U est là pour accompagner le Q, il ne travaille pas.',
             'scene' => "Fête du village, devant la buvette. Le conseiller tient la caisse et vend les tickets de la soirée dansante. Le stagiaire arrive, seul.",
@@ -29,7 +29,7 @@ return [
             'relance' => 'Je danse seul, mais je danse bien.',
         ],
         [
-            'mot' => 'Vicissitude', 'nature' => 'n. f.', 'certitude' => 39,
+            'mot' => 'Vicissitude', 'decoupage' => "vis · ici · si tu", 'nature' => 'n. f.', 'certitude' => 39,
             'pistes' => ['Vitesse', 'Vichy'],
             'epellation' => 'V, I, C, I, S, S, I, T, U, D, E. Deux S au milieu, en cas de perte.',
             'scene' => "Un dimanche, dans un salon. Le stagiaire est perché sur un escabeau pour fixer une étagère. Le conseiller, en bas, tient la boîte à outils.",
@@ -40,7 +40,7 @@ return [
             'relance' => "L'étagère penche, mais elle tient.",
         ],
         [
-            'mot' => 'Capharnaüm', 'nature' => 'n. m.', 'certitude' => 66,
+            'mot' => 'Capharnaüm', 'decoupage' => "cafard · nan · hum", 'nature' => 'n. m.', 'certitude' => 66,
             'pistes' => ['Cafetière', 'Caravane'],
             'epellation' => 'C, A, P, H, A, R, N, A, Ü, M. Avec un tréma sur le U, pour faire joli.',
             'scene' => "Une cuisine, le soir. Le stagiaire est debout sur une chaise. Le conseiller, technicien de la désinsectisation, remplit un formulaire.",
@@ -51,7 +51,7 @@ return [
             'relance' => "Il s'appelle Gérard. Enfin, moi, je l'appelle Gérard.",
         ],
         [
-            'mot' => 'Parcimonie', 'nature' => 'n. f.', 'certitude' => 52,
+            'mot' => 'Parcimonie', 'decoupage' => "par ici · Monie", 'nature' => 'n. f.', 'certitude' => 52,
             'pistes' => ['Parking', 'Parchemin', 'Parc Astérix'],
             'epellation' => "P, A, R, C, I, M, O, N, I, E. Le C fait le bruit du S, c'est un arrangement entre eux.",
             'scene' => "Samedi matin, au marché, en pleine foule. Le stagiaire guide sa grand-mère, Monie, vers le stand des fromages. Le conseiller, fromager, leur fait signe.",
@@ -62,7 +62,7 @@ return [
             'relance' => 'Elle a pris du brie, finalement.',
         ],
         [
-            'mot' => 'Saltimbanque', 'nature' => 'n.', 'certitude' => 47,
+            'mot' => 'Saltimbanque', 'decoupage' => "salle · timbre · banque", 'nature' => 'n.', 'certitude' => 47,
             'pistes' => ['Salsifis', 'Salto'],
             'epellation' => "S, A, L, T, I, M, B, A, N, Q, U, E. Le M devant le B, c'est le règlement.",
             'scene' => "Dans le hall d'une grande mairie. Le stagiaire, perdu, une liste à la main, s'adresse à l'accueil, tenu par le conseiller.",
@@ -73,7 +73,7 @@ return [
             'relance' => 'Et les toilettes, si possible.',
         ],
         [
-            'mot' => 'Escarmouche', 'nature' => 'n. f.', 'certitude' => 34,
+            'mot' => 'Escarmouche', 'decoupage' => "et ce car · mouche", 'nature' => 'n. f.', 'certitude' => 34,
             'pistes' => ['Escargot', 'Escalator'],
             'epellation' => 'E, S, C, A, R, M, O, U, C, H, E. Un seul R, on économise.',
             'scene' => "Un arrêt de bus, en plein été. Le conseiller regarde sa montre. Le stagiaire agite les bras autour de sa tête.",
@@ -84,7 +84,7 @@ return [
             'relance' => 'Le car est passé pendant ce temps-là.',
         ],
         [
-            'mot' => 'Ambivalence', 'nature' => 'n. f.', 'certitude' => 48,
+            'mot' => 'Ambivalence', 'decoupage' => "hamb… hi · Valence", 'nature' => 'n. f.', 'certitude' => 48,
             'pistes' => ['Ambulance', 'Amboise'],
             'epellation' => 'A, M, B, I, V, A, L, E, N, C, E. Avec un B, comme dans « bof ».',
             'scene' => "À la gare, au comptoir d'un snack. Le stagiaire hésite entre manger et attraper son train pour Valence. La serveuse (le conseiller) s'impatiente.",
@@ -95,7 +95,7 @@ return [
             'relance' => 'Avec des frites, du coup.',
         ],
         [
-            'mot' => 'Péninsule', 'nature' => 'n. f.', 'certitude' => 35,
+            'mot' => 'Péninsule', 'decoupage' => "paie · Nina · seule", 'nature' => 'n. f.', 'certitude' => 35,
             'pistes' => ['Pénélope', 'Pénible'],
             'epellation' => 'P, É, N, I, N, S, U, L, E. Le deuxième N est en option.',
             'scene' => "Au restaurant, l'addition arrive. Le stagiaire regarde son amie Nina, puis le serveur (le conseiller).",

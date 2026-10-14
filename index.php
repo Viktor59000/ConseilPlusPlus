@@ -80,5 +80,6 @@ include("includes/header.php");
 </section>
 
 <script src="js/mot-du-jour.js" defer></script>
+<script src="js/sketch.js" defer></script>
 
 <?php include("includes/footer.php"); ?>
