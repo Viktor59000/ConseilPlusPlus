@@ -35,8 +35,8 @@ include("includes/header.php");
       <h3>2. Poser le widget</h3>
       <ol>
         <li>Appui long sur un espace vide de l'écran d'accueil → <strong>Widgets</strong>.</li>
-        <li>Cherchez <strong>ConseilPlus+</strong> → <strong>Le Petit Moyen</strong>, faites-le glisser sur l'écran.</li>
-        <li>Le mot du jour et un conseil s'affichent. <strong>↻</strong> : un autre conseil. Toucher le widget : Le Petit Moyen.</li>
+        <li>Cherchez <strong>ConseilPlus+</strong> et faites glisser le widget sur l'écran.</li>
+        <li>C'est une carte à deux faces : le <strong>conseil du jour</strong> et le <strong>mot du jour</strong>. <strong>⇄</strong> retourne la carte, <strong>↻</strong> donne un autre conseil. Posez-en deux pour voir les deux faces.</li>
       </ol>
     </article>
   </div>

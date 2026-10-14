@@ -10,6 +10,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import fr.conseilplus.app.MainActivity
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Charge api/widget.php et met le widget à jour. Lancé à la pose du widget, toutes les 3 heures,
- * et quand on touche ↻. Délais longs : le site gratuit peut mettre une minute à se réveiller.
+ * et quand on touche ↻ (NOUVEAU_CONSEIL : remplace le conseil du jour). Délais longs : le site gratuit peut mettre une minute à se réveiller.
  */
 class MiseAJourWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 
@@ -32,7 +33,7 @@ class MiseAJourWorker(context: Context, params: WorkerParameters) : Worker(conte
             if (connexion.responseCode != 200) return Result.retry()
             val json = connexion.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
             JSONObject(json).getString("mot") // vérifie que la réponse est complète
-            MotDuJourWidget.enregistrer(applicationContext, json)
+            MotDuJourWidget.enregistrer(applicationContext, json, inputData.getBoolean(NOUVEAU_CONSEIL, false))
             MotDuJourWidget.afficher(applicationContext)
             Result.success()
         } catch (e: Exception) {
@@ -45,11 +46,17 @@ class MiseAJourWorker(context: Context, params: WorkerParameters) : Worker(conte
     companion object {
         private const val UNIQUE = "widget-maintenant"
         private const val PERIODIQUE = "widget-periodique"
+        private const val NOUVEAU_CONSEIL = "nouveau_conseil"
         private val reseau = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-        fun maintenant(context: Context) {
-            val requete = OneTimeWorkRequestBuilder<MiseAJourWorker>().setConstraints(reseau).build()
-            WorkManager.getInstance(context).enqueueUniqueWork(UNIQUE, ExistingWorkPolicy.REPLACE, requete)
+        fun maintenant(context: Context, nouveauConseil: Boolean = false) {
+            val requete = OneTimeWorkRequestBuilder<MiseAJourWorker>()
+                .setConstraints(reseau)
+                .setInputData(workDataOf(NOUVEAU_CONSEIL to nouveauConseil))
+                .build()
+            // File séparée pour ↻ : une mise à jour automatique simultanée ne l'annule pas
+            val nom = if (nouveauConseil) "$UNIQUE-conseil" else UNIQUE
+            WorkManager.getInstance(context).enqueueUniqueWork(nom, ExistingWorkPolicy.REPLACE, requete)
         }
 
         fun planifier(context: Context) {
