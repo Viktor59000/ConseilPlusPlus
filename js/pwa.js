@@ -33,6 +33,22 @@ installer?.addEventListener('click', async () => {
   }
 });
 
+// Boutons « Copier » (formules du widget KWGT)
+if (navigator.clipboard) {
+  for (const bouton of document.querySelectorAll('[data-copier]')) {
+    bouton.hidden = false;
+    bouton.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(bouton.dataset.copier);
+        bouton.textContent = 'Copié';
+      } catch {
+        bouton.textContent = 'Copie impossible';
+      }
+      setTimeout(() => { bouton.textContent = 'Copier'; }, 2000);
+    });
+  }
+}
+
 window.addEventListener('appinstalled', () => {
   if (etat) etat.textContent = "Installation terminée. Le cabinet est désormais sur votre écran d'accueil.";
 });

@@ -53,6 +53,17 @@ Conseils classés par l'utilisateur connecté. Authentification par la session d
 | `GET` | `/conseils.php` | non | Un conseil aléatoire |
 | `GET` | `/conseils.php?nombre=3` | non | Plusieurs conseils (5 max) |
 
+## Widget — `api/widget.php`
+
+| Méthode | URL | Clé | Rôle |
+|---|---|---|---|
+| `GET` | `/widget.php` | non | Mot du jour + un conseil, en champs prêts à afficher (widget KWGT / Scriptable) |
+
+Réponse : `date`, `mot`, `nature`, `ligne1` (définition, ou chute du sketch), `ligne2` (exemple, ou découpage officiel),
+`conseil`, `dossier`. En-tête `Cache-Control: max-age=600`.
+
+Formule KWGT (Android) : `$wg("https://conseilplus.onrender.com/api/widget.php", json, ".mot")$` (procédure sur `application.php`).
+
 ## Exemples (curl)
 
 ```bash

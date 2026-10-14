@@ -44,4 +44,46 @@ include("includes/header.php");
   <p class="mono installation-note">Appui long sur l'icône : accès direct au mot du jour ou à votre conseil (Android). Sans réseau, l'application affiche les derniers contenus consultés.</p>
 </section>
 
+<?php
+$api_widget = 'https://conseilplus.onrender.com/api/widget.php';
+$formules = [
+    'Le mot du jour' => '.mot',
+    'La définition (ou la chute du sketch)' => '.ligne1',
+    'Le conseil' => '.conseil',
+];
+?>
+<section class="conteneur installation" aria-labelledby="titre-widget">
+  <h2 id="titre-widget">Widget d'écran d'accueil (Android)</h2>
+  <p class="chapo">Le mot du jour et un conseil, directement sur votre écran d'accueil, grâce à l'application gratuite KWGT.</p>
+  <div class="installation-grille">
+    <article class="installation-carte">
+      <h3>1. Poser le widget</h3>
+      <ol>
+        <li>Installez <strong>KWGT Kustom Widget Maker</strong> depuis le Play Store.</li>
+        <li>Appui long sur l'écran d'accueil → <strong>Widgets</strong> → <strong>KWGT</strong> → taille <strong>4×2</strong>, posez-le.</li>
+        <li>Touchez le widget vide : l'éditeur KWGT s'ouvre.</li>
+      </ol>
+    </article>
+    <article class="installation-carte">
+      <h3>2. Le remplir</h3>
+      <ol>
+        <li>Touchez <strong>+</strong> en haut à droite, choisissez <strong>Texte</strong>.</li>
+        <li>Touchez ce texte, puis le champ <strong>Texte</strong>, et collez une formule ci-dessous.</li>
+        <li>Recommencez pour chaque ligne voulue, puis enregistrez (icône disquette).</li>
+      </ol>
+    </article>
+  </div>
+  <ul class="formules">
+<?php foreach ($formules as $libelle => $champ):
+    $formule = '$wg("' . $api_widget . '", json, "' . $champ . '")$'; ?>
+    <li>
+      <span class="formules-libelle"><?= htmlspecialchars($libelle) ?></span>
+      <code><?= htmlspecialchars($formule) ?></code>
+      <button type="button" class="btn btn-clair btn-petit" data-copier="<?= htmlspecialchars($formule) ?>" hidden>Copier</button>
+    </li>
+<?php endforeach; ?>
+  </ul>
+  <p class="mono installation-note">Couleurs du cabinet : fond <code>#F4EFE4</code>, texte <code>#1B2440</code>, accent <code>#C8102E</code>. Le widget se met à jour tout seul ; le premier chargement de la journée peut prendre une minute (le cabinet se réveille).</p>
+</section>
+
 <?php include("includes/footer.php"); ?>
