@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ConseilPlus+</string>
+    <string name="attente">Le cabinet ouvre ses portes.\n\nLe conseiller arrive (jusqu\'à une minute, il est moyen).</string>
+    <string name="widget_nom">Le Petit Moyen</string>
+    <string name="widget_titre">Le Petit Moyen</string>
+    <string name="widget_description">Le mot (presque) du jour et un conseil du cabinet.</string>
+    <string name="widget_chargement">Chargement…</string>
+    <string name="widget_chargement_detail">Le conseiller cherche le mot du jour. Cela peut prendre une minute.</string>
+    <string name="widget_rafraichir">Nouveau conseil</string>
+</resources>

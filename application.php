@@ -14,22 +14,48 @@ include("includes/header.php");
 <section class="conteneur entete-page">
   <p class="etiquette">Application mobile</p>
   <h1>Le cabinet, dans votre poche</h1>
-  <p class="chapo">ConseilPlus+ s'installe sur votre écran d'accueil comme une application. Aucun magasin d'applications, aucune mise à jour à faire : le cabinet se met à jour tout seul, à son rythme.</p>
+  <p class="chapo">Le conseil, le mot (presque) du jour, et un widget sur votre écran d'accueil. Le cabinet se met à jour tout seul, à son rythme.</p>
+</section>
+
+<section class="conteneur installation" aria-labelledby="titre-android">
+  <h2 id="titre-android">Android : l'application et son widget</h2>
   <div class="actions">
-    <button type="button" class="btn btn-tampon" id="installer" hidden>Installer l'application</button>
+    <a class="btn btn-tampon" href="https://github.com/Viktor59000/ConseilPlusPlus/releases/download/android/conseilplus.apk" download>Télécharger l'application Android</a>
   </div>
-  <p class="installation-etat" id="installation-etat" role="status"></p>
+  <div class="installation-grille">
+    <article class="installation-carte">
+      <h3>1. Installer</h3>
+      <ol>
+        <li>Touchez <strong>Télécharger l'application Android</strong>, puis ouvrez le fichier <strong>conseilplus.apk</strong>.</li>
+        <li>Android demande d'autoriser l'installation depuis votre navigateur : <strong>Paramètres</strong> → <strong>Autoriser</strong>. Une seule fois.</li>
+        <li>Touchez <strong>Installer</strong>. L'icône C++ apparaît avec vos applications.</li>
+      </ol>
+    </article>
+    <article class="installation-carte">
+      <h3>2. Poser le widget</h3>
+      <ol>
+        <li>Appui long sur un espace vide de l'écran d'accueil → <strong>Widgets</strong>.</li>
+        <li>Cherchez <strong>ConseilPlus+</strong> → <strong>Le Petit Moyen</strong>, faites-le glisser sur l'écran.</li>
+        <li>Le mot du jour et un conseil s'affichent. <strong>↻</strong> : un autre conseil. Toucher le widget : Le Petit Moyen.</li>
+      </ol>
+    </article>
+  </div>
+  <p class="mono installation-note">L'application ne vient pas du Play Store : Android le signale, c'est normal. Elle n'accède qu'au site du cabinet.</p>
 </section>
 
 <section class="conteneur installation" aria-labelledby="titre-installation">
-  <h2 id="titre-installation">Procédure d'installation</h2>
+  <h2 id="titre-installation">Sans téléchargement (iPhone et Android)</h2>
+  <p class="chapo">Le site s'installe aussi directement depuis le navigateur, sans widget.</p>
+  <div class="actions">
+    <button type="button" class="btn btn-clair" id="installer" hidden>Installer depuis le navigateur</button>
+  </div>
+  <p class="installation-etat" id="installation-etat" role="status"></p>
   <div class="installation-grille">
     <article class="installation-carte">
       <h3>Android</h3>
       <ol>
         <li>Ouvrez ce site dans <strong>Chrome</strong>.</li>
-        <li>Touchez le bouton <strong>Installer l'application</strong> ci-dessus.<br>S'il n'apparaît pas : menu <strong>⋮</strong> en haut à droite, puis <strong>Ajouter à l'écran d'accueil</strong> → <strong>Installer</strong>.</li>
-        <li>L'icône C++ apparaît avec vos autres applications.</li>
+        <li>Touchez <strong>Installer depuis le navigateur</strong> ci-dessus.<br>S'il n'apparaît pas : menu <strong>⋮</strong> en haut à droite, puis <strong>Ajouter à l'écran d'accueil</strong> → <strong>Installer</strong>.</li>
       </ol>
     </article>
     <article class="installation-carte">
@@ -41,7 +67,7 @@ include("includes/header.php");
       </ol>
     </article>
   </div>
-  <p class="mono installation-note">Appui long sur l'icône : accès direct au mot du jour ou à votre conseil (Android). Sans réseau, l'application affiche les derniers contenus consultés.</p>
+  <p class="mono installation-note">Sans réseau, le site installé affiche les derniers contenus consultés.</p>
 </section>
 
 <?php
@@ -52,9 +78,10 @@ $formules = [
     'Le conseil' => '.conseil',
 ];
 ?>
-<section class="conteneur installation" aria-labelledby="titre-widget">
-  <h2 id="titre-widget">Widget d'écran d'accueil (Android)</h2>
-  <p class="chapo">Le mot du jour et un conseil, directement sur votre écran d'accueil, grâce à l'application gratuite KWGT.</p>
+<section class="conteneur installation">
+  <details class="sommaire">
+  <summary>Pour les bricoleurs : widget personnalisé avec KWGT</summary>
+  <p>Le mot du jour et un conseil dans un widget dessiné par vos soins, grâce à l'application gratuite KWGT.</p>
   <div class="installation-grille">
     <article class="installation-carte">
       <h3>1. Poser le widget</h3>
@@ -84,6 +111,7 @@ $formules = [
 <?php endforeach; ?>
   </ul>
   <p class="mono installation-note">Couleurs du cabinet : fond <code>#F4EFE4</code>, texte <code>#1B2440</code>, accent <code>#C8102E</code>. Le widget se met à jour tout seul ; le premier chargement de la journée peut prendre une minute (le cabinet se réveille).</p>
+  </details>
 </section>
 
 <?php include("includes/footer.php"); ?>

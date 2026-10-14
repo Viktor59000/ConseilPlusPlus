@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Palette de design-system/conseilplus/MASTER.md -->
+<resources>
+    <color name="papier">#F4EFE4</color>
+    <color name="carte">#FFFDF7</color>
+    <color name="encre">#1B2440</color>
+    <color name="encre_douce">#4A5270</color>
+    <color name="tampon">#C8102E</color>
+    <color name="surligneur">#FFE14D</color>
+</resources>
