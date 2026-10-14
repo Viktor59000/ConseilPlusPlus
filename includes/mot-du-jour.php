@@ -35,8 +35,8 @@ une fausse définition par une scène du quotidien qui se termine sur un calembo
 
 # MÉTHODE (dans cet ordre)
 0. Découpage : avant tout, trouve comment le mot SONNE comme une phrase ou une expression banale, en le cassant
-   en morceaux (« à terre / moi / maman » pour atermoiement, « des potes / hic » pour despotique,
-   « Hippo / bol » pour hyperbole, « thé / j'y / verse » pour tergiverser). Écris-le dans la clé "decoupage".
+   en morceaux (« non / chat / lance » pour nonchalance, « bal / d'ac / un » pour baldaquin,
+   « la vis / ici / si tu » pour vicissitude, « cafard / nan / hum » pour capharnaüm). Écris-le dans la clé "decoupage".
    La chute du sketch sera construite avec ce découpage.
 
 # DÉROULÉ (l'ouverture et la formule finale sont ajoutées par le site, ne les écris pas)
@@ -51,7 +51,8 @@ une fausse définition par une scène du quotidien qui se termine sur un calembo
 
 # RÈGLES
 - La chute ne contient JAMAIS le mot cible lui-même, ni un mot de sa famille : elle contient seulement le découpage sonore.
-  « On dirait un tintamarre » est un échec (c'est la vraie définition) ; « Tintin… à mare ! » est réussi.
+  « Ton chat est nonchalant » est un échec (c'est la vraie définition) ; « Non, chat… Lance ! » est réussi.
+- Invente tes propres calembours : ne reprends JAMAIS une chute des sketchs originaux d'Éric et Ramzy.
 - Dans la scène, les personnages ignorent qu'on cherche un mot : ils ne parlent jamais de mot, de dictionnaire,
   d'épellation ni de sens. Ils vivent leur moment du quotidien, et la chute arrive « par hasard ».
 - Le calembour doit être approximatif, voire laborieux. Un jeu de mots trop propre est un échec.
@@ -61,7 +62,7 @@ une fausse définition par une scène du quotidien qui se termine sur un calembo
 - Rien de sexuel, haineux, violent ou humiliant. Pas d'alcool fort ni de drogue.
 
 # EXEMPLE (format attendu)
-{"mot":"Atermoiement","nature":"n. m.","decoupage":"à terre / moi / maman","pistes":["Atterrissage","Armoire"],"epellation":"A, T, E, R, M, O, A, M, A, N.","scene":"Un petit garçon (le stagiaire) tombe de vélo. Un passant (le conseiller) se penche.","repliques":[{"qui":"conseiller","texte":"Mon petit, où es-tu ? Qui dois-je appeler ?"},{"qui":"stagiaire","texte":"À terre… moi… maman !"}],"relance":"Et le vélo, on le laisse.","certitude":41}
+{"mot":"Baldaquin","nature":"n. m.","decoupage":"bal / d'ac / un","pistes":["Balcon","Baladeur"],"epellation":"B, A, L, D, A, Q, U, I, N. Le U accompagne le Q, il ne travaille pas.","scene":"Fête du village. Le conseiller vend les tickets de la soirée dansante. Le stagiaire arrive, seul.","repliques":[{"qui":"conseiller","texte":"C'est deux euros l'entrée pour le bal. Je vous en mets combien ?"},{"qui":"stagiaire","texte":"Le bal ? D'ac… Un."}],"relance":"Je danse seul, mais je danse bien.","certitude":44}
 
 # SORTIE
 Uniquement un objet JSON sur une ligne, avec exactement ces clés : mot, nature, decoupage, pistes, epellation, scene, repliques, relance, certitude
@@ -78,6 +79,28 @@ function sketchs_banque(): array
 {
     static $banque = null;
     return $banque ??= require __DIR__ . '/../data/sketchs.php';
+}
+
+/**
+ * Toutes les pages du dictionnaire (définitions et sketchs de la banque), classées par ordre alphabétique
+ * et numérotées à partir de 1. Même forme que les entrées de lire_mot(), sans date (jour = null).
+ */
+function pages_dictionnaire(): array
+{
+    static $pages = null;
+    if ($pages !== null) {
+        return $pages;
+    }
+    $pages = array_map(fn($m) => $m + ['format' => 'definition', 'sketch' => null], mots_banque());
+    foreach (sketchs_banque()['sketchs'] as $s) {
+        $pages[] = [
+            'mot' => $s['mot'], 'nature' => $s['nature'], 'format' => 'sketch', 'certitude' => $s['certitude'],
+            'sketch' => array_intersect_key($s, array_flip(['pistes', 'epellation', 'scene', 'repliques', 'relance'])),
+        ];
+    }
+    $collator = new Collator('fr_FR');
+    usort($pages, fn($a, $b) => $collator->compare($a['mot'], $b['mot']));
+    return $pages = array_map(fn($p, $i) => $p + ['jour' => null, 'page' => $i + 1], $pages, array_keys($pages));
 }
 
 /** Mots déjà publiés récemment (pour éviter les répétitions). */

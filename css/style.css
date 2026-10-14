@@ -207,6 +207,16 @@ section { padding-block: 56px; }
 .sketch-scene { font-style: italic; color: var(--encre-douce); margin: 8px 0 !important; padding-left: 12px; border-left: 3px solid var(--surligneur); }
 .sketch-formule { margin-top: 8px !important; }
 .archives { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
+.feuilleter { scroll-margin-top: 16px; }
+.sommaire { margin-top: 28px; border: var(--bord); background: var(--carte); padding: 12px 20px; }
+.sommaire summary { font-weight: 600; cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 10px; list-style: none; }
+.sommaire summary::-webkit-details-marker { display: none; }
+.sommaire summary::before { content: "▸"; }
+.sommaire[open] summary::before { content: "▾"; }
+.sommaire-liste { columns: 3 14ch; column-gap: 32px; margin: 12px 0 4px; padding-left: 2.2em; }
+.sommaire-liste li { break-inside: avoid; padding: 4px 0; }
+.sommaire-liste a[aria-current="page"] { font-weight: 600; background: linear-gradient(transparent 52%, var(--surligneur) 52%); }
+.sommaire-sketch { color: var(--encre-douce); font-size: .9rem; }
 .pied-lien { font-weight: 600; }
 
 /* ---------- Sous-menu de l'espace client ---------- */

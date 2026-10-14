@@ -1,9 +1,13 @@
 <?php
 // Affiche une entrée du Petit Moyen. Attend $mot (entrée lue par lire_mot / mot_du_jour)
-// et, en option, $titre_niveau (h2 par défaut).
+// et, en option, $titre_niveau (h2 par défaut). Une page feuilletée (pages_dictionnaire) n'a pas de date.
 $balise = $titre_niveau ?? 'h2';
-$date = (new IntlDateFormatter('fr_FR', IntlDateFormatter::FULL, IntlDateFormatter::NONE, 'Europe/Paris'))->format(new DateTime($mot['jour']));
-$date = mb_strtoupper(mb_substr($date, 0, 1)) . mb_substr($date, 1); // « Mercredi 14 octobre 2026 »
+if ($mot['jour'] !== null) {
+    $date = (new IntlDateFormatter('fr_FR', IntlDateFormatter::FULL, IntlDateFormatter::NONE, 'Europe/Paris'))->format(new DateTime($mot['jour']));
+    $date = mb_strtoupper(mb_substr($date, 0, 1)) . mb_substr($date, 1); // « Mercredi 14 octobre 2026 »
+} else {
+    $date = 'Page ' . $mot['page'];
+}
 $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
 ?>
 <article class="entree-mot">
@@ -11,7 +15,7 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
   <<?= $balise ?> class="entree-titre"><?= htmlspecialchars($mot['mot']) ?> <span class="entree-nature"><?= htmlspecialchars($mot['nature']) ?></span></<?= $balise ?>>
 <?php if ($mot['format'] === 'sketch' && $mot['sketch']):
     $s = $mot['sketch'];
-    $ouverture = OUVERTURES[crc32($mot['jour']) % count(OUVERTURES)];
+    $ouverture = OUVERTURES[crc32($mot['jour'] ?? $mot['mot']) % count(OUVERTURES)];
 ?>
   <div class="sketch">
     <p><strong>Le conseiller :</strong> <?= htmlspecialchars($ouverture) ?></p>
