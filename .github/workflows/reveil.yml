@@ -1,6 +1,7 @@
 # Visite quotidienne du site en ligne (offres gratuites Render + Aiven) :
 # - réveille le site et interroge la base, pour qu'Aiven ne l'éteigne pas faute d'activité ;
-# - fait préparer par l'IA le mot (presque) du jour du lendemain.
+# - fait préparer par l'IA le mot (presque) du jour du lendemain ;
+# - envoie la notification du mot du jour aux abonnés.
 name: Réveil quotidien
 
 on:
@@ -18,3 +19,5 @@ jobs:
         run: curl --fail --silent --show-error --max-time 60 https://conseilplus.onrender.com/api/mot-du-jour.php
       - name: Préparer le mot de demain
         run: curl --silent --show-error --max-time 90 -X POST https://conseilplus.onrender.com/api/mot-du-jour.php
+      - name: Envoyer la notification du mot du jour (une fois par jour au plus)
+        run: curl --silent --show-error --max-time 120 -X POST -H "Content-Type: application/json" -d '{"action":"envoyer"}' https://conseilplus.onrender.com/api/notifications.php

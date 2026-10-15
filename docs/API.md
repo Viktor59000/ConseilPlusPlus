@@ -74,6 +74,18 @@ Formule KWGT (Android) : `$wg("https://conseilplus.onrender.com/api/widget.php",
 
 Un vote par visiteur et par mot (modifiable). Seule une empreinte anonyme est stockée (hachage IP + mot + secret).
 
+## Notifications — `api/notifications.php`
+
+| Méthode | URL | Clé | Rôle |
+|---|---|---|---|
+| `GET` | `/notifications.php` | non | Clé publique VAPID (pour s'abonner dans le navigateur) |
+| `POST` | `/notifications.php` | non | `{action: "abonner", abonnement}` · `{action: "desabonner", endpoint}` · `{action: "envoyer"}` |
+
+Web Push implémenté sans dépendance (`includes/push.php` : chiffrement RFC 8291, VAPID RFC 8292) ; clés VAPID créées
+au premier appel et gardées dans la table `reglages`. Seuls les services de notification connus (FCM, Mozilla, Apple,
+Windows) sont acceptés. L'envoi part au plus une fois par jour ; il est déclenché chaque matin par `reveil.yml`.
+Test : `php tests/test_push.php`.
+
 ## Exemples (curl)
 
 ```bash

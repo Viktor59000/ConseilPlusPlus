@@ -43,6 +43,15 @@ include("includes/header.php");
   <p class="mono installation-note">L'application ne vient pas du Play Store : Android le signale, c'est normal. Elle n'accède qu'au site du cabinet.</p>
 </section>
 
+<section class="conteneur installation" aria-labelledby="titre-notifications" data-notifications>
+  <h2 id="titre-notifications">Le mot du jour en notification</h2>
+  <p class="chapo">Chaque matin, vers 7 h, le cabinet vous envoie le mot (presque) du jour. Une notification par jour, pas une de plus.</p>
+  <div class="actions">
+    <button type="button" class="btn btn-tampon" data-notif-bouton hidden>Recevoir le mot du jour chaque matin</button>
+  </div>
+  <p class="installation-etat" data-notif-etat role="status"></p>
+</section>
+
 <section class="conteneur installation" aria-labelledby="titre-installation">
   <h2 id="titre-installation">Sans téléchargement (iPhone et Android)</h2>
   <p class="chapo">Le site s'installe aussi directement depuis le navigateur, sans widget.</p>
@@ -114,4 +123,5 @@ $formules = [
   </details>
 </section>
 
+<script src="js/notifications.js" defer></script>
 <?php include("includes/footer.php"); ?>

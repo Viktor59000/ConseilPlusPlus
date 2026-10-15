@@ -93,6 +93,19 @@ try {
             date_vote DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             UNIQUE KEY un_vote (mot, empreinte)
         );
+
+        CREATE TABLE IF NOT EXISTS reglages (
+            cle VARCHAR(50) PRIMARY KEY,
+            valeur TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS abonnements_push (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            endpoint VARCHAR(500) CHARACTER SET ascii NOT NULL UNIQUE,
+            p256dh VARCHAR(120) NOT NULL,
+            auth VARCHAR(40) NOT NULL,
+            date_abonnement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
     ");
 
     // Migration : ajout du format « sketch » au mot du jour (bases créées avant cette version)

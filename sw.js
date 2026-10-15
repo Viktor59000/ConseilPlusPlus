@@ -3,7 +3,7 @@
 //   (ou si le site gratuit met trop longtemps à se réveiller).
 // - Polices, images, scripts : cache d'abord, mis à jour en arrière-plan.
 // - Espace client, formulaires, API d'écriture : jamais mis en cache.
-const VERSION = 'conseilplus-v1';
+const VERSION = 'conseilplus-v2';
 const HORS_LIGNE = 'hors-ligne.html';
 const A_PRECHARGER = [
   HORS_LIGNE,
@@ -78,4 +78,27 @@ self.addEventListener('fetch', (e) => {
   if (p.startsWith('assets/') || p.startsWith('js/')) {
     e.respondWith(cacheDabord(requete));
   }
+});
+
+// Notification du mot (presque) du jour (envoyée par api/notifications.php)
+self.addEventListener('push', (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch { d = { corps: e.data ? e.data.text() : '' }; }
+  e.waitUntil(self.registration.showNotification(d.titre || 'ConseilPlus+', {
+    body: d.corps || 'Le mot (presque) du jour est arrivé.',
+    icon: 'assets/icons/icon-192.png',
+    badge: 'assets/icons/favicon-48.png',
+    lang: 'fr',
+    tag: 'mot-du-jour',
+    data: { url: d.url || 'petit-moyen.php' },
+  }));
+});
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const cible = new URL(e.notification.data?.url || './', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((fenetres) => {
+    const ouverte = fenetres.find((f) => f.url.startsWith(self.registration.scope));
+    return ouverte ? ouverte.navigate(cible).then((f) => f && f.focus()) : self.clients.openWindow(cible);
+  }));
 });

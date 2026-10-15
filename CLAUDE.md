@@ -70,7 +70,11 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `Dockerfile`, `docker/apache.conf`, `.github/workflows/reveil.yml` | Mise en ligne (Render + Aiven) et visite quotidienne |
 | `android/`, `.github/workflows/android.yml` | Appli Android (WebView + widget « Le Petit Moyen » via `api/widget.php`), APK construit par GitHub à chaque push touchant `android/` |
 | `bureau/` | **Le Bureau**, logiciel de gestion séparé (base `gestion`), consomme l'API (`docs/BUREAU.md`) |
-| `tests/test_api.php` | Test de bout en bout de l'API (`php tests/test_api.php`) |
+| `guichet.php`, `js/guichet.js` | Le guichet (ticket, file absurde, fermeture à votre tour) |
+| `js/partage.js` | Partage d'un conseil / d'un mot (image story générée dans le navigateur) |
+| `api/votes.php`, `js/votes.js` | Votes « Moyen » / « Pas moyen » (palmarès lu par Le Bureau) |
+| `api/notifications.php`, `includes/push.php`, `js/notifications.js` | Notification quotidienne du mot du jour (Web Push sans dépendance, clés VAPID en base) |
+| `tests/test_api.php`, `tests/test_push.php` | Tests de l'API et du chiffrement Web Push |
 
 ### Règles à respecter
 - **Sécurité** : jeton CSRF sur tous les formulaires POST, `htmlspecialchars` sur toute sortie, requêtes préparées,
