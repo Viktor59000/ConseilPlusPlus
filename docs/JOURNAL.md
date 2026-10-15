@@ -20,9 +20,14 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 - **Le Bureau** (`bureau/`, `docs/BUREAU.md`) : logiciel de gestion séparé (base `gestion`), en ligne sur `/bureau/`.
   Premier agent créé en ligne par l'utilisateur. Envoi réel des réponses par email via Brevo (code poussé).
 - **Mobile** : site installable (PWA) + appli Android avec widget carte conseil / mot (APK construit par GitHub).
+- **Partage** (image story), **Le guichet** (`guichet.php`), **votes** « Moyen / Pas moyen » (palmarès dans Le Bureau),
+  **notification quotidienne** du mot du jour (Web Push maison, envoi par `reveil.yml` vers 7 h).
 
 ## Prochaines étapes
 
+0. **Tester la notification sur un vrai téléphone** : `application.php` → « Recevoir le mot du jour chaque matin »,
+   puis lancer le workflow *Réveil quotidien* à la main (onglet Actions de GitHub) ou attendre le lendemain 7 h.
+   (L'appli Android en WebView ne gère pas les notifications : passer par Chrome ou le site installé.)
 1. **Le Bureau** : à confronter aux consignes du prof (séance du 16/10). Envoi des réponses par email :
    **vérifié en ligne le 15/10** (via Brevo, expéditeur = boîte perso de l'utilisateur ; une adresse dédiée au
    cabinet pourra la remplacer : la vérifier dans Brevo puis changer `BUREAU_EXPEDITEUR` dans Render).
@@ -47,6 +52,13 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
   l'utilisateur, jamais dans le dépôt.
 
 ## Historique des sessions
+
+### 15/10/2026 — Second PC
+- Envoi d'emails du Bureau vérifié en ligne (Brevo).
+- Partage d'un conseil / d'un mot : image story 1080 × 1920 générée dans le navigateur, menu de partage natif.
+- Le guichet : ticket, file absurde (guichet 7, pause café, erreur de saisie), fermeture pile à votre tour.
+- Votes « Moyen » / « Pas moyen » (`api/votes.php`, empreinte anonyme), palmarès dans Le Bureau via l'API.
+- Notifications Web Push sans dépendance (`includes/push.php`, `tests/test_push.php`), clés VAPID en base.
 
 ### 14/10/2026 (soir) — Second PC
 - **Le Bureau** : logiciel de gestion séparé (base `gestion`) : relevé du courrier via l'API (GET puis PATCH `importe`),
