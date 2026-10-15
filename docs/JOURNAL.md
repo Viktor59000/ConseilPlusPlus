@@ -23,12 +23,11 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 
 ## Prochaines étapes
 
-1. **Vérifier l'envoi d'emails en ligne** : le déploiement `65533d9` (Brevo) et celui des variables Brevo étaient
-   bloqués le 14/10 au soir par un incident Render (« Builds are not starting »). S'il est encore « Building » :
-   Cancel puis *Manual Deploy → Deploy latest commit*. Puis tester « Envoyer par email et classer » (dossier Yuzuw).
-2. **Le Bureau** : à confronter aux consignes du prof (séance du 16/10).
-3. **Appli Android** : tester l'APK et le widget sur un vrai téléphone ; Play Store plus tard (25 $, clé de signature secrète).
-4. Améliorations possibles de l'API : une clé par application, webhook, pagination, documentation OpenAPI.
+1. **Le Bureau** : à confronter aux consignes du prof (séance du 16/10). Envoi des réponses par email :
+   **vérifié en ligne le 15/10** (via Brevo, expéditeur = boîte perso de l'utilisateur ; une adresse dédiée au
+   cabinet pourra la remplacer : la vérifier dans Brevo puis changer `BUREAU_EXPEDITEUR` dans Render).
+2. **Appli Android** : tester l'APK et le widget sur un vrai téléphone ; Play Store plus tard (25 $, clé de signature secrète).
+3. Améliorations possibles de l'API : une clé par application, webhook, pagination, documentation OpenAPI.
 
 ## Points ouverts
 
