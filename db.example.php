@@ -84,6 +84,15 @@ try {
             type ENUM('situation', 'action', 'resultat') NOT NULL,
             texte VARCHAR(255) NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS votes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            mot VARCHAR(80) NOT NULL,
+            vote ENUM('moyen', 'pas_moyen') NOT NULL,
+            empreinte CHAR(64) NOT NULL,
+            date_vote DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY un_vote (mot, empreinte)
+        );
     ");
 
     // Migration : ajout du format « sketch » au mot du jour (bases créées avant cette version)

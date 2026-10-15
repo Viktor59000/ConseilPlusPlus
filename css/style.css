@@ -246,6 +246,12 @@ section { padding-block: 56px; }
 }
 .entree-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 16px; }
 .fiche-partager { margin-top: 16px; }
+.votes:not([hidden]) { display: inline-flex; border: var(--bord); background: var(--carte); }
+.vote { min-height: 44px; padding: 6px 14px; border: 0; background: none; font: 600 .95rem var(--texte); color: var(--encre); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.vote + .vote { border-left: var(--bord); }
+.vote:hover { background: var(--papier); }
+.vote[aria-pressed="true"] { background: var(--surligneur); }
+.vote:disabled { cursor: progress; }
 .archives { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
 .feuilleter { scroll-margin-top: 16px; }
 .sommaire { margin-top: 28px; border: var(--bord); background: var(--carte); padding: 12px 20px; }

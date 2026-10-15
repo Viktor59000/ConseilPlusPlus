@@ -64,6 +64,16 @@ Réponse : `date`, `mot`, `nature`, `ligne1` (définition, ou chute du sketch), 
 
 Formule KWGT (Android) : `$wg("https://conseilplus.onrender.com/api/widget.php", json, ".mot")$` (procédure sur `application.php`).
 
+## Votes — `api/votes.php`
+
+| Méthode | URL | Clé | Rôle |
+|---|---|---|---|
+| `GET` | `/votes.php?mots=Mirobolant,Labrador` | non | Compteurs « moyen » / « pas_moyen » de chaque mot |
+| `GET` | `/votes.php?palmares=5` | non | Les mots les mieux notés (utilisé par Le Bureau) |
+| `POST` | `/votes.php` | non | Vote `{mot, vote}` (`moyen` ou `pas_moyen`) : `200` · `404` mot inconnu · `422` · `429` |
+
+Un vote par visiteur et par mot (modifiable). Seule une empreinte anonyme est stockée (hachage IP + mot + secret).
+
 ## Exemples (curl)
 
 ```bash

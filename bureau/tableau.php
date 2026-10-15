@@ -9,6 +9,9 @@ $compte = $bdd->query("SELECT statut, COUNT(*) AS n FROM dossiers GROUP BY statu
 $par_type = $bdd->query("SELECT type_demande, COUNT(*) AS n FROM dossiers GROUP BY type_demande ORDER BY n DESC")->fetchAll(PDO::FETCH_KEY_PAIR);
 $a_traiter = $bdd->query("SELECT * FROM dossiers WHERE statut <> 'classe' ORDER BY date_demande LIMIT 8")->fetchAll();
 $dernier = $bdd->query("SELECT * FROM releves ORDER BY date_releve DESC LIMIT 1")->fetch();
+// Palmarès des votes du public, lu par l'API publique du site (le Bureau ne touche pas à sa base)
+$palmares = api('GET', 'votes.php?palmares=5', null, false);
+$palmares = $palmares['code'] === 200 && is_array($palmares['data']) ? $palmares['data'] : null;
 $total = array_sum($compte);
 
 $titre = 'Tableau de bord';
@@ -73,6 +76,19 @@ include("includes/haut.php");
     </ul>
 <?php endif; ?>
     <p class="aide mono">Priorité de tous les dossiers : moyenne.</p>
+
+    <h2>Palmarès du Petit Moyen</h2>
+<?php if ($palmares === null): ?>
+    <p class="aide">Palmarès indisponible : le site ne répond pas.</p>
+<?php elseif (!$palmares): ?>
+    <p class="aide">Aucun vote pour l'instant. Le public réfléchit.</p>
+<?php else: ?>
+    <ol class="palmares">
+<?php foreach ($palmares as $p): ?>
+      <li><strong><?= htmlspecialchars($p['mot']) ?></strong> <span class="mono petit">Moyen <?= (int) $p['moyen'] ?> · Pas moyen <?= (int) $p['pas_moyen'] ?></span></li>
+<?php endforeach; ?>
+    </ol>
+<?php endif; ?>
   </section>
 </div>
 <?php include("includes/bas.php"); ?>

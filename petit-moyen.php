@@ -66,4 +66,5 @@ include("includes/header.php");
 
 <script src="js/sketch.js" defer></script>
 <script src="js/partage.js" defer></script>
+<script src="js/votes.js" defer></script>
 <?php include("includes/footer.php"); ?>

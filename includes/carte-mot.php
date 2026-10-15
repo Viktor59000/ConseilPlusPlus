@@ -81,6 +81,10 @@ if ($mot['format'] === 'sketch' && $mot['sketch']) {
 $partage_url = $mot['jour'] === null ? 'petit-moyen.php?page=' . $mot['page'] . '#feuilleter' : 'petit-moyen.php';
 ?>
   <div class="entree-actions">
+    <div class="votes" data-votes data-mot="<?= htmlspecialchars($mot['mot']) ?>" role="group" aria-label="Votre avis sur ce mot" hidden>
+      <button type="button" class="vote" data-vote="moyen" aria-pressed="false">Moyen <span class="mono" data-compte="moyen">0</span></button>
+      <button type="button" class="vote" data-vote="pas_moyen" aria-pressed="false">Pas moyen <span class="mono" data-compte="pas_moyen">0</span></button>
+    </div>
     <button type="button" class="btn btn-clair btn-petit" hidden data-partager="mot"
       data-mot="<?= htmlspecialchars($mot['mot']) ?>" data-nature="<?= htmlspecialchars($mot['nature']) ?>"
       data-texte="<?= htmlspecialchars($partage_texte) ?>" data-detail="<?= htmlspecialchars($partage_detail) ?>"
