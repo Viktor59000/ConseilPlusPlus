@@ -69,4 +69,21 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
     <div><dt>Certitude</dt><dd><?= (int) $mot['certitude'] ?> %</dd></div>
   </dl>
 <?php endif; ?>
+<?php
+// Partage (js/partage.js) : définition + exemple, ou chute du sketch + découpage officiel
+if ($mot['format'] === 'sketch' && $mot['sketch']) {
+    $partage_texte = end($mot['sketch']['repliques'])['texte'];
+    $partage_detail = !empty($mot['sketch']['decoupage']) ? 'Découpage officiel : ' . $mot['sketch']['decoupage'] : '';
+} else {
+    $partage_texte = $mot['definition'];
+    $partage_detail = '« ' . $mot['exemple'] . ' »';
+}
+$partage_url = $mot['jour'] === null ? 'petit-moyen.php?page=' . $mot['page'] . '#feuilleter' : 'petit-moyen.php';
+?>
+  <div class="entree-actions">
+    <button type="button" class="btn btn-clair btn-petit" hidden data-partager="mot"
+      data-mot="<?= htmlspecialchars($mot['mot']) ?>" data-nature="<?= htmlspecialchars($mot['nature']) ?>"
+      data-texte="<?= htmlspecialchars($partage_texte) ?>" data-detail="<?= htmlspecialchars($partage_detail) ?>"
+      data-url="<?= htmlspecialchars($partage_url) ?>">Partager</button>
+  </div>
 </article>

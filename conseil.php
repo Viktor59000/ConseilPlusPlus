@@ -45,10 +45,12 @@ include("includes/espace-nav.php");
   <div class="actions">
     <a class="btn btn-tampon" id="autre-conseil" href="conseil.php#recommandation">Demander un autre conseil</a>
     <button class="btn btn-clair" type="button" data-classer="#recommandation" data-source="generateur" hidden>Classer au dossier</button>
+    <button class="btn btn-clair" type="button" data-partager="conseil" data-source="#recommandation" hidden>Partager</button>
   </div>
 </section>
 
 <script src="js/conseil.js" defer></script>
 <script src="js/carnet.js" defer></script>
+<script src="js/partage.js" defer></script>
 
 <?php include("includes/footer.php"); ?>

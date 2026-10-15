@@ -244,6 +244,8 @@ section { padding-block: 56px; }
 @media (prefers-reduced-motion: reduce) {
   .sketch.en-scene .vu, .sketch.en-scene .replique-chute.vu mark, .sketch.en-scene .sketch-decoupage.vu { animation: none; }
 }
+.entree-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 16px; }
+.fiche-partager { margin-top: 16px; }
 .archives { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
 .feuilleter { scroll-margin-top: 16px; }
 .sommaire { margin-top: 28px; border: var(--bord); background: var(--carte); padding: 12px 20px; }

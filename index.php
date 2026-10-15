@@ -35,6 +35,7 @@ include("includes/header.php");
     </p>
     <span class="tampon" aria-hidden="true">Validé</span>
     <p class="fiche-pied mono">Offert. Non remboursable.</p>
+    <button class="btn btn-clair btn-petit fiche-partager" type="button" data-partager="conseil" data-source=".hero .fiche" hidden>Partager ce conseil</button>
   </article>
 </section>
 
@@ -81,5 +82,6 @@ include("includes/header.php");
 
 <script src="js/mot-du-jour.js" defer></script>
 <script src="js/sketch.js" defer></script>
+<script src="js/partage.js" defer></script>
 
 <?php include("includes/footer.php"); ?>
