@@ -259,6 +259,31 @@ section { padding-block: 56px; }
 .sommaire-sketch { color: var(--encre-douce); font-size: .9rem; }
 .pied-lien { font-weight: 600; }
 
+/* ---------- Le guichet ---------- */
+.visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.guichet { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: start; }
+.guichet-ecran { grid-row: span 2; background: var(--encre); color: var(--surligneur); border: var(--bord); box-shadow: var(--ombre); padding: 28px; text-align: center; }
+.guichet-ecran-titre { margin: 0; color: var(--papier); text-transform: uppercase; letter-spacing: .14em; }
+.guichet-numero { font: 500 clamp(4rem, 14vw, 8.5rem)/1 var(--mono); margin: 16px 0; letter-spacing: .06em; }
+.guichet-numero.clignote { animation: clignote 900ms steps(2, start) 2; }
+@keyframes clignote { 50% { opacity: .25; } }
+.carte-guichet { position: relative; background: var(--carte); border: var(--bord); box-shadow: var(--ombre); padding: 24px 28px; }
+.guichet-ticket-titre { margin: 0; text-transform: uppercase; letter-spacing: .12em; color: var(--encre-douce); }
+.guichet-mon-numero { font: 400 3.4rem/1.1 var(--titre); margin: 6px 0 14px; }
+.guichet-infos { display: grid; gap: 10px; margin: 0 0 20px; }
+.guichet-infos dt { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--encre-douce); }
+.guichet-infos dd { margin: 0; font-weight: 600; }
+.guichet-tampon { position: absolute; right: 20px; bottom: 22px; margin: 0; padding: 6px 14px; border: 3px double var(--tampon); color: var(--tampon);
+  font: 500 1.1rem var(--mono); letter-spacing: .18em; text-transform: uppercase; transform: rotate(-9deg); }
+.guichet-ferme-texte { font-weight: 600; margin: 0; }
+.guichet-annonces h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .12em; margin: 0 0 10px; color: var(--encre-douce); }
+.guichet-journal { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.guichet-journal li { padding: 8px 12px; background: var(--carte); border-left: 4px solid var(--surligneur); }
+.guichet-journal li:first-child { font-weight: 600; }
+.guichet-journal .mono { color: var(--encre-douce); margin-right: 6px; }
+@media (max-width: 760px) { .guichet { grid-template-columns: 1fr; } .guichet-ecran { grid-row: auto; } }
+@media (prefers-reduced-motion: reduce) { .guichet-numero.clignote { animation: none; } }
+
 /* ---------- Application mobile ---------- */
 .installation-etat { font-weight: 600; min-height: 1.5em; margin-top: 16px; }
 .installation-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }

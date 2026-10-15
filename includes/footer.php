@@ -4,6 +4,7 @@
     <img src="assets/logo.svg" alt="ConseilPlus+" width="190" height="45">
     <p class="mono">Aucun conseil délivré par ConseilPlus+ ne doit être suivi. Sérieusement.</p>
     <a class="pied-lien" href="petit-moyen.php">Le Petit Moyen, dictionnaire officieux</a>
+    <a class="pied-lien" href="guichet.php">Le guichet</a>
     <a class="pied-lien" href="application.php">L'application mobile</a>
   </div>
 </footer>
