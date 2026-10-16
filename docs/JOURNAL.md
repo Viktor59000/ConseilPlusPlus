@@ -65,6 +65,11 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
   À faire par l'utilisateur dans la console Aiven (voir `docs/DEPLOIEMENT.md`, « En cas de souci »).
 - Page d'erreur de base de données sécurisée : plus d'adresse ni de message MySQL affichés, code 503
   (le workflow de réveil détecte désormais la panne), réponse JSON pour l'API.
+- Aiven rallumé par l'utilisateur : service en *Rebuilding* (reconstruction depuis la sauvegarde) pendant plus d'une heure.
+- Alternative étudiée : base MySQL sur le panneau Pterodactyl d'Echo-Host (serveur du bot « Oni bot », compte d'un tiers).
+  Code adapté (pas besoin du droit CREATE DATABASE, identifiants propres au Bureau), mais la création de base
+  échoue côté Echo-Host (erreur serveur, puis limite 429) : aucune base créée, à voir avec leur support.
+- `reveil.yml` : passage toutes les 6 h (garde la base Aiven active), notification seulement à la passe du matin.
 
 ### 15/10/2026 — Second PC
 - Envoi d'emails du Bureau vérifié en ligne (Brevo).

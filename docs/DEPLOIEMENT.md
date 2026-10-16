@@ -51,6 +51,9 @@ Le site reste sur Render : seule la base change.
 4. Render redéploie seul ; les tables se créent au premier chargement (le code accepte de ne pas avoir le droit
    de créer la base elle-même).
 
+Essai du 16/10 sur Echo-Host : la création de base renvoie une erreur serveur (« An unexpected error »),
+probablement aucun serveur MySQL rattaché à l'offre bot Discord. Demander au support d'Echo-Host avant de réessayer.
+
 À savoir : la connexion n'est pas chiffrée (pas de TLS sur ce type de base) et la base suit la vie de l'abonnement
 du serveur (renouvellement mensuel).
 
@@ -59,8 +62,9 @@ du serveur (renouvellement mensuel).
 - **Render** : le site s'endort après 15 min sans visite ; la visite suivante attend environ une minute.
   Les sessions sont effacées à chaque endormissement ou déploiement (il faut parfois se reconnecter ;
   comptes et carnets restent en base).
-- **Aiven** : une base gratuite inactive peut être éteinte. La visite quotidienne (`reveil.yml`) l'évite ;
-  si cela arrive quand même, la rallumer depuis la console Aiven (*Power on*).
+- **Aiven** : une base gratuite inactive est éteinte automatiquement. `reveil.yml` visite le site toutes les 6 h
+  (une seule visite par jour n'a pas suffi le 16/10) ; si cela arrive quand même, la rallumer depuis la console Aiven
+  (*Power on*) : la reconstruction depuis la sauvegarde peut prendre longtemps (état *Rebuilding*).
 - **Aiven** : 1 Go de stockage, largement suffisant.
 
 ## En cas de souci
