@@ -1,0 +1,63 @@
+# Tests automatiques à chaque push : syntaxe de tous les fichiers PHP, puis le site lancé avec une vraie base MySQL
+# (pages, API, chiffrement Web Push). Un échec est signalé par GitHub (croix rouge + courriel), avant la mise en ligne.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: tests
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping -ptests" --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: '3306'
+      DB_USER: root
+      DB_PASS: tests
+      DB_NAME: site
+      API_KEY: cle-de-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, intl, openssl, curl
+
+      - name: Syntaxe PHP
+        run: |
+          find . -name '*.php' -not -path './android/*' -print0 | xargs -0 -n1 php -l > /dev/null
+
+      - name: Configuration (comme sur Render)
+        run: |
+          cp db.example.php db.php
+          cp config.example.php config.php
+          cp bureau/config.example.php bureau/config.php
+
+      - name: Lancer le site
+        run: |
+          php -S 127.0.0.1:8000 -t . > serveur.log 2>&1 &
+          for i in $(seq 1 30); do curl -s -o /dev/null http://127.0.0.1:8000/index.php && break; sleep 1; done
+
+      - name: Pages
+        run: php tests/test_pages.php http://127.0.0.1:8000
+
+      - name: API
+        run: php tests/test_api.php http://127.0.0.1:8000
+
+      - name: Web Push
+        run: php tests/test_push.php
+
+      - name: Journal du serveur (en cas d'échec)
+        if: failure()
+        run: cat serveur.log
