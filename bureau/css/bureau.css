@@ -10,7 +10,7 @@ code { font: 500 .85em var(--mono); background: var(--surface-2); padding: 1px .
 /* En-tête : barre translucide, comme sur le site */
 .entete { position: sticky; top: 0; z-index: 10; background: var(--verre); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid var(--filet); }
 @media (prefers-reduced-transparency: reduce) { .entete { background: var(--fond); -webkit-backdrop-filter: none; backdrop-filter: none; } }
-.entete-in { max-width: 1200px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; min-height: 60px; }
+.entete-in { max-width: 1200px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; min-height: 60px; }
 .marque { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--encre); border-radius: 6px; }
 .marque .logo-svg { height: 36px; }
 .marque-nom { font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; padding-left: 12px; border-left: 1px solid var(--filet); }
