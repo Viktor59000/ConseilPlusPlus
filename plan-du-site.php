@@ -49,6 +49,7 @@ include("includes/header.php");
     <h2 id="plan-pratique">Pratique</h2>
     <ul>
       <li><a href="application.php">L'application mobile</a></li>
+      <li><a href="developpeurs.php">L'API du cabinet (documentation pour développeurs)</a></li>
       <li><a href="accessibilite.php">Accessibilité</a></li>
       <li><a href="mentions-legales.php">Mentions légales</a></li>
       <li><a href="confidentialite.php">Confidentialité</a></li>

@@ -10,7 +10,7 @@ $pages = [
     'index.php' => 200, 'cabinet.php' => 200, 'petit-moyen.php' => 200, 'produit.php' => 200, 'guichet.php' => 200,
     'contact.php' => 200, 'login.php' => 200, 'application.php' => 200, 'plan-du-site.php' => 200,
     'accessibilite.php' => 200, 'mentions-legales.php' => 200, 'confidentialite.php' => 200,
-    'mot-de-passe-oublie.php' => 200, 'reinitialiser.php' => 200, 'erreur-404.php' => 404,
+    'mot-de-passe-oublie.php' => 200, 'developpeurs.php' => 200, 'reinitialiser.php' => 200, 'erreur-404.php' => 404,
     // pages réservées : redirection vers la connexion
     'conseil.php' => 302, 'carnet.php' => 302, 'compte.php' => 302, 'duel.php' => 302, 'bureau/statistiques.php' => 302,
     // API publique et API protégée

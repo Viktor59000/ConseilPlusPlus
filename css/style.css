@@ -503,6 +503,37 @@ kbd { font-family: var(--mono); font-size: .85em; padding: 1px 7px; border: 1px 
 
 .piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
+/* ---------- Documentation de l'API (developpeurs.php) ---------- */
+.api-fiche { display: grid; gap: 0; margin: 0; background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); overflow: hidden; }
+.api-fiche div { display: grid; grid-template-columns: minmax(140px, 220px) minmax(0, 1fr); gap: 8px 24px; padding: 16px 24px; border-bottom: 1px solid var(--filet); }
+.api-fiche div:last-child { border-bottom: 0; }
+.api-fiche dt { font-weight: 650; }
+.api-fiche dd { margin: 0; color: var(--encre-2); }
+.api-groupe { padding-block: clamp(32px, 5vw, 56px) 0; }
+.api-groupe h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); }
+.endpoint { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 24px 28px; margin-top: 18px; }
+.endpoint-entete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 10px; }
+.endpoint-entete h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; font-size: 1.1rem; }
+.endpoint-entete h3 code { font: 500 1rem var(--mono); overflow-wrap: anywhere; }
+.endpoint > p { color: var(--encre-2); }
+.methode, .acces, .code { display: inline-block; padding: 3px 10px; border-radius: 999px; font: 700 .74rem var(--mono); letter-spacing: .06em; white-space: nowrap; }
+.methode { background: var(--surface-2); color: var(--encre); }
+.methode-post { background: var(--jaune); color: var(--encre-fixe); }
+.methode-patch, .methode-delete { background: transparent; color: var(--rouge); box-shadow: inset 0 0 0 1.5px var(--rouge); }
+.acces { background: var(--surface-2); color: var(--encre-2); }
+.acces-cle { color: var(--rouge); box-shadow: inset 0 0 0 1.5px var(--rouge); background: transparent; }
+.acces-session { background: var(--jaune); color: var(--encre-fixe); }
+.endpoint-liste { margin: 14px 0 0; display: grid; gap: 6px; }
+.endpoint-liste div { display: grid; grid-template-columns: minmax(90px, 200px) minmax(0, 1fr); gap: 4px 16px; align-items: baseline; }
+.endpoint-liste dd { margin: 0; color: var(--encre-2); }
+.endpoint-liste code { font: 500 .88rem var(--mono); }
+.code { background: var(--fond-ok); color: var(--ok); }
+.code-4xx, .code-5xx { background: var(--fond-erreur); color: var(--rouge); }
+.essai { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--filet); display: grid; gap: 10px; justify-items: start; }
+.essai-curl { font: 500 .85rem var(--mono); color: var(--encre-2); overflow-wrap: anywhere; }
+.essai-resultat { width: 100%; max-height: 340px; overflow: auto; margin: 0; padding: 16px 18px; border-radius: var(--rayon-petit); background: #0A0D18; color: #E6E9F2; font: 500 .82rem/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; animation: apparition 300ms var(--ressort); }
+@media (max-width: 560px) { .api-fiche div, .endpoint-liste div { grid-template-columns: minmax(0, 1fr); } .endpoint { padding: 20px; } }
+
 /* ---------- Plan du site, accessibilité ---------- */
 .texte-long { max-width: 72ch; }
 .texte-long h2 { margin-top: 1.8em; font-size: 1.6rem; }

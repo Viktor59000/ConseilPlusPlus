@@ -62,6 +62,12 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 
 ## Historique des sessions
 
+### 16/10/2026 — PC principal (README, documentation de l'API)
+- Page publique **L'API du cabinet** (`developpeurs.php`) : 17 endpoints décrits, « Essayer » en direct sur les GET publics.
+- README réécrit : captures (`docs/captures/`), schéma d'architecture (Mermaid), tableau de l'API, technique, installation,
+  **déroulé de soutenance en 5 minutes** et questions à préparer.
+- Rappel : `GROQ_API_KEY` absente dans Render, donc l'IA tourne en secours en ligne (à ajouter avec la nouvelle clé).
+
 ### 16/10/2026 — PC principal (sécurité, tests, Bureau)
 - Sécurité sans toucher à `auth/` : cookies de session protégés, HSTS, CSP (empreinte du script du thème), X-Frame-Options,
   Permissions-Policy, limite des essais de connexion / inscription (vérifiée : 11e essai refusé). Contrôlé en ligne.
