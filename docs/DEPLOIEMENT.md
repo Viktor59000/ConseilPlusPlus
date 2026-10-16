@@ -1,7 +1,8 @@
-# Mise en ligne — Render + Aiven
+# Mise en ligne — Render + TiDB Cloud
 
 Le site tourne en ligne sur **Render** (PHP 8.3 + Apache, dans un conteneur Docker), avec une base MySQL
-hébergée par **Aiven**. Les deux offres sont gratuites et sans carte bancaire.
+hébergée par **TiDB Cloud Serverless** (compatible MySQL, région Francfort). Les deux offres sont gratuites et
+sans carte bancaire. (Jusqu'au 16/10, la base était chez Aiven : éteinte faute d'activité, voir plus bas.)
 
 ## Mise à jour automatique
 
@@ -16,26 +17,30 @@ en 2 à 4 minutes.
 | `Dockerfile` | Image PHP 8.3 + Apache, extensions `pdo_mysql` et `intl`, copie `db.example.php` et `config.example.php` |
 | `docker/apache.conf` | IP réelle du visiteur derrière le proxy Render, HTTPS, dossiers internes bloqués |
 | `.dockerignore` | Exclut `db.php`, `config.php`, `.git`, `tests` de l'image |
-| `certs/aiven-ca.pem` | Certificat **public** de la base Aiven (connexion chiffrée vérifiée) |
+| `certs/aiven-ca.pem` | Ancien certificat Aiven (inutile avec TiDB, qui utilise les autorités du système) |
+| `includes/courriel.php` | Gabarit HTML des courriels (logo, signature, tampon) et envoi par l'API Brevo |
+| `assets/email/` | Logo et icône PNG des courriels (servis par le site en ligne) |
 | `.github/workflows/reveil.yml` | Visite quotidienne du site (garde la base active, prépare le mot du lendemain) |
 
 ## Variables d'environnement (Render → conseilplus → Environment)
 
 | Variable | Valeur | Secret |
 |---|---|---|
-| `DB_HOST` | `mysql-1f33b105-lechti-2651.l.aivencloud.com` | non |
-| `DB_PORT` | `17075` | non |
-| `DB_NAME` | `defaultdb` | non |
-| `DB_USER` | `avnadmin` | non |
-| `DB_SSL_CA` | `certs/aiven-ca.pem` | non |
-| `DB_PASS` | mot de passe Aiven (console Aiven → service → Password) | **oui** |
+| `DB_HOST` | `gateway01.eu-central-1.prod.aws.tidbcloud.com` | non |
+| `DB_PORT` | `4000` | non |
+| `DB_NAME` | `site` (Le Bureau crée et utilise `gestion` sur le même serveur) | non |
+| `DB_USER` | `4UjHJ89hDwKrPSe.root` | non |
+| `DB_SSL_CA` | `/etc/ssl/certs/ca-certificates.crt` (TLS obligatoire chez TiDB) | non |
+| `DB_PASS` | mot de passe TiDB (console TiDB → cluster → *Connect* → *Generate Password*) | **oui** |
 | `API_KEY` | clé du logiciel de gestion (bouton *Generate* de Render) | **oui** |
 | `GROQ_API_KEY` | clé Groq (facultative : sans elle, générateurs locaux) | **oui** |
+| `BREVO_API_KEY` | clé API Brevo (Brevo → SMTP et API → Clés API) : accusés de réception + réponses du Bureau | **oui** |
+| `BUREAU_EXPEDITEUR` | `conseilplusplus@gmail.com` (expéditeur vérifié dans Brevo) | non |
 
 Les secrets ne vont **jamais** dans Git ni dans une conversation : ils sont saisis directement dans Render.
 Modifier une variable redéploie le site automatiquement.
 
-## Alternative à Aiven : base MySQL sur un panneau Pterodactyl (ex. Echo-Host)
+## Autre alternative : base MySQL sur un panneau Pterodactyl (ex. Echo-Host)
 
 Une base créée depuis l'onglet **Databases** d'un panneau Pterodactyl reste toujours allumée (pas de mise en veille).
 Le site reste sur Render : seule la base change.
@@ -62,16 +67,19 @@ du serveur (renouvellement mensuel).
 - **Render** : le site s'endort après 15 min sans visite ; la visite suivante attend environ une minute.
   Les sessions sont effacées à chaque endormissement ou déploiement (il faut parfois se reconnecter ;
   comptes et carnets restent en base).
-- **Aiven** : une base gratuite inactive est éteinte automatiquement. `reveil.yml` visite le site toutes les 6 h
-  (une seule visite par jour n'a pas suffi le 16/10) ; si cela arrive quand même, la rallumer depuis la console Aiven
-  (*Power on*) : la reconstruction depuis la sauvegarde peut prendre longtemps (état *Rebuilding*).
-- **Aiven** : 1 Go de stockage, largement suffisant.
+- **TiDB Cloud Serverless** : 5 Go de stockage et un quota mensuel de « Request Units », très au-dessus des besoins.
+  Pas d'extinction pour inactivité. `reveil.yml` visite quand même le site toutes les 6 h (mot du jour, notification).
+- **Brevo** : 300 courriels par jour. L'expéditeur est une adresse Gmail : Brevo prévient qu'un domaine « freemail »
+  peut finir en indésirables (DMARC). Un nom de domaine à soi réglerait ça.
+- **Ancienne base Aiven** : éteinte automatiquement faute d'activité le 16/10, bloquée en *Rebuilding*. Les données
+  d'avant (comptes, carnets, dossiers du Bureau) y sont restées ; à migrer vers TiDB si elle revient.
 
 ## En cas de souci
 
 | Problème | Piste |
 |---|---|
 | Déploiement en échec | Render → conseilplus → *Logs* (erreur de construction Docker) |
-| Page « Guichet momentanément fermé » (erreur 503) | Base injoignable : console Aiven → service MySQL → *Power on* s'il est éteint. Si le service a disparu, en recréer un (MySQL, offre Free) et reporter `DB_HOST`, `DB_PORT`, `DB_PASS` dans Render. Le détail exact est dans Render → *Logs* (« base de données indisponible ») |
+| Page « Guichet momentanément fermé » (erreur 503) | Base injoignable : console TiDB Cloud → vérifier que le cluster est actif ; si le mot de passe a été régénéré, le reporter dans `DB_PASS` (Render). Le détail exact est dans Render → *Logs* (« base de données indisponible ») |
 | Le workflow *Réveil quotidien* échoue (e-mail de GitHub) | Même cause probable : le site répond 503 quand la base est injoignable |
 | Le site met une minute à s'afficher | Normal après 15 min d'inactivité (offre gratuite) |
+| Aucun courriel reçu après le formulaire de contact | `BREVO_API_KEY` / `BUREAU_EXPEDITEUR` dans Render ; Brevo → *Statistiques* → *Transactionnel* ; dossier Indésirables. Au plus 2 accusés par adresse et par jour |

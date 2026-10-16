@@ -3,10 +3,10 @@
 Mis à jour par Claude à la fin de chaque session (et avant chaque changement de PC).
 L'entrée la plus récente est en haut de l'historique.
 
-## État actuel (14/10/2026)
+## État actuel (16/10/2026)
 
 Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pages (profil mobile).
-**En ligne** sur https://conseilplus.onrender.com (Render gratuit + MySQL Aiven gratuit), redéployé à chaque push
+**En ligne** sur https://conseilplus.onrender.com (Render gratuit + TiDB Cloud Serverless gratuit), redéployé à chaque push
 (`docs/DEPLOIEMENT.md`).
 
 - **Pages publiques** : accueil (conseil du jour + mot du jour), formules, contact (passe par l'API), espace client, Le Petit Moyen.
@@ -36,8 +36,11 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 
 ## Points ouverts
 
-- **Base Aiven injoignable depuis le 16/10** (DNS inexistant) : rallumer le service ou en recréer un, puis mettre à jour
-  les variables Render. Tant que ce n'est pas fait, le site en ligne affiche « Guichet momentanément fermé ».
+- **Anciennes données sur Aiven** (comptes, carnets, historique des mots, dossiers du Bureau) : base bloquée en
+  *Rebuilding* depuis le 16/10. Le site tourne sur une base TiDB neuve ; migrer les données si Aiven revient.
+- **Courriels** : tester en ligne l'accusé de réception (formulaire de contact) et une réponse du Bureau une fois la
+  nouvelle clé Brevo en place.
+- `data/cadres.php` : accords au masculin avec des objets féminins (« votre trottinette se sente moins seul ») à neutraliser.
 - Fichier `android/app/conseilplus.p12` versionné avec son mot de passe en clair dans `build.gradle.kts` :
   acceptable pour des APK partagés à la main, **pas pour le Play Store** (créer alors une clé secrète hors dépôt).
 
@@ -50,8 +53,8 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
   `CONSIGNE_SKETCH` dans `includes/mot-du-jour.php` si besoin.
 - `db.php`, `config.php` et `bureau/config.php` ne sont pas dans Git : à recréer sur chaque PC (`docs/REPRISE.md`,
   `docs/BUREAU.md`). Pour l'envoi d'emails en local, mettre `BREVO_API_KEY` / `BUREAU_EXPEDITEUR` dans `bureau/config.php`.
-- **Clé Brevo** : elle a transité par la conversation ; la régénérer dans Brevo et la remplacer dans Render à l'occasion.
-  Variables Render ajoutées par l'utilisateur : `BREVO_API_KEY`, `BUREAU_EXPEDITEUR` (59.lechti@gmail.com, expéditeur vérifié).
+- **Brevo** : nouveau compte dédié au cabinet (`conseilplusplus@gmail.com`, expéditeur vérifié). Clé API à créer par l'utilisateur et à
+  coller dans Render (`BREVO_API_KEY`), `BUREAU_EXPEDITEUR` = `conseilplusplus@gmail.com`.
 - Transcriptions des « Mots » : 49/54 analysées ; calembours non relevés pour Séquestration, Chauvinisme, Portatif,
   Sarcasme, Castagnettes (`calembours_emission` vide pour ces mots). Transcriptions dans les conversations Gemini de
   l'utilisateur, jamais dans le dépôt.
@@ -59,6 +62,13 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 ## Historique des sessions
 
 ### 16/10/2026 — PC principal
+- **Nouvelle base : TiDB Cloud Serverless** (Francfort, port 4000, TLS) à la place d'Aiven ; variables Render mises à
+  jour (`docs/DEPLOIEMENT.md`). Site et Bureau de nouveau en ligne, tables recréées vides.
+- **Courriels du cabinet** : `includes/courriel.php` (gabarit HTML compatible messageries : logo PNG, cartouche
+  « Dossier n° », signature avec adresse absurde et tampon rouge), partagé par le site et Le Bureau.
+  Accusé de réception automatique du formulaire de contact (2 max par adresse et par jour).
+  Aperçu local : `tests/apercu-courriel.php?type=accuse` / `?type=reponse`.
+- Nouvelle adresse du cabinet `conseilplusplus@gmail.com` et compte Brevo dédié (créés par l'utilisateur).
 - Pull des 22 commits du second PC (Bureau, mise en ligne, appli Android, partage, guichet, votes, notifications).
 - Mise à niveau locale : `db.php` recopié depuis `db.example.php` (nouvelles tables), `bureau/config.php` créé.
 - **Panne en ligne** : le nom d'hôte Aiven (`DB_HOST`) n'existe plus dans le DNS → service MySQL Aiven éteint ou supprimé.
