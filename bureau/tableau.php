@@ -91,4 +91,22 @@ include("includes/haut.php");
 <?php endif; ?>
   </section>
 </div>
+
+<section class="carte sauvegarde" aria-labelledby="titre-sauvegarde">
+  <div>
+    <h2 id="titre-sauvegarde">Sauvegardes</h2>
+    <p class="aide">Un fichier .sql complet (tables et données), à garder en lieu sûr : il contient les adresses email
+      et les mots de passe chiffrés. Pour le réimporter : phpMyAdmin → base vide → Importer.</p>
+  </div>
+  <div class="actions">
+    <form method="post" action="export.php">
+      <?= csrf_champ() ?>
+      <button class="btn btn-tampon" name="base" value="site" type="submit">Télécharger la base du site</button>
+    </form>
+    <form method="post" action="export.php">
+      <?= csrf_champ() ?>
+      <button class="btn" name="base" value="gestion" type="submit">Télécharger la base du Bureau</button>
+    </form>
+  </div>
+</section>
 <?php include("includes/bas.php"); ?>

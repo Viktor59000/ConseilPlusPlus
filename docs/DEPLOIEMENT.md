@@ -86,6 +86,10 @@ du serveur (renouvellement mensuel).
 
 ## Exporter (sauvegarder) les bases
 
+**Le plus simple** : Le Bureau (en local ou en ligne) → tableau de bord → carte « Sauvegardes » →
+« Télécharger la base du site » ou « Télécharger la base du Bureau ». Le fichier `.sql` se réimporte avec
+phpMyAdmin (base vide → *Importer*). Les méthodes ci-dessous restent utiles sans accès au Bureau.
+
 Deux bases : `site` (comptes, contacts, carnets, mots du jour…) et `gestion` (Le Bureau). Le mot de passe est toujours
 demandé par `-p` (jamais écrit dans la commande, il resterait dans l'historique).
 

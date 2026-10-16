@@ -107,3 +107,9 @@ textarea { line-height: 1.5; resize: vertical; }
 @keyframes apparition { from { opacity: 0; transform: translateY(10px); } }
 .chiffres .chiffre:nth-child(2) { animation-delay: 60ms; } .chiffres .chiffre:nth-child(3) { animation-delay: 120ms; } .chiffres .chiffre:nth-child(4) { animation-delay: 180ms; }
 .entete-in .theme-bouton { order: 5; }
+
+/* Sauvegardes (tableau de bord) */
+.sauvegarde { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; margin-top: 24px; }
+.sauvegarde > div:first-child { max-width: 56ch; }
+.sauvegarde .actions { margin-top: 0; }
+.sauvegarde form { margin: 0; }

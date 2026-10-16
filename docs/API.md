@@ -86,6 +86,14 @@ au premier appel et gardées dans la table `reglages`. Seuls les services de not
 Windows) sont acceptés. L'envoi part au plus une fois par jour ; il est déclenché chaque matin par `reveil.yml`.
 Test : `php tests/test_push.php`.
 
+## Sauvegarde — `api/export.php`
+
+| Méthode | Paramètres | Réponse |
+|---|---|---|
+| `GET` (clé requise) | — | `200 { base, fichier, sql }` : toute la base du site en SQL (structure + données) |
+
+Utilisé par le bouton « Télécharger la base du site » du Bureau. Contient des données personnelles : clé obligatoire.
+
 ## Exemples (curl)
 
 ```bash

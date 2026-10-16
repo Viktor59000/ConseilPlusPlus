@@ -34,6 +34,13 @@ Sans ces réglages, « Archiver et classer » garde la réponse dans le dossier 
 (adresse invalide, quota atteint), le dossier reste ouvert avec la réponse enregistrée, pour réessayer.
 Colonne `envoi` du dossier : `envoye`, `archive` ou `echec`.
 
+## Sauvegardes
+
+Tableau de bord → carte « Sauvegardes » : un clic télécharge un fichier `.sql` complet.
+- **Base du site** : demandée à l'API (`api/export.php`, clé requise) — le Bureau ne lit toujours pas la base du site.
+- **Base du Bureau** : exportée directement (`bureau/export.php`).
+Réimport : phpMyAdmin → base vide → *Importer*. Testé : réimport sans erreur, données identiques.
+
 ## Base `gestion` (créée automatiquement)
 
 | Table | Rôle |

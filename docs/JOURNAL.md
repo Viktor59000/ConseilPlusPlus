@@ -62,6 +62,10 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 
 ## Historique des sessions
 
+### 16/10/2026 — PC principal (sauvegardes)
+- Boutons « Télécharger la base du site / du Bureau » dans le tableau de bord du Bureau (`bureau/export.php`,
+  `api/export.php` avec clé, `includes/export-sql.php` : export en PHP pur, sans mysqldump). Réimport testé.
+
 ### 16/10/2026 — PC principal (refonte « La note »)
 - L'utilisateur a jugé la refonte « Apple » trop fade : nouvelle identité complète avec le skill `logo-design`
   (3 pistes, choix A « La note » : C+ entouré au stylo rouge). Kit dans `branding/`, icônes web, PNG des courriels.
