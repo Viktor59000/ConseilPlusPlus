@@ -5,6 +5,7 @@
 // Attributs d'un bouton :
 //   data-partager="conseil" data-source="#id"   → lit le conseil affiché dans l'élément (il peut changer)
 //   data-partager="mot" data-mot data-nature data-texte data-detail data-url   → une entrée du Petit Moyen
+//   data-partager="texte" data-titre data-texte data-detail data-etiquette data-url data-nom   → générique (test, horoscope…)
 
 const SITE = 'conseilplus.onrender.com';
 const COULEURS = { papier: '#F5F6FA', carte: '#FFFFFF', encre: '#1B2440', douce: '#525A73', filet: '#DDE1EC', seyes: '#D9E1F7', marge: '#F3AEB5', tampon: '#C8102E', surligneur: '#FFE14D' };
@@ -146,6 +147,22 @@ function contenu(bouton) {
     };
   }
   const d = bouton.dataset;
+  if (d.partager === 'texte') {
+    // Générique (test, horoscope…) : data-titre, data-texte, data-detail, data-etiquette, data-url, data-nom
+    const blocsTexte = [
+      { texte: d.titre, police: `800 84px ${SANS}`, interligne: 100, espaceAvant: 30, surligne: true },
+      { texte: d.texte, police: `600 54px ${SANS}`, interligne: 76, espaceAvant: 36 },
+    ];
+    if (d.detail) blocsTexte.push({ texte: d.detail, police: `italic 400 44px ${SANS}`, interligne: 62, espaceAvant: 30, couleur: COULEURS.douce });
+    return {
+      nom: `conseilplus-${d.nom || 'partage'}.png`,
+      titre: `${d.titre} — ConseilPlus+`,
+      texte: `${d.titre} : ${d.texte} — ConseilPlus+, le conseiller moyen.`,
+      url: new URL(d.url || './', location.href).href,
+      etiquette: d.etiquette || 'ConseilPlus+',
+      blocs: blocsTexte,
+    };
+  }
   const blocs = [
     { texte: d.mot, police: `800 112px ${SANS}`, interligne: 130, espaceAvant: 30, surligne: true },
     { texte: d.nature, police: `italic 400 44px ${SANS}`, interligne: 64, couleur: COULEURS.douce },

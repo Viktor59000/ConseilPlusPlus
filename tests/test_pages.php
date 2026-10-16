@@ -7,7 +7,7 @@
  */
 $base = rtrim($argv[1] ?? 'http://localhost/Site', '/');
 $pages = [
-    'index.php' => 200, 'cabinet.php' => 200, 'petit-moyen.php' => 200, 'produit.php' => 200, 'guichet.php' => 200, 'messmerde.php' => 200,
+    'index.php' => 200, 'cabinet.php' => 200, 'petit-moyen.php' => 200, 'produit.php' => 200, 'guichet.php' => 200, 'messmerde.php' => 200, 'standard.php' => 200, 'diagnostic.php' => 200,
     'contact.php' => 200, 'login.php' => 200, 'application.php' => 200, 'plan-du-site.php' => 200,
     'accessibilite.php' => 200, 'mentions-legales.php' => 200, 'confidentialite.php' => 200,
     'mot-de-passe-oublie.php' => 200, 'developpeurs.php' => 200, 'reinitialiser.php' => 200, 'erreur-404.php' => 404,

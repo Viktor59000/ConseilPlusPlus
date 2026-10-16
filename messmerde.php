@@ -5,6 +5,8 @@
  * (js/messmerde.js) ; sans JavaScript, Messmerde l'avait évidemment prévu.
  */
 session_start();
+require("includes/horoscope.php");
+$horoscope = horoscope_du_jour();
 
 $titre = 'Les expériences de Messmerde';
 $description = "Messmerde, mentaliste du cabinet ConseilPlus+, lit dans vos pensées avec une précision moyenne : une vingtaine d'expériences, un interrogatoire, que des évidences.";
@@ -55,5 +57,26 @@ include("includes/header.php");
   </aside>
 </section>
 
+<section class="conteneur" aria-labelledby="titre-horoscope" id="horoscope">
+  <p class="etiquette">Prédictions du jour</p>
+  <h2 id="titre-horoscope">L'horoscope de Messmerde</h2>
+  <p class="chapo">Chaque matin, Messmerde consulte les astres, puis le calendrier. Ses prédictions se réalisent toutes : il n'en fait que de sûres.</p>
+  <ul class="horoscope">
+<?php foreach ($horoscope as $s): ?>
+    <li class="signe">
+      <p class="signe-symbole" aria-hidden="true"><?= $s['symbole'] ?></p>
+      <h3><?= htmlspecialchars($s['nom']) ?> <span class="signe-dates mono"><?= htmlspecialchars($s['dates']) ?></span></h3>
+      <p class="signe-prediction"><?= htmlspecialchars($s['prediction']) ?></p>
+      <p class="signe-infos mono">Chiffre : <?= $s['chiffre'] ?> · Couleur : <?= htmlspecialchars($s['couleur']) ?></p>
+      <button type="button" class="btn btn-clair btn-petit" hidden data-partager="texte" data-nom="horoscope-<?= $s['cle'] ?>"
+        data-titre="<?= htmlspecialchars($s['symbole'] . ' ' . $s['nom']) ?>" data-texte="<?= htmlspecialchars($s['prediction']) ?>"
+        data-detail="Chiffre porte-bonheur : <?= $s['chiffre'] ?>. Couleur : <?= htmlspecialchars($s['couleur']) ?>."
+        data-etiquette="L'horoscope de Messmerde — <?= date('d/m/Y') ?>" data-url="messmerde.php#horoscope">Partager</button>
+    </li>
+<?php endforeach; ?>
+  </ul>
+</section>
+
 <script src="<?= fichier_versionne('js/messmerde.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
 <?php include("includes/footer.php"); ?>

@@ -457,6 +457,58 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 @media (max-width: 760px) { .messmerde { grid-template-columns: minmax(0, 1fr); } .credibilite { position: static; } .experience { padding: 28px 24px 32px; } .experience-tampon { top: auto; bottom: 20px; } }
 @media (prefers-reduced-motion: reduce) { .experience-tampon.tampon-anime, .experience-revelation.concentre, .experience.nouvelle, .credibilite.monte .credibilite-valeur { animation: none; } }
 
+/* L'horoscope de Messmerde */
+.horoscope { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); gap: 18px; }
+.signe { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 22px 24px; display: grid; align-content: start; gap: 8px; }
+.signe-symbole { margin: 0; font-size: 2rem; line-height: 1; color: var(--rouge); }
+.signe h3 { margin: 0; font-size: 1.2rem; }
+.signe-dates { display: block; margin-top: 4px; font-size: .78rem; color: var(--encre-2); font-weight: 500; }
+.signe-prediction { margin: 0; font-weight: 600; }
+.signe-infos { margin: 0; font-size: .8rem; color: var(--encre-2); }
+.signe .btn { justify-self: start; margin-top: 6px; }
+
+/* ---------- Le diagnostic « Quel client êtes-vous ? » ---------- */
+.diagnostic { display: grid; gap: 18px; max-width: 760px; }
+.diagnostic-question { margin: 0; border: 0; background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 22px 26px; display: grid; gap: 6px; }
+.diagnostic-question legend { float: left; width: 100%; padding: 0; margin-bottom: 8px; font-weight: 700; font-size: 1.15rem; }
+.diagnostic-question legend .mono { color: var(--rouge); margin-right: 4px; }
+.diagnostic-choix { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 4px 12px; border-radius: var(--rayon-petit); cursor: pointer; }
+.diagnostic-choix:hover { background: var(--surface-2); }
+.diagnostic-choix input { width: 20px; height: 20px; accent-color: var(--rouge); flex: none; }
+.diagnostic-resultat { position: relative; max-width: 760px; background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre-haute); padding: 36px 40px; animation: apparition 400ms var(--ressort); }
+.diagnostic-label { margin: 0; color: var(--encre-2); text-transform: uppercase; letter-spacing: .1em; }
+.diagnostic-resultat h2 { font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 8px 0 14px; }
+.diagnostic-texte { font-size: 1.15rem; max-width: 52ch; }
+.diagnostic-taux { color: var(--encre-2); }
+.diagnostic-tampon { position: absolute; right: 30px; top: 30px; margin: 0; padding: 6px 14px; border: 3px double var(--rouge); border-radius: 8px; color: var(--rouge);
+  font: 700 1rem var(--mono); letter-spacing: .18em; text-transform: uppercase; transform: rotate(7deg); }
+@media (max-width: 760px) { .diagnostic-tampon { position: static; display: inline-block; margin-bottom: 12px; } .diagnostic-resultat { padding: 28px 24px; } }
+
+/* ---------- Le standard téléphonique ---------- */
+.standard { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 32px; align-items: start; }
+.telephone { background: var(--surface); border-radius: 36px; box-shadow: var(--ombre-haute); padding: 24px; }
+.telephone-ecran { background: #0A0D18; color: #E8EBF5; border-radius: 22px; padding: 18px 20px; min-height: 210px; box-shadow: inset 0 0 0 1px #232A45; }
+.telephone-etat { margin: 0 0 10px; color: var(--jaune); display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: .08em; }
+.telephone-message { margin: 0; font-size: 1.05rem; line-height: 1.5; }
+.telephone.en-ligne .telephone-ecran { box-shadow: inset 0 0 0 2px var(--jaune); }
+.clavier { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0; }
+.touche { aspect-ratio: 1.4; border-radius: 999px; border: 1px solid var(--filet); background: var(--fond); color: var(--encre);
+  font: 700 1.6rem var(--mono); cursor: pointer; transition: transform 120ms, background-color 160ms; }
+.touche:hover:not(:disabled) { background: var(--surface-2); }
+.touche:disabled { opacity: .45; cursor: not-allowed; }
+.touche.enfoncee { animation: enfonce 220ms var(--ressort); }
+@keyframes enfonce { 40% { transform: scale(.88); background: var(--jaune); color: var(--encre-fixe); } }
+.telephone-commandes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.standard-option { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 600; cursor: pointer; }
+.standard-option input { width: 20px; height: 20px; accent-color: var(--rouge); }
+.standard-journal h3 { font-size: 1rem; color: var(--encre-2); margin: 0 0 12px; }
+.standard-journal ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.standard-journal li { padding: 10px 14px; background: var(--surface); border-radius: var(--rayon-petit); border-left: 4px solid var(--filet); }
+.standard-journal li.journal-vous { border-left-color: var(--jaune); font-weight: 650; }
+.standard-ferme { font-weight: 600; }
+@media (max-width: 860px) { .standard { grid-template-columns: minmax(0, 1fr); } .telephone { max-width: 420px; } }
+@media (prefers-reduced-motion: reduce) { .touche.enfoncee { animation: none; } }
+
 /* ---------- Application mobile ---------- */
 .installation-etat { font-weight: 600; min-height: 1.5em; margin-top: 16px; }
 .installation-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 24px; }

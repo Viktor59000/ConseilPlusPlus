@@ -21,6 +21,13 @@ return [
             'parametres' => ['conseils' => 'facultatif, 1 à 20 : une réserve de conseils pour le widget'],
             'reponses' => ['200' => '{ date, mot, nature, ligne1, ligne2, conseil, dossier }']],
     ],
+    'Horoscope' => [
+        ['methode' => 'GET', 'chemin' => '/horoscope.php', 'acces' => 'public', 'essayer' => 'horoscope.php?signe=belier',
+            'role' => "L'horoscope de Messmerde : une prédiction évidente par signe et par jour (la même pour tout le monde).",
+            'parametres' => ['signe' => 'facultatif : belier, taureau, gemeaux, cancer, lion, vierge, balance, scorpion, sagittaire, capricorne, verseau, poissons',
+                'date' => 'facultatif, AAAA-MM-JJ : un jour passé'],
+            'reponses' => ['200' => '{ date, signes[] } ou { date, cle, nom, prediction, chiffre, couleur }', '400' => 'date invalide', '404' => 'signe inconnu ou date future']],
+    ],
     'Votes et notifications' => [
         ['methode' => 'GET', 'chemin' => '/votes.php?palmares=5', 'acces' => 'public', 'essayer' => 'votes.php?palmares=5',
             'role' => 'Les mots les mieux notés par le public.',
