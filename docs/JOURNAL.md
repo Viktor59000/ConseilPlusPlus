@@ -36,6 +36,11 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 
 ## Points ouverts
 
+- **Base Aiven injoignable depuis le 16/10** (DNS inexistant) : rallumer le service ou en recréer un, puis mettre à jour
+  les variables Render. Tant que ce n'est pas fait, le site en ligne affiche « Guichet momentanément fermé ».
+- Fichier `android/app/conseilplus.p12` versionné avec son mot de passe en clair dans `build.gradle.kts` :
+  acceptable pour des APK partagés à la main, **pas pour le Play Store** (créer alors une clé secrète hors dépôt).
+
 - **Régénérer la clé Groq** (elle a transité par une conversation) et la mettre dans `config.php` sur chaque PC
   et dans Render (variable `GROQ_API_KEY`, absente pour l'instant : le site en ligne utilise les générateurs locaux).
 - **Régénérer `API_KEY` dans Render** (bouton *Generate*) : la valeur actuelle a transité par la conversation.
@@ -52,6 +57,14 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
   l'utilisateur, jamais dans le dépôt.
 
 ## Historique des sessions
+
+### 16/10/2026 — PC principal
+- Pull des 22 commits du second PC (Bureau, mise en ligne, appli Android, partage, guichet, votes, notifications).
+- Mise à niveau locale : `db.php` recopié depuis `db.example.php` (nouvelles tables), `bureau/config.php` créé.
+- **Panne en ligne** : le nom d'hôte Aiven (`DB_HOST`) n'existe plus dans le DNS → service MySQL Aiven éteint ou supprimé.
+  À faire par l'utilisateur dans la console Aiven (voir `docs/DEPLOIEMENT.md`, « En cas de souci »).
+- Page d'erreur de base de données sécurisée : plus d'adresse ni de message MySQL affichés, code 503
+  (le workflow de réveil détecte désormais la panne), réponse JSON pour l'API.
 
 ### 15/10/2026 — Second PC
 - Envoi d'emails du Bureau vérifié en ligne (Brevo).

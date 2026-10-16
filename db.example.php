@@ -131,6 +131,22 @@ try {
         }
     }
 } catch (PDOException $e) {
-    die("Erreur de connexion ou d'initialisation de la BDD : " . $e->getMessage());
+    // Le détail (adresse du serveur, message MySQL) va dans les journaux, jamais dans la page publique
+    error_log('ConseilPlus+ : base de données indisponible (' . $e->getMessage() . ')');
+    http_response_code(503); // « service indisponible » : visible des outils de surveillance, contrairement à un 200
+    header('Retry-After: 120');
+    if (str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/api/')) {
+        header('Content-Type: application/json; charset=utf-8');
+        exit(json_encode(['erreur' => 'Service momentanément indisponible. Réessayez dans quelques minutes.'], JSON_UNESCAPED_UNICODE));
+    }
+    header('Content-Type: text/html; charset=utf-8');
+    exit('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+        . '<title>Guichet fermé — ConseilPlus+</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;'
+        . 'background:#F4EFE4;color:#1B2440;font:17px/1.55 system-ui,sans-serif}main{max-width:32rem;margin:24px;padding:32px;'
+        . 'background:#FFFDF7;border:2px solid #1B2440;box-shadow:6px 6px 0 #1B2440}h1{margin:0 0 12px;font-size:1.6rem}'
+        . 'p{margin:0 0 10px}.mono{font-family:ui-monospace,monospace;font-size:.85rem;color:#4A5270}</style></head>'
+        . '<body><main><h1>Guichet momentanément fermé</h1><p>Nos archives sont indisponibles. Le cabinet ne voit pas '
+        . 'd\'autre explication.</p><p>Réessayez dans quelques minutes : le guichet rouvre généralement sans prévenir.</p>'
+        . '<p class="mono">Erreur 503 — service indisponible</p></main></body></html>');
 }
 ?>

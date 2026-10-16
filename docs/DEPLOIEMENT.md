@@ -49,5 +49,6 @@ Modifier une variable redéploie le site automatiquement.
 | Problème | Piste |
 |---|---|
 | Déploiement en échec | Render → conseilplus → *Logs* (erreur de construction Docker) |
-| « Erreur de connexion ou d'initialisation de la BDD » | Base Aiven éteinte (la rallumer) ou `DB_PASS` incorrect |
+| Page « Guichet momentanément fermé » (erreur 503) | Base injoignable : console Aiven → service MySQL → *Power on* s'il est éteint. Si le service a disparu, en recréer un (MySQL, offre Free) et reporter `DB_HOST`, `DB_PORT`, `DB_PASS` dans Render. Le détail exact est dans Render → *Logs* (« base de données indisponible ») |
+| Le workflow *Réveil quotidien* échoue (e-mail de GitHub) | Même cause probable : le site répond 503 quand la base est injoignable |
 | Le site met une minute à s'afficher | Normal après 15 min d'inactivité (offre gratuite) |
