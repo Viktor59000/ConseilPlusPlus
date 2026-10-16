@@ -1,0 +1,6 @@
+# Version de l'API dans l'adresse : /api/v1/contacts.php sert api/contacts.php (WAMP ; en ligne : docker/apache.conf)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^v1/([a-z-]+\.php)$ $1 [L,QSA]
+    RewriteRule ^v1/?$ openapi.php [L]
+</IfModule>

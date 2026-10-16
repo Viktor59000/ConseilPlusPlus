@@ -55,7 +55,9 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `mentions-legales.php`, `confidentialite.php`, `accessibilite.php`, `plan-du-site.php`, `erreur-404.php` | Pages légales, RGAA, plan, 404 (`ErrorDocument` dans `docker/apache.conf`) |
 | `robots.txt`, `sitemap.xml`, `assets/og-image.png` (modèle `tests/og-image.html`) | Référencement et aperçu des liens partagés |
 | `auth/` | Connexion, inscription, déconnexion (repris de l'ancien site : sel statique + SHA-512, NE PAS changer) |
-| `api/contacts.php` | REST des demandes de contact (POST public ; GET/PATCH/DELETE avec en-tête `X-API-Key`) |
+| `api/contacts.php` | REST des demandes de contact (POST public ; GET paginé/filtré/trié, PATCH, DELETE avec en-tête `X-API-Key`) |
+| `api/cles.php`, `bureau/cles.php` | Clés d'API par application (droits lecture/ecriture, stockées hachées) ; la clé maîtresse `API_KEY` garde tous les droits |
+| `api/openapi.php`, `api/.htaccess` | Description OpenAPI 3.1 générée depuis `data/api.php` ; alias versionné `/api/v1/…` (`tests/routeur.php` pour `php -S`) |
 | `api/conseils.php` | Conseils aléatoires (public) |
 | `api/mes-conseils.php` | Carnet de l'utilisateur (session + jeton CSRF) |
 | `api/mot-du-jour.php` | Mot du jour (GET) + préparation IA du lendemain (POST) |

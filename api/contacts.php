@@ -40,17 +40,71 @@ switch ($_SERVER['REQUEST_METHOD']) {
         if ($statut !== null && !in_array($statut, STATUTS, true)) {
             repondre(400, ['erreur' => 'Statut invalide (nouveau ou importe).']);
         }
-        if ($statut === null) {
-            $stmt = $bdd->query('SELECT * FROM contacts ORDER BY date_creation');
-        } else {
-            $stmt = $bdd->prepare('SELECT * FROM contacts WHERE statut = :statut ORDER BY date_creation');
-            $stmt->execute(['statut' => $statut]);
+        // Filtres facultatifs
+        $conditions = [];
+        $valeurs = [];
+        if ($statut !== null) {
+            $conditions[] = 'statut = :statut';
+            $valeurs['statut'] = $statut;
         }
+        if (isset($_GET['type'])) {
+            if (!in_array($_GET['type'], TYPES_DEMANDE, true)) {
+                repondre(400, ['erreur' => 'Type de demande invalide.']);
+            }
+            $conditions[] = 'type_demande = :type';
+            $valeurs['type'] = $_GET['type'];
+        }
+        if (isset($_GET['q']) && trim($_GET['q']) !== '') {
+            $conditions[] = '(nom LIKE :q OR email LIKE :q2 OR message LIKE :q3)';
+            $motif = '%' . addcslashes(mb_substr(trim($_GET['q']), 0, 100), '%_\\') . '%';
+            $valeurs += ['q' => $motif, 'q2' => $motif, 'q3' => $motif];
+        }
+        $where = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
+
+        // Tri (liste blanche) : date (par défaut), -date (récentes d'abord), nom, -nom
+        $tris = ['date' => 'date_creation, id', '-date' => 'date_creation DESC, id DESC', 'nom' => 'nom, id', '-nom' => 'nom DESC, id DESC'];
+        $tri = $_GET['tri'] ?? 'date';
+        if (!isset($tris[$tri])) {
+            repondre(400, ['erreur' => 'Tri invalide (date, -date, nom ou -nom).']);
+        }
+        $ordre = ' ORDER BY ' . $tris[$tri];
+
+        // Sans ?page= : toute la liste (compatible avec Le Bureau). Avec ?page= : pagination.
+        if (!isset($_GET['page'])) {
+            $stmt = $bdd->prepare("SELECT * FROM contacts$where$ordre");
+            $stmt->execute($valeurs);
+            $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            repondre(200, ['total' => count($contacts), 'contacts' => $contacts]);
+        }
+        $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $par_page = filter_input(INPUT_GET, 'par_page', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100]]);
+        if (!$page || (isset($_GET['par_page']) && !$par_page)) {
+            repondre(400, ['erreur' => 'Pagination invalide (page ≥ 1, par_page de 1 à 100).']);
+        }
+        $par_page = $par_page ?: 20;
+        $compte = $bdd->prepare("SELECT COUNT(*) FROM contacts$where");
+        $compte->execute($valeurs);
+        $total = (int) $compte->fetchColumn();
+        $pages = max(1, (int) ceil($total / $par_page));
+        $stmt = $bdd->prepare("SELECT * FROM contacts$where$ordre LIMIT $par_page OFFSET " . (($page - 1) * $par_page));
+        $stmt->execute($valeurs);
         $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        repondre(200, ['total' => count($contacts), 'contacts' => $contacts]);
+
+        // En-tête Link (RFC 8288) : pages suivante, précédente, première et dernière
+        $lien = fn (int $p) => '<contacts.php?' . http_build_query(['page' => $p] + $_GET) . '>';
+        $liens = [$lien(1) . '; rel="first"', $lien($pages) . '; rel="last"'];
+        if ($page > 1) {
+            $liens[] = $lien($page - 1) . '; rel="prev"';
+        }
+        if ($page < $pages) {
+            $liens[] = $lien($page + 1) . '; rel="next"';
+        }
+        header('Link: ' . implode(', ', $liens));
+        header("X-Total-Count: $total");
+        repondre(200, ['total' => $total, 'page' => $page, 'par_page' => $par_page, 'pages' => $pages, 'contacts' => $contacts]);
 
     case 'PATCH':
-        exiger_cle();
+        exiger_cle('ecriture');
         $id = lire_id();
         $statut = lire_corps()['statut'] ?? 'importe';
         if (!in_array($statut, STATUTS, true)) {
@@ -63,7 +117,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $existe->fetchColumn() ? repondre(200, ['id' => $id, 'statut' => $statut]) : repondre(404, ['erreur' => 'Demande introuvable.']);
 
     case 'DELETE':
-        exiger_cle();
+        exiger_cle('ecriture');
         $stmt = $bdd->prepare('DELETE FROM contacts WHERE id = :id');
         $stmt->execute(['id' => lire_id()]);
         $stmt->rowCount() ? repondre(204) : repondre(404, ['erreur' => 'Demande introuvable.']);

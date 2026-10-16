@@ -86,6 +86,17 @@ try {
             INDEX (ip, date_appel)
         );
 
+        CREATE TABLE IF NOT EXISTS api_cles (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nom VARCHAR(50) NOT NULL,
+            empreinte CHAR(64) NOT NULL UNIQUE,
+            apercu VARCHAR(12) NOT NULL,
+            droits VARCHAR(50) NOT NULL DEFAULT 'lecture',
+            date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            derniere_utilisation DATETIME NULL,
+            revoquee TINYINT(1) NOT NULL DEFAULT 0
+        );
+
         CREATE TABLE IF NOT EXISTS fragments (
             id INT AUTO_INCREMENT PRIMARY KEY,
             type ENUM('situation', 'action', 'resultat') NOT NULL,

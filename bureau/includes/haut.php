@@ -35,6 +35,7 @@ envoyer_csp();
       <a href="dossiers.php"<?= $page === 'dossiers' ? ' aria-current="page"' : '' ?>>Dossiers</a>
       <a href="journal.php"<?= $page === 'journal' ? ' aria-current="page"' : '' ?>>Relevés</a>
       <a href="statistiques.php"<?= $page === 'statistiques' ? ' aria-current="page"' : '' ?>>Statistiques</a>
+      <a href="cles.php"<?= $page === 'cles' ? ' aria-current="page"' : '' ?>>Clés d'API</a>
     </nav>
     <form class="agent" method="post" action="deconnexion.php">
       <?= csrf_champ() ?>

@@ -15,6 +15,7 @@ $acces = [
     'public' => ['Public', 'Sans clé'],
     'cle' => ['Clé', 'En-tête X-API-Key'],
     'session' => ['Session', 'Client connecté'],
+    'admin' => ['Clé maîtresse', 'Clé du Bureau uniquement'],
 ];
 ?>
 
@@ -28,8 +29,10 @@ $acces = [
   <h2 id="titre-principes" class="visuellement-cache">Principes</h2>
   <dl class="api-fiche">
     <div><dt>Adresse de base</dt><dd><code><?= htmlspecialchars($base) ?></code></dd></div>
-    <div><dt>Format</dt><dd>JSON en UTF-8, codes HTTP standard (200, 201, 204, 400, 401, 404, 405, 422, 429)</dd></div>
-    <div><dt>Authentification</dt><dd>En-tête <code>X-API-Key</code> pour les ressources réservées au logiciel de gestion</dd></div>
+    <div><dt>Format</dt><dd>JSON en UTF-8, codes HTTP standard (200, 201, 204, 400, 401, 403, 404, 405, 422, 429)</dd></div>
+    <div><dt>Version</dt><dd><code>/api/v1/…</code> (version actuelle, à préférer) ou <code>/api/…</code> : mêmes réponses</dd></div>
+    <div><dt>Description OpenAPI</dt><dd><a href="api/openapi.php"><code>openapi.php</code></a> (OpenAPI 3.1, à importer dans Postman, Insomnia ou Swagger UI)</dd></div>
+    <div><dt>Authentification</dt><dd>En-tête <code>X-API-Key</code>. Chaque application reçoit sa propre clé, avec ses droits (<code>lecture</code>, <code>ecriture</code>) ; une clé sans le droit demandé reçoit <code>403</code></dd></div>
     <div><dt>Traçabilité</dt><dd>Chaque appel est journalisé (date, ressource, code, application), adresses IP effacées après 90 jours</dd></div>
     <div><dt>Limites</dt><dd>Écritures publiques limitées par adresse IP (réponse <code>429</code> et en-tête <code>Retry-After</code>)</dd></div>
   </dl>

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     header('Allow: GET');
     repondre(405, ['erreur' => 'Méthode non autorisée.']);
 }
-exiger_cle();
+exiger_cle('admin'); // sauvegarde complète : clé maîtresse uniquement
 
 $base = $bdd->query('SELECT DATABASE()')->fetchColumn();
 repondre(200, [

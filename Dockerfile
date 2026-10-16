@@ -8,7 +8,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends libicu-dev ca-certificates \
     && docker-php-ext-install pdo_mysql intl \
     && rm -rf /var/lib/apt/lists/* \
-    && a2enmod remoteip headers \
+    && a2enmod remoteip headers rewrite \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY docker/apache.conf /etc/apache2/conf-enabled/conseilplus.conf

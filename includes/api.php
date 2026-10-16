@@ -33,12 +33,49 @@ function lire_corps(): array
     return $_POST;
 }
 
-/** Bloque la requête si l'en-tête X-API-Key est absent ou incorrect. */
-function exiger_cle(): void
+/**
+ * Identifie la clé de l'en-tête X-API-Key :
+ * - la clé maîtresse (API_KEY, celle du Bureau) a tous les droits, y compris « admin » (gérer les clés) ;
+ * - une clé d'application (table api_cles, stockée hachée) a les droits « lecture » et/ou « ecriture ».
+ * Retourne ['nom' => application, 'droits' => [...]] ou null si la clé est absente, inconnue ou révoquée.
+ */
+function cle_presentee(): ?array
 {
+    static $resultat = false;
+    if ($resultat !== false) {
+        return $resultat;
+    }
     $cle = $_SERVER['HTTP_X_API_KEY'] ?? '';
-    if (!hash_equals(API_KEY, $cle)) {
+    if ($cle === '') {
+        return $resultat = null;
+    }
+    if (hash_equals(API_KEY, $cle)) {
+        return $resultat = ['nom' => 'gestion', 'droits' => ['lecture', 'ecriture', 'admin']];
+    }
+    global $bdd;
+    try {
+        $stmt = $bdd->prepare('SELECT id, nom, droits FROM api_cles WHERE empreinte = :empreinte AND revoquee = 0');
+        $stmt->execute(['empreinte' => hash('sha256', $cle)]);
+        $ligne = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $ligne = false;
+    }
+    if (!$ligne) {
+        return $resultat = null;
+    }
+    $bdd->prepare('UPDATE api_cles SET derniere_utilisation = NOW() WHERE id = :id')->execute(['id' => $ligne['id']]);
+    return $resultat = ['nom' => $ligne['nom'], 'droits' => explode(',', $ligne['droits'])];
+}
+
+/** Bloque la requête si la clé est absente ou invalide (401), ou si elle n'a pas le droit demandé (403). */
+function exiger_cle(string $droit = 'lecture'): void
+{
+    $cle = cle_presentee();
+    if ($cle === null) {
         repondre(401, ['erreur' => 'Clé API manquante ou invalide (en-tête X-API-Key).']);
+    }
+    if (!in_array($droit, $cle['droits'], true)) {
+        repondre(403, ['erreur' => "Cette clé n'a pas le droit « $droit »."]);
     }
 }
 
@@ -66,11 +103,11 @@ function ip_client(): string
     return $ip;
 }
 
-/** Qui appelle : le logiciel de gestion (clé valide), le site lui-même (appel local) ou le public. */
+/** Qui appelle : l'application de la clé (gestion = clé maîtresse), le site lui-même (appel local) ou le public. */
 function application_appelante(): string
 {
-    if (hash_equals(API_KEY, $_SERVER['HTTP_X_API_KEY'] ?? '')) {
-        return 'gestion';
+    if ($cle = cle_presentee()) {
+        return mb_substr($cle['nom'], 0, 50);
     }
     return in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true) ? 'site' : 'public';
 }

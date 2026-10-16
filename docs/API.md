@@ -1,6 +1,12 @@
 # API ConseilPlus+
 
-Base : `http://localhost/Site/api` — réponses en JSON (UTF-8).
+Base : `http://localhost/Site/api/v1` (ou `/api`, alias sans version) — réponses en JSON (UTF-8).
+
+- **Version** : `/api/v1/contacts.php` sert `api/contacts.php` (règle dans `api/.htaccess`, activée en ligne par `docker/apache.conf`, et par `tests/routeur.php` pour le serveur de test).
+- **OpenAPI 3.1** : `GET /api/v1/` ou `/api/openapi.php`, généré à partir de `data/api.php` (même source que `developpeurs.php`).
+- **Clés** : en-tête `X-API-Key`. La clé maîtresse (`API_KEY`, celle du Bureau) a tous les droits. Les autres applications
+  reçoivent leur propre clé (`api/cles.php`, page « Clés d'API » du Bureau) avec les droits `lecture` et/ou `ecriture` ;
+  le site n'en garde que l'empreinte SHA-256. Clé absente ou révoquée : `401`. Droit manquant : `403`.
 
 ## Contacts — `api/contacts.php`
 
@@ -9,12 +15,15 @@ Base : `http://localhost/Site/api` — réponses en JSON (UTF-8).
 | Méthode | URL | Clé | Rôle | Réponses |
 |---|---|---|---|---|
 | `POST` | `/contacts.php` | non | Le site vitrine envoie une demande | `201` créée · `422` champs invalides |
-| `GET` | `/contacts.php?statut=nouveau` | oui | Lister les demandes (filtre `nouveau` / `importe` facultatif) | `200` · `401` |
-| `GET` | `/contacts.php?id=42` | oui | Détail d'une demande | `200` · `404` |
-| `PATCH` | `/contacts.php?id=42` | oui | Changer le statut (par défaut `importe`) | `200` · `404` · `422` |
-| `DELETE` | `/contacts.php?id=42` | oui | Supprimer une demande traitée | `204` · `404` |
+| `GET` | `/contacts.php?statut=nouveau` | lecture | Lister les demandes (filtres, tri et pagination ci-dessous) | `200` · `400` · `401` |
+| `GET` | `/contacts.php?id=42` | lecture | Détail d'une demande | `200` · `404` |
+| `PATCH` | `/contacts.php?id=42` | écriture | Changer le statut (par défaut `importe`) | `200` · `404` · `422` |
+| `DELETE` | `/contacts.php?id=42` | écriture | Supprimer une demande traitée | `204` · `404` |
 
-**Clé** : en-tête `X-API-Key`, valeur `API_KEY` de `config.php`.
+**Liste** : filtres `statut` (`nouveau` / `importe`), `type` (type de demande), `q` (recherche dans nom, adresse, message) ;
+tri `tri=date` (défaut), `-date`, `nom`, `-nom`. Sans `page`, toute la liste est renvoyée `{ total, contacts[] }` (ce que lit Le Bureau).
+Avec `page` (et `par_page`, 1 à 100, 20 par défaut) : `{ total, page, par_page, pages, contacts[] }`,
+en-têtes `Link` (`first`, `prev`, `next`, `last`, RFC 8288) et `X-Total-Count`.
 
 **Limite** : `POST` est limité à 5 demandes par minute et par IP (`429 Too Many Requests` au-delà, en-tête `Retry-After`).
 
@@ -98,15 +107,25 @@ Totaux tirés du journal `api_logs` (aucune adresse IP renvoyée). Affichés par
 
 | Méthode | Paramètres | Réponse |
 |---|---|---|
-| `GET` (clé requise) | — | `200 { base, fichier, sql }` : toute la base du site en SQL (structure + données) |
+| `GET` (clé maîtresse) | — | `200 { base, fichier, sql }` : toute la base du site en SQL (structure + données) |
 
-Utilisé par le bouton « Télécharger la base du site » du Bureau. Contient des données personnelles : clé obligatoire.
+Utilisé par le bouton « Télécharger la base du site » du Bureau. Contient des données personnelles : clé maîtresse obligatoire (`403` pour une clé d'application).
+
+## Clés d'application — `api/cles.php` (clé maîtresse)
+
+| Méthode | URL | Rôle | Réponses |
+|---|---|---|---|
+| `GET` | `/cles.php` | Lister les clés (nom, début de la clé, droits, dernier appel, révoquée) | `200 { total, cles[] }` |
+| `POST` | `/cles.php` | Délivrer une clé `{ nom, droits: ["lecture", "ecriture"] }` ; la clé n'est renvoyée qu'une fois | `201 { id, nom, droits, cle }` · `422` |
+| `DELETE` | `/cles.php?id=3` | Révoquer (1re fois), puis effacer (2e fois) | `204` · `404` |
+
+Le nom de l'application apparaît dans le journal `api_logs` (colonne `application`) et donc dans les statistiques.
 
 ## Exemples (curl)
 
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{"nom":"Jean","email":"jean@exemple.fr","type_demande":"Autre","message":"Bonjour le conseiller"}' http://localhost/Site/api/contacts.php
-curl -H "X-API-Key: VOTRE_CLE" "http://localhost/Site/api/contacts.php?statut=nouveau"
+curl -H "X-API-Key: VOTRE_CLE" "http://localhost/Site/api/v1/contacts.php?statut=nouveau&page=1&par_page=10&tri=-date"
 curl -X PATCH -H "X-API-Key: VOTRE_CLE" "http://localhost/Site/api/contacts.php?id=1"
 curl http://localhost/Site/api/conseils.php
 ```

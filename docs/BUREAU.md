@@ -38,6 +38,8 @@ Colonne `envoi` du dossier : `envoye`, `archive` ou `echec`.
 
 - **Statistiques** (`bureau/statistiques.php`) : appels à l'API par jour (7, 14 ou 30 jours), ressources, codes de réponse,
   applications appelantes. Lu par l'API elle-même (`GET /api/statistiques.php`, clé requise).
+- **Clés d'API** (`bureau/cles.php`) : délivrer une clé à une autre application (droits lecture et/ou écriture, affichée une
+  seule fois), la révoquer, puis l'effacer. Passe par `/api/cles.php`, réservé à la clé maîtresse du Bureau.
 - **Ton de la réponse** proposée dans un dossier : standard, très administratif (articles, références) ou chaleureux (moyennement).
 
 ## Sauvegardes

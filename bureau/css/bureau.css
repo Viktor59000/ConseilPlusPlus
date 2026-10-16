@@ -127,3 +127,12 @@ textarea { line-height: 1.5; resize: vertical; }
 .histogramme-valeur, .histogramme-jour { font-size: .72rem; color: var(--encre-2); white-space: nowrap; }
 @keyframes monte { from { transform: scaleY(0); } }
 @media (max-width: 760px) { .histogramme li:nth-child(even) .histogramme-jour, .histogramme li:nth-child(even) .histogramme-valeur { color: transparent; } }
+
+/* Clés d'API */
+.cases { border: 0; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.cases legend { font-size: .95rem; font-weight: 600; padding: 0; margin-bottom: 6px; }
+.cases label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; margin: 0; }
+.cases input { width: 20px; height: 20px; min-height: 0; padding: 0; accent-color: var(--rouge); }
+.cle-neuve { border-left: 4px solid var(--jaune); }
+.cle-valeur { display: inline-block; font: 500 1rem var(--mono); padding: 10px 14px; background: var(--fond); border-radius: var(--rayon-petit); overflow-wrap: anywhere; user-select: all; }
+.cle-revoquee td { color: var(--encre-2); }

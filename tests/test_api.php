@@ -43,6 +43,37 @@ verifier("GET ?id=$id", 200, appeler_api('GET', "$base/contacts.php?id=$id", nul
 verifier("PATCH ?id=$id (→ importe)", 200, appeler_api('PATCH', "$base/contacts.php?id=$id", ['statut' => 'importe'], $cle));
 verifier('PATCH statut invalide', 422, appeler_api('PATCH', "$base/contacts.php?id=$id", ['statut' => 'perdu'], $cle));
 verifier('PATCH ?id=999999 (inexistant)', 404, appeler_api('PATCH', "$base/contacts.php?id=999999", null, $cle));
+// --- Pagination, tri, filtres et version
+$r = appeler_api('GET', "$base/contacts.php?page=1&par_page=2&tri=-date", null, $cle);
+verifier('GET paginé (page 1, 2 par page)', 200, $r);
+$ok = ($r['data']['par_page'] ?? 0) === 2 && count($r['data']['contacts'] ?? []) <= 2 && ($r['data']['contacts'][0]['id'] ?? 0) == $id;
+printf("[%s] %-45s\n", $ok ? 'OK' : 'ECHEC', 'meta de pagination, plus récente en premier');
+$echecs += $ok ? 0 : 1;
+$r = appeler_api('GET', "$base/contacts.php?q=" . rawurlencode('grille-pain me juge') . '&type=' . rawurlencode('Réclamation'), null, $cle);
+$ok = $r['code'] === 200 && in_array($id, array_column($r['data']['contacts'] ?? [], 'id'));
+printf("[%s] %-45s\n", $ok ? 'OK' : 'ECHEC', 'recherche ?q= et filtre ?type=');
+$echecs += $ok ? 0 : 1;
+verifier('GET par_page=500 (invalide)', 400, appeler_api('GET', "$base/contacts.php?page=1&par_page=500", null, $cle));
+verifier('GET tri inconnu', 400, appeler_api('GET', "$base/contacts.php?tri=hasard", null, $cle));
+verifier("GET /v1/contacts.php?id=$id", 200, appeler_api('GET', "$base/v1/contacts.php?id=$id", null, $cle));
+$r = appeler_api('GET', "$base/v1/");
+verifier('GET /v1/ (description OpenAPI)', 200, $r);
+printf("[%s] %-45s\n", ($r['data']['openapi'] ?? '') === '3.1.0' ? 'OK' : 'ECHEC', 'OpenAPI 3.1.0');
+$echecs += ($r['data']['openapi'] ?? '') === '3.1.0' ? 0 : 1;
+
+// --- Clés par application (droits lecture / ecriture)
+$r = appeler_api('POST', "$base/cles.php", ['nom' => 'Test API', 'droits' => ['lecture']], $cle);
+verifier('POST cles.php (clé lecture seule)', 201, $r);
+[$id_cle, $lecture] = [$r['data']['id'] ?? 0, ['X-API-Key: ' . ($r['data']['cle'] ?? 'absente')]];
+verifier('POST cles.php nom réservé', 422, appeler_api('POST', "$base/cles.php", ['nom' => 'gestion'], $cle));
+verifier('GET contacts avec clé lecture', 200, appeler_api('GET', "$base/contacts.php?id=$id", null, $lecture));
+verifier('PATCH avec clé lecture (refusé)', 403, appeler_api('PATCH', "$base/contacts.php?id=$id", null, $lecture));
+verifier('GET cles.php avec clé lecture (refusé)', 403, appeler_api('GET', "$base/cles.php", null, $lecture));
+verifier('GET export.php avec clé lecture (refusé)', 403, appeler_api('GET', "$base/export.php", null, $lecture));
+verifier('DELETE cles.php (révocation)', 204, appeler_api('DELETE', "$base/cles.php?id=$id_cle", null, $cle));
+verifier('GET avec clé révoquée', 401, appeler_api('GET', "$base/contacts.php?id=$id", null, $lecture));
+verifier('DELETE cles.php (effacement)', 204, appeler_api('DELETE', "$base/cles.php?id=$id_cle", null, $cle));
+
 verifier("DELETE ?id=$id", 204, appeler_api('DELETE', "$base/contacts.php?id=$id", null, $cle));
 verifier("DELETE ?id=$id (déjà supprimé)", 404, appeler_api('DELETE', "$base/contacts.php?id=$id", null, $cle));
 verifier('PUT (méthode non autorisée)', 405, appeler_api('PUT', "$base/contacts.php"));
