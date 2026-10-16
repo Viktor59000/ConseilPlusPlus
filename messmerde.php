@@ -7,15 +7,18 @@
 session_start();
 
 $titre = 'Les expériences de Messmerde';
-$description = 'Messmerde, mentaliste du cabinet ConseilPlus+, lit dans vos pensées avec une précision moyenne. Sept expériences, sept évidences.';
+$description = "Messmerde, mentaliste du cabinet ConseilPlus+, lit dans vos pensées avec une précision moyenne : une vingtaine d'expériences, un interrogatoire, que des évidences.";
 $page = 'autre';
 include("includes/header.php");
 ?>
 
-<section class="conteneur entete-page">
-  <p class="etiquette">Service de divination</p>
-  <h1>Les expériences de Messmerde</h1>
-  <p class="chapo">Messmerde, mentaliste du cabinet, lit dans les pensées depuis qu'il a appris à lire. Sept expériences, menées avec une précision moyenne et une assurance totale.</p>
+<section class="conteneur entete-page messmerde-entete">
+  <div>
+    <p class="etiquette">Service de divination</p>
+    <h1>Les expériences de Messmerde</h1>
+    <p class="chapo">Messmerde, mentaliste du cabinet, lit dans les pensées depuis qu'il a appris à lire. Chaque séance : sept expériences tirées au sort, dont un interrogatoire, menées avec une précision moyenne et une assurance totale.</p>
+  </div>
+  <img class="messmerde-portrait" src="assets/equipe/messmerde.webp" alt="Messmerde en pleine concentration, deux doigts sur la tempe, une boule à neige à la main" width="640" height="640" decoding="async">
 </section>
 
 <section class="conteneur messmerde" aria-labelledby="titre-experience">

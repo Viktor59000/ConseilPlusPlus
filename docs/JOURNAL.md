@@ -68,7 +68,10 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
   titre d'onglet « PRÉVU. »), tampon « PRÉVU », verdict « Bluffant / Moyennement bluffant », crédibilité qui ne fait que monter.
   Concept repris d'une vidéo (faux mentaliste), gags et répliques inventés pour le site. Nom choisi par l'utilisateur.
 - Carte « Messmerde » dans Le cabinet (lien vers ses expériences) ; prompt du portrait dans `docs/IMAGES.md`
-  (`assets/equipe/messmerde.webp` à générer, monogramme en attendant). Liens : pied de page, plan du site ; test des pages.
+  (`assets/equipe/messmerde.webp`, fourni par l'utilisateur, aussi affiché en tête de sa page). Liens : pied de page, plan du site.
+- Répertoire de 20 expériences (prénom, année, jour, ciel, durée, pensée, clin d'œil, dé, touche, langue, écran, choix…) :
+  7 tirées au sort par séance, toujours un **interrogatoire** (5 questions oui/non parmi 30, puis une « déduction » qui
+  répète une réponse ou compte les oui) et toujours « Le départ » en dernier.
 
 ### 16/10/2026 — PC principal (ménage de code)
 - Doublons supprimés : CSRF du Bureau (réutilise `includes/csrf.php`), délais estimés (`delai_estime()` dans

@@ -80,7 +80,7 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `android/`, `.github/workflows/android.yml` | Appli Android (WebView + widget « Le Petit Moyen » via `api/widget.php?conseils=12`), APK construit par GitHub à chaque push touchant `android/` (seul code hors PHP/JS/HTML/CSS, voulu) |
 | `bureau/` | **Le Bureau**, logiciel de gestion séparé (base `gestion`), consomme l'API (`docs/BUREAU.md`) |
 | `guichet.php`, `js/guichet.js` | Le guichet (ticket, file absurde, fermeture à votre tour) |
-| `messmerde.php`, `js/messmerde.js` | Les expériences de Messmerde, mentaliste du cabinet : 7 « prédictions » évidentes, tampon « PRÉVU » |
+| `messmerde.php`, `js/messmerde.js` | Les expériences de Messmerde, mentaliste du cabinet : 20 « prédictions » évidentes (7 tirées par séance) dont un interrogatoire, tampon « PRÉVU » |
 | `js/partage.js` | Partage d'un conseil / d'un mot (image story générée dans le navigateur) |
 | `api/votes.php`, `js/votes.js` | Votes « Moyen » / « Pas moyen » (palmarès lu par Le Bureau) |
 | `api/notifications.php`, `includes/push.php`, `js/notifications.js` | Notification quotidienne du mot du jour (Web Push sans dépendance, clés VAPID en base) |

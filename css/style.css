@@ -422,6 +422,11 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 @media (max-width: 760px) { .guichet { grid-template-columns: minmax(0, 1fr); } .guichet-ecran { grid-row: auto; } }
 
 /* ---------- Les expériences de Messmerde ---------- */
+.messmerde-entete { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 32px; align-items: center; }
+.messmerde-portrait { width: 100%; max-width: 360px; height: auto; justify-self: end; border-radius: var(--rayon); box-shadow: var(--ombre); }
+.experience-question { flex-basis: 100%; margin: 0; font-size: 1.2rem; font-weight: 650; min-height: 1.5em; }
+.experience-champ { display: grid; gap: 6px; font-weight: 600; flex: 1 1 220px; max-width: 320px; }
+@media (max-width: 760px) { .messmerde-entete { grid-template-columns: minmax(0, 1fr); } .messmerde-portrait { justify-self: start; max-width: 240px; } }
 .messmerde { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 28px; align-items: start; }
 .experience { position: relative; background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 32px 36px 40px; min-height: 360px; }
 .experience.nouvelle { animation: apparition 400ms var(--ressort); }
