@@ -24,6 +24,13 @@ function note_de_service(): string
     return $t['dates'][date('d-m')] ?? $t['jours'][(int) date('N')];
 }
 
+/** Délai de traitement « estimé » d'un dossier : toujours le même pour un numéro donné (site et Bureau). */
+function delai_estime(int $id): string
+{
+    $delais = textes()['delais'];
+    return $delais[$id % count($delais)];
+}
+
 /** $n témoignages différents, au hasard : [[texte, nom, précision], …]. */
 function temoignages(int $n): array
 {

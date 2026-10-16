@@ -6,24 +6,8 @@ session_name('BUREAU');
 session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off']);
 session_start();
 
-/** Jeton CSRF de la session (créé au premier appel). */
-function csrf_jeton(): string
-{
-    return $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
-}
-
-/** Champ caché à placer dans chaque formulaire POST. */
-function csrf_champ(): string
-{
-    return '<input type="hidden" name="csrf" value="' . csrf_jeton() . '">';
-}
-
-/** Vérifie le jeton envoyé par le formulaire. */
-function csrf_valide(): bool
-{
-    $envoye = $_POST['csrf'] ?? '';
-    return isset($_SESSION['csrf']) && is_string($envoye) && hash_equals($_SESSION['csrf'], $envoye);
-}
+// Jeton CSRF : mêmes fonctions que le site (csrf_jeton, csrf_champ, csrf_valide), dans la session du Bureau
+require_once __DIR__ . '/../../includes/csrf.php';
 
 /** Agent connecté (et toujours enregistré), ou redirection vers la page de connexion. */
 function exiger_agent(): array

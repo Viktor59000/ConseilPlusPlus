@@ -62,6 +62,11 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 
 ## Historique des sessions
 
+### 16/10/2026 — PC principal (ménage de code)
+- Doublons supprimés : CSRF du Bureau (réutilise `includes/csrf.php`), délais estimés (`delai_estime()` dans
+  `includes/textes.php`, liste dans `data/textes.php`), texte de l'accusé de réception (`accuse_reception()` dans
+  `includes/courriel.php`, utilisé aussi par l'aperçu), style des rubriques (`css/base.css`), règle CSS morte.
+
 ### 16/10/2026 — PC principal (README, documentation de l'API)
 - Page publique **L'API du cabinet** (`developpeurs.php`) : 17 endpoints décrits, « Essayer » en direct sur les GET publics.
 - README réécrit : captures (`docs/captures/`), schéma d'architecture (Mermaid), tableau de l'API, technique, installation,

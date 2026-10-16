@@ -19,15 +19,6 @@ if (($_GET['type'] ?? 'accuse') === 'reponse') {
         'apercu' => 'Votre dossier n° 0042 a été traité.',
     ]);
 } else {
-    echo gabarit_courriel([
-        'titre' => 'Accusé de réception',
-        'corps' => "Madame, Monsieur Jean Moyen,\n\nLe cabinet ConseilPlus+ accuse réception de votre demande « Demande de conseil », enregistrée sous le n° 0042.\n\n"
-            . "Votre dossier a été placé dans la file d'attente, entre un dossier urgent et un dossier qui l'était.\n"
-            . "Délai de traitement estimé : entre 3 jours et jamais.\n\n"
-            . "Un conseiller moyen prendra connaissance de votre demande dès qu'il aura terminé de ne pas la lire. "
-            . "Vous recevrez notre réponse officielle à cette adresse.\n\n"
-            . "Ceci est un accusé de réception automatique : inutile d'y répondre, nous ne le lirions pas non plus.",
-        'dossier' => '0042', 'signataire' => 'Le guichet automatique', 'fonction' => 'Service courrier', 'tampon' => 'Reçu',
-        'apercu' => 'Votre demande n° 0042 est enregistrée.',
-    ]);
+    // Le vrai courriel envoyé par contact.php, pour une demande fictive n° 42
+    echo accuse_reception('Jean Moyen', 'Demande de conseil', 42)['html'];
 }

@@ -93,11 +93,6 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
 
 /* ---------- Typographie commune ---------- */
-.etiquette {
-  display: flex; align-items: center; gap: 12px; margin: 0 0 22px;
-  font: 500 .78rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--encre-2);
-}
-.etiquette::before { content: ""; width: 24px; height: 2px; border-radius: 2px; background: var(--rouge); flex: none; }
 .chapo { font-size: clamp(1.2rem, 2.1vw, 1.45rem); line-height: 1.5; max-width: 42ch; color: var(--encre-2); }
 
 /* Surligneur : se dessine de gauche à droite à l'apparition (js/site.js) */
@@ -150,7 +145,6 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .fiche-pied { margin: 0; color: var(--encre-2); }
 .fiche-grande { max-width: 860px; }
 .fiche-grande .fiche-conseil { font-size: clamp(1.45rem, 3vw, 2rem); --ligne: 2.5rem; }
-.fiche-partager { margin-top: 18px; }
 .fiche-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 /* Nouveau conseil (js/conseil.js) : le texte se réécrit */
 .fiche.renouvele .fiche-conseil { animation: reecrit 600ms var(--ressort); }

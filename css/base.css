@@ -93,6 +93,13 @@ img, svg { max-width: 100%; }
 .mono { font-family: var(--mono); font-size: .82rem; letter-spacing: .01em; }
 .visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 
+/* Rubrique au-dessus d'un titre : petit trait rouge + capitales espacées (site et Bureau) */
+.etiquette {
+  display: flex; align-items: center; gap: 12px; margin: 0 0 22px;
+  font: 500 .78rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--encre-2);
+}
+.etiquette::before { content: ""; width: 24px; height: 2px; border-radius: 2px; background: var(--rouge); flex: none; }
+
 /* Bouton de thème (soleil / lune) */
 .theme-bouton {
   display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0;

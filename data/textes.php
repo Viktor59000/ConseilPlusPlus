@@ -18,6 +18,13 @@ return [
         'Imprimé sur papier recyclé, puis égaré.',
     ],
 
+    // Délais de traitement « estimés » (accusé de réception du site, dossiers du Bureau) : l'ordre compte,
+    // un même numéro de dossier donne toujours le même délai
+    'delais' => [
+        'entre 3 jours et jamais', 'sous 48 h, ouvrables, hors jours ouvrables', 'dès que possible, voire après',
+        'avant la fin de l\'année (sans précision)', 'aussitôt que le stagiaire revient', 'quelques semaines, à la louche',
+    ],
+
     // Note de service selon le jour de la semaine (1 = lundi … 7 = dimanche)
     'jours' => [
         1 => "Note de service : le cabinet ouvre à 14 h 12, comme tous les lundis, par solidarité.",

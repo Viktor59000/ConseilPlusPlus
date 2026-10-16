@@ -4,6 +4,7 @@
  */
 require_once __DIR__ . '/api.php';
 require_once __DIR__ . '/../../includes/courriel.php'; // gabarit et envoi des courriels, partagés avec le site
+require_once __DIR__ . '/../../includes/textes.php';   // delai_estime(), partagé avec l'accusé de réception du site
 
 const STATUTS_DOSSIER = [
     'a_traiter' => 'À traiter',
@@ -136,14 +137,6 @@ function envoyer_reponse(array $dossier, string $texte, string $agent): array
     return envoyer_courriel(BREVO_API_KEY, BUREAU_EXPEDITEUR, BUREAU_EXPEDITEUR_NOM, $dossier['email'], $dossier['nom'],
         "Votre demande n° $numero — réponse du cabinet ConseilPlus+",
         $texte . signature_texte($agent, 'Conseiller moyen'), $html);
-}
-
-/** Délai de traitement « estimé », toujours le même pour un dossier donné. */
-function delai_estime(int $id): string
-{
-    $delais = ['entre 3 jours et jamais', 'sous 48 h, ouvrables, hors jours ouvrables', 'dès que possible, voire après',
-        'avant la fin de l\'année (sans précision)', 'aussitôt que le stagiaire revient', 'quelques semaines, à la louche'];
-    return $delais[$id % count($delais)];
 }
 
 /** Date courte à la française (« 14/10/2026 à 13 h 36 »). */

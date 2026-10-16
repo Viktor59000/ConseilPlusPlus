@@ -24,8 +24,7 @@ code { font: 500 .85em var(--mono); background: var(--surface-2); padding: 1px .
 /* Page */
 .page { flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 48px 24px 72px; }
 .entete-page { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 24px; }
-.etiquette { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; font: 500 .78rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--encre-2); }
-.etiquette::before { content: ""; width: 24px; height: 2px; border-radius: 2px; background: var(--rouge); }
+.etiquette { margin-bottom: 14px; } /* rubrique : style commun dans css/base.css, plus serrée dans le Bureau */
 .aide { color: var(--encre-2); margin: .3em 0; }
 .lien-fort { font-weight: 600; }
 .carte { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 28px 32px; animation: apparition 450ms var(--ressort) both; margin-bottom: 24px; min-width: 0; }

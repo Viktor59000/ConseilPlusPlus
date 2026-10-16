@@ -96,6 +96,36 @@ function gabarit_courriel(array $o): string
 }
 
 /**
+ * Accusé de réception d'une demande de contact (envoyé par contact.php, prévisualisé par tests/apercu-courriel.php).
+ * Retourne ['sujet', 'texte' (version sans HTML, signature comprise), 'html'].
+ */
+function accuse_reception(string $nom, string $type_demande, int $id): array
+{
+    require_once __DIR__ . '/textes.php'; // delai_estime()
+    $numero = sprintf('%04d', $id);
+    $corps = "Madame, Monsieur $nom,\n\n"
+        . "Le cabinet ConseilPlus+ accuse réception de votre demande « $type_demande », enregistrée sous le n° $numero.\n\n"
+        . "Votre dossier a été placé dans la file d'attente, entre un dossier urgent et un dossier qui l'était.\n"
+        . 'Délai de traitement estimé : ' . delai_estime($id) . ".\n\n"
+        . "Un conseiller moyen prendra connaissance de votre demande dès qu'il aura terminé de ne pas la lire. "
+        . "Vous recevrez notre réponse officielle à cette adresse.\n\n"
+        . "Ceci est un accusé de réception automatique : inutile d'y répondre, nous ne le lirions pas non plus.";
+    return [
+        'sujet' => "Votre demande n° $numero — accusé de réception du cabinet ConseilPlus+",
+        'texte' => $corps . signature_texte('Le guichet automatique', 'Service courrier'),
+        'html' => gabarit_courriel([
+            'titre' => 'Accusé de réception',
+            'corps' => $corps,
+            'dossier' => $numero,
+            'signataire' => 'Le guichet automatique',
+            'fonction' => 'Service courrier',
+            'tampon' => 'Reçu',
+            'apercu' => "Votre demande n° $numero est enregistrée. Elle sera traitée, un jour.",
+        ]),
+    ];
+}
+
+/**
  * Envoie un courriel par l'API de Brevo. Retourne [true, ''] si l'envoi est accepté, sinon [false, raison lisible].
  */
 function envoyer_courriel(string $cle_api, string $expediteur, string $expediteur_nom, string $destinataire, string $destinataire_nom,
