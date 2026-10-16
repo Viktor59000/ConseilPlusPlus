@@ -9,3 +9,6 @@ db.php
 
 # Le Bureau (configuration locale)
 bureau/config.php
+
+# Sauvegardes de base de données (données personnelles)
+*.sql

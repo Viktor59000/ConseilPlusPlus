@@ -83,3 +83,33 @@ du serveur (renouvellement mensuel).
 | Le workflow *Réveil quotidien* échoue (e-mail de GitHub) | Même cause probable : le site répond 503 quand la base est injoignable |
 | Le site met une minute à s'afficher | Normal après 15 min d'inactivité (offre gratuite) |
 | Aucun courriel reçu après le formulaire de contact | `BREVO_API_KEY` / `BUREAU_EXPEDITEUR` dans Render ; Brevo → *Statistiques* → *Transactionnel* ; dossier Indésirables. Au plus 2 accusés par adresse et par jour |
+
+## Exporter (sauvegarder) les bases
+
+Deux bases : `site` (comptes, contacts, carnets, mots du jour…) et `gestion` (Le Bureau). Le mot de passe est toujours
+demandé par `-p` (jamais écrit dans la commande, il resterait dans l'historique).
+
+**En local (WAMP)** — dans un terminal ouvert dans le dossier du projet :
+
+```bash
+C:/wamp64/bin/mysql/mysql9.1.0/bin/mysqldump.exe -uroot --single-transaction --no-tablespaces --set-gtid-purged=OFF --databases site gestion > sauvegarde-locale.sql
+```
+
+Ou sans terminal : phpMyAdmin (icône WAMP → phpMyAdmin) → base `site` → onglet *Exporter* → format SQL → *Exécuter*.
+
+**En ligne (TiDB Cloud)** — même outil, avec l'adresse de TiDB et la connexion chiffrée (certificats `certs/cacert.pem`) :
+
+```bash
+C:/wamp64/bin/mysql/mysql9.1.0/bin/mysqldump.exe -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -u 4UjHJ89hDwKrPSe.root -p --ssl-mode=VERIFY_IDENTITY --ssl-ca=certs/cacert.pem --single-transaction --no-tablespaces --set-gtid-purged=OFF --databases site gestion > sauvegarde-tidb.sql
+```
+
+Autre voie : console TiDB Cloud → cluster → *Data* → *Export* (fichier SQL ou CSV à télécharger).
+
+**Réimporter** un fichier (par exemple la base en ligne vers WAMP) :
+
+```bash
+C:/wamp64/bin/mysql/mysql9.1.0/bin/mysql.exe -uroot < sauvegarde-tidb.sql
+```
+
+Les fichiers `.sql` contiennent des données personnelles (adresses email, mots de passe chiffrés) : ne jamais les
+mettre dans Git (`*.sql` est ignoré).
