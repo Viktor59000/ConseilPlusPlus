@@ -6,10 +6,10 @@ Proposé le 14/10/2026. Illustre le principe « une même API peut alimenter une
 
 1. **Endpoint** `GET /api/conseil-du-jour.php` : un conseil identique pour tout le monde pendant 24 h
    (générateur initialisé avec la date du jour).
-2. **Widget sans appli native** (démo rapide) : KWGT (Android) ou Scriptable (iOS) lisent le JSON de l'endpoint.
+2. **Widget sans appli native** (en place) (démo rapide) : KWGT (Android) ou Scriptable (iOS) lisent le JSON de l'endpoint.
 3. **Notification** : transformer le site en PWA (manifest déjà présent dans `assets/icons/site.webmanifest`)
    + service worker + Web Push. Android, et iOS ≥ 16.4 une fois le site installé.
-4. **Widget natif** (plus lourd) : Android Glance / iOS WidgetKit.
+4. **Widget natif** (essayé puis retiré le 16/10 : hors PHP/JS/HTML/CSS) : Android Glance / iOS WidgetKit.
 
 Prérequis : le téléphone doit joindre le site → hébergement (ou IP du PC sur le Wi-Fi pour tester).
 Web Push exige du HTTPS, donc un hébergement.

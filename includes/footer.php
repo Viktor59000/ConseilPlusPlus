@@ -1,3 +1,4 @@
+<?php /* Pied de page commun à toutes les pages du site. */ ?>
 </main>
 <footer class="pied">
   <div class="conteneur pied-in">

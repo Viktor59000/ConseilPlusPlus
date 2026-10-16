@@ -68,7 +68,6 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `design-system/conseilplus/MASTER.md` | Charte graphique (source de vérité de la DA) |
 | `docs/API.md`, `docs/IDEES.md`, `docs/JOURNAL.md`, `docs/REPRISE.md`, `docs/DEPLOIEMENT.md` | Documentation |
 | `Dockerfile`, `docker/apache.conf`, `.github/workflows/reveil.yml` | Mise en ligne (Render + TiDB Cloud) et visite quotidienne |
-| `android/`, `.github/workflows/android.yml` | Appli Android (WebView + widget « Le Petit Moyen » via `api/widget.php`), APK construit par GitHub à chaque push touchant `android/` |
 | `bureau/` | **Le Bureau**, logiciel de gestion séparé (base `gestion`), consomme l'API (`docs/BUREAU.md`) |
 | `guichet.php`, `js/guichet.js` | Le guichet (ticket, file absurde, fermeture à votre tour) |
 | `js/partage.js` | Partage d'un conseil / d'un mot (image story générée dans le navigateur) |

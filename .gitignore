@@ -6,11 +6,6 @@ db.php
 .vscode/
 .idea/
 .DS_Store
-# Application Android (fichiers de construction)
-android/.gradle/
-android/build/
-android/app/build/
-android/local.properties
 
 # Le Bureau (configuration locale)
 bureau/config.php

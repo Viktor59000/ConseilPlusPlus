@@ -19,7 +19,8 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
   préparé par l'IA la veille, banque locale en secours. Sketchs sur la mécanique des « Mots » (15 en banque).
 - **Le Bureau** (`bureau/`, `docs/BUREAU.md`) : logiciel de gestion séparé (base `gestion`), en ligne sur `/bureau/`.
   Premier agent créé en ligne par l'utilisateur. Envoi réel des réponses par email via Brevo (code poussé).
-- **Mobile** : site installable (PWA) + appli Android avec widget carte conseil / mot (APK construit par GitHub).
+- **Mobile** : site installable (PWA) + widget KWGT (Android) via `api/widget.php`. L'appli Android native a été retirée le 16/10
+  (tri : uniquement PHP, JS, HTML, CSS, plus Dockerfile et workflow pour la mise en ligne).
 - **Partage** (image story), **Le guichet** (`guichet.php`), **votes** « Moyen / Pas moyen » (palmarès dans Le Bureau),
   **notification quotidienne** du mot du jour (Web Push maison, envoi par `reveil.yml` vers 7 h).
 
@@ -27,11 +28,9 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 
 0. **Tester la notification sur un vrai téléphone** : `application.php` → « Recevoir le mot du jour chaque matin »,
    puis lancer le workflow *Réveil quotidien* à la main (onglet Actions de GitHub) ou attendre le lendemain 7 h.
-   (L'appli Android en WebView ne gère pas les notifications : passer par Chrome ou le site installé.)
 1. **Le Bureau** : à confronter aux consignes du prof (séance du 16/10). Envoi des réponses par email :
    **vérifié en ligne le 15/10** (via Brevo, expéditeur = boîte perso de l'utilisateur ; une adresse dédiée au
    cabinet pourra la remplacer : la vérifier dans Brevo puis changer `BUREAU_EXPEDITEUR` dans Render).
-2. **Appli Android** : tester l'APK et le widget sur un vrai téléphone ; Play Store plus tard (25 $, clé de signature secrète).
 3. Améliorations possibles de l'API : une clé par application, webhook, pagination, documentation OpenAPI.
 
 ## Points ouverts
@@ -41,8 +40,7 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 - **Courriels** : tester en ligne l'accusé de réception (formulaire de contact) et une réponse du Bureau une fois la
   nouvelle clé Brevo en place.
 - `data/cadres.php` : accords au masculin avec des objets féminins (« votre trottinette se sente moins seul ») à neutraliser.
-- Fichier `android/app/conseilplus.p12` versionné avec son mot de passe en clair dans `build.gradle.kts` :
-  acceptable pour des APK partagés à la main, **pas pour le Play Store** (créer alors une clé secrète hors dépôt).
+- La clé de signature Android `conseilplus.p12` reste dans l'historique Git (appli retirée) : ne jamais la réutiliser.
 
 - **Régénérer la clé Groq** (elle a transité par une conversation) et la mettre dans `config.php` sur chaque PC
   et dans Render (variable `GROQ_API_KEY`, absente pour l'instant : le site en ligne utilise les générateurs locaux).
@@ -53,8 +51,8 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
   `CONSIGNE_SKETCH` dans `includes/mot-du-jour.php` si besoin.
 - `db.php`, `config.php` et `bureau/config.php` ne sont pas dans Git : à recréer sur chaque PC (`docs/REPRISE.md`,
   `docs/BUREAU.md`). Pour l'envoi d'emails en local, mettre `BREVO_API_KEY` / `BUREAU_EXPEDITEUR` dans `bureau/config.php`.
-- **Brevo** : nouveau compte dédié au cabinet (`conseilplusplus@gmail.com`, expéditeur vérifié). Clé API à créer par l'utilisateur et à
-  coller dans Render (`BREVO_API_KEY`), `BUREAU_EXPEDITEUR` = `conseilplusplus@gmail.com`.
+- **Brevo** : nouveau compte dédié au cabinet (`conseilplusplus@gmail.com`, expéditeur vérifié). Clé API créée et collée
+  dans Render par l'utilisateur (`BREVO_API_KEY`), `BUREAU_EXPEDITEUR` = `conseilplusplus@gmail.com`.
 - Transcriptions des « Mots » : 49/54 analysées ; calembours non relevés pour Séquestration, Chauvinisme, Portatif,
   Sarcasme, Castagnettes (`calembours_emission` vide pour ces mots). Transcriptions dans les conversations Gemini de
   l'utilisateur, jamais dans le dépôt.
@@ -67,7 +65,10 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
 - **Courriels du cabinet** : `includes/courriel.php` (gabarit HTML compatible messageries : logo PNG, cartouche
   « Dossier n° », signature avec adresse absurde et tampon rouge), partagé par le site et Le Bureau.
   Accusé de réception automatique du formulaire de contact (2 max par adresse et par jour).
-  Aperçu local : `tests/apercu-courriel.php?type=accuse` / `?type=reponse`.
+  Aperçu local : `tests/apercu-courriel.php?type=accuse` / `?type=reponse`. **Testé en ligne : accusé n° 0001 délivré.**
+- **Tri du dépôt** : appli Android (Kotlin, Gradle, workflow `android.yml`) retirée, section correspondante de
+  `application.php` et paramètre `?conseils` de `api/widget.php` supprimés ; icônes et certificat Aiven inutilisés supprimés ;
+  `includes/footer.php` et `bureau/includes/bas.php` commencent par une balise PHP (GitHub les classait en « Hack »).
 - Nouvelle adresse du cabinet `conseilplusplus@gmail.com` et compte Brevo dédié (créés par l'utilisateur).
 - Pull des 22 commits du second PC (Bureau, mise en ligne, appli Android, partage, guichet, votes, notifications).
 - Mise à niveau locale : `db.php` recopié depuis `db.example.php` (nouvelles tables), `bureau/config.php` créé.
