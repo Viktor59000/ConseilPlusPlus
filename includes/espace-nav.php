@@ -1,10 +1,11 @@
 <?php
-// Sous-menu de l'espace client. Attend $onglet : conseil | consultation | duel | carnet.
+// Sous-menu de l'espace client. Attend $onglet : conseil | consultation | duel | carnet | compte.
 $onglets = [
     'conseil' => ['conseil.php', 'Mon conseil'],
     'consultation' => ['consultation.php', 'Consultation'],
     'duel' => ['duel.php', 'Le Duel'],
     'carnet' => ['carnet.php', 'Mon carnet'],
+    'compte' => ['compte.php', 'Mon compte'],
 ];
 ?>
 <nav class="espace-nav" aria-label="Espace client">

@@ -62,6 +62,19 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 
 ## Historique des sessions
 
+### 16/10/2026 — PC principal (compte, légal, widget)
+- **Appli Android rétablie** à la demande de l'utilisateur (seul code hors PHP/JS/HTML/CSS) : widget aux couleurs de
+  « La note » (copie arrondie, marge rouge, mode sombre via `values-night`), nouvelle icône ; `api/widget.php?conseils=`
+  remis (le tri l'avait retiré alors que le widget s'en sert). APK reconstruit par GitHub (réussi).
+- **`reveil.yml` était invalide** depuis l'ajout des notifications (« : » dans une commande non protégée) : ni réveil
+  ni notification ne tournaient. Corrigé (bloc `run: |`). Nouveau `garde-eveille.yml` : visite toutes les 10 min.
+- Code du prof (`auth/`) **intact**. Ajouts à côté : mot de passe oublié (Brevo, jeton haché, 1 h, usage unique,
+  réponse identique que le compte existe ou non), « Mon compte » avec suppression (carnet et jetons effacés
+  explicitement : MyISAM sous WAMP ignore les clés étrangères), 8 caractères minimum (formulaire + réinitialisation).
+- Mentions légales, confidentialité (journal de l'API purgé après 90 jours), page 404 dans le ton, robots.txt,
+  sitemap.xml, Open Graph (image 1200 × 630), « Un autre conseil » sans compte sur l'accueil, faux paiement Premium,
+  sous-menu mobile sur une ligne, guichet sans tirets vides. Tout testé (parcours complet, Lighthouse, 320 px / 200 %).
+
 ### 16/10/2026 — PC principal (sauvegardes)
 - Boutons « Télécharger la base du site / du Bureau » dans le tableau de bord du Bureau (`bureau/export.php`,
   `api/export.php` avec clé, `includes/export-sql.php` : export en PHP pur, sans mysqldump). Réimport testé.

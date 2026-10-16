@@ -82,6 +82,8 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .btn-tampon:hover { box-shadow: 0 12px 24px -8px rgba(27, 36, 64, .5); }
 .btn-clair { background: transparent; color: var(--encre); border-color: var(--contour); }
 .btn-clair:hover { border-color: var(--encre); background: var(--surface); }
+.btn-danger { background: transparent; color: var(--rouge); border-color: var(--rouge); }
+.btn-danger:hover { background: var(--rouge); color: var(--fond); }
 .btn-petit { min-height: 44px; padding: 9px 20px; font-size: .98rem; }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: .55; cursor: progress; transform: none; }
 /* Flèche qui avance au survol */
@@ -137,7 +139,7 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .fiche-note { position: absolute; top: -24px; left: -16px; padding: 10px 16px; white-space: nowrap; color: var(--rouge); font: 800 1.45rem/1 var(--police); letter-spacing: -.02em; transform: rotate(-8deg); }
 .fiche-note sup { font-size: .72em; vertical-align: .55em; line-height: 0; }
 .fiche-entete { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
-.fiche-entete h2 { font-size: .9rem; font-weight: 700; letter-spacing: .08em; margin: 0; text-transform: uppercase; }
+.fiche-entete h2 { overflow-wrap: anywhere; font-size: .9rem; font-weight: 700; letter-spacing: .08em; margin: 0; text-transform: uppercase; }
 .fiche-entete .mono { color: var(--encre-2); }
 .fiche-conseil {
   font-size: clamp(1.35rem, 2.4vw, 1.65rem); line-height: var(--ligne); font-weight: 600; letter-spacing: -.012em; margin-bottom: 64px;
@@ -149,6 +151,7 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .fiche-grande { max-width: 860px; }
 .fiche-grande .fiche-conseil { font-size: clamp(1.45rem, 3vw, 2rem); --ligne: 2.5rem; }
 .fiche-partager { margin-top: 18px; }
+.fiche-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 /* Nouveau conseil (js/conseil.js) : le texte se réécrit */
 .fiche.renouvele .fiche-conseil { animation: reecrit 600ms var(--ressort); }
 @keyframes reecrit { from { opacity: 0; transform: translateY(8px); filter: blur(4px); } }
@@ -281,6 +284,14 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .prix { font-weight: 800; font-size: 3rem; letter-spacing: -.04em; line-height: 1; margin-bottom: 20px; }
 .prix span { font-size: 1rem; font-weight: 400; letter-spacing: 0; margin-left: 6px; color: var(--encre-2); }
 
+/* Fenêtre (dialog natif) : faux paiement de la formule Premium */
+.dialogue { width: min(520px, calc(100% - 32px)); padding: clamp(28px, 5vw, 44px); border: 0; border-radius: var(--rayon); background: var(--surface); color: var(--encre); box-shadow: var(--ombre-haute); }
+.dialogue::backdrop { background: rgba(14, 18, 32, .55); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.dialogue[open] { animation: apparition 350ms var(--ressort); }
+.dialogue .tampon { position: static; display: inline-block; margin-bottom: 20px; font-size: 1.3rem; }
+.dialogue .actions { margin-top: 28px; }
+.dialogue form { margin: 0; }
+
 .tableau-defile { overflow-x: auto; background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); }
 .comparatif { width: 100%; border-collapse: collapse; min-width: 560px; }
 .comparatif th, .comparatif td { padding: 18px 24px; text-align: left; border-bottom: 1px solid var(--filet); }
@@ -340,7 +351,7 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .aide { margin: 8px 0 0; font-size: .98rem; color: var(--encre-2); }
 
 /* ---------- Le guichet ---------- */
-.guichet { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: start; }
+.guichet { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 28px; align-items: start; }
 .guichet-ecran { grid-row: span 2; background: #0A0D18; color: var(--jaune); border-radius: var(--rayon); padding: 40px; text-align: center; box-shadow: var(--ombre-haute), inset 0 0 0 1px #232A45; }
 .guichet-ecran-titre { margin: 0; color: #C3C8D9; letter-spacing: .14em; text-transform: uppercase; }
 .guichet-numero { font: 500 min(9rem, 22vw)/1 var(--mono); margin: 22px 0; letter-spacing: .04em; text-shadow: 0 0 24px rgba(255, 225, 77, .35); }
@@ -348,7 +359,7 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 @keyframes appel { 0%, 100% { opacity: 1; transform: none; } 30% { opacity: .2; transform: scale(.96); } }
 .carte-guichet { position: relative; background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 28px 32px; }
 .guichet-ticket-titre { margin: 0; color: var(--encre-2); text-transform: uppercase; letter-spacing: .1em; }
-.guichet-mon-numero { font: 800 3.8rem/1.05 var(--police); letter-spacing: -.04em; margin: 8px 0 16px; }
+.guichet-mon-numero { overflow-wrap: anywhere; font: 800 3.8rem/1.05 var(--police); letter-spacing: -.04em; margin: 8px 0 16px; }
 .guichet-infos { display: grid; gap: 12px; margin: 0 0 24px; }
 .guichet-infos dt { font-size: .9rem; color: var(--encre-2); }
 .guichet-infos dd { margin: 0; font-weight: 650; }
@@ -384,7 +395,12 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .espace-nav a:hover { background: color-mix(in srgb, var(--surface) 70%, transparent); }
 .espace-nav a[aria-current="page"] { background: var(--surface); box-shadow: 0 2px 6px rgba(0, 0, 0, .12); }
 .espace-nav .espace-nav-sortie { color: var(--encre-2); font-weight: 500; }
-@media (max-width: 560px) { .espace-nav ul { border-radius: 16px; } .espace-nav a { border-radius: 13px; } }
+@media (max-width: 760px) {
+  .espace-nav-in { flex-wrap: nowrap; flex-direction: column; align-items: stretch; gap: 8px; }
+  .espace-nav ul { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .espace-nav ul::-webkit-scrollbar { display: none; }
+  .espace-nav li { flex: none; }
+}
 
 /* ---------- Duel ---------- */
 .tableau-score { display: inline-grid; grid-template-columns: repeat(3, auto); background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); overflow: hidden; }
@@ -442,11 +458,12 @@ kbd { font-family: var(--mono); font-size: .85em; padding: 1px 7px; border: 1px 
 .pied-in { padding: 56px 0 48px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px 48px; align-items: start; }
 .pied-accroche { font-size: clamp(1.4rem, 2.6vw, 2rem); font-weight: 750; letter-spacing: -.025em; line-height: 1.2; color: var(--encre); margin: 0 0 12px; }
 .pied p { margin: 0; }
-.pied nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.pied nav ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
 .pied a { color: var(--encre); display: inline-block; padding: 8px 0; text-decoration: none; background: linear-gradient(var(--rouge), var(--rouge)) no-repeat 0 85% / 0 2px; transition: background-size 300ms var(--ressort); }
 .pied a:hover { background-size: 100% 2px; }
 .pied-mentions { grid-column: 1 / -1; padding-top: 24px; border-top: 1px solid var(--filet); font-size: .92rem; }
 @media (max-width: 760px) { .pied-in { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .pied nav ul { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 960px) {

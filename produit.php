@@ -47,8 +47,20 @@ include("includes/header.php");
       <li>Mais nous y pensons très fort</li>
       <li>Garantie : on a dit aucune</li>
     </ul>
-    <a class="btn btn-clair" href="contact.php">Nous contacter</a>
+    <!-- Sans JavaScript : simple lien vers le contact. Avec : fenêtre de « paiement » (js/site.js) -->
+    <a class="btn btn-clair" href="contact.php" data-ouvre-dialogue="dialogue-premium">Souscrire à Premium</a>
   </article>
+
+  <dialog class="dialogue" id="dialogue-premium" aria-labelledby="titre-premium">
+    <span class="tampon" aria-hidden="true">Refusé</span>
+    <h2 id="titre-premium">Paiement refusé</h2>
+    <p>Votre banque n'y est pour rien : c'est nous. Après examen de votre dossier, le cabinet estime que vous méritez mieux que la formule Premium.</p>
+    <p>Bonne nouvelle : la formule Illimitée est exactement la même, en gratuit.</p>
+    <div class="actions">
+      <a class="btn btn-tampon" href="<?= $lien_client ?>">Prendre l'Illimitée</a>
+      <form method="dialog"><button class="btn btn-clair" type="submit">Fermer</button></form>
+    </div>
+  </dialog>
 </section>
 
 <section class="conteneur">

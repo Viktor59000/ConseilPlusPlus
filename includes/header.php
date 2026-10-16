@@ -2,19 +2,39 @@
 // Attend, définis par la page :
 //   $titre       titre de l'onglet
 //   $description résumé pour les moteurs de recherche (meta description)
+//   $base        (facultatif) dossier racine du site, pour les pages servies à une autre adresse (erreur 404)
 //   $page        accueil | petit-moyen | formules | guichet | contact | client | espace | autre
 require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/theme.php';
 require_once __DIR__ . '/boucle.php';
+require_once __DIR__ . '/courriel.php'; // url_publique()
+// Adresse publique de la page (aperçus de partage, adresse canonique)
+$url_page = url_publique() . '/' . (basename($_SERVER['SCRIPT_NAME']) === 'index.php' ? '' : basename($_SERVER['SCRIPT_NAME']));
 $connecte = isset($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+<?php if (!empty($base)): ?>
+  <base href="<?= htmlspecialchars($base) ?>">
+<?php endif; ?>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= htmlspecialchars($titre) ?> — ConseilPlus+</title>
   <meta name="description" content="<?= htmlspecialchars($description ?? 'ConseilPlus+, le conseiller moyen : des conseils absurdes, délivrés avec le plus grand sérieux.') ?>">
+  <link rel="canonical" href="<?= htmlspecialchars($url_page) ?>">
+  <!-- Aperçu des liens partagés (WhatsApp, Discord, réseaux sociaux…) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ConseilPlus+">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="<?= htmlspecialchars($titre) ?> — ConseilPlus+">
+  <meta property="og:description" content="<?= htmlspecialchars($description ?? 'Des conseils absurdes, délivrés avec le plus grand sérieux.') ?>">
+  <meta property="og:url" content="<?= htmlspecialchars($url_page) ?>">
+  <meta property="og:image" content="<?= url_publique() ?>/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ConseilPlus+ : Des conseils. C'est déjà ça.">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/icons/favicon.ico" sizes="48x48">
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">

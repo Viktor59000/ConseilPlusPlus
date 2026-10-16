@@ -1,0 +1,19 @@
+# Garde le site éveillé : l'offre gratuite de Render endort le site après 15 minutes sans visite, et le premier
+# visiteur attend alors environ une minute. Une visite toutes les 10 minutes l'évite.
+# (Render offre 750 h par mois : assez pour un seul service allumé en permanence.)
+# GitHub peut retarder ou sauter des passes planifiées : le réveil n'est pas garanti à la minute près.
+name: Garde éveillé
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  visite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Visiter le site
+        run: |
+          curl --silent --show-error --max-time 120 -o /dev/null -w "HTTP %{http_code} en %{time_total} s\n" https://conseilplus.onrender.com/api/widget.php

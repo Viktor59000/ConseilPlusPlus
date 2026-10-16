@@ -50,7 +50,10 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 |---|---|
 | `index.php`, `produit.php`, `contact.php`, `login.php` | Pages publiques |
 | `petit-moyen.php` | Archives du mot (presque) du jour |
-| `conseil.php`, `consultation.php`, `duel.php`, `carnet.php` | Espace client (connecté) |
+| `conseil.php`, `consultation.php`, `duel.php`, `carnet.php`, `compte.php` | Espace client (connecté) ; `compte.php` = suppression du compte |
+| `mot-de-passe-oublie.php`, `reinitialiser.php`, `includes/compte.php` | Mot de passe oublié (lien par courriel, 1 h, usage unique) : **à côté** du code `auth/`, même méthode de hachage |
+| `mentions-legales.php`, `confidentialite.php`, `accessibilite.php`, `plan-du-site.php`, `erreur-404.php` | Pages légales, RGAA, plan, 404 (`ErrorDocument` dans `docker/apache.conf`) |
+| `robots.txt`, `sitemap.xml`, `assets/og-image.png` (modèle `tests/og-image.html`) | Référencement et aperçu des liens partagés |
 | `auth/` | Connexion, inscription, déconnexion (repris de l'ancien site : sel statique + SHA-512, NE PAS changer) |
 | `api/contacts.php` | REST des demandes de contact (POST public ; GET/PATCH/DELETE avec en-tête `X-API-Key`) |
 | `api/conseils.php` | Conseils aléatoires (public) |
@@ -67,7 +70,7 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `config.example.php` → `config.php` | Clés `API_KEY` et `GROQ_API_KEY` (ignoré par Git) |
 | `design-system/conseilplus/MASTER.md` | Charte graphique (source de vérité de la DA) |
 | `docs/API.md`, `docs/IDEES.md`, `docs/JOURNAL.md`, `docs/REPRISE.md`, `docs/DEPLOIEMENT.md` | Documentation |
-| `Dockerfile`, `docker/apache.conf`, `.github/workflows/reveil.yml` | Mise en ligne (Render + TiDB Cloud) et visite quotidienne |
+| `Dockerfile`, `docker/apache.conf`, `.github/workflows/reveil.yml`, `.github/workflows/garde-eveille.yml` | Mise en ligne (Render + TiDB Cloud), passes de contrôle toutes les 6 h, visite toutes les 10 min (site jamais endormi) |
 | `android/`, `.github/workflows/android.yml` | Appli Android (WebView + widget « Le Petit Moyen » via `api/widget.php?conseils=12`), APK construit par GitHub à chaque push touchant `android/` (seul code hors PHP/JS/HTML/CSS, voulu) |
 | `bureau/` | **Le Bureau**, logiciel de gestion séparé (base `gestion`), consomme l'API (`docs/BUREAU.md`) |
 | `guichet.php`, `js/guichet.js` | Le guichet (ticket, file absurde, fermeture à votre tour) |

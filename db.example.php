@@ -113,6 +113,15 @@ try {
             auth VARCHAR(40) NOT NULL,
             date_abonnement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
+
+        CREATE TABLE IF NOT EXISTS reinitialisations (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            id_utilisateur INT NOT NULL,
+            jeton CHAR(64) NOT NULL UNIQUE,
+            expire DATETIME NOT NULL,
+            date_demande DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
+        );
     ");
 
     // Migration : ajout du format « sketch » au mot du jour (bases créées avant cette version)

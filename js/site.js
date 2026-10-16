@@ -21,6 +21,24 @@
     });
   }
 
+  // ---------- Fenêtres : un lien [data-ouvre-dialogue="id"] ouvre le <dialog> au lieu de changer de page ----------
+  document.querySelectorAll('[data-ouvre-dialogue]').forEach((lien) => {
+    const dialogue = document.getElementById(lien.dataset.ouvreDialogue);
+    if (!dialogue || typeof dialogue.showModal !== 'function') return;
+    lien.addEventListener('click', (e) => {
+      e.preventDefault();
+      dialogue.showModal();
+      const tampon = dialogue.querySelector('.tampon');
+      if (tampon) { tampon.classList.remove('tampon-anime'); void tampon.offsetWidth; tampon.classList.add('tampon-anime'); }
+    });
+    // Un clic sur le fond assombri ferme la fenêtre (Échap aussi, nativement)
+    dialogue.addEventListener('click', (e) => {
+      const r = dialogue.getBoundingClientRect();
+      const dehors = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      if (e.target === dialogue && dehors) dialogue.close();
+    });
+  });
+
   // ---------- En-tête : filet dès qu'on a défilé ----------
   const entete = document.querySelector('.entete');
   if (entete) {

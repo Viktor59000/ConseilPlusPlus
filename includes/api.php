@@ -88,6 +88,10 @@ function journaliser(int $code): void
             'ip' => ip_client(),
             'application' => application_appelante(),
         ]);
+        // Données personnelles (adresses IP) : le journal ne garde que 90 jours (purge de temps en temps)
+        if (random_int(1, 100) === 1) {
+            $bdd->exec('DELETE FROM api_logs WHERE date_appel < NOW() - INTERVAL 90 DAY');
+        }
     } catch (PDOException $e) {
         error_log('ConseilPlus+ : journalisation API impossible (' . $e->getMessage() . ')');
     }

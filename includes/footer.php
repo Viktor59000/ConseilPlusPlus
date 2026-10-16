@@ -12,6 +12,8 @@
         <li><a href="accessibilite.php">Accessibilité : partiellement conforme</a></li>
         <li><a href="application.php">L'application mobile</a></li>
         <li><a href="contact.php">Nous contacter</a></li>
+        <li><a href="mentions-legales.php">Mentions légales</a></li>
+        <li><a href="confidentialite.php">Confidentialité</a></li>
       </ul>
     </nav>
     <p class="pied-mentions">© <?= date('Y') ?> ConseilPlus+, le conseiller moyen · Hommage non officiel à l'humour absurde · Polices Schibsted Grotesk et JetBrains Mono (licence OFL)</p>

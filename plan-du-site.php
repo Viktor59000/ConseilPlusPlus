@@ -35,10 +35,12 @@ include("includes/header.php");
       <li><a href="consultation.php">Consultation</a></li>
       <li><a href="duel.php">Le Duel</a></li>
       <li><a href="carnet.php">Mon carnet</a></li>
+      <li><a href="compte.php">Mon compte</a></li>
       <li><a href="auth/logout.php">Déconnexion</a></li>
 <?php else: ?>
       <li><a href="login.php">Connexion et création de compte</a></li>
-      <li>Une fois connecté : Mon conseil, Consultation, Le Duel, Mon carnet</li>
+      <li><a href="mot-de-passe-oublie.php">Mot de passe oublié</a></li>
+      <li>Une fois connecté : Mon conseil, Consultation, Le Duel, Mon carnet, Mon compte</li>
 <?php endif; ?>
     </ul>
   </section>
@@ -47,6 +49,8 @@ include("includes/header.php");
     <ul>
       <li><a href="application.php">L'application mobile</a></li>
       <li><a href="accessibilite.php">Accessibilité</a></li>
+      <li><a href="mentions-legales.php">Mentions légales</a></li>
+      <li><a href="confidentialite.php">Confidentialité</a></li>
       <li><a href="plan-du-site.php" aria-current="page">Plan du site</a></li>
     </ul>
   </section>

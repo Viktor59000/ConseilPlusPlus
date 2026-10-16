@@ -29,10 +29,10 @@ include("includes/header.php");
     <noscript><p class="guichet-ferme-texte">Le guichet est actuellement fermé. Horaires d'ouverture : de 8 h 59 à 9 h 01, du mardi au mardi.</p></noscript>
     <div data-machine hidden>
       <p class="mono guichet-ticket-titre">Votre ticket</p>
-      <p class="guichet-mon-numero" data-ticket>—</p>
+      <p class="guichet-mon-numero" data-ticket>Aucun</p>
       <dl class="guichet-infos">
-        <div><dt class="mono">Personnes devant vous</dt><dd data-devant>—</dd></div>
-        <div><dt class="mono">Attente estimée</dt><dd data-attente>—</dd></div>
+        <div><dt class="mono">Personnes devant vous</dt><dd data-devant>Inconnu, pour l'instant</dd></div>
+        <div><dt class="mono">Attente estimée</dt><dd data-attente>Inestimable</dd></div>
       </dl>
       <button type="button" class="btn btn-tampon" data-prendre>Prendre un ticket</button>
       <p class="guichet-tampon" data-ferme hidden>Guichet fermé</p>

@@ -43,7 +43,7 @@ include("includes/espace-nav.php");
   </article>
 
   <div class="actions">
-    <a class="btn btn-tampon" id="autre-conseil" href="conseil.php#recommandation">Demander un autre conseil</a>
+    <a class="btn btn-tampon" data-autre-conseil="#recommandation" href="conseil.php#recommandation">Demander un autre conseil</a>
     <button class="btn btn-clair" type="button" data-classer="#recommandation" data-source="generateur" hidden>Classer au dossier</button>
     <button class="btn btn-clair" type="button" data-partager="conseil" data-source="#recommandation" hidden>Partager</button>
   </div>

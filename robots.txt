@@ -1,0 +1,9 @@
+# ConseilPlus+ : les pages publiques peuvent être indexées ; l'API, Le Bureau et les comptes non.
+User-agent: *
+Disallow: /api/
+Disallow: /bureau/
+Disallow: /auth/
+Disallow: /tests/
+Disallow: /reinitialiser.php
+
+Sitemap: https://conseilplus.onrender.com/sitemap.xml

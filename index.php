@@ -23,20 +23,23 @@ include("includes/header.php");
     </div>
   </div>
 
-  <article class="fiche" aria-labelledby="fiche-titre">
+  <article class="fiche" id="copie-du-jour" aria-labelledby="fiche-titre">
     <span class="fiche-note entoure" aria-hidden="true"><span>C<sup>+</sup></span><?= boucle_stylo() ?></span>
     <header class="fiche-entete">
       <h2 id="fiche-titre">Conseil du jour</h2>
-      <span class="mono">Dossier n° <?= $conseil['dossier'] ?></span>
+      <span class="mono">Dossier n° <span data-conseil="dossier" data-dossier><?= $conseil['dossier'] ?></span></span>
     </header>
-    <p class="fiche-conseil">
-      <?= htmlspecialchars($conseil['situation']) ?>
-      <mark><?= htmlspecialchars($conseil['action']) ?></mark>
-      <?= htmlspecialchars($conseil['resultat']) ?>
+    <p class="fiche-conseil" aria-live="polite">
+      <span data-conseil="situation"><?= htmlspecialchars($conseil['situation']) ?></span>
+      <mark data-conseil="action"><?= htmlspecialchars($conseil['action']) ?></mark>
+      <span data-conseil="resultat"><?= htmlspecialchars($conseil['resultat']) ?></span>
     </p>
     <span class="tampon tampon-anime" aria-hidden="true">Validé</span>
     <p class="fiche-pied mono">Offert. Non remboursable.</p>
-    <button class="btn btn-clair btn-petit fiche-partager" type="button" data-partager="conseil" data-source=".hero .fiche" hidden>Partager ce conseil</button>
+    <div class="fiche-actions">
+      <button class="btn btn-tampon btn-petit" type="button" data-autre-conseil="#copie-du-jour" hidden>Un autre conseil</button>
+      <button class="btn btn-clair btn-petit" type="button" data-partager="conseil" data-source="#copie-du-jour" hidden>Partager</button>
+    </div>
   </article>
 </section>
 
@@ -82,6 +85,7 @@ include("includes/header.php");
   <a class="btn btn-tampon avance" href="contact.php">Nous contacter</a>
 </section>
 
+<script src="js/conseil.js" defer></script>
 <script src="js/mot-du-jour.js" defer></script>
 <script src="js/sketch.js" defer></script>
 <script src="js/partage.js" defer></script>

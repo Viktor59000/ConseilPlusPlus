@@ -20,7 +20,8 @@ en 2 à 4 minutes.
 | `certs/aiven-ca.pem` | Ancien certificat Aiven (inutile avec TiDB, qui utilise les autorités du système) |
 | `includes/courriel.php` | Gabarit HTML des courriels (logo, signature, tampon) et envoi par l'API Brevo |
 | `assets/email/` | Logo et icône PNG des courriels (servis par le site en ligne) |
-| `.github/workflows/reveil.yml` | Visite quotidienne du site (garde la base active, prépare le mot du lendemain) |
+| `.github/workflows/reveil.yml` | Passes toutes les 6 h : vérifie site et base, prépare le mot du lendemain, notification du matin |
+| `.github/workflows/garde-eveille.yml` | Visite toutes les 10 min : le site gratuit ne s'endort plus (750 h/mois offertes par Render, assez pour un service) |
 
 ## Variables d'environnement (Render → conseilplus → Environment)
 
@@ -64,7 +65,8 @@ du serveur (renouvellement mensuel).
 
 ## Limites des offres gratuites
 
-- **Render** : le site s'endort après 15 min sans visite ; la visite suivante attend environ une minute.
+- **Render** : le site s'endort après 15 min sans visite (la visite suivante attend environ une minute) ;
+  `garde-eveille.yml` le visite toutes les 10 min pour l'éviter (GitHub peut sauter quelques passes).
   Les sessions sont effacées à chaque endormissement ou déploiement (il faut parfois se reconnecter ;
   comptes et carnets restent en base).
 - **TiDB Cloud Serverless** : 5 Go de stockage et un quota mensuel de « Request Units », très au-dessus des besoins.
@@ -81,7 +83,7 @@ du serveur (renouvellement mensuel).
 | Déploiement en échec | Render → conseilplus → *Logs* (erreur de construction Docker) |
 | Page « Guichet momentanément fermé » (erreur 503) | Base injoignable : console TiDB Cloud → vérifier que le cluster est actif ; si le mot de passe a été régénéré, le reporter dans `DB_PASS` (Render). Le détail exact est dans Render → *Logs* (« base de données indisponible ») |
 | Le workflow *Réveil quotidien* échoue (e-mail de GitHub) | Même cause probable : le site répond 503 quand la base est injoignable |
-| Le site met une minute à s'afficher | Normal après 15 min d'inactivité (offre gratuite) |
+| Le site met une minute à s'afficher | Le site s'est endormi : vérifier que le workflow *Garde éveillé* tourne (onglet Actions de GitHub) |
 | Aucun courriel reçu après le formulaire de contact | `BREVO_API_KEY` / `BUREAU_EXPEDITEUR` dans Render ; Brevo → *Statistiques* → *Transactionnel* ; dossier Indésirables. Au plus 2 accusés par adresse et par jour |
 
 ## Exporter (sauvegarder) les bases
