@@ -10,6 +10,7 @@
       <ul>
         <li><a href="plan-du-site.php">Plan du site</a></li>
         <li><a href="accessibilite.php">Accessibilité : partiellement conforme</a></li>
+        <li><a href="messmerde.php">Les expériences de Messmerde</a></li>
         <li><a href="application.php">L'application mobile</a></li>
         <li><a href="developpeurs.php">L'API (développeurs)</a></li>
         <li><a href="contact.php">Nous contacter</a></li>

@@ -62,6 +62,14 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 
 ## Historique des sessions
 
+### 16/10/2026 — Second PC (Messmerde)
+- **Les expériences de Messmerde** (`messmerde.php`, `js/messmerde.js`) : le mentaliste du cabinet « devine » des évidences
+  en 7 expériences (nombre < 11, heure lue sur l'appareil, « celle-ci », le bouton, l'appareil, la lecture, le départ :
+  titre d'onglet « PRÉVU. »), tampon « PRÉVU », verdict « Bluffant / Moyennement bluffant », crédibilité qui ne fait que monter.
+  Concept repris d'une vidéo (faux mentaliste), gags et répliques inventés pour le site. Nom choisi par l'utilisateur.
+- Carte « Messmerde » dans Le cabinet (lien vers ses expériences) ; prompt du portrait dans `docs/IMAGES.md`
+  (`assets/equipe/messmerde.webp` à générer, monogramme en attendant). Liens : pied de page, plan du site ; test des pages.
+
 ### 16/10/2026 — PC principal (ménage de code)
 - Doublons supprimés : CSRF du Bureau (réutilise `includes/csrf.php`), délais estimés (`delai_estime()` dans
   `includes/textes.php`, liste dans `data/textes.php`), texte de l'accusé de réception (`accuse_reception()` dans

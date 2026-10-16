@@ -217,6 +217,8 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .membre-role { color: var(--rouge); margin: 0 0 14px; }
 .membre p { color: var(--encre-2); }
 .membre-fiche { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--filet); display: grid; gap: 6px; font-size: .95rem; }
+.membre-lien { margin: 14px 0 0; font-weight: 700; }
+.membre-lien a { color: var(--encre); text-decoration-color: var(--rouge); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .membre-fiche div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 12px; }
 .membre-fiche dt { color: var(--encre-2); }
 .membre-fiche dd { margin: 0 0 0 auto; font-weight: 600; text-align: right; overflow-wrap: anywhere; min-width: 0; }
@@ -418,6 +420,37 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .guichet-journal li:first-child { font-weight: 650; }
 .guichet-journal .mono { color: var(--encre-2); margin-right: 6px; }
 @media (max-width: 760px) { .guichet { grid-template-columns: minmax(0, 1fr); } .guichet-ecran { grid-row: auto; } }
+
+/* ---------- Les expériences de Messmerde ---------- */
+.messmerde { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.experience { position: relative; background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 32px 36px 40px; min-height: 360px; }
+.experience.nouvelle { animation: apparition 400ms var(--ressort); }
+.experience-num { margin: 0 0 6px; color: var(--encre-2); text-transform: uppercase; letter-spacing: .1em; }
+.experience h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: 10px; }
+.experience-consigne { font-size: 1.15rem; max-width: 46ch; }
+.experience-scene { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 20px 0; }
+.experience-revelation { font-size: clamp(1.3rem, 3vw, 1.7rem); font-weight: 750; letter-spacing: -.01em; min-height: 1.6em; margin: 20px 0 8px; max-width: 30ch; }
+.experience-revelation.concentre { color: var(--encre-2); font-style: italic; animation: concentre 900ms ease-in-out infinite alternate; }
+@keyframes concentre { to { opacity: .35; } }
+.experience-tampon { position: absolute; right: 28px; top: 28px; margin: 0; padding: 6px 16px; border: 3px double var(--rouge); border-radius: 8px; color: var(--rouge);
+  font: 700 1.2rem var(--mono); letter-spacing: .2em; text-transform: uppercase; transform: rotate(8deg); }
+.experience-tampon.tampon-anime { animation: clac-prevu 420ms var(--rebond) both; }
+@keyframes clac-prevu { 0% { transform: rotate(8deg) scale(2.2); opacity: 0; } 60% { transform: rotate(8deg) scale(.94); opacity: 1; } 100% { transform: rotate(8deg) scale(1); } }
+.experience-avis { border-top: 1px solid var(--filet); margin-top: 24px; padding-top: 16px; }
+.experience-avis .mono { margin: 0; color: var(--encre-2); text-transform: uppercase; letter-spacing: .1em; }
+.cartes { display: flex; gap: 16px; flex-wrap: wrap; }
+.carte-mystere { width: 104px; height: 150px; border-radius: var(--rayon-petit); border: 2px solid var(--encre); cursor: pointer;
+  background: repeating-linear-gradient(45deg, var(--surface-2) 0 10px, var(--surface) 10px 20px); color: var(--encre);
+  font: 700 .95rem var(--mono); text-transform: uppercase; transition: transform 300ms var(--ressort), opacity 300ms; }
+.carte-mystere:hover:not(:disabled) { transform: translateY(-6px) rotate(-2deg); }
+.carte-mystere.retournee { background: var(--jaune); color: var(--encre-fixe); transform: translateY(-6px); }
+.carte-mystere.ecartee { opacity: .35; }
+.credibilite { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 24px 28px; text-align: center; position: sticky; top: 110px; }
+.credibilite .mono { margin: 0; color: var(--encre-2); text-transform: uppercase; letter-spacing: .1em; }
+.credibilite-valeur { font: 800 3.6rem/1.1 var(--police); letter-spacing: -.04em; margin: 8px 0; }
+.credibilite.monte .credibilite-valeur { animation: clac 420ms var(--rebond); }
+@media (max-width: 760px) { .messmerde { grid-template-columns: minmax(0, 1fr); } .credibilite { position: static; } .experience { padding: 28px 24px 32px; } .experience-tampon { top: auto; bottom: 20px; } }
+@media (prefers-reduced-motion: reduce) { .experience-tampon.tampon-anime, .experience-revelation.concentre, .experience.nouvelle, .credibilite.monte .credibilite-valeur { animation: none; } }
 
 /* ---------- Application mobile ---------- */
 .installation-etat { font-weight: 600; min-height: 1.5em; margin-top: 16px; }
