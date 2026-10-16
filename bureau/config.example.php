@@ -15,7 +15,7 @@ define('BUREAU_DB_NAME', getenv('BUREAU_DB_NAME') ?: 'gestion');
 // sinon les mêmes que le site
 define('BUREAU_DB_USER', getenv('BUREAU_DB_USER') ?: (getenv('DB_USER') ?: 'root'));
 define('BUREAU_DB_PASS', getenv('BUREAU_DB_PASS') ?: (getenv('DB_PASS') ?: ''));
-define('BUREAU_DB_SSL_CA', getenv('DB_SSL_CA') ?: ''); // chemin depuis la racine du site (connexion chiffrée en ligne)
+define('BUREAU_DB_SSL_CA', getenv('DB_SSL_CA') ?: ''); // chemin depuis la racine du site, ou absolu (connexion chiffrée en ligne)
 
 // Envoi des réponses par email : Brevo (API HTTPS, gratuit jusqu'à 300 mails par jour).
 // Render bloque le SMTP sur l'offre gratuite, d'où l'API. Sans clé, la réponse est seulement archivée dans le dossier.

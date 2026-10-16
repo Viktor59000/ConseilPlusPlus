@@ -8,7 +8,8 @@ date_default_timezone_set('Europe/Paris');
 
 $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC];
 if (BUREAU_DB_SSL_CA !== '') {
-    $options[PDO::MYSQL_ATTR_SSL_CA] = __DIR__ . '/../../' . BUREAU_DB_SSL_CA;
+    // chemin absolu (certificats du système) ou relatif à la racine du site
+    $options[PDO::MYSQL_ATTR_SSL_CA] = str_starts_with(BUREAU_DB_SSL_CA, '/') ? BUREAU_DB_SSL_CA : __DIR__ . '/../../' . BUREAU_DB_SSL_CA;
 }
 
 try {

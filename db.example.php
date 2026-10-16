@@ -12,9 +12,10 @@ $pass = getenv('DB_PASS') ?: '';
 
 $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
 // Base distante (Aiven) : connexion chiffrée, vérifiée avec le certificat public de l'hébergeur
-// (DB_SSL_CA = chemin depuis la racine du site, par exemple certs/aiven-ca.pem)
+// DB_SSL_CA = chemin depuis la racine du site (certs/aiven-ca.pem) ou chemin absolu
+// (/etc/ssl/certs/ca-certificates.crt : certificats du système, pour TiDB Cloud)
 if ($ca = getenv('DB_SSL_CA')) {
-    $options[PDO::MYSQL_ATTR_SSL_CA] = __DIR__ . '/' . $ca;
+    $options[PDO::MYSQL_ATTR_SSL_CA] = str_starts_with($ca, '/') ? $ca : __DIR__ . '/' . $ca;
 }
 
 try {

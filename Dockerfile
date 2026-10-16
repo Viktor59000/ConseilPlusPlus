@@ -3,8 +3,9 @@
 FROM php:8.3-apache
 
 # Extensions utilisées par le site : PDO MySQL, intl (dates en français, tri alphabétique)
+# ca-certificates : certificats du système, pour la connexion chiffrée à la base (TiDB Cloud)
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libicu-dev \
+    && apt-get install -y --no-install-recommends libicu-dev ca-certificates \
     && docker-php-ext-install pdo_mysql intl \
     && rm -rf /var/lib/apt/lists/* \
     && a2enmod remoteip headers \
