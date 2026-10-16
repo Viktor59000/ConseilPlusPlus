@@ -1,0 +1,5 @@
+# Sous WAMP (PHP en module Apache) : limite des essais, exécutée avant le code du cours (includes/limite-connexion.php).
+# En ligne, la même directive est dans docker/apache.conf (ce fichier y est ignoré).
+<IfModule php_module>
+    php_value auto_prepend_file "../includes/limite-connexion.php"
+</IfModule>

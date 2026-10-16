@@ -41,6 +41,8 @@ include("includes/header.php");
     <p class="alerte alerte-ok" role="status">Votre compte et votre carnet ont été supprimés. Le cabinet vous regrette, moyennement.</p>
 <?php elseif ($erreur === 'session'): ?>
     <p class="alerte alerte-erreur" role="alert">Le formulaire a expiré. Merci de le renvoyer.</p>
+<?php elseif ($erreur === 'trop'): ?>
+    <p class="alerte alerte-erreur" role="alert">Trop d'essais en peu de temps. Le guichet fait une pause : réessayez dans un quart d'heure, ou utilisez « Mot de passe oublié ».</p>
 <?php elseif ($erreur === '1'): ?>
     <p class="alerte alerte-erreur" role="alert">Email ou mot de passe incorrect. Vérifiez votre saisie, ou créez un compte ci-contre.</p>
 <?php endif; ?>

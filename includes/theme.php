@@ -14,6 +14,20 @@ function theme_script(): string
         . "d.classList.add('avec-js')})()</script>";
 }
 
+/**
+ * Politique de sécurité du contenu (CSP) : seuls les fichiers du site sont chargés ; le seul script écrit dans la
+ * page (celui du thème) est autorisé par son empreinte. Les styles intégrés restent permis (feuille intégrée,
+ * largeurs des barres du Bureau). À envoyer avant tout affichage.
+ */
+function envoyer_csp(): void
+{
+    $script = preg_replace('#^<script>|</script>$#', '', theme_script());
+    $empreinte = base64_encode(hash('sha256', $script, true));
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-$empreinte'; "
+        . "style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; "
+        . "manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
+}
+
 function theme_bouton(): string
 {
     return '<button class="theme-bouton" type="button" data-theme-bouton aria-label="Passer en thème sombre" hidden>'

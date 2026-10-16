@@ -12,6 +12,8 @@ RUN apt-get update \
     && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY docker/apache.conf /etc/apache2/conf-enabled/conseilplus.conf
+# Cookies de session protégés, version de PHP masquée (docker/securite.ini)
+COPY docker/securite.ini $PHP_INI_DIR/conf.d/securite.ini
 COPY . /var/www/html/
 
 # Les fichiers de configuration lisent les variables d'environnement (valeurs locales par défaut)

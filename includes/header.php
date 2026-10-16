@@ -12,6 +12,7 @@ require_once __DIR__ . '/courriel.php'; // url_publique()
 // Adresse publique de la page (aperçus de partage, adresse canonique)
 $url_page = url_publique() . '/' . (basename($_SERVER['SCRIPT_NAME']) === 'index.php' ? '' : basename($_SERVER['SCRIPT_NAME']));
 $connecte = isset($_SESSION['user_id']);
+envoyer_csp();
 ?>
 <!DOCTYPE html>
 <html lang="fr">

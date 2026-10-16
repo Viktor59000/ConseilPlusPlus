@@ -2,6 +2,8 @@
 // En-tête des pages du Bureau. Attend $titre et, si un agent est connecté, $agent et $page (tableau | dossiers | journal).
 $agent ??= null;
 $page ??= '';
+require_once __DIR__ . '/../../includes/theme.php';
+envoyer_csp();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
