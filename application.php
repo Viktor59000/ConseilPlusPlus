@@ -123,5 +123,5 @@ $formules = [
   </details>
 </section>
 
-<script src="js/notifications.js" defer></script>
+<script src="<?= fichier_versionne('js/notifications.js') ?>" defer></script>
 <?php include("includes/footer.php"); ?>

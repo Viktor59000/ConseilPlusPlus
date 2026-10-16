@@ -15,6 +15,19 @@ function theme_script(): string
 }
 
 /**
+ * Adresse d'un script avec l'empreinte de son contenu (« js/site.js?v=1a2b3c4d ») : après une mise à jour,
+ * l'adresse change, donc le navigateur et le service worker chargent la nouvelle version tout de suite
+ * au lieu de garder l'ancienne en cache. $chemin : depuis la page (« js/… » ou « ../js/… » pour Le Bureau).
+ */
+function fichier_versionne(string $chemin): string
+{
+    static $empreintes = [];
+    $fichier = __DIR__ . '/../' . preg_replace('#^(\.\./)+#', '', $chemin);
+    $empreintes[$fichier] ??= is_file($fichier) ? substr(md5_file($fichier), 0, 8) : '0';
+    return $chemin . '?v=' . $empreintes[$fichier];
+}
+
+/**
  * Politique de sécurité du contenu (CSP) : seuls les fichiers du site sont chargés ; le seul script écrit dans la
  * page (celui du thème) est autorisé par son empreinte. Les styles intégrés restent permis (feuille intégrée,
  * largeurs des barres du Bureau). À envoyer avant tout affichage.

@@ -21,8 +21,8 @@
   </div>
 </footer>
 <script type="application/json" id="textes-site"><?= json_encode(['onglet' => textes()['onglet_absent'], 'secrets' => textes()['secrets']], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
-<script src="js/theme.js" defer></script>
-<script src="js/site.js" defer></script>
-<script src="js/pwa.js" defer></script>
+<script src="<?= fichier_versionne('js/theme.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/site.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/pwa.js') ?>" defer></script>
 </body>
 </html>

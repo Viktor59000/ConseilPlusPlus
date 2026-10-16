@@ -127,7 +127,7 @@ function aria_erreur(array $erreurs, string $champ): string
     <button class="btn btn-clair" type="button" data-classer="#verdict" data-source="<?= $resultat['source'] ?>" hidden>Classer au dossier</button>
   </div>
 </section>
-<script src="js/carnet.js" defer></script>
+<script src="<?= fichier_versionne('js/carnet.js') ?>" defer></script>
 <?php else: ?>
 <section class="conteneur guichets">
   <form class="formulaire" action="consultation.php" method="POST" novalidate aria-labelledby="titre-questionnaire">

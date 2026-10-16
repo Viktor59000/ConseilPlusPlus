@@ -49,8 +49,8 @@ include("includes/espace-nav.php");
   </div>
 </section>
 
-<script src="js/conseil.js" defer></script>
-<script src="js/carnet.js" defer></script>
-<script src="js/partage.js" defer></script>
+<script src="<?= fichier_versionne('js/conseil.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/carnet.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
 
 <?php include("includes/footer.php"); ?>

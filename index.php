@@ -94,10 +94,10 @@ include("includes/header.php");
   <a class="btn btn-tampon avance" href="contact.php">Nous contacter</a>
 </section>
 
-<script src="js/conseil.js" defer></script>
-<script src="js/mot-du-jour.js" defer></script>
-<script src="js/sketch.js" defer></script>
-<script src="js/partage.js" defer></script>
-<script src="js/votes.js" defer></script>
+<script src="<?= fichier_versionne('js/conseil.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/mot-du-jour.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/sketch.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/votes.js') ?>" defer></script>
 
 <?php include("includes/footer.php"); ?>

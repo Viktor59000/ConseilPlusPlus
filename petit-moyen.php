@@ -86,7 +86,7 @@ include("includes/header.php");
 </section>
 <?php endif; ?>
 
-<script src="js/sketch.js" defer></script>
-<script src="js/partage.js" defer></script>
-<script src="js/votes.js" defer></script>
+<script src="<?= fichier_versionne('js/sketch.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
+<script src="<?= fichier_versionne('js/votes.js') ?>" defer></script>
 <?php include("includes/footer.php"); ?>

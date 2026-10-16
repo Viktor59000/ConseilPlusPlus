@@ -192,6 +192,6 @@ include("includes/espace-nav.php");
 <?php endif; ?>
 </section>
 
-<script src="js/duel.js" defer></script>
+<script src="<?= fichier_versionne('js/duel.js') ?>" defer></script>
 
 <?php include("includes/footer.php"); ?>

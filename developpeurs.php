@@ -80,5 +80,5 @@ $acces = [
   <a class="btn btn-tampon avance" href="contact.php">Demander une clé</a>
 </section>
 
-<script src="js/api-doc.js" defer></script>
+<script src="<?= fichier_versionne('js/api-doc.js') ?>" defer></script>
 <?php include("includes/footer.php"); ?>

@@ -45,5 +45,5 @@ include("includes/header.php");
   </div>
 </section>
 
-<script src="js/guichet.js" defer></script>
+<script src="<?= fichier_versionne('js/guichet.js') ?>" defer></script>
 <?php include("includes/footer.php"); ?>
