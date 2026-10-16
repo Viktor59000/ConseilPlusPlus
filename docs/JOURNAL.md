@@ -39,7 +39,8 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
    **vérifié en ligne le 15/10** (via Brevo, expéditeur = boîte perso de l'utilisateur ; une adresse dédiée au
    cabinet pourra la remplacer : la vérifier dans Brevo puis changer `BUREAU_EXPEDITEUR` dans Render).
 3. Améliorations possibles de l'API : webhook (prévenir Le Bureau à chaque nouvelle demande au lieu du relevé).
-4. Vérifier sur téléphone le standard (musique d'attente), les attestations (partage de l'image) et l'horoscope.
+4. Vérifier sur téléphone le standard (musique d'attente), les attestations (partage de l'image) et l'horoscope ;
+   tester les nouvelles pages avec un lecteur d'écran (NVDA, TalkBack).
 
 ## Points ouverts
 
@@ -76,6 +77,10 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 - **API** : pagination/tri/filtres (`GET /contacts.php?page=…`, réponse sans `page` inchangée pour Le Bureau), alias `/api/v1/`
   (`api/.htaccess`, `a2enmod rewrite` dans le Dockerfile, `tests/routeur.php` pour la CI), `api/openapi.php`,
   clés par application (`api_cles`, `api/cles.php`, `bureau/cles.php`), export réservé à la clé maîtresse. Tests complétés.
+- **Vérifications** : Lighthouse en ligne (profil mobile) : diagnostic, attestations, standard 100/100/100/100 ;
+  Messmerde 99/100/100/100 (portrait servi en 3 tailles) ; accueil 98 à 100 selon la latence de Render (sur `/` : le test sur
+  `/index.php` donne SEO 92 à cause de la balise canonique vers `/`, normal). Focus clavier corrigé chez Messmerde et dans les
+  attestations, `accessibilite.php` mis à jour, barre du Bureau sur une ligne. Tests GitHub verts.
 
 ### 16/10/2026 — Second PC (Messmerde)
 - **Les expériences de Messmerde** (`messmerde.php`, `js/messmerde.js`) : le mentaliste du cabinet « devine » des évidences
