@@ -213,6 +213,9 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 /* Le cabinet : l'équipe */
 .equipe { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 24px; }
 .membre { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 28px; }
+.membre-photo { display: block; width: calc(100% + 56px); max-width: none; height: auto; aspect-ratio: 1; margin: -28px -28px 22px; border-radius: var(--rayon) var(--rayon) 0 0; object-fit: cover; background: #F5F6FA; transition: transform 500ms var(--ressort); }
+.membre { overflow: hidden; }
+.membre:hover .membre-photo { transform: scale(1.03); }
 .membre-portrait { display: grid; place-items: center; width: 96px; height: 96px; margin-bottom: 20px; border-radius: 50%; object-fit: cover; background: var(--surface-2); }
 .membre-monogramme { font: 800 2.6rem var(--police); color: var(--encre); background: var(--surface-2); }
 .membre-monogramme svg { inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); }

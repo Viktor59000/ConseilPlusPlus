@@ -26,7 +26,7 @@ $t = textes();
     $portrait = 'assets/equipe/' . $m['cle'] . '.webp'; ?>
     <li class="membre">
 <?php if (is_file(__DIR__ . '/' . $portrait)): ?>
-      <img class="membre-portrait" src="<?= $portrait ?>" alt="" width="320" height="320" loading="lazy">
+      <img class="membre-photo" src="<?= $portrait ?>" alt="" width="640" height="640" loading="lazy" decoding="async">
 <?php else: ?>
       <span class="membre-portrait membre-monogramme entoure" aria-hidden="true"><?= htmlspecialchars(mb_strtoupper(mb_substr(preg_replace('/^(Le |La )/', '', $m['nom']), 0, 1))) ?><?= boucle_stylo() ?></span>
 <?php endif; ?>
