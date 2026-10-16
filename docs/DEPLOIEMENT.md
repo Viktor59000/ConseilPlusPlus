@@ -21,7 +21,7 @@ en 2 à 4 minutes.
 | `includes/courriel.php` | Gabarit HTML des courriels (logo, signature, tampon) et envoi par l'API Brevo |
 | `assets/email/` | Logo et icône PNG des courriels (servis par le site en ligne) |
 | `.github/workflows/reveil.yml` | Passes toutes les 6 h : vérifie site et base, prépare le mot du lendemain, notification du matin |
-| `.github/workflows/garde-eveille.yml` | Visite toutes les 10 min : le site gratuit ne s'endort plus (750 h/mois offertes par Render, assez pour un service) |
+| `.github/workflows/garde-eveille.yml` | Un passage de près de 6 h relancé chaque heure, qui visite le site toutes les 9 min : le site gratuit ne s'endort plus (750 h/mois offertes par Render, assez pour un service) |
 
 ## Variables d'environnement (Render → conseilplus → Environment)
 
@@ -66,7 +66,7 @@ du serveur (renouvellement mensuel).
 ## Limites des offres gratuites
 
 - **Render** : le site s'endort après 15 min sans visite (la visite suivante attend environ une minute) ;
-  `garde-eveille.yml` le visite toutes les 10 min pour l'éviter (GitHub peut sauter quelques passes).
+  `garde-eveille.yml` le visite toutes les 9 min pour l'éviter (passage de près de 6 h, relayé par la passe horaire suivante : GitHub sautait les passes de 10 min).
   Les sessions sont effacées à chaque endormissement ou déploiement (il faut parfois se reconnecter ;
   comptes et carnets restent en base).
 - **TiDB Cloud Serverless** : 5 Go de stockage et un quota mensuel de « Request Units », très au-dessus des besoins.

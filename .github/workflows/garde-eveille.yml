@@ -1,19 +1,33 @@
 # Garde le site éveillé : l'offre gratuite de Render endort le site après 15 minutes sans visite, et le premier
-# visiteur attend alors environ une minute. Une visite toutes les 10 minutes l'évite.
-# (Render offre 750 h par mois : assez pour un seul service allumé en permanence.)
-# GitHub peut retarder ou sauter des passes planifiées : le réveil n'est pas garanti à la minute près.
+# visiteur attend alors environ une minute. (Render offre 750 h par mois : assez pour un seul service allumé en permanence.)
+#
+# GitHub retarde ou saute souvent les passes planifiées fréquentes (« toutes les 10 minutes » ne passait qu'une fois par
+# jour). On fait donc l'inverse : un seul passage reste allumé presque 6 heures (limite de GitHub) et visite le site toutes
+# les 9 minutes. Une passe est planifiée chaque heure : grâce au groupe « concurrency », elle attend la fin du passage en
+# cours puis prend aussitôt le relais. Il suffit qu'une passe démarre une fois de temps en temps pour que la garde continue.
+# Dépôt public : les minutes de GitHub Actions sont gratuites.
 name: Garde éveillé
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '7 * * * *'
   workflow_dispatch:
+
+concurrency:
+  group: garde-eveille
+  cancel-in-progress: false
 
 jobs:
   visite:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 355
     steps:
-      - name: Visiter le site
+      - name: Visiter le site toutes les 9 minutes pendant 5 h 45
         run: |
-          curl --silent --show-error --max-time 120 -o /dev/null -w "HTTP %{http_code} en %{time_total} s\n" https://conseilplus.onrender.com/api/widget.php
+          fin=$(( $(date +%s) + 345 * 60 ))
+          while [ "$(date +%s)" -lt "$fin" ]; do
+            curl --silent --show-error --max-time 120 -o /dev/null \
+              -w "$(date +%H:%M) HTTP %{http_code} en %{time_total} s\n" \
+              https://conseilplus.onrender.com/api/widget.php || true
+            sleep 540
+          done

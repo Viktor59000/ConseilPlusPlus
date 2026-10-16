@@ -64,12 +64,11 @@ include("includes/header.php");
   <ul class="horoscope">
 <?php foreach ($horoscope as $s): ?>
     <li class="signe">
-      <p class="signe-symbole" aria-hidden="true"><?= $s['symbole'] ?></p>
       <h3><?= htmlspecialchars($s['nom']) ?> <span class="signe-dates mono"><?= htmlspecialchars($s['dates']) ?></span></h3>
       <p class="signe-prediction"><?= htmlspecialchars($s['prediction']) ?></p>
       <p class="signe-infos mono">Chiffre : <?= $s['chiffre'] ?> · Couleur : <?= htmlspecialchars($s['couleur']) ?></p>
       <button type="button" class="btn btn-clair btn-petit" hidden data-partager="texte" data-nom="horoscope-<?= $s['cle'] ?>"
-        data-titre="<?= htmlspecialchars($s['symbole'] . ' ' . $s['nom']) ?>" data-texte="<?= htmlspecialchars($s['prediction']) ?>"
+        data-titre="<?= htmlspecialchars($s['nom']) ?>" data-texte="<?= htmlspecialchars($s['prediction']) ?>"
         data-detail="Chiffre porte-bonheur : <?= $s['chiffre'] ?>. Couleur : <?= htmlspecialchars($s['couleur']) ?>."
         data-etiquette="L'horoscope de Messmerde — <?= date('d/m/Y') ?>" data-url="messmerde.php#horoscope">Partager</button>
     </li>

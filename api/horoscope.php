@@ -2,7 +2,7 @@
 /**
  * api/horoscope.php — L'horoscope de Messmerde (une prédiction évidente par signe et par jour).
  *
- * GET                    → 200 { date, signes: [ { cle, nom, symbole, dates, prediction, chiffre, couleur } ] }
+ * GET                    → 200 { date, signes: [ { cle, nom, dates, prediction, chiffre, couleur } ] }
  * GET ?signe=belier      → 200 { date, cle, nom, … } | 404 signe inconnu
  * GET ?date=AAAA-MM-JJ   → l'horoscope d'un jour passé (pas de prédiction à l'avance : même Messmerde a ses limites)
  *

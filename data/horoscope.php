@@ -3,18 +3,18 @@
 // Tirage déterministe selon la date (includes/horoscope.php) : le même horoscope pour tout le monde dans la journée.
 return [
     'signes' => [
-        ['cle' => 'belier', 'nom' => 'Bélier', 'symbole' => '♈', 'dates' => '21 mars – 19 avril'],
-        ['cle' => 'taureau', 'nom' => 'Taureau', 'symbole' => '♉', 'dates' => '20 avril – 20 mai'],
-        ['cle' => 'gemeaux', 'nom' => 'Gémeaux', 'symbole' => '♊', 'dates' => '21 mai – 20 juin'],
-        ['cle' => 'cancer', 'nom' => 'Cancer', 'symbole' => '♋', 'dates' => '21 juin – 22 juillet'],
-        ['cle' => 'lion', 'nom' => 'Lion', 'symbole' => '♌', 'dates' => '23 juillet – 22 août'],
-        ['cle' => 'vierge', 'nom' => 'Vierge', 'symbole' => '♍', 'dates' => '23 août – 22 septembre'],
-        ['cle' => 'balance', 'nom' => 'Balance', 'symbole' => '♎', 'dates' => '23 septembre – 22 octobre'],
-        ['cle' => 'scorpion', 'nom' => 'Scorpion', 'symbole' => '♏', 'dates' => '23 octobre – 21 novembre'],
-        ['cle' => 'sagittaire', 'nom' => 'Sagittaire', 'symbole' => '♐', 'dates' => '22 novembre – 21 décembre'],
-        ['cle' => 'capricorne', 'nom' => 'Capricorne', 'symbole' => '♑', 'dates' => '22 décembre – 19 janvier'],
-        ['cle' => 'verseau', 'nom' => 'Verseau', 'symbole' => '♒', 'dates' => '20 janvier – 18 février'],
-        ['cle' => 'poissons', 'nom' => 'Poissons', 'symbole' => '♓', 'dates' => '19 février – 20 mars'],
+        ['cle' => 'belier', 'nom' => 'Bélier', 'dates' => '21 mars – 19 avril'],
+        ['cle' => 'taureau', 'nom' => 'Taureau', 'dates' => '20 avril – 20 mai'],
+        ['cle' => 'gemeaux', 'nom' => 'Gémeaux', 'dates' => '21 mai – 20 juin'],
+        ['cle' => 'cancer', 'nom' => 'Cancer', 'dates' => '21 juin – 22 juillet'],
+        ['cle' => 'lion', 'nom' => 'Lion', 'dates' => '23 juillet – 22 août'],
+        ['cle' => 'vierge', 'nom' => 'Vierge', 'dates' => '23 août – 22 septembre'],
+        ['cle' => 'balance', 'nom' => 'Balance', 'dates' => '23 septembre – 22 octobre'],
+        ['cle' => 'scorpion', 'nom' => 'Scorpion', 'dates' => '23 octobre – 21 novembre'],
+        ['cle' => 'sagittaire', 'nom' => 'Sagittaire', 'dates' => '22 novembre – 21 décembre'],
+        ['cle' => 'capricorne', 'nom' => 'Capricorne', 'dates' => '22 décembre – 19 janvier'],
+        ['cle' => 'verseau', 'nom' => 'Verseau', 'dates' => '20 janvier – 18 février'],
+        ['cle' => 'poissons', 'nom' => 'Poissons', 'dates' => '19 février – 20 mars'],
     ],
 
     'predictions' => [
@@ -58,5 +58,5 @@ return [
         "Vous entendrez un bruit. Probablement normal.",
     ],
 
-    'couleurs' => ['le bleu, ou une couleur voisine', 'une couleur', 'le gris moyen', 'le beige administratif', 'celle de vos chaussettes', 'le rouge tampon', 'le jaune surligneur'],
+    'couleurs' => ['le bleu, ou une couleur voisine', 'une couleur', 'le gris moyen', 'le beige administratif', 'celle de vos chaussettes'],
 ];
