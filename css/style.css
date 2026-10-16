@@ -484,6 +484,16 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
   font: 700 1rem var(--mono); letter-spacing: .18em; text-transform: uppercase; transform: rotate(7deg); }
 @media (max-width: 760px) { .diagnostic-tampon { position: static; display: inline-block; margin-bottom: 12px; } .diagnostic-resultat { padding: 28px 24px; } }
 
+/* ---------- Les attestations ---------- */
+.attestation { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 32px; align-items: start; }
+.attestation-demande { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 26px 28px; display: grid; gap: 8px; }
+.attestation-demande h2 { font-size: 1.3rem; margin-bottom: 8px; }
+.attestation-demande label { font-weight: 650; margin-top: 8px; }
+.attestation-demande select, .attestation-demande input { width: 100%; min-height: 48px; padding: 10px 14px; border-radius: var(--rayon-petit); border: 1px solid var(--contour); background: var(--surface); color: var(--encre); font: inherit; }
+.attestation-apercu img { display: block; width: 100%; height: auto; border-radius: var(--rayon-petit); box-shadow: var(--ombre-haute); background: #fff; }
+.attestation-apercu.tamponne img { animation: apparition 500ms var(--ressort); }
+@media (max-width: 860px) { .attestation { grid-template-columns: minmax(0, 1fr); } }
+
 /* ---------- Le standard téléphonique ---------- */
 .standard { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 32px; align-items: start; }
 .telephone { background: var(--surface); border-radius: 36px; box-shadow: var(--ombre-haute); padding: 24px; }

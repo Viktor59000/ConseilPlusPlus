@@ -81,6 +81,11 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `bureau/` | **Le Bureau**, logiciel de gestion séparé (base `gestion`), consomme l'API (`docs/BUREAU.md`) |
 | `guichet.php`, `js/guichet.js` | Le guichet (ticket, file absurde, fermeture à votre tour) |
 | `messmerde.php`, `js/messmerde.js` | Les expériences de Messmerde, mentaliste du cabinet : 20 « prédictions » évidentes (7 tirées par séance) dont un interrogatoire, tampon « PRÉVU » |
+| `standard.php`, `js/standard.js` | Le standard téléphonique de Mireille (clavier, musique d'attente WebAudio, file qui finit à la machine à café) |
+| `includes/horoscope.php`, `data/horoscope.php`, `api/horoscope.php` | Horoscope de Messmerde (déterministe par jour, 12 signes, API GET) |
+| `diagnostic.php`, `data/diagnostic.php` | « Quel client êtes-vous ? » du conseiller (formulaire GET, toujours moyen) |
+| `attestation.php`, `js/attestation.js`, `data/attestations.php` | Attestations officielles du tampon, dessinées dans le navigateur (rien envoyé au serveur) |
+| Lore | Chaque membre de l'équipe (`data/textes.php`, clé `lien`) tient un service du site |
 | `js/partage.js` | Partage d'un conseil / d'un mot (image story générée dans le navigateur) |
 | `api/votes.php`, `js/votes.js` | Votes « Moyen » / « Pas moyen » (palmarès lu par Le Bureau) |
 | `api/notifications.php`, `includes/push.php`, `js/notifications.js` | Notification quotidienne du mot du jour (Web Push sans dépendance, clés VAPID en base) |
