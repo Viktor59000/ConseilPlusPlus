@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) 
         $erreur = 'Cochez la case de confirmation pour supprimer votre compte.';
     } else {
         // Effacement explicite (les clés étrangères ne sont pas appliquées partout : MyISAM sous WAMP)
-        foreach (['carnet', 'reinitialisations'] as $table) {
+        foreach (['carnet', 'reinitialisations', 'duels'] as $table) {
             $bdd->prepare("DELETE FROM $table WHERE id_utilisateur = ?")->execute([$utilisateur]);
         }
         $bdd->prepare('DELETE FROM utilisateurs WHERE id = ?')->execute([$utilisateur]);

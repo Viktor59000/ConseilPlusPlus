@@ -62,6 +62,15 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 
 ## Historique des sessions
 
+### 16/10/2026 — PC principal (sécurité, tests, Bureau)
+- Sécurité sans toucher à `auth/` : cookies de session protégés, HSTS, CSP (empreinte du script du thème), X-Frame-Options,
+  Permissions-Policy, limite des essais de connexion / inscription (vérifiée : 11e essai refusé). Contrôlé en ligne.
+- Tests GitHub à chaque push (`tests.yml`, MySQL réel) : verts. Courriel « mot de passe oublié » vérifié en ligne (délivré).
+- Le Bureau : page Statistiques (nouvel endpoint `api/statistiques.php`), trois tons de réponse. La recherche existait déjà.
+- Duel : tableau d'honneur (table `duels`, prénom seulement, effacé avec le compte). Le Petit Moyen : mots préférés du public.
+- À faire par l'utilisateur : régénérer les clés Groq, Brevo et `API_KEY` (passées par la conversation), supprimer le compte
+  Aiven, tester widget et notification sur un vrai téléphone, passage au lecteur d'écran (RGAA « totalement conforme »).
+
 ### 16/10/2026 — PC principal (contenu)
 - Textes tournants (`data/textes.php`) : 16 tampons, 14 mentions, note de service selon le jour et 15 dates
   particulières, 24 témoignages de clients inventés (accueil, formules, cabinet), FAQ passée de 3 à 10 questions.

@@ -35,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 annoncer('Dossier pris en charge. Il est désormais « en cours d\'examen », ce qui ne garantit rien.');
                 break;
             case 'rediger':
-                $brouillon = rediger_reponse($dossier, $agent['nom']);
+                $ton = array_key_exists($_POST['ton'] ?? '', TONS_REPONSE) ? $_POST['ton'] : 'standard';
+                $brouillon = rediger_reponse($dossier, $agent['nom'], $ton);
                 $valeurs['statut'] = $dossier['statut'] === 'a_traiter' ? 'en_cours' : $dossier['statut'];
                 break;
             case 'enregistrer':
@@ -127,6 +128,12 @@ include("includes/haut.php");
       <?= csrf_champ() ?>
       <label for="reponse">Texte de la réponse</label>
       <textarea id="reponse" name="reponse" rows="16" maxlength="5000" placeholder="Utilisez « Rédiger une réponse » : le cabinet propose un texte, que vous pouvez corriger."><?= htmlspecialchars($reponse) ?></textarea>
+      <label for="ton">Ton de la réponse proposée</label>
+      <select id="ton" name="ton">
+<?php foreach (TONS_REPONSE as $cle => $libelle): ?>
+        <option value="<?= $cle ?>"<?= ($_POST['ton'] ?? 'standard') === $cle ? ' selected' : '' ?>><?= $libelle ?></option>
+<?php endforeach; ?>
+      </select>
       <div class="actions">
         <button class="btn btn-clair" name="action" value="rediger" type="submit" formnovalidate><?= $reponse ? 'Proposer une autre réponse' : 'Rédiger une réponse' ?></button>
         <button class="btn btn-clair" name="action" value="enregistrer" type="submit">Enregistrer le brouillon</button>

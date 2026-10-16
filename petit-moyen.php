@@ -19,6 +19,11 @@ $numero = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, ['options' => ['m
 $feuillet = $pages[$numero - 1];
 $autre = ($numero + random_int(1, $total - 1) - 1) % $total + 1; // une autre page, jamais la même
 
+// Palmarès du public : les mots qui ont reçu le plus de « Moyen » (au moins un vote positif)
+$palmares = $bdd->query("SELECT mot, SUM(vote = 'moyen') AS moyen, SUM(vote = 'pas_moyen') AS pas_moyen
+                         FROM votes GROUP BY mot HAVING moyen > 0
+                         ORDER BY moyen - pas_moyen DESC, moyen DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
+
 $titre = 'Le Petit Moyen';
 $description = 'Le Petit Moyen, dictionnaire officieux de ConseilPlus+ : un mot (presque) du jour, défini avec une précision moyenne.';
 $page = 'petit-moyen';
@@ -54,6 +59,23 @@ include("includes/header.php");
 </section>
 
 <?php if ($archives): ?>
+<?php if ($palmares): ?>
+<section class="conteneur" aria-labelledby="titre-palmares">
+  <p class="etiquette">Votes du public</p>
+  <h2 id="titre-palmares">Les mots préférés du public</h2>
+  <ol class="honneur">
+<?php foreach ($palmares as $i => $p): ?>
+    <li>
+      <span class="honneur-rang<?= $i === 0 ? ' entoure' : '' ?>" aria-hidden="true"><?= $i + 1 ?><?= $i === 0 ? boucle_stylo() : '' ?></span>
+      <strong><?= htmlspecialchars($p['mot']) ?></strong>
+      <span>Moyen <?= (int) $p['moyen'] ?> · Pas moyen <?= (int) $p['pas_moyen'] ?></span>
+      <span></span>
+    </li>
+<?php endforeach; ?>
+  </ol>
+</section>
+
+<?php endif; ?>
 <section class="conteneur" aria-labelledby="titre-archives">
   <h2 id="titre-archives">Les jours précédents</h2>
   <ul class="archives">

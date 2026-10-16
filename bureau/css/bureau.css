@@ -113,3 +113,18 @@ textarea { line-height: 1.5; resize: vertical; }
 .sauvegarde > div:first-child { max-width: 56ch; }
 .sauvegarde .actions { margin-top: 0; }
 .sauvegarde form { margin: 0; }
+
+/* Statistiques de l'API : histogramme par jour (hauteur en variable CSS) et choix de la période */
+.periode { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--surface-2); }
+.periode a { padding: 8px 16px; border-radius: 999px; font-weight: 600; text-decoration: none; color: var(--encre); }
+.periode a[aria-current="page"] { background: var(--surface); box-shadow: 0 2px 6px rgba(0, 0, 0, .12); }
+.histogramme { list-style: none; margin: 12px 0 0; padding: 0; display: flex; align-items: flex-end; gap: 6px; height: 220px; }
+.histogramme li { flex: 1 1 0; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; }
+.histogramme-barre { width: 100%; height: var(--h); min-height: 2px; border-radius: 6px 6px 2px 2px; background: var(--bouton); transform-origin: bottom; animation: monte 700ms var(--ressort) both; }
+.histogramme-valeur { min-height: 1em; }
+/* Dates : une sur deux sur 14 jours, une sur cinq sur 30 jours (lisibles, sans chevauchement) */
+.histogramme[data-jours="14"] li:nth-child(even) .histogramme-jour,
+.histogramme[data-jours="30"] li:not(:nth-child(5n+1)) .histogramme-jour { color: transparent; }
+.histogramme-valeur, .histogramme-jour { font-size: .72rem; color: var(--encre-2); white-space: nowrap; }
+@keyframes monte { from { transform: scaleY(0); } }
+@media (max-width: 760px) { .histogramme li:nth-child(even) .histogramme-jour, .histogramme li:nth-child(even) .histogramme-valeur { color: transparent; } }

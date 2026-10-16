@@ -62,8 +62,15 @@ function conseil_du_cabinet(): string
     return $r['data']['conseil'] ?? 'Patientez. Si cela ne suffit pas, patientez davantage.';
 }
 
-/** Projet de réponse officielle, à relire et modifier par l'agent avant envoi. */
-function rediger_reponse(array $dossier, string $agent): string
+/** Tons de réponse proposés à l'agent (dossier.php). */
+const TONS_REPONSE = [
+    'standard' => 'Standard',
+    'administratif' => 'Très administratif',
+    'chaleureux' => 'Chaleureux (moyennement)',
+];
+
+/** Projet de réponse officielle, à relire et modifier par l'agent avant envoi. $ton : clé de TONS_REPONSE. */
+function rediger_reponse(array $dossier, string $agent, string $ton = 'standard'): string
 {
     $date = (new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE, 'Europe/Paris'))
         ->format(new DateTime($dossier['date_demande']));
@@ -73,13 +80,31 @@ function rediger_reponse(array $dossier, string $agent): string
         'Demande de conseil' => 'Votre demande de conseil a été examinée par un conseiller moyennement qualifié.',
         default => 'Votre demande, dont la nature nous échappe encore, a été examinée avec le plus grand sérieux.',
     };
-    return "Madame, Monsieur {$dossier['nom']},\n\n"
-        . "Le cabinet ConseilPlus+ accuse réception de votre demande n° {$dossier['id_site']} du $date.\n"
-        . "$objet\n\n"
-        . "Après délibération, voici notre recommandation :\n"
-        . '« ' . conseil_du_cabinet() . " »\n\n"
-        . "Nous restons à votre disposition, dans la limite de nos disponibilités, qui sont limitées.\n"
-        . "Veuillez agréer l'expression de nos salutations moyennes.";
+    $conseil = '« ' . conseil_du_cabinet() . ' »';
+    $numero = $dossier['id_site'];
+    return match ($ton) {
+        'administratif' => "Objet : suite à donner à votre demande n° $numero (réf. CP+/$numero/B-12)\n\n"
+            . "Madame, Monsieur {$dossier['nom']},\n\n"
+            . "Conformément aux dispositions de la procédure interne en vigueur, et après instruction de votre demande "
+            . "enregistrée le $date, nous avons l'honneur de porter à votre connaissance les éléments suivants.\n"
+            . "$objet\n\n"
+            . "Article 1 : la recommandation du cabinet est la suivante :\n$conseil\n"
+            . "Article 2 : la présente réponse est susceptible de recours, dans un délai compris entre 3 jours et jamais.\n"
+            . "Article 3 : le service courrier est chargé de l'exécution de la présente.\n\n"
+            . "Nous vous prions d'agréer, Madame, Monsieur, l'assurance de notre considération distinguée, et moyenne.",
+        'chaleureux' => "Bonjour {$dossier['nom']} !\n\n"
+            . "Merci beaucoup pour votre demande n° $numero du $date : elle a illuminé notre matinée, ou au moins notre pause café.\n"
+            . "$objet\n\n"
+            . "Voici notre conseil, préparé avec tout le soin dont nous sommes à peu près capables :\n$conseil\n\n"
+            . "N'hésitez pas à revenir vers nous. Nous hésiterons un peu à vous répondre, mais nous finirons par le faire.\n"
+            . "Bien moyennement à vous.",
+        default => "Madame, Monsieur {$dossier['nom']},\n\n"
+            . "Le cabinet ConseilPlus+ accuse réception de votre demande n° $numero du $date.\n"
+            . "$objet\n\n"
+            . "Après délibération, voici notre recommandation :\n$conseil\n\n"
+            . "Nous restons à votre disposition, dans la limite de nos disponibilités, qui sont limitées.\n"
+            . "Veuillez agréer l'expression de nos salutations moyennes.",
+    };
     // La signature (nom de l'agent, adresse, tampon) est ajoutée automatiquement à l'envoi : includes/courriel.php
 }
 

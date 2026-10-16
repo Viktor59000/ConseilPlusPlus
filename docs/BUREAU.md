@@ -34,6 +34,12 @@ Sans ces réglages, « Archiver et classer » garde la réponse dans le dossier 
 (adresse invalide, quota atteint), le dossier reste ouvert avec la réponse enregistrée, pour réessayer.
 Colonne `envoi` du dossier : `envoye`, `archive` ou `echec`.
 
+## Statistiques et tons de réponse
+
+- **Statistiques** (`bureau/statistiques.php`) : appels à l'API par jour (7, 14 ou 30 jours), ressources, codes de réponse,
+  applications appelantes. Lu par l'API elle-même (`GET /api/statistiques.php`, clé requise).
+- **Ton de la réponse** proposée dans un dossier : standard, très administratif (articles, références) ou chaleureux (moyennement).
+
 ## Sauvegardes
 
 Tableau de bord → carte « Sauvegardes » : un clic télécharge un fichier `.sql` complet.

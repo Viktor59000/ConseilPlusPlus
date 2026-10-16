@@ -114,6 +114,18 @@ try {
             date_abonnement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
 
+        CREATE TABLE IF NOT EXISTS duels (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            id_utilisateur INT NOT NULL,
+            prenom VARCHAR(100) NOT NULL,
+            joueur SMALLINT NOT NULL,
+            cabinet SMALLINT NOT NULL,
+            manches SMALLINT NOT NULL,
+            victoire TINYINT(1) NOT NULL,
+            date_partie DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX (victoire, manches)
+        );
+
         CREATE TABLE IF NOT EXISTS reinitialisations (
             id INT AUTO_INCREMENT PRIMARY KEY,
             id_utilisateur INT NOT NULL,

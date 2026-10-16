@@ -86,6 +86,17 @@ du serveur (renouvellement mensuel).
 | Le site met une minute à s'afficher | Le site s'est endormi : vérifier que le workflow *Garde éveillé* tourne (onglet Actions de GitHub) |
 | Aucun courriel reçu après le formulaire de contact | `BREVO_API_KEY` / `BUREAU_EXPEDITEUR` dans Render ; Brevo → *Statistiques* → *Transactionnel* ; dossier Indésirables. Au plus 2 accusés par adresse et par jour |
 
+## Sécurité en ligne
+
+- `docker/securite.ini` : cookies de session `HttpOnly`, `Secure`, `SameSite=Lax`, mode strict ; version de PHP masquée.
+- `docker/apache.conf` : HSTS (HTTPS obligatoire), `X-Frame-Options: DENY`, `Permissions-Policy`, version d'Apache masquée.
+- Politique de contenu (CSP) envoyée par PHP (`envoyer_csp()` dans `includes/theme.php`) : seuls les fichiers du site ; le seul
+  script intégré (thème) est autorisé par son empreinte. **Ajouter un script dans une page = le mettre dans un fichier `js/`.**
+- Limite des essais (`includes/limite-connexion.php`) : 10 connexions par quart d'heure et 5 inscriptions par heure et par
+  adresse IP, exécutée juste avant `auth/` (code du cours non modifié) par `auto_prepend_file` (Apache en ligne,
+  `auth/.htaccess` sous WAMP).
+- Tests automatiques à chaque push (`.github/workflows/tests.yml`) : syntaxe PHP, pages (`tests/test_pages.php`), API, Web Push.
+
 ## Exporter (sauvegarder) les bases
 
 **Le plus simple** : Le Bureau (en local ou en ligne) → tableau de bord → carte « Sauvegardes » →

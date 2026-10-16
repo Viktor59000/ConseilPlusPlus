@@ -1,5 +1,5 @@
 <?php
-// En-tête des pages du Bureau. Attend $titre et, si un agent est connecté, $agent et $page (tableau | dossiers | journal).
+// En-tête des pages du Bureau. Attend $titre et, si un agent est connecté, $agent et $page (tableau | dossiers | journal | statistiques).
 $agent ??= null;
 $page ??= '';
 require_once __DIR__ . '/../../includes/theme.php';
@@ -33,7 +33,8 @@ envoyer_csp();
     <nav class="nav" aria-label="Navigation du Bureau">
       <a href="tableau.php"<?= $page === 'tableau' ? ' aria-current="page"' : '' ?>>Tableau de bord</a>
       <a href="dossiers.php"<?= $page === 'dossiers' ? ' aria-current="page"' : '' ?>>Dossiers</a>
-      <a href="journal.php"<?= $page === 'journal' ? ' aria-current="page"' : '' ?>>Journal des relevés</a>
+      <a href="journal.php"<?= $page === 'journal' ? ' aria-current="page"' : '' ?>>Relevés</a>
+      <a href="statistiques.php"<?= $page === 'statistiques' ? ' aria-current="page"' : '' ?>>Statistiques</a>
     </nav>
     <form class="agent" method="post" action="deconnexion.php">
       <?= csrf_champ() ?>

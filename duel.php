@@ -58,11 +58,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             $partie['mot'] = au_hasard(array_diff(duel_donnees()['mots_imposes'], [$mot]));
+            if ($partie['gagnant'] !== null) {
+                // Partie terminée : résultat gardé pour le tableau d'honneur (prénom seulement)
+                $bdd->prepare('INSERT INTO duels (id_utilisateur, prenom, joueur, cabinet, manches, victoire) VALUES (?, ?, ?, ?, ?, ?)')
+                    ->execute([$_SESSION['user_id'], $_SESSION['prenom'], $partie['joueur'], $partie['cabinet'], $partie['manches'],
+                        (int) ($partie['gagnant'] === 'joueur')]);
+            }
         }
     }
 }
 
 $suggestion = au_hasard(duel_donnees()['suggestions']);
+
+// Tableau d'honneur : les victoires les plus rapides, et le bilan du cabinet
+$honneur = $bdd->query('SELECT prenom, joueur, manches, date_partie FROM duels WHERE victoire = 1
+                        ORDER BY manches, joueur DESC, date_partie LIMIT 5')->fetchAll(PDO::FETCH_ASSOC);
+$bilan = $bdd->query('SELECT COUNT(*) AS parties, COALESCE(SUM(victoire = 0), 0) AS cabinet FROM duels')->fetch(PDO::FETCH_ASSOC);
 $titre = 'Le Duel';
 $description = 'Affrontez le cabinet ConseilPlus+ en 100 points, à coups de phrases absurdes. Règlement disponible sur demande, puis égaré.';
 $page = 'espace';
@@ -157,6 +168,28 @@ include("includes/espace-nav.php");
       <button class="lien-action" type="submit" name="nouvelle_partie" value="1">Recommencer la partie</button>
     </form>
   </aside>
+</section>
+
+<section class="conteneur" aria-labelledby="titre-honneur">
+  <p class="etiquette">Tableau d'honneur</p>
+  <h2 id="titre-honneur">Les victoires les plus rapides</h2>
+<?php if (!$honneur): ?>
+  <p class="aide">Personne n'a encore battu le cabinet. Le cabinet n'en tire aucune fierté particulière, mais il le note.</p>
+<?php else: ?>
+  <ol class="honneur">
+<?php foreach ($honneur as $i => $h): ?>
+    <li>
+      <span class="honneur-rang<?= $i === 0 ? ' entoure' : '' ?>" aria-hidden="true"><?= $i + 1 ?><?= $i === 0 ? boucle_stylo() : '' ?></span>
+      <strong><?= htmlspecialchars($h['prenom']) ?></strong>
+      <span><?= (int) $h['manches'] ?> manche<?= $h['manches'] > 1 ? 's' : '' ?> · <?= (int) $h['joueur'] ?> points</span>
+      <span class="mono"><?= (new DateTime($h['date_partie']))->format('d/m/Y') ?></span>
+    </li>
+<?php endforeach; ?>
+  </ol>
+<?php endif; ?>
+<?php if ($bilan['parties']): ?>
+  <p class="aide">Bilan officiel : <?= (int) $bilan['parties'] ?> partie<?= $bilan['parties'] > 1 ? 's' : '' ?> terminée<?= $bilan['parties'] > 1 ? 's' : '' ?>, dont <?= (int) $bilan['cabinet'] ?> gagnée<?= $bilan['cabinet'] > 1 ? 's' : '' ?> par le cabinet, qui estime ce chiffre « moyennement représentatif ».</p>
+<?php endif; ?>
 </section>
 
 <script src="js/duel.js" defer></script>

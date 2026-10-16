@@ -86,6 +86,14 @@ au premier appel et gardées dans la table `reglages`. Seuls les services de not
 Windows) sont acceptés. L'envoi part au plus une fois par jour ; il est déclenché chaque matin par `reveil.yml`.
 Test : `php tests/test_push.php`.
 
+## Statistiques — `api/statistiques.php`
+
+| Méthode | Paramètres | Réponse |
+|---|---|---|
+| `GET` (clé requise) | `?jours=14` (1 à 90) | `200 { jours, total, erreurs, par_jour[], par_ressource[], par_code[], par_application[] }` |
+
+Totaux tirés du journal `api_logs` (aucune adresse IP renvoyée). Affichés par Le Bureau, page « Statistiques ».
+
 ## Sauvegarde — `api/export.php`
 
 | Méthode | Paramètres | Réponse |

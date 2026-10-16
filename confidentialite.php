@@ -23,6 +23,8 @@ include("includes/header.php");
     <li><strong>Compte client</strong> : prénom, nom, adresse email et mot de passe (enregistré sous forme chiffrée, jamais en clair).
       Sert à l'espace client. Conservé jusqu'à la suppression du compte.</li>
     <li><strong>Mon carnet</strong> : les conseils que vous classez. Supprimés avec le compte.</li>
+    <li><strong>Le Duel</strong> : le score de vos parties terminées. Vos victoires peuvent apparaître au tableau d'honneur,
+      visible des autres clients, avec votre prénom seulement. Supprimé avec le compte.</li>
     <li><strong>Formulaire de contact</strong> : nom, adresse email et message. Sert à vous répondre (accusé de réception et réponse
       par courriel). Conservé le temps du traitement, puis archivé ; supprimé sur simple demande.</li>
     <li><strong>Votes « Moyen / Pas moyen »</strong> : aucune donnée personnelle, seulement une empreinte anonyme qui empêche

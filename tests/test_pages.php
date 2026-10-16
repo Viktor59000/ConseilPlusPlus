@@ -12,9 +12,9 @@ $pages = [
     'accessibilite.php' => 200, 'mentions-legales.php' => 200, 'confidentialite.php' => 200,
     'mot-de-passe-oublie.php' => 200, 'reinitialiser.php' => 200, 'erreur-404.php' => 404,
     // pages réservées : redirection vers la connexion
-    'conseil.php' => 302, 'carnet.php' => 302, 'compte.php' => 302,
+    'conseil.php' => 302, 'carnet.php' => 302, 'compte.php' => 302, 'duel.php' => 302, 'bureau/statistiques.php' => 302,
     // API publique et API protégée
-    'api/conseils.php' => 200, 'api/widget.php' => 200, 'api/export.php' => 401, 'api/contacts.php' => 401,
+    'api/conseils.php' => 200, 'api/widget.php' => 200, 'api/export.php' => 401, 'api/contacts.php' => 401, 'api/statistiques.php' => 401,
     'bureau/connexion.php' => 200,
 ];
 $echecs = 0;

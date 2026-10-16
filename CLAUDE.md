@@ -67,6 +67,9 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `includes/csrf.php`, `includes/http.php`, `includes/header.php`, `includes/espace-nav.php` | Commun |
 | `data/*.php` | Banques de contenu (fragments, kamoulox, cadres, questions, duel, mots, sketchs, textes) |
 | `data/textes.php`, `includes/textes.php` | Petits textes tournants : tampons, mentions, note de service (jour / dates), témoignages, équipe, valeurs, FAQ, titres d'onglet, conseils secrets |
+| `includes/limite-connexion.php`, `auth/.htaccess`, `docker/securite.ini` | Sécurité autour du code du cours : limite des essais (avant `auth/`), cookies protégés |
+| `api/statistiques.php`, `bureau/statistiques.php` | Statistiques d'usage de l'API, affichées dans Le Bureau |
+| `.github/workflows/tests.yml`, `tests/test_pages.php` | Tests automatiques à chaque push |
 | `cabinet.php` | Le cabinet : équipe (portraits facultatifs `assets/equipe/<cle>.webp`), valeurs, chiffres, témoignages |
 | `db.example.php` → `db.php` | Connexion + création/migration automatique des tables (ignoré par Git) |
 | `config.example.php` → `config.php` | Clés `API_KEY` et `GROQ_API_KEY` (ignoré par Git) |
