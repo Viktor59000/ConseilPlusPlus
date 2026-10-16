@@ -1,72 +1,99 @@
 # ConseilPlus+ — Charte (source de vérité)
 
+Refonte du 16/10/2026, menée avec le skill `apple-design` (Human Interface Guidelines d'Apple : principes,
+accessibilité, couleur, typographie, mise en page). Ancienne direction : « brutalisme administratif ».
+
 ## Concept
-Un cabinet de conseil qui se prend pour une administration : formulaires, tampons, numéros de dossier.
-Le ton est sérieux, le fond est absurde. Le site ne fait jamais de clin d'œil : c'est le décalage qui fait rire.
+Un cabinet de conseil qui se prend très au sérieux. **Le sérieux d'une grande maison, au service d'un conseil absurde** :
+l'emballage est irréprochable (sobre, aligné, net), le contenu est n'importe quoi. Le site ne fait jamais de clin d'œil :
+c'est le décalage qui fait rire.
+
+**Signature** : tout est droit, sauf le **tampon** rouge (« Validé », « Le plus choisi par erreur », découpage des sketchs)
+et le « + » du logo. Ce sont les deux seuls éléments de travers : ils font de leur mieux.
 
 ## Nom et logo
-- **ConseilPlus+** — signature : **Le conseiller moyen**
-- Monogramme **C++** : la contraction Conseil + Plus + « + ». Le dernier « + » est posé de travers (−15°) : il fait de son mieux.
-- Fichiers sources : `branding/` (monogramme, nom, logo horizontal, icône carrée, versions négatives).
-  Favicon et icônes web : `assets/icons/`. Logo du site : `assets/logo.svg`.
-- Le logo est toujours en `--encre` (ou `--papier` sur fond sombre). Jamais de « + » rouge seul : il évoquerait l'emblème de la Croix-Rouge.
-- Accroche : « Des conseils. C'est déjà ça. »
+- **ConseilPlus+** — signature : **Le conseiller moyen**. Accroche : « Des conseils. C'est déjà ça. »
+- Monogramme **C++** ; le dernier « + » est posé de travers (−15°).
+- Fichiers : `branding/` (sources), `assets/logo.svg` (clair) et `assets/logo-negatif.svg` (sombre, via `<picture>`),
+  icônes web dans `assets/icons/`, PNG des courriels dans `assets/email/`.
+- Le logo n'apparaît qu'une fois par page (en-tête). Jamais de « + » rouge seul (emblème de la Croix-Rouge).
 
 ## Voix
 - Vouvoiement, phrases courtes, vocabulaire administratif (« dossier », « traitement », « conformément à »).
 - Assurance totale, compétence nulle.
-- Les conseils naissent de la combinaison de 3 fragments sans rapport : situation + action + résultat.
+- Boutons : un verbe qui dit ce qui se passe (« Envoyer ma demande », « Créer mon compte »).
 
-## Couleurs (tokens CSS)
-| Token | Hex | Usage |
-|---|---|---|
-| `--papier` | `#F4EFE4` | Fond de page |
-| `--carte` | `#FFFDF7` | Cartes, champs |
-| `--encre` | `#1B2440` | Texte, bordures, ombres |
-| `--encre-douce` | `#4A5270` | Texte secondaire (contraste 6.9:1 sur papier) |
-| `--tampon` | `#C8102E` | Tampons, CTA principal, erreurs (jamais dans le logo) |
-| `--surligneur` | `#FFE14D` | Mise en avant de mots, formule recommandée |
-| `--ok` | `#1E6B3A` | Messages de succès |
+## Couleurs (tokens CSS, `css/style.css`)
+Chaque couleur a un rôle ; le mode sombre suit le réglage du système (pas de bouton de thème, comme le demandent les HIG).
 
-Pas de dégradés. Pas d'autres couleurs.
+| Token | Clair | Sombre | Rôle | Contraste |
+|---|---|---|---|---|
+| `--fond` | `#F5F5F7` | `#000000` | Fond de page | — |
+| `--surface` | `#FFFFFF` | `#1C1C1E` | Cartes, champs | — |
+| `--surface-2` | `#E8E8ED` | `#2C2C2E` | Contrôles segmentés | — |
+| `--texte` | `#1D1D1F` | `#F5F5F7` | Texte | 15,5:1 / 19,3:1 |
+| `--texte-2` | `#6E6E73` | `#A1A1A6` | Texte secondaire | 4,7:1 / 6,6:1 |
+| `--contour` | `#8E8E93` | `#8E8E93` | Bord des champs | 3,3:1 / 5,2:1 (RGAA 3.3) |
+| `--accent` | `#1B2440` | `#C9D3FF` | Marine du logo : action principale, focus | 15,3:1 / 10,4:1 avec `--sur-accent` |
+| `--tampon` | `#C8102E` | `#FF6B78` | Tampons, erreurs, actions destructives | 5,9:1 / 6,2:1 |
+| `--surligneur` | `#FFE14D` | `#FFE14D` | Mot mis en avant (texte `#1D1D1F` dessus) | 12,9:1 |
+| `--ok` | `#1E6B3A` | `#4CD07D` | Succès | 6,5:1 / 8,6:1 |
+
+Pas de dégradé. Le marine est réservé aux actions principales (pas de décor).
 
 ## Typographie
-- Titres : **Archivo Black** (une seule graisse, majuscules réservées aux tampons)
-- Texte : **IBM Plex Sans** 400/600, 17px, interligne 1.55
-- Données / numéros de dossier / labels : **IBM Plex Mono** 500
+Polices du système (San Francisco sur Apple, Segoe UI sur Windows, Roboto sur Android) : rien à télécharger.
+- Titres : graisse 700, interlettrage −0,02 à −0,03 em. `h1` jusqu'à 4,75 rem (accueil).
+- Texte : 17 px (1,0625 rem), interligne 1,5. Jamais en dessous de 0,75 rem.
+- Données (numéros de dossier, dates, tampons) : `ui-monospace`.
+- Tailles en `rem` : le texte suit le réglage du navigateur (testé à 200 %).
 
-## Formes et effets (style : brutalisme administratif)
-- Angles vifs (0px), bordure 2px `--encre`.
-- Ombre dure décalée : `4px 4px 0 var(--encre)`. Au survol, le bouton « s'enfonce » (translate 2px, ombre 2px).
-- Tampons : texte mono en majuscules, cadre double rouge, rotation -6° à -12°.
-- Surligneur : fond jaune sur la moitié basse du mot.
-- Mouvement minimal : seul le tampon du conseil s'anime (« clac » de 250ms). Désactivé si `prefers-reduced-motion`.
+## Formes
+- Cartes : rayon 20 px, sans bordure, ombre très légère (aucune en sombre).
+- Boutons en pilule, hauteur 48 px (44 px pour `.btn-petit`) : `.btn-tampon` = action principale (plein, marine),
+  `.btn-clair` = action secondaire (contour). Une seule action principale par zone.
+- Champs : rayon 12 px, bord 1 px `--contour`, étiquette au-dessus, focus = contour 3 px `--accent`.
+- Contrôle segmenté (sous-menu de l'espace client, votes) : fond `--surface-2`, segment actif en `--surface`.
+- En-tête : barre collante translucide (seule couche « verre » du site), opaque si le système réduit la transparence.
 
-## Règles UX (issues de ui-ux-pro-max)
-- Labels visibles sur tous les champs, jamais de placeholder seul.
-- Retour visible après chaque envoi de formulaire (succès / erreur avec la marche à suivre).
-- Focus clavier visible (outline 3px `--tampon`).
-- Cibles tactiles ≥ 44px, pas de défilement horizontal, testé à 375 / 768 / 1440px.
-- Pas d'emoji en guise d'icône.
+## Mouvement
+Un seul moment : le tampon se pose (« clac », 250 ms). Plus la lecture des sketchs et le guichet qui clignote deux fois.
+Tout est coupé si le système demande de réduire les animations.
 
-## Navigation
-- Menu principal (toutes les pages) : Accueil · Nos formules · Contact · [Espace client] / [Mon espace] une fois connecté.
-- Sous-menu de l'espace client (bandeau marine, `includes/espace-nav.php`) : Mon conseil · Consultation · Le Duel · Mon carnet · Déconnexion.
-- Chaque page ne garde que ses propres actions (pas de boutons de navigation en double).
-
-## Performance et qualité
-- Lighthouse : 100 / 100 / 100 / 100 (performance, accessibilité, bonnes pratiques, SEO) sur les 8 pages, profil mobile.
-- Polices hébergées sur le site (`assets/fonts`, sous-ensemble latin, préchargées), feuille de style intégrée à la page.
-- Chaque page définit `$description` (meta description).
+## Navigation (architecture)
+- **En-tête** (toutes les pages) : logo (= accueil) · Le mot du jour · Nos formules · Le guichet · Contact ·
+  [Espace client] / [Mon espace]. Sous 760 px, menu repliable (bouton « Menu », `aria-expanded`, Échap ;
+  déplié si JavaScript est absent).
+- **Sous-menu de l'espace client** (`includes/espace-nav.php`) : Mon conseil · Consultation · Le Duel · Mon carnet · Déconnexion.
+- **Pied** : Plan du site · Accessibilité : partiellement conforme · L'application mobile · Nous contacter.
+- Page courante signalée par `aria-current` (souligné, pas seulement une couleur).
 
 ## Pages
 | Page | Fichier | Rôle |
 |---|---|---|
-| Accueil | `index.php` | Accroche, fonctionnement, conseil gratuit, contact |
+| Accueil | `index.php` | Conseil du jour, mot du jour, méthode, contact |
+| Le Petit Moyen | `petit-moyen.php` | Mot (presque) du jour, archives, feuilleter |
 | Nos formules | `produit.php` | 3 formules, comparatif, FAQ |
-| Contact | `contact.php` | Formulaire enregistré dans la table `contacts` (source de l'API) |
+| Le guichet | `guichet.php` | Ticket, file d'attente absurde |
+| Contact | `contact.php` | Formulaire envoyé à l'API (`contacts`), accusé de réception par courriel |
 | Espace client | `login.php` | Connexion / inscription |
-| Mon conseil | `conseil.php` | Générateur réservé aux clients connectés |
+| Mon conseil | `conseil.php` | Générateur réservé aux clients |
 | Consultation | `consultation.php` | Questionnaire inutile + verdict IA |
-| Le Duel | `duel.php` | Partie en 100 points contre le cabinet (barème caché) |
+| Le Duel | `duel.php` | Partie en 100 points (barème caché) |
 | Mon carnet | `carnet.php` | Conseils classés |
+| Application mobile | `application.php` | Installation (PWA), notifications, widget KWGT |
+| Plan du site | `plan-du-site.php` | Second moyen de navigation (RGAA 12.1) |
+| Accessibilité | `accessibilite.php` | Déclaration d'accessibilité RGAA 4.1 |
+
+## Accessibilité (RGAA 4.1)
+- Contrastes ci-dessus, en clair et en sombre ; focus visible partout ; lien d'évitement « Aller au contenu ».
+- Formulaires : étiquette visible, « Tous les champs sont obligatoires » (ou mention « facultatif »), erreur en texte
+  (préfixe « Erreur : »), reliée au champ (`aria-describedby`, `aria-invalid`), bord rouge épais en plus de la couleur.
+- Affichage à 320 px sans défilement horizontal, texte à 200 % sans perte (vérifié par script, clair et sombre).
+- Cibles tactiles de 44 px au minimum. Pas d'emoji en guise d'icône.
+- Mettre à jour `accessibilite.php` (état, date, non-conformités) après chaque audit.
+
+## Performance et qualité
+- Lighthouse 100 / 100 / 100 / 100 (performance, accessibilité, bonnes pratiques, SEO) sur les 13 pages, profil mobile.
+- Feuille de style intégrée à la page, polices système, scripts en `defer`. Cache des fichiers statiques : `docker/apache.conf`.
+- Chaque page définit `$titre`, `$description` et `$page`.

@@ -1,16 +1,14 @@
 // Service worker de ConseilPlus+ (application installée).
 // - Pages publiques et mot du jour : réseau d'abord, copie de secours si le téléphone est hors ligne
 //   (ou si le site gratuit met trop longtemps à se réveiller).
-// - Polices, images, scripts : cache d'abord, mis à jour en arrière-plan.
+// - Images, scripts : cache d'abord, mis à jour en arrière-plan.
 // - Espace client, formulaires, API d'écriture : jamais mis en cache.
-const VERSION = 'conseilplus-v2';
+const VERSION = 'conseilplus-v3';
 const HORS_LIGNE = 'hors-ligne.html';
 const A_PRECHARGER = [
   HORS_LIGNE,
   'assets/logo.svg',
-  'assets/fonts/archivo-black.woff2',
-  'assets/fonts/ibm-plex-sans.woff2',
-  'assets/fonts/ibm-plex-mono-500.woff2',
+  'assets/logo-negatif.svg',
   'assets/icons/icon-192.png',
 ];
 const PAGES_PUBLIQUES = ['', 'index.php', 'petit-moyen.php', 'produit.php'];

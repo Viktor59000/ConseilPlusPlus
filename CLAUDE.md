@@ -78,10 +78,11 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 ### Règles à respecter
 - **Sécurité** : jeton CSRF sur tous les formulaires POST, `htmlspecialchars` sur toute sortie, requêtes préparées,
   `session_regenerate_id()` à la connexion, jamais de secret dans Git (`config.php`, `db.php` ignorés).
-- **DA** : suivre `design-system/conseilplus/MASTER.md` (palette, typo, brutalisme administratif).
+- **DA** : suivre `design-system/conseilplus/MASTER.md` (sobriété inspirée des HIG d'Apple, mode sombre, tampon rouge en signature ; skill `apple-design`).
   Le logo C++ est en encre ; jamais de « + » rouge isolé (emblème de la Croix-Rouge).
 - **Navigation** : menu principal à 4 entrées ; l'espace client a son propre sous-menu. Pas de boutons de navigation en double.
-- **Qualité** : viser Lighthouse 100/100/100/100 sur chaque page (polices locales, CSS intégré, `$description` par page).
+- **Qualité** : viser Lighthouse 100/100/100/100 sur chaque page (polices système, CSS intégré, `$description` par page)
+  et la conformité RGAA 4.1 (`accessibilite.php` à tenir à jour).
 - **Contenu IA** : célébrités uniquement depuis la liste de `data/kamoulox.php` (actions inoffensives, pas de politiques,
   pas de personnalités en polémique) ; verbes violents filtrés ; l'IA ne doit jamais ralentir une page
   (génération du mot du jour en arrière-plan).

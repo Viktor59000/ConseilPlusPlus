@@ -112,6 +112,7 @@ include("includes/header.php");
       <input id="ct-site" type="text" name="site_web" tabindex="-1" autocomplete="off">
     </div>
     <h2 id="titre-contact">Formulaire de demande</h2>
+    <p class="obligatoire">Tous les champs sont obligatoires.</p>
 <?php if (isset($_GET['envoye'])): ?>
     <p class="alerte alerte-ok" role="status">Demande enregistrée sous le statut « nouveau ». Nous la traiterons avec la lenteur qui nous caractérise.</p>
 <?php elseif ($erreur_session): ?>

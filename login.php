@@ -31,6 +31,7 @@ include("includes/header.php");
   <form class="formulaire" action="auth/connexion.php" method="POST" aria-labelledby="titre-connexion">
     <?= csrf_champ() ?>
     <h2 id="titre-connexion">Connexion</h2>
+    <p class="obligatoire">Tous les champs sont obligatoires.</p>
 <?php if (isset($_GET['success'])): ?>
     <p class="alerte alerte-ok" role="status">Inscription enregistrée. Vous pouvez vous connecter.</p>
 <?php elseif ($erreur === 'session'): ?>
@@ -52,6 +53,7 @@ include("includes/header.php");
   <form class="formulaire" action="auth/inscription.php" method="POST" aria-labelledby="titre-inscription">
     <?= csrf_champ() ?>
     <h2 id="titre-inscription">Ouvrir un dossier</h2>
+    <p class="obligatoire">Tous les champs sont obligatoires.</p>
 <?php if ($erreur === 'mail'): ?>
     <p class="alerte alerte-erreur" role="alert">Cet email possède déjà un dossier. Connectez-vous avec, ou utilisez une autre adresse.</p>
 <?php endif; ?>

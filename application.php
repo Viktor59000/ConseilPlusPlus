@@ -83,17 +83,17 @@ $formules = [
       </ol>
     </article>
   </div>
-  <ul class="formules">
+  <ul class="kwgt">
 <?php foreach ($formules as $libelle => $champ):
     $formule = '$wg("' . $api_widget . '", json, "' . $champ . '")$'; ?>
     <li>
-      <span class="formules-libelle"><?= htmlspecialchars($libelle) ?></span>
+      <span class="kwgt-libelle"><?= htmlspecialchars($libelle) ?></span>
       <code><?= htmlspecialchars($formule) ?></code>
       <button type="button" class="btn btn-clair btn-petit" data-copier="<?= htmlspecialchars($formule) ?>" hidden>Copier</button>
     </li>
 <?php endforeach; ?>
   </ul>
-  <p class="mono installation-note">Couleurs du cabinet : fond <code>#F4EFE4</code>, texte <code>#1B2440</code>, accent <code>#C8102E</code>. Le widget se met à jour tout seul ; le premier chargement de la journée peut prendre une minute (le cabinet se réveille).</p>
+  <p class="installation-note">Couleurs du cabinet : fond <code>#FFFFFF</code>, texte <code>#1D1D1F</code>, accent <code>#1B2440</code>, tampon <code>#C8102E</code>. Le widget se met à jour tout seul ; le premier chargement de la journée peut prendre une minute (le cabinet se réveille).</p>
   </details>
 </section>
 

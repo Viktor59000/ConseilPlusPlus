@@ -5,7 +5,8 @@ L'entrée la plus récente est en haut de l'historique.
 
 ## État actuel (16/10/2026)
 
-Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pages (profil mobile).
+Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 13 pages (profil mobile).
+Nouvelle DA (16/10) : sobriété inspirée des HIG d'Apple, mode sombre, RGAA 4.1 (partiellement conforme, audit interne).
 **En ligne** sur https://conseilplus.onrender.com (Render gratuit + TiDB Cloud Serverless gratuit), redéployé à chaque push
 (`docs/DEPLOIEMENT.md`).
 
@@ -46,7 +47,8 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
   et dans Render (variable `GROQ_API_KEY`, absente pour l'instant : le site en ligne utilise les générateurs locaux).
 - **Régénérer `API_KEY` dans Render** (bouton *Generate*) : la valeur actuelle a transité par la conversation.
 - Formulaire de contact en ligne (appel interne de l'API via `URL_INTERNE`) pas encore testé de bout en bout.
-- Affichage mobile du sous-menu de l'espace client non vérifié visuellement (audit Lighthouse mobile OK).
+- RGAA : audit interne seulement ; tester Le Duel, Le guichet et la lecture des sketchs avec un lecteur d'écran (NVDA, VoiceOver),
+  puis mettre à jour `accessibilite.php`. Le Bureau et les courriels gardent l'ancienne DA (crème, marine) : à aligner si besoin.
 - La qualité des sketchs générés par l'IA est variable (calembours parfois faibles) : surveiller, ajuster
   `CONSIGNE_SKETCH` dans `includes/mot-du-jour.php` si besoin.
 - `db.php`, `config.php` et `bureau/config.php` ne sont pas dans Git : à recréer sur chaque PC (`docs/REPRISE.md`,
@@ -58,6 +60,17 @@ Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 9 pa
   l'utilisateur, jamais dans le dépôt.
 
 ## Historique des sessions
+
+### 16/10/2026 — PC principal (suite)
+- **Refonte de la DA** avec le skill `apple-design` (installé dans `~/.claude/skills/apple-design`, HIG d'Apple) :
+  polices système (plus de polices à télécharger), cartes arrondies, boutons en pilule, mode sombre automatique,
+  en-tête translucide, contrôles segmentés ; seul le tampon rouge reste de travers (signature). Charte : `MASTER.md`.
+- **Architecture** : le mot du jour et le guichet passent dans le menu principal ; menu repliable sous 760 px (`js/menu.js`) ;
+  pied de page avec plan du site, accessibilité, application, contact.
+- **RGAA 4.1** : `plan-du-site.php`, `accessibilite.php` (déclaration, partiellement conforme), champs obligatoires signalés,
+  erreurs préfixées « Erreur : », contrastes vérifiés en clair et sombre, 320 px et texte à 200 % vérifiés par script.
+- Lighthouse 100/100/100/100 sur les 13 pages. Cache des fichiers statiques sur Render (`docker/apache.conf`).
+- Correctif : la liste KWGT de `application.php` partageait la classe `.formules` avec la page des formules.
 
 ### 16/10/2026 — PC principal
 - **Nouvelle base : TiDB Cloud Serverless** (Francfort, port 4000, TLS) à la place d'Aiven ; variables Render mises à

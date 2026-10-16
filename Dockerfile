@@ -1,4 +1,4 @@
-# ConseilPlus+ en ligne (Render) : PHP 8.3 + Apache, base MySQL distante (Aiven).
+# ConseilPlus+ en ligne (Render) : PHP 8.3 + Apache, base MySQL distante (TiDB Cloud).
 # Réglages et secrets : variables d'environnement définies sur Render (voir docs/DEPLOIEMENT.md).
 FROM php:8.3-apache
 

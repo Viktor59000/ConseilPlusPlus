@@ -7,7 +7,10 @@
 //   data-partager="mot" data-mot data-nature data-texte data-detail data-url   → une entrée du Petit Moyen
 
 const SITE = 'conseilplus.onrender.com';
-const COULEURS = { papier: '#F4EFE4', carte: '#FFFDF7', encre: '#1B2440', douce: '#4A5270', tampon: '#C8102E', surligneur: '#FFE14D' };
+const COULEURS = { papier: '#F5F5F7', carte: '#FFFFFF', encre: '#1D1D1F', douce: '#6E6E73', filet: '#D2D2D7', tampon: '#C8102E', surligneur: '#FFE14D' };
+// Polices système, comme sur le site (rien à télécharger)
+const SANS = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
 
 /** Le logo du cabinet, chargé une fois (le SVG reçoit une taille explicite pour tous les navigateurs). */
 let logo = null;
@@ -40,11 +43,6 @@ function couper(ctx, texte, largeur) {
  * Dessine l'image story. blocs = [{ texte, police, couleur, interligne, espaceAvant, surligne }] (contenu de la carte).
  */
 async function dessiner(etiquette, blocs) {
-  await Promise.all([
-    document.fonts.load('400 96px "Archivo Black"'),
-    document.fonts.load('600 54px "IBM Plex Sans"'),
-    document.fonts.load('500 30px "IBM Plex Mono"'),
-  ]).catch(() => {});
   const c = document.createElement('canvas');
   c.width = 1080;
   c.height = 1920;
@@ -69,20 +67,17 @@ async function dessiner(etiquette, blocs) {
   hauteur += 150; // place du tampon
   const yCarte = Math.max(420, Math.round((c.height - hauteur) / 2) - 40);
 
-  ctx.fillStyle = COULEURS.encre;
-  ctx.fillRect(90 + 18, yCarte + 18, 900, hauteur + 80);
   ctx.fillStyle = COULEURS.carte;
-  ctx.fillRect(90, yCarte, 900, hauteur + 80);
-  ctx.lineWidth = 6;
-  ctx.strokeStyle = COULEURS.encre;
-  ctx.strokeRect(90, yCarte, 900, hauteur + 80);
+  ctx.beginPath();
+  ctx.roundRect(90, yCarte, 900, hauteur + 80, 56);
+  ctx.fill();
 
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = COULEURS.douce;
-  ctx.font = '500 30px "IBM Plex Mono", monospace';
-  ctx.fillText(etiquette.toUpperCase(), x, yCarte + 80);
-  ctx.fillStyle = COULEURS.encre;
-  ctx.fillRect(x, yCarte + 104, largeur, 4);
+  ctx.font = `600 32px ${SANS}`;
+  ctx.fillText(etiquette, x, yCarte + 80);
+  ctx.fillStyle = COULEURS.filet;
+  ctx.fillRect(x, yCarte + 104, largeur, 2);
 
   let y = yCarte + 110;
   for (const b of prepares) {
@@ -105,19 +100,24 @@ async function dessiner(etiquette, blocs) {
   ctx.rotate(-0.17);
   ctx.strokeStyle = COULEURS.tampon;
   ctx.lineWidth = 5;
-  ctx.strokeRect(-130, -48, 260, 84);
+  ctx.beginPath();
+  ctx.roundRect(-130, -48, 260, 84, 14);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.roundRect(-118, -36, 236, 60, 8);
+  ctx.stroke();
   ctx.fillStyle = COULEURS.tampon;
-  ctx.font = '500 46px "IBM Plex Mono", monospace';
+  ctx.font = `700 42px ${MONO}`;
   ctx.textAlign = 'center';
   ctx.fillText('VALIDÉ', 0, 10);
   ctx.restore();
 
   ctx.textAlign = 'center';
   ctx.fillStyle = COULEURS.encre;
-  ctx.font = '600 40px "IBM Plex Sans", sans-serif';
+  ctx.font = `600 40px ${SANS}`;
   ctx.fillText(SITE, 540, 1730);
   ctx.fillStyle = COULEURS.douce;
-  ctx.font = '500 26px "IBM Plex Mono", monospace';
+  ctx.font = `400 28px ${SANS}`;
   ctx.fillText('Aucun conseil ne doit être suivi. Sérieusement.', 540, 1790);
 
   return new Promise((ok) => c.toBlob(ok, 'image/png'));
@@ -135,16 +135,16 @@ function contenu(bouton) {
       texte: `« ${texte} » — conseil officiel du cabinet ConseilPlus+, le conseiller moyen.`,
       url: new URL('./', location.href).href,
       etiquette: 'Conseil officiel' + (dossier ? ' — dossier n° ' + dossier : ''),
-      blocs: [{ texte, police: '600 64px "IBM Plex Sans", sans-serif', interligne: 88, espaceAvant: 40 }],
+      blocs: [{ texte, police: `600 64px ${SANS}`, interligne: 88, espaceAvant: 40 }],
     };
   }
   const d = bouton.dataset;
   const blocs = [
-    { texte: d.mot, police: '400 112px "Archivo Black", sans-serif', interligne: 130, espaceAvant: 30, surligne: true },
-    { texte: d.nature, police: 'italic 400 44px "IBM Plex Sans", sans-serif', interligne: 64, couleur: COULEURS.douce },
-    { texte: d.texte, police: '600 58px "IBM Plex Sans", sans-serif', interligne: 80, espaceAvant: 40 },
+    { texte: d.mot, police: `800 112px ${SANS}`, interligne: 130, espaceAvant: 30, surligne: true },
+    { texte: d.nature, police: `italic 400 44px ${SANS}`, interligne: 64, couleur: COULEURS.douce },
+    { texte: d.texte, police: `600 58px ${SANS}`, interligne: 80, espaceAvant: 40 },
   ];
-  if (d.detail) blocs.push({ texte: d.detail, police: 'italic 400 48px "IBM Plex Sans", sans-serif', interligne: 66, espaceAvant: 34, couleur: COULEURS.douce });
+  if (d.detail) blocs.push({ texte: d.detail, police: `italic 400 48px ${SANS}`, interligne: 66, espaceAvant: 34, couleur: COULEURS.douce });
   return {
     nom: 'conseilplus-' + d.mot.toLowerCase().normalize('NFD').replace(/[^a-z]+/g, '-') + '.png',
     titre: `${d.mot} — Le Petit Moyen`,
