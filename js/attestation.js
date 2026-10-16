@@ -124,6 +124,8 @@ if (demande) {
     apercu.classList.remove('tamponne');
     void apercu.offsetWidth;
     apercu.classList.add('tamponne');
+    apercu.querySelector('[data-statut]').textContent = `Document prêt : ${modeles[type].titre}, tamponné « VALIDÉ ».`;
+    apercu.querySelector('[data-telecharger]').focus({ preventScroll: true });
     apercu.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 

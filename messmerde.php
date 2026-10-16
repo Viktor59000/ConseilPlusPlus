@@ -20,7 +20,7 @@ include("includes/header.php");
     <h1>Les expériences de Messmerde</h1>
     <p class="chapo">Messmerde, mentaliste du cabinet, lit dans les pensées depuis qu'il a appris à lire. Chaque séance : sept expériences tirées au sort, dont un interrogatoire, menées avec une précision moyenne et une assurance totale.</p>
   </div>
-  <img class="messmerde-portrait" src="assets/equipe/messmerde.webp" alt="Messmerde en pleine concentration, deux doigts sur la tempe, une boule à neige à la main" width="640" height="640" decoding="async">
+  <img class="messmerde-portrait" src="assets/equipe/messmerde-480.webp" srcset="assets/equipe/messmerde-360.webp 360w, assets/equipe/messmerde-480.webp 480w, assets/equipe/messmerde.webp 640w" sizes="(max-width: 760px) 240px, 360px" alt="Messmerde en pleine concentration, deux doigts sur la tempe, une boule à neige à la main" width="640" height="640" decoding="async">
 </section>
 
 <section class="conteneur messmerde" aria-labelledby="titre-experience">

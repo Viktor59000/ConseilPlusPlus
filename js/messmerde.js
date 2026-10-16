@@ -382,7 +382,14 @@ if (zone) {
     return [...tours, DEPART];
   }
 
-  function lancer(n) {
+  // Le focus suit l'expérience (les boutons qui l'avaient disparaissent) : lu par les lecteurs d'écran
+  function focaliser() {
+    elTitre.tabIndex = -1;
+    elTitre.focus({ preventScroll: true });
+    zone.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function lancer(n, avecFocus = true) {
     nettoyer();
     nettoyer = () => {};
     etape = n;
@@ -398,6 +405,7 @@ if (zone) {
     void zone.offsetWidth;
     zone.classList.add('nouvelle');
     e.jouer();
+    if (avecFocus) focaliser();
   }
 
   function bilan() {
@@ -413,15 +421,16 @@ if (zone) {
     elRevelation.textContent = `Je savais que vous iriez jusqu'au bout. Crédibilité finale : ${score} %.`;
     elTampon.hidden = false;
     elAvis.hidden = true;
-    bouton('Une nouvelle séance', 'btn btn-clair').addEventListener('click', demarrer);
+    bouton('Une nouvelle séance', 'btn btn-clair').addEventListener('click', () => demarrer(true));
+    focaliser();
   }
 
-  function demarrer() {
+  function demarrer(avecFocus = false) {
     score = 100;
     elScore.textContent = '100 %';
     elCommentaire.textContent = 'Calculé par Messmerde lui-même.';
     seance = tirerSeance();
-    lancer(0);
+    lancer(0, avecFocus);
   }
 
   elAvis.addEventListener('click', (ev) => {
@@ -441,6 +450,25 @@ if (zone) {
     if (etape + 1 < seance.length) lancer(etape + 1);
     else bilan();
   });
+
+  // Clavier et lecteur d'écran : si l'élément qui avait le focus disparaît (bouton retiré, carte cachée),
+  // le focus passe à la prochaine action visible de l'expérience, sinon à la révélation (annoncée par aria-live).
+  let focusDansZone = false;
+  document.addEventListener('focusin', (ev) => { focusDansZone = zone.contains(ev.target); });
+  zone.addEventListener('click', () => { focusDansZone = true; }, true);
+  document.addEventListener('click', (ev) => { if (!zone.contains(ev.target)) focusDansZone = false; }, true);
+  function recadrer() {
+    const actif = document.activeElement;
+    if (!focusDansZone) return;
+    if (zone.contains(actif) && actif.offsetParent && !actif.disabled) return;
+    if (actif !== document.body && !zone.contains(actif)) return;
+    const suivant = [...zone.querySelectorAll('button, input, [tabindex="0"]')].find((e) => e.offsetParent && !e.disabled);
+    const cible = suivant || elRevelation;
+    if (!suivant) elRevelation.tabIndex = -1;
+    cible.focus({ preventScroll: true });
+  }
+  new MutationObserver(() => setTimeout(recadrer, 0))
+    .observe(zone, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'disabled', 'class'] });
 
   zone.hidden = false;
   panneau.hidden = false;

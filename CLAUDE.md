@@ -99,7 +99,8 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 - **DA** : suivre `design-system/conseilplus/MASTER.md` (identité « La note » : C+ entouré au stylo rouge, Schibsted Grotesk, thèmes clair/sombre avec bouton, animations ;
   socle commun `css/base.css`, skills `logo-design` et `apple-design`).
   Le logo C++ est en encre ; jamais de « + » rouge isolé (emblème de la Croix-Rouge).
-- **Navigation** : menu principal à 4 entrées ; l'espace client a son propre sous-menu. Pas de boutons de navigation en double.
+- **Navigation** : menu principal à 5 entrées (Le cabinet, Le mot du jour, Nos formules, Le guichet, Contact) ; l'espace client a son propre sous-menu.
+  Les autres services (Messmerde, standard, diagnostic, attestations) passent par les cartes de l'équipe (Le cabinet) et le plan du site, pas par le menu. Pas de boutons de navigation en double.
 - **Qualité** : viser Lighthouse 100/100/100/100 sur chaque page (CSS intégré et minifié, police préchargée, `$description` par page)
   et la conformité RGAA 4.1 (`accessibilite.php` à tenir à jour).
 - **Contenu IA** : célébrités uniquement depuis la liste de `data/kamoulox.php` (actions inoffensives, pas de politiques,

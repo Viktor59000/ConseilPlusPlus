@@ -25,18 +25,21 @@ include("includes/header.php");
 
   <h2>Résultats de l'audit interne</h2>
   <ul>
-    <li>Pages vérifiées : accueil, Le Petit Moyen, Nos formules, Le guichet, Contact, Espace client (connexion, Mon conseil, Consultation, Le Duel, Mon carnet), Application mobile, Plan du site, cette page.</li>
+    <li>Pages vérifiées : accueil, Le cabinet, Le Petit Moyen, Nos formules, Le guichet, Contact, Espace client (connexion, Mon conseil, Consultation, Le Duel, Mon carnet), Les expériences de Messmerde (et son horoscope), Le standard, Quel client êtes-vous ?, Les attestations, Application mobile, Plan du site, cette page.</li>
     <li>Contrastes vérifiés en apparence claire et sombre (texte : 4,5:1 au minimum, composants : 3:1 au minimum).</li>
     <li>Navigation complète au clavier, focus visible, lien d'évitement vers le contenu, plan du site.</li>
     <li>Formulaires : étiquettes visibles, champs obligatoires signalés, erreurs décrites en texte et reliées au champ.</li>
+    <li>Contenus mis à jour sans recharger la page (expériences de Messmerde, standard, attestations) : changements annoncés aux technologies d'assistance, et le focus clavier suit le contenu quand un bouton disparaît.</li>
+    <li>Le standard se pilote à la souris, au toucher ou au clavier (chiffres, étoile et dièse) ; la voix de synthèse et la musique d'attente sont facultatives et s'arrêtent en raccrochant. Le diagnostic fonctionne sans JavaScript.</li>
     <li>Animations brèves, désactivées si le système demande de réduire les animations.</li>
-    <li>Outils : Lighthouse, navigation au clavier, zoom à 200 % et affichage à 320 pixels de large.</li>
+    <li>Outils : Lighthouse (accessibilité 100/100 sur les pages vérifiées), navigation au clavier, zoom à 200 % et affichage à 320 pixels de large.</li>
   </ul>
 
   <h2>Contenus non accessibles</h2>
   <ul>
-    <li>Le Duel, Le guichet et la lecture des sketchs mettent à jour le contenu sans recharger la page. Les zones concernées sont annoncées aux technologies d'assistance, mais n'ont pas encore été testées avec un lecteur d'écran.</li>
-    <li>L'image à partager (format story) est générée sans texte alternatif dans le fichier ; le même texte accompagne toujours le partage.</li>
+    <li>Le Duel, Le guichet, la lecture des sketchs, les expériences de Messmerde et le standard mettent à jour le contenu sans recharger la page. Les zones concernées sont annoncées aux technologies d'assistance, mais n'ont pas encore été testées avec un lecteur d'écran.</li>
+    <li>Les attestations demandent JavaScript (le document est dessiné dans le navigateur, pour que le nom saisi ne soit jamais envoyé au serveur) ; un message l'indique quand JavaScript est désactivé.</li>
+    <li>Les images à partager (format story) et les attestations téléchargées sont des fichiers PNG sans texte alternatif intégré ; sur la page, l'aperçu a un texte alternatif, et le même texte accompagne toujours le partage.</li>
     <li>Le logiciel de gestion interne (Le Bureau) n'est pas couvert par cette déclaration.</li>
   </ul>
 

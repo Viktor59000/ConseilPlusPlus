@@ -38,6 +38,7 @@ include("includes/header.php");
   </form>
 
   <div class="attestation-apercu" data-apercu hidden>
+    <p class="visuellement-cache" role="status" data-statut></p>
     <img data-image alt="" width="1600" height="1131">
     <div class="actions">
       <button type="button" class="btn btn-tampon" data-telecharger>Télécharger</button>
