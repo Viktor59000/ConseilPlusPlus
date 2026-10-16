@@ -14,7 +14,9 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 - **Pages publiques** : accueil (conseil du jour + mot du jour), formules, contact (passe par l'API), espace client, Le Petit Moyen.
 - **Espace client** : Mon conseil (sans rechargement), Consultation (questionnaire tournant + verdict IA),
   Le Duel (partie en 100 points, barème caché), Mon carnet (conseils classés).
-- **API REST** (`docs/API.md`) : contacts (site → logiciel de gestion, clé `X-API-Key`), conseils, carnet, mot du jour.
+- **API REST** (`docs/API.md`) : contacts (site → logiciel de gestion), conseils, carnet, mot du jour, horoscope.
+  Version `/api/v1/`, description OpenAPI 3.1 (`api/openapi.php`), pagination/tri/filtres sur les contacts,
+  clés par application avec droits lecture/écriture (page « Clés d'API » du Bureau ; la clé maîtresse `API_KEY` garde tout).
   Journal de chaque échange dans `api_logs`, limite de débit, tests dans `tests/test_api.php`.
 - **Sécurité** : CSRF, `session_regenerate_id`, champ piège anti-robots, requêtes préparées, échappement des sorties.
 - **Le Petit Moyen** : mot du jour (fausse définition ou sketch du conseiller et du stagiaire),
@@ -25,6 +27,9 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
   (tri : uniquement PHP, JS, HTML, CSS, plus Dockerfile et workflow pour la mise en ligne).
 - **Partage** (image story), **Le guichet** (`guichet.php`), **votes** « Moyen / Pas moyen » (palmarès dans Le Bureau),
   **notification quotidienne** du mot du jour (Web Push maison, envoi par `reveil.yml` vers 7 h).
+- **Le lore du cabinet** : chaque membre de l'équipe tient un service (lien sur sa carte, page Le cabinet) :
+  le conseiller → diagnostic « Quel client êtes-vous ? », le stagiaire → Le Petit Moyen, Mireille → le standard téléphonique,
+  Bertrand → le guichet, Messmerde → ses expériences et son horoscope, le tampon → les attestations officielles.
 
 ## Prochaines étapes
 
@@ -33,7 +38,8 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 1. **Le Bureau** : à confronter aux consignes du prof (séance du 16/10). Envoi des réponses par email :
    **vérifié en ligne le 15/10** (via Brevo, expéditeur = boîte perso de l'utilisateur ; une adresse dédiée au
    cabinet pourra la remplacer : la vérifier dans Brevo puis changer `BUREAU_EXPEDITEUR` dans Render).
-3. Améliorations possibles de l'API : une clé par application, webhook, pagination, documentation OpenAPI.
+3. Améliorations possibles de l'API : webhook (prévenir Le Bureau à chaque nouvelle demande au lieu du relevé).
+4. Vérifier sur téléphone le standard (musique d'attente), les attestations (partage de l'image) et l'horoscope.
 
 ## Points ouverts
 
@@ -61,6 +67,15 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
   l'utilisateur, jamais dans le dépôt.
 
 ## Historique des sessions
+
+### 16/10/2026 — Second PC (le lore du cabinet, API pro)
+- **Standard téléphonique** de Mireille (`standard.php`) : clavier, voix de synthèse et musique d'attente facultatives,
+  file d'attente qui finit à la machine à café. **Horoscope de Messmerde** (section de `messmerde.php` + `api/horoscope.php`).
+  **Diagnostic** « Quel client êtes-vous ? » (`diagnostic.php`, sans JS). **Attestations** du tampon (`attestation.php`,
+  image dessinée dans le navigateur, rien n'est envoyé). Lien de service sur chaque carte de l'équipe.
+- **API** : pagination/tri/filtres (`GET /contacts.php?page=…`, réponse sans `page` inchangée pour Le Bureau), alias `/api/v1/`
+  (`api/.htaccess`, `a2enmod rewrite` dans le Dockerfile, `tests/routeur.php` pour la CI), `api/openapi.php`,
+  clés par application (`api_cles`, `api/cles.php`, `bureau/cles.php`), export réservé à la clé maîtresse. Tests complétés.
 
 ### 16/10/2026 — Second PC (Messmerde)
 - **Les expériences de Messmerde** (`messmerde.php`, `js/messmerde.js`) : le mentaliste du cabinet « devine » des évidences
