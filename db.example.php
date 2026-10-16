@@ -19,7 +19,13 @@ if ($ca = getenv('DB_SSL_CA')) {
 
 try {
     $bdd_init = new PDO("mysql:host=$servername;port=$port", $user, $pass, $options);
-    $bdd_init->exec("CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    // Création de la base si besoin. Sur un hébergement mutualisé (panneau Pterodactyl, cPanel…), la base est créée
+    // depuis le panneau et l'utilisateur n'a pas le droit d'en créer : on continue alors avec la base existante.
+    try {
+        $bdd_init->exec("CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    } catch (PDOException $e) {
+        // droit refusé : la base doit déjà exister (la connexion ci-dessous le vérifie)
+    }
     $bdd_init = null;
 
     $bdd = new PDO("mysql:host=$servername;port=$port;dbname=$dbname;charset=utf8mb4", $user, $pass, $options);

@@ -13,7 +13,12 @@ if (BUREAU_DB_SSL_CA !== '') {
 
 try {
     $serveur = new PDO('mysql:host=' . BUREAU_DB_HOST . ';port=' . BUREAU_DB_PORT, BUREAU_DB_USER, BUREAU_DB_PASS, $options);
-    $serveur->exec('CREATE DATABASE IF NOT EXISTS `' . BUREAU_DB_NAME . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+    // Sur un hébergement mutualisé, la base est créée depuis le panneau (pas le droit d'en créer ici) : on continue
+    try {
+        $serveur->exec('CREATE DATABASE IF NOT EXISTS `' . BUREAU_DB_NAME . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+    } catch (PDOException $e) {
+        // la connexion à la base ci-dessous vérifie qu'elle existe
+    }
     $serveur = null;
 
     $bdd = new PDO('mysql:host=' . BUREAU_DB_HOST . ';port=' . BUREAU_DB_PORT . ';dbname=' . BUREAU_DB_NAME . ';charset=utf8mb4',

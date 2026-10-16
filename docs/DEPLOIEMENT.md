@@ -35,6 +35,25 @@ en 2 à 4 minutes.
 Les secrets ne vont **jamais** dans Git ni dans une conversation : ils sont saisis directement dans Render.
 Modifier une variable redéploie le site automatiquement.
 
+## Alternative à Aiven : base MySQL sur un panneau Pterodactyl (ex. Echo-Host)
+
+Une base créée depuis l'onglet **Databases** d'un panneau Pterodactyl reste toujours allumée (pas de mise en veille).
+Le site reste sur Render : seule la base change.
+
+1. Panneau → serveur → **Databases** → **New Database** : nom `site`, *Connections from* `%` (Render n'a pas d'IP fixe).
+   Recommencer pour une 2e base nommée `gestion` (Le Bureau).
+2. Le panneau affiche pour chaque base : *Endpoint* (hôte:port), *Username*, *Password* (bouton *View*),
+   et le nom réel de la base (souvent préfixé, par ex. `s771_site`).
+3. Render → conseilplus → **Environment** :
+   - `DB_HOST`, `DB_PORT` : l'endpoint de la base `site` ; `DB_NAME`, `DB_USER`, `DB_PASS` : ses identifiants ;
+   - `BUREAU_DB_NAME`, `BUREAU_DB_USER`, `BUREAU_DB_PASS` : ceux de la base `gestion` ;
+   - **supprimer** `DB_SSL_CA` (le certificat Aiven ne sert plus).
+4. Render redéploie seul ; les tables se créent au premier chargement (le code accepte de ne pas avoir le droit
+   de créer la base elle-même).
+
+À savoir : la connexion n'est pas chiffrée (pas de TLS sur ce type de base) et la base suit la vie de l'abonnement
+du serveur (renouvellement mensuel).
+
 ## Limites des offres gratuites
 
 - **Render** : le site s'endort après 15 min sans visite ; la visite suivante attend environ une minute.

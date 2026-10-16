@@ -11,8 +11,10 @@ define('BUREAU_API_KEY', getenv('API_KEY') ?: 'changez-moi');
 define('BUREAU_DB_HOST', getenv('DB_HOST') ?: 'localhost');
 define('BUREAU_DB_PORT', getenv('DB_PORT') ?: '3306');
 define('BUREAU_DB_NAME', getenv('BUREAU_DB_NAME') ?: 'gestion');
-define('BUREAU_DB_USER', getenv('DB_USER') ?: 'root');
-define('BUREAU_DB_PASS', getenv('DB_PASS') ?: '');
+// Identifiants propres au Bureau si sa base a son propre utilisateur (panneau Pterodactyl : un utilisateur par base),
+// sinon les mêmes que le site
+define('BUREAU_DB_USER', getenv('BUREAU_DB_USER') ?: (getenv('DB_USER') ?: 'root'));
+define('BUREAU_DB_PASS', getenv('BUREAU_DB_PASS') ?: (getenv('DB_PASS') ?: ''));
 define('BUREAU_DB_SSL_CA', getenv('DB_SSL_CA') ?: ''); // chemin depuis la racine du site (connexion chiffrée en ligne)
 
 // Envoi des réponses par email : Brevo (API HTTPS, gratuit jusqu'à 300 mails par jour).
