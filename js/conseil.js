@@ -23,6 +23,8 @@ document.querySelectorAll('[data-autre-conseil]').forEach((bouton) => {
 
       // Rejoue les animations : le texte se réécrit, le tampon retombe
       const tampon = fiche.querySelector('.tampon');
+      const mots = JSON.parse(fiche.dataset.tampons || '[]');
+      if (mots.length) tampon.textContent = mots[Math.floor(Math.random() * mots.length)];
       fiche.classList.remove('renouvele');
       tampon.classList.remove('tampon-anime');
       void tampon.offsetWidth;

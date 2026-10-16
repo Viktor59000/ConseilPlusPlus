@@ -47,6 +47,55 @@
     addEventListener('scroll', maj, { passive: true });
   }
 
+  // ---------- Petites surprises ----------
+  let textes = { onglet: [], secrets: [] };
+  try { textes = JSON.parse(document.getElementById('textes-site')?.textContent || '{}'); } catch { /* sans textes, pas de surprise */ }
+  const auHasard = (liste) => liste[Math.floor(Math.random() * liste.length)];
+
+  // Le titre de l'onglet réclame le visiteur quand il regarde ailleurs
+  const titre = document.title;
+  document.addEventListener('visibilitychange', () => {
+    document.title = document.hidden && textes.onglet?.length ? `${auHasard(textes.onglet)} — ConseilPlus+` : titre;
+  });
+
+  // Cinq clics sur un tampon : le cabinet sort le grand tampon
+  let clics = 0;
+  let minuterie;
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.fiche .tampon')) return;
+    clics += 1;
+    clearTimeout(minuterie);
+    minuterie = setTimeout(() => { clics = 0; }, 1500);
+    if (clics < 5) return;
+    clics = 0;
+    const geant = document.createElement('div');
+    geant.className = 'tampon-geant';
+    geant.setAttribute('role', 'status');
+    geant.textContent = 'Insistant';
+    document.body.append(geant);
+    setTimeout(() => geant.remove(), 1800);
+  });
+
+  // Code Konami (↑ ↑ ↓ ↓ ← → ← → B A) : le conseil premium caché
+  const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  let position = 0;
+  document.addEventListener('keydown', (e) => {
+    const touche = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    position = touche === KONAMI[position] ? position + 1 : (touche === KONAMI[0] ? 1 : 0);
+    if (position < KONAMI.length || !textes.secrets?.length) return;
+    position = 0;
+    const dialogue = document.createElement('dialog');
+    dialogue.className = 'dialogue';
+    dialogue.setAttribute('aria-labelledby', 'titre-secret');
+    dialogue.innerHTML = '<span class="tampon tampon-anime" aria-hidden="true">Confidentiel</span>'
+      + '<h2 id="titre-secret">Conseil premium caché</h2><p></p>'
+      + '<form method="dialog" class="actions"><button class="btn btn-tampon" type="submit">Je n\'ai rien vu</button></form>';
+    dialogue.querySelector('p').textContent = auHasard(textes.secrets);
+    dialogue.addEventListener('close', () => dialogue.remove());
+    document.body.append(dialogue);
+    dialogue.showModal();
+  });
+
   if (calme || !('IntersectionObserver' in window)) return;
 
   // Préparé quand la page est au repos : rien ne retarde le premier affichage ni les premiers clics
@@ -57,7 +106,7 @@
     const SELECTEURS = {
       reveler: ['main section > .conteneur > h2', 'main section > h2', '.mot-du-jour-intro', '.entree-mot', '.etapes li', '.formule',
         '.tableau-defile', '.faq details', '.formulaire', '.carnet-item', '.installation-carte', '.archives > li',
-        '.appel', '.guichet > *', '.plan section', '.texte-long > *', '.duel-deroule > *', '.sommaire'].join(','),
+        '.appel', '.guichet > *', '.plan section', '.temoignage', '.membre', '.valeur', '.texte-long > *', '.duel-deroule > *', '.sommaire'].join(','),
       surligner: '.surligne, .fiche-conseil mark, .entree-mot mark',
       entourer: '.entoure',
       tamponner: '.tampon:not(.tampon-anime), .sketch-decoupage',

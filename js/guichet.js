@@ -20,6 +20,11 @@ if (machine) {
     'entre 4 minutes et jamais', 'moins longtemps que la dernière fois, sans doute', 'environ un café et demi',
     'le temps de remplir le formulaire B-12', 'quelques instants administratifs', 'à peu près une saison',
     'ça dépend du guichet', 'non communiquée pour des raisons de sérénité',
+    'deux chansons de Florent Pagny, version longue', 'le temps de faire un tour de rond-point, ou deux',
+    'trois pauses café, réglementaires', 'jusqu\'à la prochaine réforme du guichet', 'une demi-sieste',
+    'un épisode de série, sans le générique', 'calculée en jours ouvrés, à partir de demain',
+    'le temps que le stagiaire retrouve le tampon', 'courte, à l\'échelle de l\'univers', 'raisonnable, pour un mardi',
+    'confidentielle', 'en cours d\'estimation (prévoir un délai pour l\'estimation)',
   ];
   const INCIDENTS = [
     (p) => `Le guichet ${p} part en pause café. Il revient. Il ne revient pas.`,
@@ -28,6 +33,25 @@ if (machine) {
     () => 'Une personne demande « juste un renseignement ». La file est suspendue.',
     () => 'Le conseiller vérifie que vous avez bien pris un ticket.',
     () => 'Merci de patienter : la patience est un service inclus.',
+    (p) => `Le guichet ${p} est réservé aux personnes munies du ticket du guichet ${p}.`,
+    () => 'Un ticket a été retrouvé sous la machine à café. Son propriétaire est prié de ne pas se manifester.',
+    () => 'Le tampon est en rupture d\'encre. Les conseils seront validés oralement.',
+    () => 'Rappel : les tickets ne sont ni repris, ni échangés, ni compris.',
+    (p) => `Le guichet ${p} vient d'ouvrir. Il vient de fermer.`,
+    () => 'La file d\'attente est priée de s\'aligner. Plus droit. Non, pas comme ça.',
+    () => 'Le stagiaire a appelé le numéro 0000. Personne ne s\'est présenté. Il est déçu.',
+    () => 'Une imprimante fait un bruit nouveau. La direction suit la situation de près.',
+    () => 'Le chauffage est réglé sur « moyen ». C\'est notre politique.',
+    () => 'Les personnes arrivées avant vous sont priées de rester avant vous.',
+    (p) => `Le guichet ${p} passe en mode « réflexion ». Durée indéterminée.`,
+    () => 'Un formulaire B-12 a été rempli correctement. Une enquête est ouverte.',
+    () => 'La musique d\'attente a été remplacée par du silence d\'attente.',
+    () => 'Mireille, responsable des délais, annonce un léger retard sur le retard prévu.',
+    () => 'Bertrand, guichet 7, rappelle qu\'il ne s\'appelle pas « monsieur le guichet ».',
+    () => 'Le distributeur de tickets s\'est mis en grève. Il réclame du papier.',
+    () => 'Une plante verte a été déplacée sans autorisation. Merci de la remettre où elle s\'ennuyait.',
+    () => 'Un conseil a été délivré trop vite. Toutes nos excuses, cela ne se reproduira pas.',
+    () => 'Le numéro affiché est indicatif. Le vrai numéro est connu de la direction seule.',
   ];
 
   let appele = hasard(31, 58);

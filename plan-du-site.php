@@ -21,6 +21,7 @@ include("includes/header.php");
     <h2 id="plan-cabinet">Le cabinet</h2>
     <ul>
       <li><a href="index.php">Accueil : le conseil du jour</a></li>
+      <li><a href="cabinet.php">Le cabinet : l'équipe et les valeurs</a></li>
       <li><a href="petit-moyen.php">Le Petit Moyen : le mot (presque) du jour</a></li>
       <li><a href="produit.php">Nos formules</a></li>
       <li><a href="guichet.php">Le guichet</a></li>

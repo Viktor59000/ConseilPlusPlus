@@ -21,9 +21,10 @@ include("includes/header.php");
       <a class="btn btn-tampon" href="<?= isset($_SESSION['user_id']) ? 'conseil.php' : 'login.php' ?>">Demander conseil</a>
       <a class="btn btn-clair" href="produit.php">Voir nos formules</a>
     </div>
+    <p class="note-service"><?= htmlspecialchars(note_de_service()) ?></p>
   </div>
 
-  <article class="fiche" id="copie-du-jour" aria-labelledby="fiche-titre">
+  <article class="fiche" id="copie-du-jour" aria-labelledby="fiche-titre" data-tampons="<?= htmlspecialchars(json_encode(textes()['tampons'], JSON_UNESCAPED_UNICODE)) ?>">
     <span class="fiche-note entoure" aria-hidden="true"><span>C<sup>+</sup></span><?= boucle_stylo() ?></span>
     <header class="fiche-entete">
       <h2 id="fiche-titre">Conseil du jour</h2>
@@ -34,8 +35,8 @@ include("includes/header.php");
       <mark data-conseil="action"><?= htmlspecialchars($conseil['action']) ?></mark>
       <span data-conseil="resultat"><?= htmlspecialchars($conseil['resultat']) ?></span>
     </p>
-    <span class="tampon tampon-anime" aria-hidden="true">Validé</span>
-    <p class="fiche-pied mono">Offert. Non remboursable.</p>
+    <span class="tampon tampon-anime" aria-hidden="true"><?= htmlspecialchars(texte_hasard('tampons')) ?></span>
+    <p class="fiche-pied mono"><?= htmlspecialchars(texte_hasard('mentions')) ?></p>
     <div class="fiche-actions">
       <button class="btn btn-tampon btn-petit" type="button" data-autre-conseil="#copie-du-jour" hidden>Un autre conseil</button>
       <button class="btn btn-clair btn-petit" type="button" data-partager="conseil" data-source="#copie-du-jour" hidden>Partager</button>
@@ -51,6 +52,14 @@ include("includes/header.php");
     <a class="btn btn-clair avance" href="petit-moyen.php">Consulter Le Petit Moyen</a>
   </div>
 <?php $titre_niveau = 'h3'; include("includes/carte-mot.php"); ?>
+</section>
+
+<section class="conteneur temoignages" aria-labelledby="titre-temoignages">
+  <p class="etiquette">Ils nous ont fait confiance</p>
+  <h2 id="titre-temoignages">Ce que disent nos clients</h2>
+  <div class="temoignages-grille">
+    <?= bloc_temoignages(3) ?>
+  </div>
 </section>
 
 <section class="bande">

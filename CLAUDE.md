@@ -65,7 +65,9 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `includes/duel.php` | Mode Duel (barème calculé par le code) |
 | `includes/mot-du-jour.php`, `includes/carte-mot.php` | Le Petit Moyen (définitions + sketchs) |
 | `includes/csrf.php`, `includes/http.php`, `includes/header.php`, `includes/espace-nav.php` | Commun |
-| `data/*.php` | Banques de contenu (fragments, kamoulox, cadres, questions, duel, mots, sketchs) |
+| `data/*.php` | Banques de contenu (fragments, kamoulox, cadres, questions, duel, mots, sketchs, textes) |
+| `data/textes.php`, `includes/textes.php` | Petits textes tournants : tampons, mentions, note de service (jour / dates), témoignages, équipe, valeurs, FAQ, titres d'onglet, conseils secrets |
+| `cabinet.php` | Le cabinet : équipe (portraits facultatifs `assets/equipe/<cle>.webp`), valeurs, chiffres, témoignages |
 | `db.example.php` → `db.php` | Connexion + création/migration automatique des tables (ignoré par Git) |
 | `config.example.php` → `config.php` | Clés `API_KEY` et `GROQ_API_KEY` (ignoré par Git) |
 | `design-system/conseilplus/MASTER.md` | Charte graphique (source de vérité de la DA) |

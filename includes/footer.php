@@ -19,6 +19,7 @@
     <p class="pied-mentions">© <?= date('Y') ?> ConseilPlus+, le conseiller moyen · Hommage non officiel à l'humour absurde · Polices Schibsted Grotesk et JetBrains Mono (licence OFL)</p>
   </div>
 </footer>
+<script type="application/json" id="textes-site"><?= json_encode(['onglet' => textes()['onglet_absent'], 'secrets' => textes()['secrets']], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
 <script src="js/theme.js" defer></script>
 <script src="js/site.js" defer></script>
 <script src="js/pwa.js" defer></script>

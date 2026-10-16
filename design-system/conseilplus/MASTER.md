@@ -83,6 +83,7 @@ les erreurs. Il ne sert jamais de fond de bouton.
 | Page | Fichier | Rôle |
 |---|---|---|
 | Accueil | `index.php` | La copie du jour, mot du jour, méthode, contact |
+| Le cabinet | `cabinet.php` | Équipe, valeurs, chiffres, témoignages |
 | Le Petit Moyen | `petit-moyen.php` | Mot (presque) du jour, archives, feuilleter |
 | Nos formules | `produit.php` | 3 formules, comparatif, FAQ |
 | Le guichet | `guichet.php` | Ticket, file d'attente absurde |

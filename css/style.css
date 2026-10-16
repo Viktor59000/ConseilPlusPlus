@@ -48,7 +48,7 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .menu-bouton { display: none; }
 
 /* Petit écran : menu repliable (js/site.js) ; sans JavaScript il reste déplié */
-@media (max-width: 880px) {
+@media (max-width: 1080px) {
   .nav { order: 3; width: 100%; flex-direction: column; align-items: stretch; }
   .nav-in { display: flex; flex-direction: column; gap: 2px; min-height: 0; }
   .avec-js .menu-bouton {
@@ -170,6 +170,21 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
   100% { transform: rotate(-9deg) scale(1); }
 }
 
+/* Le grand tampon (cinq clics sur un tampon) */
+.tampon-geant {
+  position: fixed; inset: 50% auto auto 50%; z-index: 50; pointer-events: none;
+  padding: .1em .4em; border: 10px double var(--rouge); border-radius: 18px; color: var(--rouge); background: color-mix(in srgb, var(--surface) 70%, transparent);
+  font: 800 clamp(2.5rem, 12vw, 7rem)/1.1 var(--mono); letter-spacing: .12em; text-transform: uppercase;
+  animation: geant 1800ms var(--rebond) both;
+}
+@keyframes geant {
+  0% { transform: translate(-50%, -50%) rotate(-12deg) scale(3); opacity: 0; }
+  18% { transform: translate(-50%, -50%) rotate(-12deg) scale(.95); opacity: 1; }
+  25%, 80% { transform: translate(-50%, -50%) rotate(-12deg) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(-12deg) scale(1); opacity: 0; }
+}
+.fiche .tampon { cursor: default; user-select: none; }
+
 /* Méthode : bande marine, chiffres entourés au stylo */
 .bande { background: #1B2440; color: #F3F1EC; }
 :root[data-theme-effectif="sombre"] .bande { background: var(--surface); }
@@ -181,6 +196,40 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .etapes p { margin: 0; color: #C3C8D9; }
 .etape-num { width: 64px; height: 56px; margin-bottom: 22px; font: 800 1.6rem var(--police); color: #F3F1EC; }
 .etape-num path { stroke: #FF5F6D; }
+
+/* Note de service (accueil) : change selon le jour et les dates particulières */
+.note-service { margin: 28px 0 0; padding-left: 14px; border-left: 3px solid var(--rouge); color: var(--encre-2); font-size: .98rem; max-width: 46ch; }
+
+/* Témoignages de clients (inventés) */
+.temoignages-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 40px; }
+.temoignage { position: relative; margin: 0; padding: 36px 28px 26px; background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); display: flex; flex-direction: column; justify-content: space-between; gap: 20px; }
+.temoignage::before { content: "«"; position: absolute; top: -6px; left: 22px; font: 800 3.4rem/1 var(--police); color: var(--rouge); }
+.temoignage blockquote { margin: 0; }
+.temoignage blockquote p { margin: 0; font-size: 1.15rem; font-weight: 600; line-height: 1.45; letter-spacing: -.01em; }
+.temoignage figcaption { color: var(--encre-2); font-size: .95rem; }
+.temoignage figcaption strong { color: var(--encre); }
+@media (max-width: 960px) { .temoignages-grille { grid-template-columns: minmax(0, 1fr); } }
+
+/* Le cabinet : l'équipe */
+.equipe { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 24px; }
+.membre { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 28px; }
+.membre-portrait { display: grid; place-items: center; width: 96px; height: 96px; margin-bottom: 20px; border-radius: 50%; object-fit: cover; background: var(--surface-2); }
+.membre-monogramme { font: 800 2.6rem var(--police); color: var(--encre); background: var(--surface-2); }
+.membre-monogramme svg { inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); }
+.membre h3 { margin-bottom: 4px; }
+.membre-role { color: var(--rouge); margin: 0 0 14px; }
+.membre p { color: var(--encre-2); }
+.membre-fiche { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--filet); display: grid; gap: 6px; font-size: .95rem; }
+.membre-fiche div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 12px; }
+.membre-fiche dt { color: var(--encre-2); }
+.membre-fiche dd { margin: 0 0 0 auto; font-weight: 600; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+.bande .etapes:has(> :nth-child(4)) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.chiffres-cabinet { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin: 32px 0 0; }
+.chiffres-cabinet div { border-top: 2px solid var(--encre); padding-top: 16px; display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 8px; }
+.chiffres-cabinet dd { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+.chiffres-cabinet dt { color: var(--encre-2); }
+@media (max-width: 960px) { .chiffres-cabinet, .bande .etapes:has(> :nth-child(4)) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .chiffres-cabinet, .bande .etapes:has(> :nth-child(4)) { grid-template-columns: minmax(0, 1fr); } }
 
 .coordonnees { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin: 32px 0 0; }
 .coordonnees div { border-top: 1px solid var(--filet); padding-top: 18px; }

@@ -28,7 +28,7 @@ include("includes/espace-nav.php");
 </section>
 
 <section class="conteneur">
-  <article class="fiche fiche-grande" id="recommandation" aria-labelledby="fiche-titre">
+  <article class="fiche fiche-grande" id="recommandation" aria-labelledby="fiche-titre" data-tampons="<?= htmlspecialchars(json_encode(textes()['tampons'], JSON_UNESCAPED_UNICODE)) ?>">
     <header class="fiche-entete">
       <h2 id="fiche-titre">Recommandation officielle</h2>
       <span class="mono">Dossier n° <span data-conseil="dossier" data-dossier><?= $conseil['dossier'] ?></span></span>
@@ -38,7 +38,7 @@ include("includes/espace-nav.php");
       <mark data-conseil="action"><?= htmlspecialchars($conseil['action']) ?></mark>
       <span data-conseil="resultat"><?= htmlspecialchars($conseil['resultat']) ?></span>
     </p>
-    <span class="tampon tampon-anime" aria-hidden="true">Validé</span>
+    <span class="tampon tampon-anime" aria-hidden="true"><?= htmlspecialchars(texte_hasard('tampons')) ?></span>
     <p class="fiche-pied mono">Traité par : le conseiller moyen</p>
   </article>
 

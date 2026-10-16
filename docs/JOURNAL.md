@@ -62,6 +62,16 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 
 ## Historique des sessions
 
+### 16/10/2026 — PC principal (contenu)
+- Textes tournants (`data/textes.php`) : 16 tampons, 14 mentions, note de service selon le jour et 15 dates
+  particulières, 24 témoignages de clients inventés (accueil, formules, cabinet), FAQ passée de 3 à 10 questions.
+- Nouvelle page **Le cabinet** (dans le menu) : 6 membres de l'équipe, 4 valeurs, chiffres, témoignages.
+  Portraits attendus dans `assets/equipe/<cle>.webp` (sinon monogramme entouré) : prompts donnés à l'utilisateur.
+- Banques agrandies : mots 59 → 120, sketchs 15 → 30 (calembours originaux, contrôlés contre l'émission),
+  questions 40 → 80, coups du Duel 16 → 50, annonces du guichet 6 → 25 incidents et 8 → 20 attentes.
+- Surprises : titre d'onglet quand on part, 5 clics sur un tampon (tampon géant), code Konami (conseil caché).
+- Menu replié sous 1080 px (5 liens). Lighthouse 98–100, 320 px / 200 % vérifiés.
+
 ### 16/10/2026 — PC principal (compte, légal, widget)
 - **Appli Android rétablie** à la demande de l'utilisateur (seul code hors PHP/JS/HTML/CSS) : widget aux couleurs de
   « La note » (copie arrondie, marge rouge, mode sombre via `values-night`), nouvelle icône ; `api/widget.php?conseils=`

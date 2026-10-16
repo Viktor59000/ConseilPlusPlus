@@ -80,20 +80,21 @@ include("includes/header.php");
   </div>
 </section>
 
+<section class="conteneur temoignages" aria-labelledby="titre-temoignages">
+  <h2 id="titre-temoignages">Avis de nos clients</h2>
+  <div class="temoignages-grille">
+    <?= bloc_temoignages(3) ?>
+  </div>
+</section>
+
 <section class="conteneur faq">
   <h2>Questions fréquentes</h2>
+<?php foreach (textes()['faq'] as [$question, $reponse]): ?>
   <details>
-    <summary>Vos conseils sont-ils fiables ?</summary>
-    <p>Non.</p>
+    <summary><?= htmlspecialchars($question) ?></summary>
+    <p><?= htmlspecialchars($reponse) ?></p>
   </details>
-  <details>
-    <summary>Qui rédige les conseils ?</summary>
-    <p>Personne. Trois morceaux de phrases sont tirés au hasard puis assemblés. C'est ce que nous appelons l'expertise.</p>
-  </details>
-  <details>
-    <summary>Puis-je me faire rembourser ?</summary>
-    <p>Oui, intégralement, de la somme que vous avez payée, c'est-à-dire rien.</p>
-  </details>
+<?php endforeach; ?>
 </section>
 
 <?php include("includes/footer.php"); ?>
