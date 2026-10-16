@@ -8,6 +8,49 @@ session_start();
 require("includes/contacts.php");
 require("includes/http.php");
 require("includes/csrf.php");
+require("includes/courriel.php");
+require_once("config.php");
+
+/**
+ * Accusé de réception automatique par courriel (Brevo), si l'envoi est configuré.
+ * Garde-fou : au plus 2 accusés par adresse et par jour, pour qu'on ne puisse pas se servir du formulaire
+ * pour inonder la boîte d'un tiers. Un échec d'envoi ne bloque jamais la demande.
+ */
+function envoyer_accuse_reception(array $demande, int $id): void
+{
+    if (COURRIEL_BREVO_CLE === '' || $id === 0) {
+        return;
+    }
+    require("db.php");
+    $stmt = $bdd->prepare('SELECT COUNT(*) FROM contacts WHERE email = :email AND date_creation > NOW() - INTERVAL 1 DAY');
+    $stmt->execute(['email' => $demande['email']]);
+    if ($stmt->fetchColumn() > 2) {
+        return;
+    }
+
+    $numero = sprintf('%04d', $id);
+    $delais = ['entre 3 jours et jamais', 'sous 48 h, ouvrables, hors jours ouvrables', 'dès que possible, voire après',
+        'avant la fin de l\'année (sans précision)', 'aussitôt que le stagiaire revient', 'quelques semaines, à la louche'];
+    $corps = "Madame, Monsieur {$demande['nom']},\n\n"
+        . "Le cabinet ConseilPlus+ accuse réception de votre demande « {$demande['type_demande']} », enregistrée sous le n° $numero.\n\n"
+        . "Votre dossier a été placé dans la file d'attente, entre un dossier urgent et un dossier qui l'était.\n"
+        . 'Délai de traitement estimé : ' . $delais[$id % count($delais)] . ".\n\n"
+        . "Un conseiller moyen prendra connaissance de votre demande dès qu'il aura terminé de ne pas la lire. "
+        . "Vous recevrez notre réponse officielle à cette adresse.\n\n"
+        . "Ceci est un accusé de réception automatique : inutile d'y répondre, nous ne le lirions pas non plus.";
+    $html = gabarit_courriel([
+        'titre' => 'Accusé de réception',
+        'corps' => $corps,
+        'dossier' => $numero,
+        'signataire' => 'Le guichet automatique',
+        'fonction' => 'Service courrier',
+        'tampon' => 'Reçu',
+        'apercu' => "Votre demande n° $numero est enregistrée. Elle sera traitée, un jour.",
+    ]);
+    envoyer_courriel(COURRIEL_BREVO_CLE, COURRIEL_EXPEDITEUR, COURRIEL_EXPEDITEUR_NOM, $demande['email'], $demande['nom'],
+        "Votre demande n° $numero — accusé de réception du cabinet ConseilPlus+",
+        $corps . signature_texte('Le guichet automatique', 'Service courrier'), $html);
+}
 
 $types = TYPES_DEMANDE;
 $valeurs = ['nom' => '', 'email' => '', 'message' => '', 'type_demande' => ''];
@@ -37,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($reponse['code'] === 429) {
         $trop_de_demandes = true;
     } elseif ($reponse['code'] === 201) {
+        envoyer_accuse_reception($valeurs, (int) ($reponse['data']['id'] ?? 0));
         // Redirection après envoi pour éviter un double enregistrement au rechargement
         header('location: contact.php?envoye=1');
         exit();

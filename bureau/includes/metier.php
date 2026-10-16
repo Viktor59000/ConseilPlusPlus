@@ -3,6 +3,7 @@
  * Le Bureau — règles métier : relevé du courrier (import via l'API), réponses, libellés.
  */
 require_once __DIR__ . '/api.php';
+require_once __DIR__ . '/../../includes/courriel.php'; // gabarit et envoi des courriels, partagés avec le site
 
 const STATUTS_DOSSIER = [
     'a_traiter' => 'À traiter',
@@ -78,9 +79,8 @@ function rediger_reponse(array $dossier, string $agent): string
         . "Après délibération, voici notre recommandation :\n"
         . '« ' . conseil_du_cabinet() . " »\n\n"
         . "Nous restons à votre disposition, dans la limite de nos disponibilités, qui sont limitées.\n"
-        . "Veuillez agréer l'expression de nos salutations moyennes.\n\n"
-        . "$agent, pour le cabinet ConseilPlus+\n"
-        . 'Le conseiller moyen';
+        . "Veuillez agréer l'expression de nos salutations moyennes.";
+    // La signature (nom de l'agent, adresse, tampon) est ajoutée automatiquement à l'envoi : includes/courriel.php
 }
 
 /** Vrai si l'envoi d'emails est configuré (clé Brevo + adresse d'expédition). */
@@ -90,45 +90,27 @@ function envoi_actif(): bool
 }
 
 /**
- * Envoie la réponse au demandeur par l'API de Brevo.
+ * Envoie la réponse au demandeur par l'API de Brevo, dans le gabarit du cabinet (logo, cartouche, signature de l'agent).
  * Retourne [true, ''] si l'email est parti, sinon [false, raison lisible].
  */
-function envoyer_reponse(array $dossier, string $texte): array
+function envoyer_reponse(array $dossier, string $texte, string $agent): array
 {
     if (!envoi_actif()) {
         return [false, 'envoi par email non configuré'];
     }
-    $html = '<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#1B2440;max-width:600px">'
-        . '<p style="font-weight:bold;font-size:18px;margin:0 0 16px">ConseilPlus+ <span style="font-weight:normal;color:#4A5270">— le conseiller moyen</span></p>'
-        . nl2br(htmlspecialchars($texte))
-        . '<p style="margin-top:24px;font-size:12px;color:#4A5270">Dossier n° ' . sprintf('%04d', $dossier['id_site'])
-        . '. Aucun conseil délivré par ConseilPlus+ ne doit être suivi. Sérieusement.</p></div>';
-    $corps = [
-        'sender' => ['name' => BUREAU_EXPEDITEUR_NOM, 'email' => BUREAU_EXPEDITEUR],
-        'to' => [['email' => $dossier['email'], 'name' => $dossier['nom']]],
-        'replyTo' => ['email' => BUREAU_EXPEDITEUR],
-        'subject' => 'Votre demande n° ' . sprintf('%04d', $dossier['id_site']) . ' — réponse du cabinet ConseilPlus+',
-        'textContent' => $texte,
-        'htmlContent' => $html,
-    ];
-    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
-    curl_setopt_array($ch, [
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($corps, JSON_UNESCAPED_UNICODE),
-        CURLOPT_HTTPHEADER => ['api-key: ' . BREVO_API_KEY, 'Content-Type: application/json', 'Accept: application/json'],
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 20,
-        CURLOPT_CAINFO => __DIR__ . '/../../certs/cacert.pem',
+    $numero = sprintf('%04d', $dossier['id_site']);
+    $html = gabarit_courriel([
+        'titre' => 'Réponse officielle du cabinet',
+        'corps' => $texte,
+        'dossier' => $numero,
+        'signataire' => $agent,
+        'fonction' => 'Conseiller moyen',
+        'tampon' => 'Traité',
+        'apercu' => "Votre dossier n° $numero a été traité. Le cabinet a délibéré.",
     ]);
-    $reponse = curl_exec($ch);
-    $code = $reponse === false ? 0 : curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    if ($code >= 200 && $code < 300) {
-        return [true, ''];
-    }
-    $message = json_decode((string) $reponse, true)['message'] ?? ($code ? "erreur $code" : 'service injoignable');
-    error_log("Le Bureau : envoi Brevo impossible ($code) : $message");
-    return [false, $message];
+    return envoyer_courriel(BREVO_API_KEY, BUREAU_EXPEDITEUR, BUREAU_EXPEDITEUR_NOM, $dossier['email'], $dossier['nom'],
+        "Votre demande n° $numero — réponse du cabinet ConseilPlus+",
+        $texte . signature_texte($agent, 'Conseiller moyen'), $html);
 }
 
 /** Délai de traitement « estimé », toujours le même pour un dossier donné. */

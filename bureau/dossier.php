@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     break;
                 }
                 $valeurs['reponse'] = mb_substr($texte, 0, 5000);
-                [$parti, $raison] = envoyer_reponse($dossier, $valeurs['reponse']);
+                [$parti, $raison] = envoyer_reponse($dossier, $valeurs['reponse'], $agent['nom']);
                 if (!$parti && envoi_actif()) {
                     // L'envoi a échoué : la réponse est gardée, le dossier reste ouvert pour réessayer
                     $valeurs['statut'] = 'en_cours';
