@@ -7,16 +7,16 @@
 //   data-partager="mot" data-mot data-nature data-texte data-detail data-url   → une entrée du Petit Moyen
 
 const SITE = 'conseilplus.onrender.com';
-const COULEURS = { papier: '#F5F5F7', carte: '#FFFFFF', encre: '#1D1D1F', douce: '#6E6E73', filet: '#D2D2D7', tampon: '#C8102E', surligneur: '#FFE14D' };
-// Polices système, comme sur le site (rien à télécharger)
-const SANS = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+const COULEURS = { papier: '#F5F6FA', carte: '#FFFFFF', encre: '#1B2440', douce: '#525A73', filet: '#DDE1EC', seyes: '#D9E1F7', marge: '#F3AEB5', tampon: '#C8102E', surligneur: '#FFE14D' };
+// Polices du site (déjà chargées par la page)
+const SANS = '"Schibsted Grotesk", Arial, sans-serif';
+const MONO = '"JetBrains Mono", Consolas, monospace';
 
 /** Le logo du cabinet, chargé une fois (le SVG reçoit une taille explicite pour tous les navigateurs). */
 let logo = null;
 async function chargerLogo() {
   if (logo) return logo;
-  const svg = (await (await fetch('assets/logo.svg')).text()).replace('<svg ', '<svg width="1082" height="256" ');
+  const svg = (await (await fetch('assets/logo.svg')).text()).replace('<svg ', '<svg width="984" height="256" ');
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   logo = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = url; });
   return logo;
@@ -43,6 +43,7 @@ function couper(ctx, texte, largeur) {
  * Dessine l'image story. blocs = [{ texte, police, couleur, interligne, espaceAvant, surligne }] (contenu de la carte).
  */
 async function dessiner(etiquette, blocs) {
+  await Promise.all([document.fonts.load(`800 112px ${SANS}`), document.fonts.load(`600 64px ${SANS}`), document.fonts.load(`500 30px ${MONO}`)]).catch(() => {});
   const c = document.createElement('canvas');
   c.width = 1080;
   c.height = 1920;
@@ -52,7 +53,7 @@ async function dessiner(etiquette, blocs) {
 
   try {
     const l = await chargerLogo();
-    ctx.drawImage(l, 190, 150, 700, 166);
+    ctx.drawImage(l, 220, 150, 640, 166);
   } catch { /* sans logo, l'image reste lisible */ }
 
   // Mise en page du contenu pour connaître la hauteur de la carte
@@ -67,15 +68,21 @@ async function dessiner(etiquette, blocs) {
   hauteur += 150; // place du tampon
   const yCarte = Math.max(420, Math.round((c.height - hauteur) / 2) - 40);
 
+  // La carte : une copie, marge rouge
+  ctx.save();
+  ctx.shadowColor = 'rgba(27, 36, 64, .18)'; ctx.shadowBlur = 60; ctx.shadowOffsetY = 24;
   ctx.fillStyle = COULEURS.carte;
   ctx.beginPath();
-  ctx.roundRect(90, yCarte, 900, hauteur + 80, 56);
+  ctx.roundRect(90, yCarte, 900, hauteur + 80, 44);
   ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = COULEURS.marge;
+  ctx.fillRect(122, yCarte, 4, hauteur + 80);
 
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = COULEURS.douce;
-  ctx.font = `600 32px ${SANS}`;
-  ctx.fillText(etiquette, x, yCarte + 80);
+  ctx.font = `500 28px ${MONO}`;
+  ctx.fillText(etiquette.toUpperCase(), x, yCarte + 80);
   ctx.fillStyle = COULEURS.filet;
   ctx.fillRect(x, yCarte + 104, largeur, 2);
 

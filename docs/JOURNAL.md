@@ -6,7 +6,8 @@ L'entrée la plus récente est en haut de l'historique.
 ## État actuel (16/10/2026)
 
 Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 13 pages (profil mobile).
-Nouvelle DA (16/10) : sobriété inspirée des HIG d'Apple, mode sombre, RGAA 4.1 (partiellement conforme, audit interne).
+Identité « La note » (16/10) : logo C+ entouré au stylo rouge, Schibsted Grotesk, thèmes clair/sombre avec bouton,
+animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement conforme (audit interne).
 **En ligne** sur https://conseilplus.onrender.com (Render gratuit + TiDB Cloud Serverless gratuit), redéployé à chaque push
 (`docs/DEPLOIEMENT.md`).
 
@@ -48,7 +49,7 @@ Nouvelle DA (16/10) : sobriété inspirée des HIG d'Apple, mode sombre, RGAA 4.
 - **Régénérer `API_KEY` dans Render** (bouton *Generate*) : la valeur actuelle a transité par la conversation.
 - Formulaire de contact en ligne (appel interne de l'API via `URL_INTERNE`) pas encore testé de bout en bout.
 - RGAA : audit interne seulement ; tester Le Duel, Le guichet et la lecture des sketchs avec un lecteur d'écran (NVDA, VoiceOver),
-  puis mettre à jour `accessibilite.php`. Le Bureau et les courriels gardent l'ancienne DA (crème, marine) : à aligner si besoin.
+  puis mettre à jour `accessibilite.php`. 
 - La qualité des sketchs générés par l'IA est variable (calembours parfois faibles) : surveiller, ajuster
   `CONSIGNE_SKETCH` dans `includes/mot-du-jour.php` si besoin.
 - `db.php`, `config.php` et `bureau/config.php` ne sont pas dans Git : à recréer sur chaque PC (`docs/REPRISE.md`,
@@ -60,6 +61,16 @@ Nouvelle DA (16/10) : sobriété inspirée des HIG d'Apple, mode sombre, RGAA 4.
   l'utilisateur, jamais dans le dépôt.
 
 ## Historique des sessions
+
+### 16/10/2026 — PC principal (refonte « La note »)
+- L'utilisateur a jugé la refonte « Apple » trop fade : nouvelle identité complète avec le skill `logo-design`
+  (3 pistes, choix A « La note » : C+ entouré au stylo rouge). Kit dans `branding/`, icônes web, PNG des courriels.
+- Polices Schibsted Grotesk + JetBrains Mono (OFL, woff2 dans `assets/fonts`). Socle commun `css/base.css`
+  (jetons, thèmes, animations), composants `css/style.css` (site) et `bureau/css/bureau.css`.
+- Bouton clair / sombre (`includes/theme.php`, `js/theme.js`), choix gardé dans le navigateur, pas de flash.
+- Animations (`js/site.js`) : boucle du logo, surligneur, tampons, apparitions au défilement, transitions de page.
+- Courriels refaits (carte blanche, rubrique mono, signature + tampon) ; image de partage aux nouvelles couleurs.
+- Lighthouse 99–100 / 100 / 100 / 100 sur 13 pages ; 320 px et texte 200 % vérifiés dans les deux thèmes.
 
 ### 16/10/2026 — PC principal (suite)
 - **Refonte de la DA** avec le skill `apple-design` (installé dans `~/.claude/skills/apple-design`, HIG d'Apple) :

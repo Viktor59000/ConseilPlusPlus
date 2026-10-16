@@ -17,10 +17,12 @@ bouton.addEventListener('click', async (evenement) => {
       fiche.querySelector(`[data-conseil="${morceau}"]`).textContent = conseil.fragments[morceau];
     }
 
-    // Rejoue l'animation du tampon
+    // Rejoue les animations : le texte se réécrit, le tampon retombe
     const tampon = fiche.querySelector('.tampon');
+    fiche.classList.remove('renouvele');
     tampon.classList.remove('tampon-anime');
     void tampon.offsetWidth;
+    fiche.classList.add('renouvele');
     tampon.classList.add('tampon-anime');
 
     // Prévient les autres scripts (ex. bouton « Classer au dossier ») qu'un nouveau conseil est affiché

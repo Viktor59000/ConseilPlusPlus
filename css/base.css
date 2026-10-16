@@ -1,0 +1,131 @@
+/* ConseilPlus+ — socle commun au site et au Bureau : polices, couleurs, thèmes, éléments de base, animations.
+   Charte : design-system/conseilplus/MASTER.md. Intégré dans la page (pas de requête CSS bloquante). */
+
+/* Polices hébergées sur le site, sous-ensemble latin (licence SIL OFL : assets/fonts/OFL-*.txt) */
+@font-face { font-family: "Schibsted Grotesk"; font-style: normal; font-weight: 400 900; font-display: swap; src: url("../assets/fonts/schibsted-grotesk.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url("../assets/fonts/jetbrains-mono-500.woff2") format("woff2"); }
+/* Repli métrique : la police de secours prend la même place, la page ne bouge pas au chargement */
+@font-face { font-family: "Schibsted repli"; src: local("Arial"); size-adjust: 101%; ascent-override: 96%; descent-override: 26%; }
+
+/* Thème clair « la copie » : papier blanc bleuté, encre marine, stylo rouge */
+:root {
+  color-scheme: light;
+  --fond: #F5F6FA;
+  --surface: #FFFFFF;
+  --surface-2: #EBEDF4;
+  --encre: #1B2440;          /* 14,2:1 sur --fond */
+  --encre-2: #525A73;        /* 6,3:1 sur --fond, 6,8:1 sur --surface */
+  --filet: #DDE1EC;
+  --contour: #7A8199;        /* bord des champs : 3,6:1 (RGAA 3.3) */
+  --bouton: #1B2440;         /* action principale */
+  --sur-bouton: #FFFFFF;     /* 15,3:1 */
+  --rouge: #C8102E;          /* stylo rouge : notes, tampons, erreurs — 5,9:1 sur --surface */
+  --jaune: #FFE14D;          /* surligneur (toujours avec --encre-fixe dessus : 11,8:1) */
+  --encre-fixe: #1B2440;
+  --ok: #1E6B3A;
+  --fond-ok: #E6F4EA;
+  --fond-erreur: #FDECEE;
+  --seyes: #D9E1F7;          /* lignes de la copie (décor) */
+  --marge: #F3AEB5;          /* marge rouge de la copie (décor) */
+  --ombre: 0 1px 2px rgba(27, 36, 64, .06), 0 12px 32px -8px rgba(27, 36, 64, .14);
+  --ombre-haute: 0 2px 4px rgba(27, 36, 64, .08), 0 24px 48px -12px rgba(27, 36, 64, .22);
+  --verre: rgba(245, 246, 250, .78);
+
+  --police: "Schibsted Grotesk", "Schibsted repli", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --rayon: 22px;
+  --rayon-petit: 12px;
+  --ressort: cubic-bezier(.2, .8, .2, 1);
+  --rebond: cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* Thème sombre « le tableau » : ardoise marine, craie, stylo rouge éclairci */
+:root[data-theme="sombre"] {
+  color-scheme: dark;
+  --fond: #0E1220; --surface: #171C2E; --surface-2: #222842;
+  --encre: #F3F1EC; --encre-2: #A9AFC3; --filet: #2C3350; --contour: #7A8199;
+  --bouton: #F3F1EC; --sur-bouton: #1B2440;
+  --rouge: #FF5F6D; --ok: #5BD68C; --fond-ok: #10291C; --fond-erreur: #3A1520;
+  --seyes: #232A45; --marge: #5A2733;
+  --ombre: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px -8px rgba(0, 0, 0, .55);
+  --ombre-haute: 0 2px 4px rgba(0, 0, 0, .5), 0 24px 48px -12px rgba(0, 0, 0, .7);
+  --verre: rgba(14, 18, 32, .78);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="clair"]) {
+    color-scheme: dark;
+    --fond: #0E1220; --surface: #171C2E; --surface-2: #222842;
+    --encre: #F3F1EC; --encre-2: #A9AFC3; --filet: #2C3350; --contour: #7A8199;
+    --bouton: #F3F1EC; --sur-bouton: #1B2440;
+    --rouge: #FF5F6D; --ok: #5BD68C; --fond-ok: #10291C; --fond-erreur: #3A1520;
+    --seyes: #232A45; --marge: #5A2733;
+    --ombre: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px -8px rgba(0, 0, 0, .55);
+    --ombre-haute: 0 2px 4px rgba(0, 0, 0, .5), 0 24px 48px -12px rgba(0, 0, 0, .7);
+    --verre: rgba(14, 18, 32, .78);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 96px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0; background: var(--fond); color: var(--encre);
+  font: 400 1.125rem/1.6 var(--police); font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased; overflow-wrap: break-word;
+}
+/* Changement de thème : fondu des couleurs (seulement pendant la bascule, pour ne rien ralentir d'autre) */
+.bascule-theme, .bascule-theme *, .bascule-theme *::before, .bascule-theme *::after {
+  transition: background-color 350ms ease, color 350ms ease, border-color 350ms ease, fill 350ms ease, box-shadow 350ms ease !important;
+}
+
+h1, h2, h3 { font-family: var(--police); line-height: 1.05; margin: 0 0 .5em; hyphens: auto; text-wrap: balance; }
+h1 { font-size: clamp(2.6rem, 7vw, 5.25rem); font-weight: 800; letter-spacing: -.035em; }
+h2 { font-size: clamp(1.8rem, 4vw, 2.9rem); font-weight: 750; letter-spacing: -.03em; }
+h3 { font-size: 1.3rem; font-weight: 700; letter-spacing: -.015em; line-height: 1.2; }
+p { margin: 0 0 1em; }
+a { color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: .2em; }
+img, svg { max-width: 100%; }
+::selection { background: var(--jaune); color: var(--encre-fixe); }
+
+:focus-visible { outline: 3px solid var(--rouge); outline-offset: 3px; border-radius: 6px; }
+
+.mono { font-family: var(--mono); font-size: .82rem; letter-spacing: .01em; }
+.visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+
+/* Bouton de thème (soleil / lune) */
+.theme-bouton {
+  display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  border: 1px solid var(--filet); border-radius: 999px; background: var(--surface); color: var(--encre); cursor: pointer;
+  transition: transform 300ms var(--rebond), border-color 200ms;
+}
+.theme-bouton:hover { border-color: var(--contour); transform: rotate(-12deg); }
+.theme-bouton svg { width: 20px; height: 20px; grid-area: 1 / 1; transition: transform 500ms var(--rebond), opacity 250ms; }
+.theme-bouton .icone-lune { opacity: 0; transform: rotate(-90deg) scale(.4); }
+:root[data-theme-effectif="sombre"] .theme-bouton .icone-soleil { opacity: 0; transform: rotate(90deg) scale(.4); }
+:root[data-theme-effectif="sombre"] .theme-bouton .icone-lune { opacity: 1; transform: none; }
+
+/* Logo en ligne : la boucle rouge se trace au chargement */
+.logo-svg { display: block; height: 100%; width: auto; overflow: visible; }
+.logo-encre { fill: var(--encre); }
+.logo-boucle { fill: var(--rouge); }
+.logo-trace { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.premiere-visite .logo-trace { animation: trace 1100ms var(--ressort) 200ms both; }
+@keyframes trace { from { stroke-dashoffset: 1; } }
+
+/* Apparition au défilement (js/site.js) : seulement les éléments hors écran au chargement */
+.a-reveler { opacity: 0; transform: translateY(28px); }
+.revele { opacity: 1; transform: none; transition: opacity 700ms var(--ressort), transform 700ms var(--ressort); transition-delay: calc(var(--i, 0) * 80ms); }
+
+/* Transitions entre les pages (navigateurs qui le gèrent) */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: 180ms ease both sortie-page; }
+::view-transition-new(root) { animation: 320ms var(--ressort) both entree-page; }
+@keyframes sortie-page { to { opacity: 0; } }
+@keyframes entree-page { from { opacity: 0; transform: translateY(10px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; transition-delay: 0ms !important; }
+  .a-reveler { opacity: 1; transform: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}

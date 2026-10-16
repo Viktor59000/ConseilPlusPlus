@@ -93,7 +93,7 @@ $formules = [
     </li>
 <?php endforeach; ?>
   </ul>
-  <p class="installation-note">Couleurs du cabinet : fond <code>#FFFFFF</code>, texte <code>#1D1D1F</code>, accent <code>#1B2440</code>, tampon <code>#C8102E</code>. Le widget se met à jour tout seul ; le premier chargement de la journée peut prendre une minute (le cabinet se réveille).</p>
+  <p class="installation-note">Couleurs du cabinet : fond <code>#FFFFFF</code>, texte <code>#1B2440</code>, stylo rouge <code>#C8102E</code>, surligneur <code>#FFE14D</code>. Le widget se met à jour tout seul ; le premier chargement de la journée peut prendre une minute (le cabinet se réveille).</p>
   </details>
 </section>
 

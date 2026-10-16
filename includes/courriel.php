@@ -24,79 +24,75 @@ function signature_texte(string $signataire, string $fonction): string
 }
 
 /**
- * Courriel HTML complet aux couleurs du cabinet.
+ * Courriel HTML complet aux couleurs du cabinet (charte : design-system/conseilplus/MASTER.md).
  * $o : titre, corps (texte brut : échappé et mis en paragraphes ici), dossier (« 0042 » ou null),
  *      signataire, fonction, tampon (« Traité », « Reçu »…), apercu (texte d'aperçu dans la boîte de réception).
+ * Mise en page en tableaux et styles en ligne : seule façon d'être affiché pareil dans Gmail, Outlook et sur mobile.
  */
 function gabarit_courriel(array $o): string
 {
     $e = fn($t) => htmlspecialchars((string) $t, ENT_QUOTES, 'UTF-8');
     $site = url_publique();
+    $domaine = $e(preg_replace('#^https?://#', '', $site));
     $encre = '#1B2440';
-    $douce = '#4A5270';
-    $papier = '#F4EFE4';
-    $carte = '#FFFDF7';
+    $encre2 = '#525A73';
+    $fond = '#F5F6FA';
+    $filet = '#DDE1EC';
     $rouge = '#C8102E';
-    $jaune = '#FFE14D';
-    $titre_police = "'Arial Black',Arial,Helvetica,sans-serif";
-    $texte_police = 'Arial,Helvetica,sans-serif';
-    $mono = "'Courier New',Courier,monospace";
+    $police = "'Schibsted Grotesk',Arial,Helvetica,sans-serif";
+    $mono = "'JetBrains Mono',Consolas,'Courier New',monospace";
 
     // Corps : paragraphes séparés par une ligne vide, retours à la ligne conservés
     $paragraphes = '';
     foreach (preg_split('/\R{2,}/u', trim((string) $o['corps'])) as $p) {
-        $paragraphes .= '<p style="margin:0 0 16px;font-family:' . $texte_police . ';font-size:15px;line-height:1.6;color:' . $encre . '">'
+        $paragraphes .= '<p style="margin:0 0 18px;font-family:' . $police . ';font-size:16px;line-height:1.65;color:' . $encre . '">'
             . nl2br($e($p)) . '</p>';
     }
-
-    $cartouche = $o['dossier'] ?? null
-        ? '<td align="right" style="font-family:' . $mono . ';font-size:12px;color:' . $douce . ';white-space:nowrap">Dossier n° '
-            . $e($o['dossier']) . '</td>'
-        : '<td></td>';
+    $dossier = ($o['dossier'] ?? null) ? 'Dossier n° ' . $e($o['dossier']) : 'Cabinet ConseilPlus+';
 
     return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-        . '<meta name="color-scheme" content="light"><title>' . $e($o['titre']) . '</title></head>'
-        . '<body style="margin:0;padding:0;background:' . $papier . '">'
+        . '<meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>' . $e($o['titre']) . '</title></head>'
+        . '<body style="margin:0;padding:0;background:' . $fond . '">'
         // Texte d'aperçu (affiché par la messagerie à côté du sujet, invisible dans le courriel)
         . '<div style="display:none;max-height:0;overflow:hidden;opacity:0">' . $e($o['apercu'] ?? '') . '</div>'
-        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:' . $papier . '"><tr><td align="center" style="padding:24px 12px">'
-        . '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:' . $carte
-            . ';border:2px solid ' . $encre . '">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:' . $fond . '"><tr><td align="center" style="padding:32px 12px">'
 
-        // En-tête : logo + numéro de dossier
-        . '<tr><td style="padding:20px 28px;border-bottom:2px solid ' . $encre . '">'
-        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>'
-        . '<td><a href="' . $site . '"><img src="' . $site . '/assets/email/logo.png" width="240" height="57" alt="ConseilPlus+, le conseiller moyen"'
-            . ' style="display:block;border:0;width:240px;height:auto"></a></td>'
-        . $cartouche . '</tr></table></td></tr>'
+        // Logo, au-dessus de la carte
+        . '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px"><tr><td style="padding:0 8px 20px">'
+        . '<a href="' . $site . '"><img src="' . $site . '/assets/email/logo.png" width="190" height="49" alt="ConseilPlus+, le conseiller moyen"'
+            . ' style="display:block;border:0;width:190px;height:auto"></a></td></tr></table>'
 
-        // Titre surligné
-        . '<tr><td style="padding:28px 28px 8px">'
-        . '<p style="margin:0 0 20px;font-family:' . $titre_police . ';font-size:22px;line-height:1.25;color:' . $encre . '">'
-            . '<span style="background:' . $jaune . ';padding:0 4px">' . $e($o['titre']) . '</span></p>'
+        // La carte
+        . '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#FFFFFF;border-radius:20px;border:1px solid ' . $filet . '">'
+        . '<tr><td style="padding:36px 40px 8px">'
+        . '<p style="margin:0 0 14px;font-family:' . $mono . ';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:' . $encre2 . '">'
+            . '<span style="color:' . $rouge . '">&#8212;&nbsp;</span>' . $dossier . '</p>'
+        . '<h1 style="margin:0 0 24px;font-family:' . $police . ';font-size:28px;line-height:1.15;font-weight:800;letter-spacing:-0.5px;color:' . $encre . '">'
+            . $e($o['titre']) . '</h1>'
         . $paragraphes . '</td></tr>'
 
-        // Signature
-        . '<tr><td style="padding:8px 28px 28px">'
-        . '<table role="presentation" cellpadding="0" cellspacing="0" style="border-top:1px dashed ' . $encre . ';padding-top:16px;width:100%"><tr>'
-        . '<td width="60" valign="top" style="padding-top:16px"><img src="' . $site . '/assets/email/icone.png" width="48" height="48" alt=""'
-            . ' style="display:block;border:2px solid ' . $encre . '"></td>'
-        . '<td valign="top" style="padding:16px 0 0 14px;font-family:' . $texte_police . ';font-size:13px;line-height:1.5;color:' . $douce . '">'
-            . '<strong style="font-family:' . $titre_police . ';font-size:15px;color:' . $encre . ';font-weight:normal">' . $e($o['signataire']) . '</strong><br>'
+        // Signature : symbole C+, nom, fonction, adresse ; tampon à droite
+        . '<tr><td style="padding:8px 40px 36px">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ' . $filet . '"><tr>'
+        . '<td width="56" valign="top" style="padding-top:20px"><img src="' . $site . '/assets/email/icone.png" width="44" height="44" alt=""'
+            . ' style="display:block;border:0"></td>'
+        . '<td valign="top" style="padding:20px 0 0 12px;font-family:' . $police . ';font-size:13px;line-height:1.55;color:' . $encre2 . '">'
+            . '<strong style="font-size:15px;color:' . $encre . '">' . $e($o['signataire']) . '</strong><br>'
             . $e($o['fonction']) . ' · Cabinet ConseilPlus+<br>'
             . '12 bis, impasse du Consensus Mou, bâtiment C, escalier D<br>'
-            . '<a href="' . $site . '" style="color:' . $encre . ';font-weight:bold">' . $e(preg_replace('#^https?://#', '', $site)) . '</a>'
-            . ' · <a href="' . $site . '/petit-moyen.php" style="color:' . $encre . '">Le mot (presque) du jour</a></td>'
-        . '<td valign="top" align="right" style="padding-top:16px">'
-            . '<span style="display:inline-block;border:3px double ' . $rouge . ';color:' . $rouge . ';font-family:' . $mono
-            . ';font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;padding:4px 10px">' . $e($o['tampon'] ?? 'Traité') . '</span></td>'
-        . '</tr></table></td></tr>'
+            . '<a href="' . $site . '" style="color:' . $encre . ';font-weight:bold;text-decoration:underline">' . $domaine . '</a>'
+            . ' · <a href="' . $site . '/petit-moyen.php" style="color:' . $encre . ';text-decoration:underline">Le mot (presque) du jour</a></td>'
+        . '<td valign="top" align="right" style="padding-top:22px">'
+            . '<span style="display:inline-block;border:3px double ' . $rouge . ';border-radius:6px;color:' . $rouge . ';font-family:' . $mono
+            . ';font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;padding:5px 12px;white-space:nowrap">' . $e($o['tampon'] ?? 'Traité') . '</span></td>'
+        . '</tr></table></td></tr></table>'
 
-        // Pied
-        . '<tr><td style="padding:14px 28px;background:' . $encre . ';font-family:' . $mono . ';font-size:11px;line-height:1.5;color:#D9D4C7">'
+        // Pied, sous la carte
+        . '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px"><tr>'
+        . '<td style="padding:20px 8px 0;font-family:' . $police . ';font-size:12px;line-height:1.6;color:' . $encre2 . '">'
             . 'Aucun conseil délivré par ConseilPlus+ ne doit être suivi. Sérieusement.<br>'
-            . 'Vous recevez ce courriel à la suite de votre demande sur ' . $e(preg_replace('#^https?://#', '', $site)) . '.</td></tr>'
-        . '</table></td></tr></table></body></html>';
+            . 'Vous recevez ce courriel à la suite de votre demande sur ' . $domaine . '.</td></tr></table>'
+        . '</td></tr></table></body></html>';
 }
 
 /**
