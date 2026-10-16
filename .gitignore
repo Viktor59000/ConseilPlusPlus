@@ -12,3 +12,9 @@ bureau/config.php
 
 # Sauvegardes de base de données (données personnelles)
 *.sql
+
+# Application Android (fichiers de construction)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties

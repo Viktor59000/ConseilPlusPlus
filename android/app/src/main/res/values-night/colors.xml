@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Thème sombre « le tableau » : suit le mode sombre du téléphone -->
+<resources>
+    <color name="papier">#0E1220</color>
+    <color name="carte">#171C2E</color>
+    <color name="encre">#F3F1EC</color>
+    <color name="encre_douce">#A9AFC3</color>
+    <color name="tampon">#FF5F6D</color>
+    <color name="filet">#2C3350</color>
+    <color name="marge">#5A2733</color>
+    <color name="bouton_fond">#222842</color>
+</resources>

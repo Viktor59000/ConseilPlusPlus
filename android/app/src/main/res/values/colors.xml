@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Thème clair « la copie » (design-system/conseilplus/MASTER.md). Le thème sombre est dans values-night. -->
+<resources>
+    <color name="papier">#F5F6FA</color>
+    <color name="carte">#FFFFFF</color>
+    <color name="encre">#1B2440</color>
+    <color name="encre_douce">#525A73</color>
+    <color name="tampon">#C8102E</color>
+    <color name="surligneur">#FFE14D</color>
+    <color name="encre_fixe">#1B2440</color>
+    <color name="filet">#DDE1EC</color>
+    <color name="marge">#F3AEB5</color>
+    <color name="bouton_fond">#EBEDF4</color>
+</resources>

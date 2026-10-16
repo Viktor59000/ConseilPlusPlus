@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bouton du widget : pilule, fond discret (comme les contrôles segmentés du site) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/bouton_fond" />
+    <corners android:radius="18dp" />
+</shape>
