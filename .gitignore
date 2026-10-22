@@ -17,3 +17,8 @@ android/.gradle/
 android/build/
 android/app/build/
 android/local.properties
+
+# Clés de signature (jamais dans Git : secrets GitHub ANDROID_CLE_P12 / ANDROID_CLE_MDP)
+*.p12
+*.jks
+*.keystore

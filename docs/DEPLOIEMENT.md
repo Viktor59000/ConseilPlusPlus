@@ -41,6 +41,17 @@ en 2 à 4 minutes.
 Les secrets ne vont **jamais** dans Git ni dans une conversation : ils sont saisis directement dans Render.
 Modifier une variable redéploie le site automatiquement.
 
+## Secrets du dépôt GitHub (Settings → Secrets and variables → Actions)
+
+| Secret | Utilisé par | Valeur |
+|---|---|---|
+| `API_KEY` | `reveil.yml` : préparer le mot du jour et envoyer la notification (POST protégés, sinon 401) | la même que `API_KEY` sur Render |
+| `ANDROID_CLE_P12` | `android.yml` : signature de l'APK | le fichier `conseilplus.p12` encodé en base64 |
+| `ANDROID_CLE_MDP` | `android.yml` | le mot de passe de cette clé |
+
+La clé de signature Android est gardée **hors du dépôt** (l'ancienne, publiée par erreur dans Git jusqu'au 22/10/2026,
+est abandonnée : ne jamais la réutiliser). Changer de clé oblige à désinstaller puis réinstaller l'appli une fois.
+
 ## Autre alternative : base MySQL sur un panneau Pterodactyl (ex. Echo-Host)
 
 Une base créée depuis l'onglet **Databases** d'un panneau Pterodactyl reste toujours allumée (pas de mise en veille).

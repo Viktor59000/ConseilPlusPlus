@@ -49,7 +49,8 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 - **Courriels** : tester en ligne l'accusé de réception (formulaire de contact) et une réponse du Bureau une fois la
   nouvelle clé Brevo en place.
 - `data/cadres.php` : accords au masculin avec des objets féminins (« votre trottinette se sente moins seul ») à neutraliser.
-- La clé de signature Android `conseilplus.p12` reste dans l'historique Git (appli retirée) : ne jamais la réutiliser.
+- L'ancienne clé de signature Android (`conseilplus.p12`, mot de passe en clair) reste dans l'historique Git : abandonnée
+  le 22/10/2026, ne jamais la réutiliser. La nouvelle est hors du dépôt (secrets GitHub, `docs/DEPLOIEMENT.md`).
 
 - **Régénérer la clé Groq** (elle a transité par une conversation) et la mettre dans `config.php` sur chaque PC
   et dans Render (variable `GROQ_API_KEY`, absente pour l'instant : le site en ligne utilise les générateurs locaux).
@@ -68,6 +69,19 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
   l'utilisateur, jamais dans le dépôt.
 
 ## Historique des sessions
+
+### 22/10/2026 — Refactor, front revu, audit du conseil
+- **Refactor** : `db.php` versionné → `includes/bdd.php` (une connexion par requête) + `includes/schema.php` (rejoué seulement
+  quand il change) ; client HTTP unique (`includes/http.php`) et adresses (`includes/url.php`) ; API : `router()`,
+  `exiger_methode()`, `lire_entier()`… ; pages : `includes/init.php`, `includes/formulaire.php`, `includes/consultation.php` ;
+  Bureau : `amorce.php`, `rediriger()`, `vues.php` ; chaque script JS dans sa propre portée.
+- **Front** (skill frontend-design) : étiquettes en capitales retirées, police machine réservée aux tampons/écrans,
+  panneaux à plat et papiers à coins, plus de fondu au défilement. Lighthouse en ligne : 93–100 / 100 / 100 / 100.
+- **Audit du conseil** (skill debate : 5 experts, 3 rounds) → corrigé : export sans secrets, accusé de réception sans texte
+  saisi, POST mot-du-jour et notifications « envoyer » sous clé, « chiffré » → empreinte SHA-512, lien de réinitialisation
+  journalisé en local seulement, contacts plafonnés à 500, sitemap complet, **nouvelle clé Android hors dépôt**.
+- **À faire par l'utilisateur** : secrets GitHub `API_KEY`, `ANDROID_CLE_P12`, `ANDROID_CLE_MDP` (voir `docs/DEPLOIEMENT.md`),
+  puis relancer *Réveil quotidien* et *Application Android* ; réinstaller l'APK (nouvelle clé) ; UptimeRobot.
 
 ### 16/10/2026 — Second PC (le lore du cabinet, API pro)
 - **Standard téléphonique** de Mireille (`standard.php`) : clavier, voix de synthèse et musique d'attente facultatives,

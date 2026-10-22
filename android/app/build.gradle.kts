@@ -18,15 +18,16 @@ android {
         versionName = "1.0.$numero"
     }
 
-    // Clé de signature partagée (APK distribué hors Play Store) : la même pour toutes les versions,
-    // sinon Android refuse la mise à jour. À remplacer par une clé secrète avant une publication sur le Play Store.
+    // Clé de signature : jamais dans le dépôt. GitHub Actions la reconstitue depuis ses secrets
+    // (ANDROID_CLE_P12 en base64, ANDROID_CLE_MDP) ; en local, définir les mêmes variables d'environnement.
+    // La même clé doit servir pour toutes les versions, sinon Android refuse la mise à jour.
     signingConfigs {
         create("partage") {
-            storeFile = file("conseilplus.p12")
+            storeFile = file(System.getenv("ANDROID_CLE_FICHIER") ?: "conseilplus.p12")
             storeType = "pkcs12"
-            storePassword = "conseilplus"
+            storePassword = System.getenv("ANDROID_CLE_MDP")
             keyAlias = "conseilplus"
-            keyPassword = "conseilplus"
+            keyPassword = System.getenv("ANDROID_CLE_MDP")
         }
     }
 

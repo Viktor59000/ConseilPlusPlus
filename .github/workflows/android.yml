@@ -29,8 +29,19 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
+      # Clé de signature tirée des secrets du dépôt (jamais dans Git). Sans eux, on s'arrête : pas d'APK non signé.
+      - name: Clé de signature
+        env:
+          ANDROID_CLE_P12: ${{ secrets.ANDROID_CLE_P12 }}
+        run: |
+          if [ -z "$ANDROID_CLE_P12" ]; then echo "Secrets ANDROID_CLE_P12 et ANDROID_CLE_MDP absents (voir docs/DEPLOIEMENT.md)."; exit 1; fi
+          echo "$ANDROID_CLE_P12" | base64 --decode > "$RUNNER_TEMP/conseilplus.p12"
+
       - name: Construire l'APK
         working-directory: android
+        env:
+          ANDROID_CLE_FICHIER: ${{ runner.temp }}/conseilplus.p12
+          ANDROID_CLE_MDP: ${{ secrets.ANDROID_CLE_MDP }}
         run: gradle assembleRelease --no-daemon
 
       - name: Renommer
