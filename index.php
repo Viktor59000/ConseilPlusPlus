@@ -97,7 +97,6 @@ include __DIR__ . '/includes/header.php';
 </section>
 
 <script src="<?= fichier_versionne('js/conseil.js') ?>" defer></script>
-<script src="<?= fichier_versionne('js/mot-du-jour.js') ?>" defer></script>
 <script src="<?= fichier_versionne('js/sketch.js') ?>" defer></script>
 <script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
 <script src="<?= fichier_versionne('js/votes.js') ?>" defer></script>

@@ -78,6 +78,8 @@ du serveur (renouvellement mensuel).
 
 - **Render** : le site s'endort après 15 min sans visite (la visite suivante attend environ une minute) ;
   `garde-eveille.yml` le visite toutes les 9 min pour l'éviter (passage de près de 6 h, relayé par la passe horaire suivante : GitHub sautait les passes de 10 min).
+  En plus, **UptimeRobot** (offre gratuite, compte de l'utilisateur, en place depuis le 22/10/2026) interroge le site à intervalle
+  régulier (toutes les 5 min au mieux sur l'offre gratuite) : il le garde éveillé si GitHub saute des passes, et prévient par courriel quand le site ne répond plus.
   Les sessions sont effacées à chaque endormissement ou déploiement (il faut parfois se reconnecter ;
   comptes et carnets restent en base).
 - **TiDB Cloud Serverless** : 5 Go de stockage et un quota mensuel de « Request Units », très au-dessus des besoins.
@@ -92,8 +94,8 @@ du serveur (renouvellement mensuel).
 | Problème | Piste |
 |---|---|
 | Déploiement en échec | Render → conseilplus → *Logs* (erreur de construction Docker) |
-| Page « Guichet momentanément fermé » (erreur 503) | Base injoignable : console TiDB Cloud → vérifier que le cluster est actif ; si le mot de passe a été régénéré, le reporter dans `DB_PASS` (Render). Le détail exact est dans Render → *Logs* (« base de données indisponible ») |
-| Le workflow *Réveil quotidien* échoue (e-mail de GitHub) | Même cause probable : le site répond 503 quand la base est injoignable |
+| Page « Archives momentanément égarées » (erreur 503) | Base injoignable : console TiDB Cloud → vérifier que le cluster est actif ; si le mot de passe a été régénéré, le reporter dans `DB_PASS` (Render). Le détail exact est dans Render → *Logs* (« base de données indisponible ») |
+| Le workflow *Réveil quotidien* échoue (e-mail de GitHub) | Étape en `503` : base injoignable (ligne précédente). Étape « Préparer le mot de demain » ou « notification » en `401` : le secret GitHub `API_KEY` manque ou ne correspond plus à `API_KEY` sur Render (à reporter après chaque régénération) |
 | Le site met une minute à s'afficher | Le site s'est endormi : vérifier que le workflow *Garde éveillé* tourne (onglet Actions de GitHub) |
 | Aucun courriel reçu après le formulaire de contact | `BREVO_API_KEY` / `BUREAU_EXPEDITEUR` dans Render ; Brevo → *Statistiques* → *Transactionnel* ; dossier Indésirables. Au plus 2 accusés par adresse et par jour |
 
@@ -139,5 +141,5 @@ Autre voie : console TiDB Cloud → cluster → *Data* → *Export* (fichier SQL
 C:/wamp64/bin/mysql/mysql9.1.0/bin/mysql.exe -uroot < sauvegarde-tidb.sql
 ```
 
-Les fichiers `.sql` contiennent des données personnelles (adresses email, mots de passe chiffrés) : ne jamais les
+Les fichiers `.sql` contiennent des données personnelles (adresses email, empreintes des mots de passe) : ne jamais les
 mettre dans Git (`*.sql` est ignoré).

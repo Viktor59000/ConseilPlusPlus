@@ -3,67 +3,61 @@
 Mis à jour par Claude à la fin de chaque session (et avant chaque changement de PC).
 L'entrée la plus récente est en haut de l'historique.
 
-## État actuel (16/10/2026)
+## État actuel (22/10/2026)
 
-Site vitrine **complet et fonctionnel**, Lighthouse 100/100/100/100 sur les 13 pages (profil mobile).
-Identité « La note » (16/10) : logo C+ entouré au stylo rouge, Schibsted Grotesk, thèmes clair/sombre avec bouton,
-animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement conforme (audit interne).
+Les trois attendus du cours sont faits, en ligne et testés ; le dossier est prêt pour le correcteur (`README.md` : parcours
+noté en schéma de séquence, tableau « exigence → code → preuve », captures à jour dans `docs/captures/`).
 **En ligne** sur https://conseilplus.onrender.com (Render gratuit + TiDB Cloud Serverless gratuit), redéployé à chaque push
-(`docs/DEPLOIEMENT.md`).
+(`docs/DEPLOIEMENT.md`). Lighthouse mesuré en ligne le 22/10 (profil mobile) : performance 93–100, accessibilité,
+bonnes pratiques et SEO 100. RGAA 4.1 : partiellement conforme (audit interne). Identité « La note » (C+ entouré au stylo rouge).
 
-- **Pages publiques** : accueil (conseil du jour + mot du jour), formules, contact (passe par l'API), espace client, Le Petit Moyen.
-- **Espace client** : Mon conseil (sans rechargement), Consultation (questionnaire tournant + verdict IA),
-  Le Duel (partie en 100 points, barème caché), Mon carnet (conseils classés).
-- **API REST** (`docs/API.md`) : contacts (site → logiciel de gestion), conseils, carnet, mot du jour, horoscope.
-  Version `/api/v1/`, description OpenAPI 3.1 (`api/openapi.php`), pagination/tri/filtres sur les contacts,
-  clés par application avec droits lecture/écriture (page « Clés d'API » du Bureau ; la clé maîtresse `API_KEY` garde tout).
-  Journal de chaque échange dans `api_logs`, limite de débit, tests dans `tests/test_api.php`.
-- **Sécurité** : CSRF, `session_regenerate_id`, champ piège anti-robots, requêtes préparées, échappement des sorties.
-- **Le Petit Moyen** : mot du jour (fausse définition ou sketch du conseiller et du stagiaire),
-  préparé par l'IA la veille, banque locale en secours. Sketchs sur la mécanique des « Mots » (15 en banque).
-- **Le Bureau** (`bureau/`, `docs/BUREAU.md`) : logiciel de gestion séparé (base `gestion`), en ligne sur `/bureau/`.
-  Premier agent créé en ligne par l'utilisateur. Envoi réel des réponses par email via Brevo (code poussé).
-- **Mobile** : site installable (PWA) + widget KWGT (Android) via `api/widget.php`. L'appli Android native a été retirée le 16/10
-  (tri : uniquement PHP, JS, HTML, CSS, plus Dockerfile et workflow pour la mise en ligne).
-- **Partage** (image story), **Le guichet** (`guichet.php`), **votes** « Moyen / Pas moyen » (palmarès dans Le Bureau),
-  **notification quotidienne** du mot du jour (Web Push maison, envoi par `reveil.yml` vers 7 h).
-- **Le lore du cabinet** : chaque membre de l'équipe tient un service (lien sur sa carte, page Le cabinet) :
-  le conseiller → diagnostic « Quel client êtes-vous ? », le stagiaire → Le Petit Moyen, Mireille → le standard téléphonique,
-  Bertrand → le guichet, Messmerde → ses expériences et son horoscope, le tampon → les attestations officielles.
+- **Site vitrine** : accueil (conseil du jour, article du règlement intérieur du jour, mot du jour), Le cabinet, Le Petit Moyen
+  (175 mots avec étymologies, 41 sketchs, « Le sigle du jour » du mouvement abréviationniste), formules, contact (passe par l'API).
+- **Services de l'équipe** : Questions pour un stagiaire, Messmerde (expériences, prédictions rétroactives, horoscope),
+  standard de Mireille (choix cliquables, sans clavier), attestations précédées du formulaire du jour, diagnostic.
+  L'ancien guichet redirige (301) vers Le cabinet.
+- **Espace client** : Mon conseil, Consultation, Le Duel, Mon carnet, **Mon compte** (mes demandes, leur statut, la réponse
+  du cabinet ; suppression des demandes et du compte).
+- **API REST** : une seule liste des routes, `data/api.php`, d'où sortent `developpeurs.php` et `api/openapi.php` (OpenAPI 3.1) ;
+  `docs/API.md` ne garde que les principes et les parcours curl. Version `/api/v1/`, pagination/tri/filtres, clés par
+  application (lecture/écriture), journal `api_logs`, limites de débit. POST mot du jour et « envoyer » des notifications sous clé.
+- **Le Bureau** (`bureau/`, base `gestion`) : relevé `nouveau` → `importe`, affectation et échéances, notes internes,
+  historique de la personne, CSV, purge du site, réponse par courriel (Brevo) **renvoyée au site** (`repondu`),
+  relecture du mot de demain, journal, statistiques, clés, sauvegardes.
+- **Mobile** : PWA, notification quotidienne (Web Push maison), appli Android + widget (`android/`, APK publié par
+  `android.yml`, signé avec la nouvelle clé gardée dans les secrets GitHub).
+- **Exploitation** : tests GitHub à chaque push, *Réveil quotidien* (exige le secret `API_KEY`), *Garde éveillé*, UptimeRobot.
+- Confidentialité alignée sur ce qui est fait réellement (chantier du 22/10 : `confidentialite.php`, doc des notifications,
+  bug de minuit, migrations sûres).
 
 ## Prochaines étapes
 
-0. **Tester la notification sur un vrai téléphone** : `application.php` → « Recevoir le mot du jour chaque matin »,
-   puis lancer le workflow *Réveil quotidien* à la main (onglet Actions de GitHub) ou attendre le lendemain 7 h.
-1. **Le Bureau** : à confronter aux consignes du prof (séance du 16/10). Envoi des réponses par email :
-   **vérifié en ligne le 15/10** (via Brevo, expéditeur = boîte perso de l'utilisateur ; une adresse dédiée au
-   cabinet pourra la remplacer : la vérifier dans Brevo puis changer `BUREAU_EXPEDITEUR` dans Render).
-3. Améliorations possibles de l'API : webhook (prévenir Le Bureau à chaque nouvelle demande au lieu du relevé).
-4. Vérifier sur téléphone le standard (musique d'attente), les attestations (partage de l'image) et l'horoscope ;
-   tester les nouvelles pages avec un lecteur d'écran (NVDA, TalkBack).
+1. **Démo de secours** : tout le parcours prêt sur WAMP (agent, une demande, un compte client) au cas où Render ou le réseau
+   tomberait, et une **vidéo** du parcours site → API → Bureau → Mon compte.
+2. **Répétitions** de la démo en 5 minutes (`README.md`, section Soutenance), chronométrées, avec les questions à préparer.
+3. **Diapositives** : « Données personnelles » (ce qui est stocké, où, combien de temps, comment l'effacer) et
+   « Promis / constaté / corrigé » (audits du conseil et ce qui a été corrigé).
+4. Tester la notification sur un vrai téléphone et les nouvelles pages avec un lecteur d'écran (NVDA, TalkBack),
+   puis mettre à jour `accessibilite.php`.
+5. Perspectives notées dans `docs/IDEES.md` (attestations reliées aux services, anonymisation et purge automatique au Bureau…).
 
 ## Points ouverts
 
 - **Anciennes données sur Aiven** (comptes, carnets, historique des mots, dossiers du Bureau) : base bloquée en
   *Rebuilding* depuis le 16/10. Le site tourne sur une base TiDB neuve ; migrer les données si Aiven revient.
-- **Courriels** : tester en ligne l'accusé de réception (formulaire de contact) et une réponse du Bureau une fois la
-  nouvelle clé Brevo en place.
-- `data/cadres.php` : accords au masculin avec des objets féminins (« votre trottinette se sente moins seul ») à neutraliser.
 - L'ancienne clé de signature Android (`conseilplus.p12`, mot de passe en clair) reste dans l'historique Git : abandonnée
   le 22/10/2026, ne jamais la réutiliser. La nouvelle est hors du dépôt (secrets GitHub, `docs/DEPLOIEMENT.md`).
-
 - **Régénérer la clé Groq** (elle a transité par une conversation) et la mettre dans `config.php` sur chaque PC
-  et dans Render (variable `GROQ_API_KEY`, absente pour l'instant : le site en ligne utilise les générateurs locaux).
-- **Régénérer `API_KEY` dans Render** (bouton *Generate*) : la valeur actuelle a transité par la conversation.
-- Formulaire de contact en ligne (appel interne de l'API via `URL_INTERNE`) pas encore testé de bout en bout.
-- RGAA : audit interne seulement ; tester Le Duel, Le guichet et la lecture des sketchs avec un lecteur d'écran (NVDA, VoiceOver),
-  puis mettre à jour `accessibilite.php`. 
-- La qualité des sketchs générés par l'IA est variable (calembours parfois faibles) : surveiller, ajuster
-  `CONSIGNE_SKETCH` dans `includes/mot-du-jour.php` si besoin.
-- `db.php`, `config.php` et `bureau/config.php` ne sont pas dans Git : à recréer sur chaque PC (`docs/REPRISE.md`,
-  `docs/BUREAU.md`). Pour l'envoi d'emails en local, mettre `BREVO_API_KEY` / `BUREAU_EXPEDITEUR` dans `bureau/config.php`.
-- **Brevo** : nouveau compte dédié au cabinet (`conseilplusplus@gmail.com`, expéditeur vérifié). Clé API créée et collée
-  dans Render par l'utilisateur (`BREVO_API_KEY`), `BUREAU_EXPEDITEUR` = `conseilplusplus@gmail.com`.
+  et dans Render (`GROQ_API_KEY`).
+- **Régénérer `API_KEY` dans Render** (la valeur a transité par une conversation), puis reporter la même valeur dans le
+  secret GitHub `API_KEY` (sinon *Réveil quotidien* échoue en 401).
+- RGAA : audit interne seulement ; lecteur d'écran à passer sur Le Duel, le standard, Questions pour un stagiaire et les sketchs.
+- La qualité des sketchs générés par l'IA est variable : relus dans Le Bureau (page Petit Moyen) avant publication ;
+  ajuster `CONSIGNE_SKETCH` dans `includes/mot-du-jour.php` si besoin.
+- `config.php` et `bureau/config.php` ne sont pas dans Git (secrets) : à recréer sur chaque PC (`docs/REPRISE.md`).
+  `db.php` est versionné (aucun secret). Pour l'envoi de courriels en local : `BREVO_API_KEY` / `BUREAU_EXPEDITEUR`.
+- **Brevo** : compte dédié au cabinet (`conseilplusplus@gmail.com`, expéditeur vérifié) ; une adresse Gmail peut finir en
+  indésirables (DMARC), un nom de domaine à soi réglerait ça.
 - Transcriptions des « Mots » : 49/54 analysées ; calembours non relevés pour Séquestration, Chauvinisme, Portatif,
   Sarcasme, Castagnettes (`calembours_emission` vide pour ces mots). Transcriptions dans les conversations Gemini de
   l'utilisateur, jamais dans le dépôt.

@@ -24,15 +24,19 @@ Variante (cloner ailleurs, par exemple dans tes cours) : crée un lien depuis `w
 New-Item -ItemType Junction -Path C:\wamp64\www\Site -Target "C:\chemin\vers\le\clone"
 ```
 
-## 3. Recréer le fichier de configuration (il n'est PAS sur GitHub)
+## 3. Recréer les fichiers de configuration (ils ne sont PAS sur GitHub)
 
-`db.php` est versionné (aucun secret : identifiants MySQL lus dans les variables `DB_*`, sinon `root` sans mot de passe).
+`db.php` est versionné (aucun secret : il charge `includes/bdd.php`, qui lit les identifiants MySQL dans les variables `DB_*`,
+sinon `root` sans mot de passe).
 Si `git pull` refuse d'écraser un ancien `db.php` local, le supprimer puis relancer `git pull`.
 
 1. Copier `config.example.php` en `config.php`, puis renseigner :
    - `API_KEY` : n'importe quelle longue chaîne aléatoire (clé du futur logiciel de gestion) ;
    - `GROQ_API_KEY` : ta clé Groq (https://console.groq.com/keys). Laisse vide pour tester sans IA :
      le site utilise alors ses générateurs locaux.
+2. Copier `bureau/config.example.php` en `bureau/config.php` et y mettre dans `BUREAU_API_KEY`
+   la **même** valeur que `API_KEY` (le Bureau s'en sert pour appeler l'API).
+   Facultatif : `BREVO_API_KEY` et `BUREAU_EXPEDITEUR` pour envoyer réellement les courriels en local.
 
 > Rappel : la clé Groq est passée par une conversation le 14/10/2026. Régénère-la sur console.groq.com
 > et mets la nouvelle dans `config.php` sur chaque PC.
@@ -40,14 +44,16 @@ Si `git pull` refuse d'écraser un ancien `db.php` local, le supprimer puis rela
 ## 4. Premier lancement
 
 1. Démarrer WAMP (icône verte).
-2. Ouvrir http://localhost/Site/ : `db.php` crée tout seul la base `site`, toutes les tables et les données de départ.
+2. Ouvrir http://localhost/Site/ : `includes/schema.php` crée tout seul la base `site`, toutes les tables et les données de départ
+   (et ne se rejoue que lorsqu'il change). Ouvrir http://localhost/Site/bureau/ crée la base `gestion` et propose de créer
+   le premier agent (la clé `API_KEY` est demandée).
 3. Vérifier l'API :
 
 ```bash
 php tests/test_api.php
 ```
 
-Résultat attendu : « Tous les tests sont passés. »
+Résultat attendu : « Tous les tests sont passés. » (`php tests/test_pages.php` vérifie aussi toutes les pages.)
 (Si `php` n'est pas reconnu, utilise le chemin complet, par exemple `C:\wamp64\bin\php\php8.3.14\php.exe`.)
 
 > La base de données n'est pas synchronisée entre les PC : comptes, carnet et historique du mot du jour
@@ -72,8 +78,9 @@ l'état exact et la suite prévue. Rien d'autre à copier.
 
 | Problème | Solution |
 |---|---|
-| Page blanche ou « Erreur de connexion à la BDD » | WAMP démarré ? identifiants MySQL corrects (variables `DB_*`, sinon root sans mot de passe) ? |
+| Page blanche ou « Erreur de connexion à la BDD » (503) | WAMP démarré ? identifiants MySQL corrects (variables `DB_*`, sinon root sans mot de passe) ? |
 | L'IA ne répond jamais (« Rédigé par : le stagiaire ») | `GROQ_API_KEY` vide ou invalide dans `config.php`, ou quota Groq dépassé |
 | « SSL certificate problem » dans les logs | Le fichier `certs/cacert.pem` doit être présent (il est dans le dépôt) |
 | Conflit au `git pull` | Ne pas forcer : demander à Claude de résoudre le conflit |
 | Dates étranges (mot du jour qui change à minuit) | Le fuseau est fixé à Europe/Paris dans `includes/bdd.php` |
+| Le Bureau répond « Clé d'API refusée par le site » | `API_KEY` différente entre `config.php` et `bureau/config.php` |

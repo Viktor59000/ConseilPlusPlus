@@ -79,7 +79,7 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `includes/limite-connexion.php`, `auth/.htaccess`, `docker/securite.ini` | Sécurité autour du code du cours : limite des essais (avant `auth/`), cookies protégés |
 | `api/statistiques.php`, `bureau/statistiques.php` | Statistiques d'usage de l'API, affichées dans Le Bureau |
 | `.github/workflows/tests.yml`, `tests/test_pages.php` | Tests automatiques à chaque push |
-| `developpeurs.php`, `data/api.php`, `js/api-doc.js` | Documentation publique de l'API (bouton « Essayer ») : tenir `data/api.php` à jour avec `docs/API.md` |
+| `developpeurs.php`, `data/api.php`, `js/api-doc.js` | Documentation publique de l'API (bouton « Essayer ») : `data/api.php` est la seule source (developpeurs.php, OpenAPI, tests d'accès) |
 | `cabinet.php` | Le cabinet : équipe (portraits facultatifs `assets/equipe/<cle>.webp`), valeurs, chiffres, témoignages |
 | `db.php` → `includes/bdd.php`, `includes/schema.php` | Connexion unique (`bdd()`), tables créées/migrées automatiquement quand `schema.php` change (empreinte dans `reglages`) |
 | `config.example.php` → `config.php` | Clés `API_KEY` et `GROQ_API_KEY` (ignoré par Git) |
