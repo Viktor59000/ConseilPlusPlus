@@ -20,7 +20,6 @@ $acces = [
 ?>
 
 <section class="conteneur entete-page">
-  <p class="etiquette">Développeurs</p>
   <h1>L'API du cabinet</h1>
   <p class="chapo">Des conseils absurdes, maintenant au format JSON. Le site, l'appli Android, le widget et le logiciel de gestion « Le Bureau » passent tous par elle.</p>
 </section>
@@ -80,7 +79,7 @@ $acces = [
     <h2>Un usage à proposer ?</h2>
     <p class="chapo">Le cabinet étudie toutes les demandes d'accès, avec la lenteur qui le caractérise.</p>
   </div>
-  <a class="btn btn-tampon avance" href="contact.php">Demander une clé</a>
+  <a class="btn btn-tampon" href="contact.php">Demander une clé</a>
 </section>
 
 <script src="<?= fichier_versionne('js/api-doc.js') ?>" defer></script>

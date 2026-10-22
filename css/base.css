@@ -27,13 +27,15 @@
   --fond-erreur: #FDECEE;
   --seyes: #D9E1F7;          /* lignes de la copie (décor) */
   --marge: #F3AEB5;          /* marge rouge de la copie (décor) */
-  --ombre: 0 1px 2px rgba(27, 36, 64, .06), 0 12px 32px -8px rgba(27, 36, 64, .14);
-  --ombre-haute: 0 2px 4px rgba(27, 36, 64, .08), 0 24px 48px -12px rgba(27, 36, 64, .22);
+  /* Deux familles : les panneaux du cabinet (à plat, filet fin) et les papiers (seuls à avoir une ombre, coins de feuille) */
+  --ombre: 0 0 0 1px var(--filet);
+  --ombre-haute: 0 1px 1px rgba(27, 36, 64, .10), 0 22px 34px -20px rgba(27, 36, 64, .45);
   --verre: rgba(245, 246, 250, .78);
 
   --police: "Schibsted Grotesk", "Schibsted repli", Arial, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  --rayon: 22px;
+  --rayon: 16px;
+  --rayon-papier: 3px;      /* une feuille a des coins, pas des arrondis */
   --rayon-petit: 12px;
   --ressort: cubic-bezier(.2, .8, .2, 1);
   --rebond: cubic-bezier(.34, 1.56, .64, 1);
@@ -47,8 +49,8 @@
   --bouton: #F3F1EC; --sur-bouton: #1B2440;
   --rouge: #FF5F6D; --ok: #5BD68C; --fond-ok: #10291C; --fond-erreur: #3A1520;
   --seyes: #232A45; --marge: #5A2733;
-  --ombre: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px -8px rgba(0, 0, 0, .55);
-  --ombre-haute: 0 2px 4px rgba(0, 0, 0, .5), 0 24px 48px -12px rgba(0, 0, 0, .7);
+  --ombre: 0 0 0 1px var(--filet);
+  --ombre-haute: 0 1px 1px rgba(0, 0, 0, .5), 0 22px 34px -20px rgba(0, 0, 0, .8);
   --verre: rgba(14, 18, 32, .78);
 }
 @media (prefers-color-scheme: dark) {
@@ -59,8 +61,8 @@
     --bouton: #F3F1EC; --sur-bouton: #1B2440;
     --rouge: #FF5F6D; --ok: #5BD68C; --fond-ok: #10291C; --fond-erreur: #3A1520;
     --seyes: #232A45; --marge: #5A2733;
-    --ombre: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 32px -8px rgba(0, 0, 0, .55);
-    --ombre-haute: 0 2px 4px rgba(0, 0, 0, .5), 0 24px 48px -12px rgba(0, 0, 0, .7);
+    --ombre: 0 0 0 1px var(--filet);
+    --ombre-haute: 0 1px 1px rgba(0, 0, 0, .5), 0 22px 34px -20px rgba(0, 0, 0, .8);
     --verre: rgba(14, 18, 32, .78);
   }
 }
@@ -90,15 +92,13 @@ img, svg { max-width: 100%; }
 
 :focus-visible { outline: 3px solid var(--rouge); outline-offset: 3px; border-radius: 6px; }
 
-.mono { font-family: var(--mono); font-size: .82rem; letter-spacing: .01em; }
+/* Petites mentions chiffrées (n° de dossier, dates, compteurs) : chiffres alignés. La police machine (--mono) est réservée
+   à ce qu'une machine imprime dans l'univers du cabinet : tampons, tickets, écrans du guichet et du téléphone. */
+.mono { font-size: .9rem; }
 .visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 
-/* Rubrique au-dessus d'un titre : petit trait rouge + capitales espacées (site et Bureau) */
-.etiquette {
-  display: flex; align-items: center; gap: 12px; margin: 0 0 22px;
-  font: 500 .78rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--encre-2);
-}
-.etiquette::before { content: ""; width: 24px; height: 2px; border-radius: 2px; background: var(--rouge); flex: none; }
+/* Référence administrative au-dessus d'un titre (« Guichet n° 3 bis », « Formulaire CP+ 12 ») : discrète, comme sur un formulaire */
+.etiquette { margin: 0 0 14px; font-size: .95rem; font-weight: 500; color: var(--encre-2); }
 
 /* Bouton de thème (soleil / lune) */
 .theme-bouton {
@@ -120,10 +120,6 @@ img, svg { max-width: 100%; }
 .premiere-visite .logo-trace { animation: trace 1100ms var(--ressort) 200ms both; }
 @keyframes trace { from { stroke-dashoffset: 1; } }
 
-/* Apparition au défilement (js/site.js) : seulement les éléments hors écran au chargement */
-.a-reveler { opacity: 0; transform: translateY(28px); }
-.revele { opacity: 1; transform: none; transition: opacity 700ms var(--ressort), transform 700ms var(--ressort); transition-delay: calc(var(--i, 0) * 80ms); }
-
 /* Transitions entre les pages (navigateurs qui le gèrent) */
 @view-transition { navigation: auto; }
 ::view-transition-old(root) { animation: 180ms ease both sortie-page; }
@@ -133,6 +129,5 @@ img, svg { max-width: 100%; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; transition-delay: 0ms !important; }
-  .a-reveler { opacity: 1; transform: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }

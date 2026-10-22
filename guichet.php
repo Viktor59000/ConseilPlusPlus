@@ -12,7 +12,6 @@ include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
-  <p class="etiquette">Accueil du public</p>
   <h1>Le guichet</h1>
   <p class="chapo">Le cabinet reçoit le public sans rendez-vous. Prenez un ticket et patientez : vous serez appelé dans l'ordre, ou presque.</p>
 </section>

@@ -79,7 +79,6 @@ include __DIR__ . '/includes/espace-nav.php';
 ?>
 
 <section class="conteneur entete-page">
-  <p class="etiquette">Salle des duels</p>
   <h1>Le Duel</h1>
   <p class="chapo">Affrontez le cabinet en 100 points. Jouez un coup absurde : l'arbitre rend son verdict selon un règlement que personne n'a lu.</p>
   <div class="tableau-score" aria-label="Score">
@@ -167,7 +166,6 @@ include __DIR__ . '/includes/espace-nav.php';
 </section>
 
 <section class="conteneur" aria-labelledby="titre-honneur">
-  <p class="etiquette">Tableau d'honneur</p>
   <h2 id="titre-honneur">Les victoires les plus rapides</h2>
 <?php if (!$honneur): ?>
   <p class="aide">Personne n'a encore battu le cabinet. Le cabinet n'en tire aucune fierté particulière, mais il le note.</p>

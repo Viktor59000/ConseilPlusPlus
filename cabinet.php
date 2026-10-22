@@ -14,7 +14,6 @@ $t = textes();
 ?>
 
 <section class="conteneur entete-page">
-  <p class="etiquette">Qui sommes-nous</p>
   <h1>Le cabinet</h1>
   <p class="chapo">Fondé un mardi, faute de mieux. Depuis, une petite équipe délivre des conseils moyens avec un sérieux <span class="surligne">exemplaire</span>.</p>
 </section>
@@ -48,7 +47,6 @@ $t = textes();
 
 <section class="bande" aria-labelledby="titre-valeurs">
   <div class="conteneur">
-    <p class="etiquette">Charte interne</p>
     <h2 id="titre-valeurs">Nos valeurs, affichées dans la salle de pause</h2>
     <ol class="etapes">
 <?php foreach ($t['valeurs'] as $i => [$valeur, $explication]): ?>
@@ -84,7 +82,7 @@ $t = textes();
     <h2>Une question pour l'équipe ?</h2>
     <p class="chapo">Le conseiller vous écoute. Il ne vous entend pas, mais il vous écoute.</p>
   </div>
-  <a class="btn btn-tampon avance" href="contact.php">Nous contacter</a>
+  <a class="btn btn-tampon" href="contact.php">Nous contacter</a>
 </section>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

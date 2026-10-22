@@ -25,7 +25,7 @@ include __DIR__ . '/includes/header.php';
     <h1>Dossier introuvable.</h1>
     <p class="chapo">Cette page n'existe pas, ou plus. Elle a sans doute été classée sans suite par un conseiller moyen.</p>
     <div class="actions">
-      <a class="btn btn-tampon avance" href="index.php">Retour à l'accueil</a>
+      <a class="btn btn-tampon" href="index.php">Retour à l'accueil</a>
       <a class="btn btn-clair" href="plan-du-site.php">Plan du site</a>
     </div>
   </div>

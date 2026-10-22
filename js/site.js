@@ -1,4 +1,4 @@
-// Comportements communs du site : menu mobile, en-tête au défilement, apparitions, surligneur, boucles de stylo.
+// Comportements communs du site : menu mobile, en-tête au défilement, fenêtres, surprises, gestes du stylo (surligneur, boucles, tampons).
 // Tout est facultatif : sans JavaScript, le contenu est simplement affiché tel quel.
 (() => {
   const calme = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -102,10 +102,8 @@
   plusTard(preparer, { timeout: 800 });
 
   function preparer() {
+    // Seuls les gestes du stylo s'animent à l'arrivée (surligneur, boucle, tampon) : le reste de la page est simplement là.
     const SELECTEURS = {
-      reveler: ['main section > .conteneur > h2', 'main section > h2', '.mot-du-jour-intro', '.entree-mot', '.etapes li', '.formule',
-        '.tableau-defile', '.faq details', '.formulaire', '.carnet-item', '.installation-carte', '.archives > li',
-        '.appel', '.guichet > *', '.plan section', '.temoignage', '.membre', '.valeur', '.texte-long > *', '.duel-deroule > *', '.sommaire'].join(','),
       surligner: '.surligne, .fiche-conseil mark, .entree-mot mark',
       entourer: '.entoure',
       tamponner: '.tampon:not(.tampon-anime), .sketch-decoupage',
@@ -119,33 +117,19 @@
     }
 
     // Premier signal de l'observateur : déjà à l'écran → on n'y touche pas (le haut de page est animé en CSS) ;
-    // hors écran → on le prépare (caché, surligneur vide, boucle non tracée) et on attend qu'il arrive.
+    // hors écran → on le prépare (surligneur vide, boucle non tracée) et on attend qu'il arrive.
     const prepares = new Set();
-    const rang = new Map();
     const observateur = new IntersectionObserver((entrees) => {
       for (const { target: el, isIntersecting } of entrees) {
         const roles = role.get(el);
         if (!prepares.has(el)) {
           if (isIntersecting) { observateur.unobserve(el); continue; }
           prepares.add(el);
-          if (roles.includes('reveler')) {
-            const n = rang.get(el.parentElement) || 0;
-            rang.set(el.parentElement, n + 1);
-            el.style.setProperty('--i', Math.min(n, 5));
-            el.classList.add('a-reveler');
-          }
           if (roles.includes('surligner')) el.classList.add('a-surligner');
           if (roles.includes('entourer')) el.classList.add('a-entourer');
           continue;
         }
         if (!isIntersecting) continue;
-        if (roles.includes('reveler')) {
-          el.classList.add('revele');
-          el.addEventListener('transitionend', () => {
-            el.classList.remove('a-reveler', 'revele');
-            el.style.removeProperty('--i');
-          }, { once: true });
-        }
         if (roles.includes('surligner')) el.classList.add('surligne-anime');
         if (roles.includes('entourer')) el.classList.add('entoure-anime');
         if (roles.includes('tamponner')) el.classList.add('tampon-anime');

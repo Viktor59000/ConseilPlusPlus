@@ -12,7 +12,6 @@ include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
-  <p class="etiquette">Application mobile</p>
   <h1>Le cabinet, dans votre poche</h1>
   <p class="chapo">Le conseil, le mot (presque) du jour, un widget sur votre écran d'accueil et une notification chaque matin. Le cabinet se met à jour tout seul, à son rythme.</p>
 </section>
@@ -20,7 +19,7 @@ include __DIR__ . '/includes/header.php';
 <section class="conteneur installation" aria-labelledby="titre-android">
   <h2 id="titre-android">Android : l'application et son widget</h2>
   <div class="actions">
-    <a class="btn btn-tampon avance" href="https://github.com/Viktor59000/ConseilPlusPlus/releases/download/android/conseilplus.apk" download>Télécharger l'application Android</a>
+    <a class="btn btn-tampon" href="https://github.com/Viktor59000/ConseilPlusPlus/releases/download/android/conseilplus.apk" download>Télécharger l'application Android</a>
   </div>
   <div class="installation-grille">
     <article class="installation-carte">

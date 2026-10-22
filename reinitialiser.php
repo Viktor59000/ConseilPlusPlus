@@ -77,7 +77,7 @@ include __DIR__ . '/includes/header.php';
   <div class="formulaire">
     <h2>Lien expiré</h2>
     <p>Demandez-en un nouveau : le cabinet en a d'autres.</p>
-    <a class="btn btn-tampon avance" href="mot-de-passe-oublie.php">Recevoir un nouveau lien</a>
+    <a class="btn btn-tampon" href="mot-de-passe-oublie.php">Recevoir un nouveau lien</a>
   </div>
 <?php endif; ?>
 </section>

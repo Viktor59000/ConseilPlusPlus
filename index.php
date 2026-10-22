@@ -49,16 +49,14 @@ include __DIR__ . '/includes/header.php';
 
 <section class="conteneur mot-du-jour" aria-labelledby="titre-mot">
   <div class="mot-du-jour-intro">
-    <p class="etiquette">Le Petit Moyen</p>
     <h2 id="titre-mot">Le mot (presque) du jour</h2>
     <p>Extrait du dictionnaire officieux du cabinet. Un nouveau mot chaque jour, défini avec une précision moyenne.</p>
-    <a class="btn btn-clair avance" href="petit-moyen.php">Consulter Le Petit Moyen</a>
+    <a class="btn btn-clair" href="petit-moyen.php">Consulter Le Petit Moyen</a>
   </div>
 <?php $titre_niveau = 'h3'; include __DIR__ . '/includes/carte-mot.php'; ?>
 </section>
 
 <section class="conteneur temoignages" aria-labelledby="titre-temoignages">
-  <p class="etiquette">Ils nous ont fait confiance</p>
   <h2 id="titre-temoignages">Ce que disent nos clients</h2>
   <div class="temoignages-grille">
     <?= bloc_temoignages(3) ?>
@@ -67,7 +65,6 @@ include __DIR__ . '/includes/header.php';
 
 <section class="bande">
   <div class="conteneur">
-    <p class="etiquette">Procédure</p>
     <h2>Notre méthode, en trois étapes moyennes</h2>
     <ol class="etapes">
       <li>
@@ -94,7 +91,7 @@ include __DIR__ . '/includes/header.php';
     <h2>Une question ?</h2>
     <p class="chapo">Notre guichet est ouvert. Enfin, le formulaire.</p>
   </div>
-  <a class="btn btn-tampon avance" href="contact.php">Nous contacter</a>
+  <a class="btn btn-tampon" href="contact.php">Nous contacter</a>
 </section>
 
 <script src="<?= fichier_versionne('js/conseil.js') ?>" defer></script>

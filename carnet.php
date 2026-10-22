@@ -33,7 +33,6 @@ include __DIR__ . '/includes/espace-nav.php';
 ?>
 
 <section class="conteneur entete-page">
-  <p class="etiquette">Archives du cabinet</p>
   <h1>Mon carnet</h1>
   <p class="chapo">
 <?php if ($conseils): ?>

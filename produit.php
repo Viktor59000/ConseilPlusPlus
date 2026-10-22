@@ -12,7 +12,6 @@ include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
-  <p class="etiquette">Produits &amp; services</p>
   <h1>Nos formules</h1>
   <p class="chapo">Trois formules, un seul niveau de qualité : <span class="surligne">moyen</span>.</p>
 </section>

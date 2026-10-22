@@ -58,7 +58,6 @@ include __DIR__ . '/includes/header.php';
 </section>
 
 <section class="conteneur" aria-labelledby="titre-horoscope" id="horoscope">
-  <p class="etiquette">Prédictions du jour</p>
   <h2 id="titre-horoscope">L'horoscope de Messmerde</h2>
   <p class="chapo">Chaque matin, Messmerde consulte les astres, puis le calendrier. Ses prédictions se réalisent toutes : il n'en fait que de sûres.</p>
   <ul class="horoscope">

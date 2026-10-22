@@ -31,7 +31,6 @@ include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
-  <p class="etiquette">Dictionnaire officieux</p>
   <h1>Le Petit Moyen</h1>
   <p class="chapo">Le dictionnaire du cabinet. Un mot par jour, parfois un jeu de mots, parfois pas, toujours défini avec une précision moyenne. Certains jours, le conseiller et son stagiaire tentent même une démonstration.</p>
 </section>
@@ -61,7 +60,6 @@ include __DIR__ . '/includes/header.php';
 <?php if ($archives): ?>
 <?php if ($palmares): ?>
 <section class="conteneur" aria-labelledby="titre-palmares">
-  <p class="etiquette">Votes du public</p>
   <h2 id="titre-palmares">Les mots préférés du public</h2>
   <ol class="honneur">
 <?php foreach ($palmares as $i => $p): ?>
