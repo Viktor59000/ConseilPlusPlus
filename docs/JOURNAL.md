@@ -80,7 +80,13 @@ animations ; site, Bureau et courriels alignés. RGAA 4.1 : partiellement confor
 - **Audit du conseil** (skill debate : 5 experts, 3 rounds) → corrigé : export sans secrets, accusé de réception sans texte
   saisi, POST mot-du-jour et notifications « envoyer » sous clé, « chiffré » → empreinte SHA-512, lien de réinitialisation
   journalisé en local seulement, contacts plafonnés à 500, sitemap complet, **nouvelle clé Android hors dépôt**.
-- **À faire par l'utilisateur** : secrets GitHub `API_KEY`, `ANDROID_CLE_P12`, `ANDROID_CLE_MDP` (voir `docs/DEPLOIEMENT.md`),
+- **Conseil n° 2 (contenu et Bureau)**, appliqué : générateurs sans répétitions ni clins d'œil, Le Petit Moyen enrichi
+  (étymologies, 175 mots, 41 sketchs, « Le sigle du jour » du mouvement abréviationniste), guichet retiré (301), standard
+  sans clavier, Questions pour un stagiaire, prédictions rétroactives, règlement intérieur, formulaire du jour ;
+  Bureau : affectation, échéances, notes, historique, CSV, purge, relecture du mot de demain ; le client lit la réponse
+  du Bureau dans « Mon compte ». Correctif TiDB : une colonne par ALTER (le Bureau était en 503).
+- Secrets GitHub et UptimeRobot faits par l'utilisateur ; APK signé avec la nouvelle clé (vérifié).
+- **À faire par l'utilisateur** (fait) : secrets GitHub `API_KEY`, `ANDROID_CLE_P12`, `ANDROID_CLE_MDP` (voir `docs/DEPLOIEMENT.md`),
   puis relancer *Réveil quotidien* et *Application Android* ; réinstaller l'APK (nouvelle clé) ; UptimeRobot.
 
 ### 16/10/2026 — Second PC (le lore du cabinet, API pro)
