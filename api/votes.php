@@ -10,58 +10,26 @@
  * (hachage de l'adresse IP, du mot et d'un secret du serveur), jamais l'adresse IP elle-même.
  * POST limité à 20 votes par minute et par visiteur.
  */
-require("../includes/api.php");
-require_once("../includes/mot-du-jour.php");
+require_once __DIR__ . '/../includes/api.php';
+require_once __DIR__ . '/../includes/votes.php';
 
-const CHOIX_VOTE = ['moyen', 'pas_moyen'];
-
-/** Compteurs des mots demandés (0 pour un mot sans vote). */
-function compter(PDO $bdd, array $mots): array
-{
-    $resultat = array_fill_keys($mots, ['moyen' => 0, 'pas_moyen' => 0]);
-    if (!$mots) {
-        return $resultat;
-    }
-    $marques = implode(',', array_fill(0, count($mots), '?'));
-    $stmt = $bdd->prepare("SELECT mot, vote, COUNT(*) AS n FROM votes WHERE mot IN ($marques) GROUP BY mot, vote");
-    $stmt->execute($mots);
-    foreach ($stmt as $ligne) {
-        if (isset($resultat[$ligne['mot']])) {
-            $resultat[$ligne['mot']][$ligne['vote']] = (int) $ligne['n'];
-        }
-    }
-    return $resultat;
-}
-
-/** Vrai si le mot existe au Petit Moyen (banque ou mot du jour publié) : pas de vote sur n'importe quoi. */
-function mot_connu(PDO $bdd, string $mot): bool
-{
-    if (in_array($mot, array_column(pages_dictionnaire(), 'mot'), true)) {
-        return true;
-    }
-    $stmt = $bdd->prepare('SELECT 1 FROM mots_du_jour WHERE mot = ?');
-    $stmt->execute([$mot]);
-    return (bool) $stmt->fetchColumn();
-}
-
-switch ($_SERVER['REQUEST_METHOD']) {
-
-    case 'GET':
+router([
+    'GET' => function () use ($bdd) {
         if (isset($_GET['palmares'])) {
-            $n = filter_input(INPUT_GET, 'palmares', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 20]]) ?: 5;
             $stmt = $bdd->prepare("SELECT mot, SUM(vote = 'moyen') AS moyen, SUM(vote = 'pas_moyen') AS pas_moyen,
                                           SUM(vote = 'moyen') - SUM(vote = 'pas_moyen') AS score
                                    FROM votes GROUP BY mot ORDER BY score DESC, moyen DESC LIMIT :n");
-            $stmt->bindValue('n', $n, PDO::PARAM_INT);
+            $stmt->bindValue('n', lire_entier('palmares', 1, 20, 5), PDO::PARAM_INT);
             $stmt->execute();
             repondre(200, array_map(fn($l) => ['mot' => $l['mot'], 'moyen' => (int) $l['moyen'],
                 'pas_moyen' => (int) $l['pas_moyen'], 'score' => (int) $l['score']], $stmt->fetchAll(PDO::FETCH_ASSOC)));
         }
         $mots = array_slice(array_values(array_filter(array_map('trim', explode(',', (string) ($_GET['mots'] ?? ''))),
             fn($m) => $m !== '' && mb_strlen($m) <= 80)), 0, 80);
-        repondre(200, compter($bdd, $mots));
+        repondre(200, compter_votes($bdd, $mots));
+    },
 
-    case 'POST':
+    'POST' => function () use ($bdd) {
         limiter(20);
         $corps = lire_corps();
         $mot = trim((string) ($corps['mot'] ?? ''));
@@ -75,9 +43,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $empreinte = hash('sha256', ip_client() . '|' . $mot . '|' . API_KEY);
         $bdd->prepare('INSERT INTO votes (mot, vote, empreinte) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE vote = VALUES(vote), date_vote = NOW()')
             ->execute([$mot, $vote, $empreinte]);
-        repondre(200, ['mot' => $mot] + compter($bdd, [$mot])[$mot]);
-
-    default:
-        header('Allow: GET, POST');
-        repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+        repondre(200, ['mot' => $mot] + compter_votes($bdd, [$mot])[$mot]);
+    },
+]);

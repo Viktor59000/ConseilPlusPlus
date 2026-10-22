@@ -39,3 +39,9 @@ function tirer_conseil(PDO $bdd): array
     $conseil['dossier'] = sprintf('%04d-%s', random_int(1, 9999), chr(random_int(65, 90)));
     return $conseil;
 }
+
+/** Le conseil tiré, en une phrase. */
+function texte_conseil(array $c): string
+{
+    return trim("{$c['situation']} {$c['action']} {$c['resultat']}");
+}

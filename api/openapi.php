@@ -4,13 +4,10 @@
  * (la même source que la documentation developpeurs.php : les deux ne peuvent pas diverger).
  * GET (public) → 200, à importer dans Postman, Insomnia ou Swagger UI.
  */
-require("../includes/api.php");
+require_once __DIR__ . '/../includes/api.php';
 require_once __DIR__ . '/../includes/url.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    header('Allow: GET');
-    repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+exiger_methode('GET');
 
 $groupes = require __DIR__ . '/../data/api.php';
 $chemins = [];

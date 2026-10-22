@@ -10,23 +10,25 @@
  * Public, sans clé : l'envoi est déclenché chaque matin par la visite quotidienne (.github/workflows/reveil.yml)
  * et ne peut partir qu'une fois par jour, quel que soit le nombre d'appels. Limite : 10 appels par minute et par IP.
  */
-require("../includes/api.php");
-require_once("../includes/push.php");
-require_once("../includes/mot-du-jour.php");
+require_once __DIR__ . '/../includes/api.php';
+require_once __DIR__ . '/../includes/push.php';
+require_once __DIR__ . '/../includes/mot-du-jour.php';
 
-try {
-    $vapid = push_cles_vapid($bdd);
-} catch (RuntimeException $e) {
-    error_log('ConseilPlus+ : ' . $e->getMessage());
-    repondre(503, ['erreur' => 'Notifications indisponibles pour le moment.']);
+/** Clés VAPID du site, ou 503 si elles sont illisibles ou impossibles à créer. */
+function vapid_ou_503(PDO $bdd): array
+{
+    try {
+        return push_cles_vapid($bdd);
+    } catch (RuntimeException $e) {
+        error_log('ConseilPlus+ : ' . $e->getMessage());
+        repondre(503, ['erreur' => 'Notifications indisponibles pour le moment.']);
+    }
 }
 
-switch ($_SERVER['REQUEST_METHOD']) {
+router([
+    'GET' => fn() => repondre(200, ['cle_publique' => b64url(vapid_ou_503($bdd)['public'])]),
 
-    case 'GET':
-        repondre(200, ['cle_publique' => b64url($vapid['public'])]);
-
-    case 'POST':
+    'POST' => function () use ($bdd) {
         limiter(10);
         $corps = lire_corps();
         switch ($corps['action'] ?? '') {
@@ -50,6 +52,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 repondre(200, ['abonne' => false]);
 
             case 'envoyer':
+                $vapid = vapid_ou_503($bdd);
                 // Une seule notification par jour : la date du dernier envoi est réservée avant d'envoyer
                 $jour = date('Y-m-d');
                 $reserve = $bdd->prepare("INSERT INTO reglages (cle, valeur) VALUES ('push_dernier_envoi', :j)
@@ -59,10 +62,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     repondre(200, ['deja' => true]);
                 }
                 $mot = mot_du_jour($bdd);
-                $texte = $mot['format'] === 'sketch' && $mot['sketch']
-                    ? end($mot['sketch']['repliques'])['texte']
-                    : $mot['definition'];
-                $donnees = ['titre' => 'Le mot (presque) du jour : ' . $mot['mot'], 'corps' => $texte, 'url' => 'petit-moyen.php'];
+                $donnees = ['titre' => 'Le mot (presque) du jour : ' . $mot['mot'], 'corps' => chute_sketch($mot) ?? $mot['definition'], 'url' => 'petit-moyen.php'];
                 $envoyes = 0;
                 $expires = 0;
                 foreach ($bdd->query('SELECT * FROM abonnements_push')->fetchAll(PDO::FETCH_ASSOC) as $abonne) {
@@ -83,8 +83,5 @@ switch ($_SERVER['REQUEST_METHOD']) {
             default:
                 repondre(422, ['erreur' => 'Action inconnue (abonner, desabonner ou envoyer).']);
         }
-
-    default:
-        header('Allow: GET, POST');
-        repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+    },
+]);

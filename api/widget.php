@@ -9,18 +9,14 @@
  *
  * Public, sans clé. Réponse gardée 10 minutes en cache par le téléphone.
  */
-require("../includes/api.php");
-require_once("../includes/mot-du-jour.php");
-require_once("../includes/tirage.php");
+require_once __DIR__ . '/../includes/api.php';
+require_once __DIR__ . '/../includes/mot-du-jour.php';
+require_once __DIR__ . '/../includes/tirage.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    header('Allow: GET');
-    repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+exiger_methode('GET');
 
 $mot = mot_du_jour($bdd);
-if ($mot['format'] === 'sketch' && $mot['sketch']) {
-    $chute = end($mot['sketch']['repliques'])['texte'];
+if (($chute = chute_sketch($mot)) !== null) {
     $ligne1 = "« $chute »";
     $ligne2 = !empty($mot['sketch']['decoupage']) ? 'Découpage officiel : ' . $mot['sketch']['decoupage'] : FORMULE_FINALE;
 } else {
@@ -30,11 +26,11 @@ if ($mot['format'] === 'sketch' && $mot['sketch']) {
 
 $conseil = tirer_conseil($bdd);
 // ?conseils=N (1 à 20) : une réserve de conseils, pour que le widget en change sans attendre le réseau
-$nombre = filter_input(INPUT_GET, 'conseils', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 20]]);
+$nombre = lire_entier('conseils', 1, 20, 0);
 $reserve = [];
-for ($i = 0; $i < ($nombre ?: 0); $i++) {
+for ($i = 0; $i < $nombre; $i++) {
     $c = tirer_conseil($bdd);
-    $reserve[] = ['texte' => trim($c['situation'] . ' ' . $c['action'] . ' ' . $c['resultat']), 'dossier' => $c['dossier']];
+    $reserve[] = ['texte' => texte_conseil($c), 'dossier' => $c['dossier']];
 }
 $date = (new IntlDateFormatter('fr_FR', IntlDateFormatter::FULL, IntlDateFormatter::NONE, 'Europe/Paris', null, 'EEEE d MMMM'))->format(new DateTime($mot['jour']));
 
@@ -45,6 +41,6 @@ repondre(200, [
     'nature' => $mot['nature'],
     'ligne1' => $ligne1,
     'ligne2' => $ligne2,
-    'conseil' => trim($conseil['situation'] . ' ' . $conseil['action'] . ' ' . $conseil['resultat']),
+    'conseil' => texte_conseil($conseil),
     'dossier' => $conseil['dossier'],
 ] + ($reserve ? ['conseils' => $reserve] : []));

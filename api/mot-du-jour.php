@@ -9,44 +9,24 @@
  *
  * Public, sans clé : prévu aussi pour un futur widget téléphone. POST limité à 3 appels par minute et par IP.
  */
-require("../includes/api.php");
-require("../includes/mot-du-jour.php");
+require_once __DIR__ . '/../includes/api.php';
+require_once __DIR__ . '/../includes/mot-du-jour.php';
 
-/** Format public d'une entrée. */
-function presenter(array $e): array
-{
-    $base = ['jour' => $e['jour'], 'mot' => $e['mot'], 'nature' => $e['nature'], 'format' => $e['format']];
-    $contenu = $e['format'] === 'sketch'
-        ? ['sketch' => $e['sketch'] + ['formule' => FORMULE_FINALE]]
-        : ['definition' => $e['definition'], 'exemple' => $e['exemple'], 'synonyme' => $e['synonyme']];
-    return $base + $contenu + ['certitude' => (int) $e['certitude'], 'source' => $e['source']];
-}
-
-switch ($_SERVER['REQUEST_METHOD']) {
-
-    case 'GET':
-        $jour = $_GET['date'] ?? date('Y-m-d');
-        $d = DateTime::createFromFormat('!Y-m-d', $jour);
-        if (!$d || $d->format('Y-m-d') !== $jour) {
-            repondre(400, ['erreur' => 'Date invalide (format AAAA-MM-JJ).']);
-        }
-        if ($jour > date('Y-m-d')) {
-            repondre(404, ['erreur' => 'Le Petit Moyen ne publie pas à l\'avance.']);
-        }
+router([
+    'GET' => function () use ($bdd) {
+        $jour = lire_date_passee('Le Petit Moyen ne publie pas à l\'avance.');
         if ($jour === date('Y-m-d')) {
-            repondre(200, presenter(mot_du_jour($bdd)));
+            repondre(200, presenter_mot(mot_du_jour($bdd)));
         }
         // Jour passé : uniquement s'il a été publié (on ne réécrit pas l'histoire)
         $entree = lire_mot($bdd, $jour);
-        $entree ? repondre(200, presenter($entree)) : repondre(404, ['erreur' => 'Aucun mot publié ce jour-là.']);
+        $entree ? repondre(200, presenter_mot($entree)) : repondre(404, ['erreur' => 'Aucun mot publié ce jour-là.']);
+    },
 
-    case 'POST':
+    'POST' => function () use ($bdd) {
         limiter(3);
         $demain = date('Y-m-d', strtotime('+1 day'));
         $cree = preparer_mot($bdd, $demain);
         repondre($cree ? 201 : 200, ['jour' => $demain, 'prepare' => $cree]);
-
-    default:
-        header('Allow: GET, POST');
-        repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+    },
+]);

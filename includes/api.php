@@ -4,12 +4,16 @@
  * Chaque échange est journalisé dans la table api_logs (date, méthode, ressource, code, IP, application).
  */
 require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/bdd.php';
 
+// Application de la clé maîtresse (celle du Bureau) : nom réservé, refusé pour une clé d'application
+const APPLICATION_GESTION = 'gestion';
+
+$bdd = bdd(); // connexion partagée par les endpoints
 header('Content-Type: application/json; charset=utf-8');
 
 /** Envoie une réponse JSON avec le code HTTP donné, journalise l'échange et arrête le script. */
-function repondre(int $code, $donnees = null): void
+function repondre(int $code, $donnees = null): never
 {
     journaliser($code);
     http_response_code($code);
@@ -33,6 +37,31 @@ function lire_corps(): array
     return $_POST;
 }
 
+/** Refuse la requête (405) si sa méthode n'est pas permise, en annonçant les méthodes permises (en-tête Allow). */
+function exiger_methode(string ...$permises): void
+{
+    if (!in_array($_SERVER['REQUEST_METHOD'], $permises, true)) {
+        header('Allow: ' . implode(', ', $permises));
+        repondre(405, ['erreur' => 'Méthode non autorisée.']);
+    }
+}
+
+/** Exécute l'action prévue pour la méthode de la requête (['GET' => fn() => …, 'POST' => …]), sinon 405. */
+function router(array $actions): never
+{
+    exiger_methode(...array_keys($actions));
+    $actions[$_SERVER['REQUEST_METHOD']]();
+    exit(); // chaque action se termine par repondre()
+}
+
+/** Refuse la requête (422) s'il y a des erreurs de saisie ($erreurs : champ => message). */
+function refuser_champs(array $erreurs): void
+{
+    if ($erreurs) {
+        repondre(422, ['erreur' => 'Champs invalides.', 'champs' => $erreurs]);
+    }
+}
+
 /**
  * Identifie la clé de l'en-tête X-API-Key :
  * - la clé maîtresse (API_KEY, celle du Bureau) a tous les droits, y compris « admin » (gérer les clés) ;
@@ -50,9 +79,9 @@ function cle_presentee(): ?array
         return $resultat = null;
     }
     if (hash_equals(API_KEY, $cle)) {
-        return $resultat = ['nom' => 'gestion', 'droits' => ['lecture', 'ecriture', 'admin']];
+        return $resultat = ['nom' => APPLICATION_GESTION, 'droits' => ['lecture', 'ecriture', 'admin']];
     }
-    global $bdd;
+    $bdd = bdd();
     try {
         $stmt = $bdd->prepare('SELECT id, nom, droits FROM api_cles WHERE empreinte = :empreinte AND revoquee = 0');
         $stmt->execute(['empreinte' => hash('sha256', $cle)]);
@@ -79,14 +108,31 @@ function exiger_cle(string $droit = 'lecture'): void
     }
 }
 
+/** Paramètre d'URL entier compris entre $min et $max, ou $defaut s'il est absent ou invalide. */
+function lire_entier(string $nom, int $min = 1, int $max = PHP_INT_MAX, ?int $defaut = null): ?int
+{
+    $valeur = filter_input(INPUT_GET, $nom, FILTER_VALIDATE_INT, ['options' => ['min_range' => $min, 'max_range' => $max]]);
+    return is_int($valeur) ? $valeur : $defaut;
+}
+
 /** Récupère un paramètre ?id= entier positif, sinon erreur 400. */
 function lire_id(): int
 {
-    $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-    if (!$id) {
-        repondre(400, ['erreur' => 'Paramètre id manquant ou invalide.']);
+    return lire_entier('id') ?? repondre(400, ['erreur' => 'Paramètre id manquant ou invalide.']);
+}
+
+/** Paramètre ?date=AAAA-MM-JJ (aujourd'hui par défaut) : 400 si mal formé, 404 ($avenir) si elle est future. */
+function lire_date_passee(string $avenir): string
+{
+    $jour = $_GET['date'] ?? date('Y-m-d');
+    $d = DateTime::createFromFormat('!Y-m-d', $jour);
+    if (!$d || $d->format('Y-m-d') !== $jour) {
+        repondre(400, ['erreur' => 'Date invalide (format AAAA-MM-JJ).']);
     }
-    return $id;
+    if ($jour > date('Y-m-d')) {
+        repondre(404, ['erreur' => $avenir]);
+    }
+    return $jour;
 }
 
 /**
@@ -115,7 +161,7 @@ function application_appelante(): string
 /** Enregistre l'échange dans le journal (un échec de journalisation ne bloque jamais la réponse). */
 function journaliser(int $code): void
 {
-    global $bdd;
+    $bdd = bdd();
     try {
         $stmt = $bdd->prepare('INSERT INTO api_logs (methode, ressource, code, ip, application) VALUES (:methode, :ressource, :code, :ip, :application)');
         $stmt->execute([
@@ -137,8 +183,7 @@ function journaliser(int $code): void
 /** Refuse la requête (429) si cette IP a déjà fait $max appels à cette ressource dans la dernière minute. */
 function limiter(int $max): void
 {
-    global $bdd;
-    $stmt = $bdd->prepare('SELECT COUNT(*) FROM api_logs WHERE ip = :ip AND ressource = :ressource AND methode = :methode AND date_appel > NOW() - INTERVAL 1 MINUTE');
+    $stmt = bdd()->prepare('SELECT COUNT(*) FROM api_logs WHERE ip = :ip AND ressource = :ressource AND methode = :methode AND date_appel > NOW() - INTERVAL 1 MINUTE');
     $stmt->execute([
         'ip' => ip_client(),
         'ressource' => basename($_SERVER['SCRIPT_NAME'], '.php'),

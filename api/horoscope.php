@@ -8,22 +8,12 @@
  *
  * Public, sans clé.
  */
-require("../includes/api.php");
-require_once("../includes/horoscope.php");
+require_once __DIR__ . '/../includes/api.php';
+require_once __DIR__ . '/../includes/horoscope.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    header('Allow: GET');
-    repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+exiger_methode('GET');
 
-$jour = $_GET['date'] ?? date('Y-m-d');
-$d = DateTime::createFromFormat('!Y-m-d', $jour);
-if (!$d || $d->format('Y-m-d') !== $jour) {
-    repondre(400, ['erreur' => 'Date invalide (format AAAA-MM-JJ).']);
-}
-if ($jour > date('Y-m-d')) {
-    repondre(404, ['erreur' => 'Messmerde ne prédit pas l\'avenir à l\'avance.']);
-}
+$jour = lire_date_passee('Messmerde ne prédit pas l\'avenir à l\'avance.');
 
 $horoscope = horoscope_du_jour($jour);
 if (isset($_GET['signe'])) {

@@ -10,8 +10,8 @@
  * POST et DELETE exigent le jeton CSRF dans l'en-tête X-CSRF-Token.
  */
 session_start();
-require("../includes/api.php");
-require("../includes/csrf.php");
+require_once __DIR__ . '/../includes/api.php';
+require_once __DIR__ . '/../includes/csrf.php';
 
 const CARNET_MAX = 200;
 const SOURCES = ['generateur', 'ia', 'secours'];
@@ -25,15 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET' && !csrf_valide()) {
     repondre(403, ['erreur' => 'Jeton CSRF manquant ou invalide (en-tête X-CSRF-Token).']);
 }
 
-switch ($_SERVER['REQUEST_METHOD']) {
-
-    case 'GET':
+router([
+    'GET' => function () use ($bdd, $utilisateur) {
         $stmt = $bdd->prepare('SELECT id, texte, dossier, source, date_classement FROM carnet WHERE id_utilisateur = :u ORDER BY date_classement DESC, id DESC');
         $stmt->execute(['u' => $utilisateur]);
         $conseils = $stmt->fetchAll(PDO::FETCH_ASSOC);
         repondre(200, ['total' => count($conseils), 'conseils' => $conseils]);
+    },
 
-    case 'POST':
+    'POST' => function () use ($bdd, $utilisateur) {
         limiter(30);
         $corps = lire_corps();
         $texte = trim(preg_replace('/\s+/u', ' ', (string) ($corps['texte'] ?? '')));
@@ -50,9 +50,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         if (!in_array($source, SOURCES, true)) {
             $erreurs['source'] = 'Source invalide (generateur, ia ou secours).';
         }
-        if ($erreurs) {
-            repondre(422, ['erreur' => 'Champs invalides.', 'champs' => $erreurs]);
-        }
+        refuser_champs($erreurs);
 
         $stmt = $bdd->prepare('SELECT COUNT(*) FROM carnet WHERE id_utilisateur = :u');
         $stmt->execute(['u' => $utilisateur]);
@@ -70,13 +68,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $stmt = $bdd->prepare('INSERT INTO carnet (id_utilisateur, texte, dossier, source) VALUES (:u, :t, :d, :s)');
         $stmt->execute(['u' => $utilisateur, 't' => $texte, 'd' => $dossier, 's' => $source]);
         repondre(201, ['id' => (int) $bdd->lastInsertId()]);
+    },
 
-    case 'DELETE':
+    'DELETE' => function () use ($bdd, $utilisateur) {
         $stmt = $bdd->prepare('DELETE FROM carnet WHERE id = :id AND id_utilisateur = :u');
         $stmt->execute(['id' => lire_id(), 'u' => $utilisateur]);
         $stmt->rowCount() ? repondre(204) : repondre(404, ['erreur' => 'Conseil introuvable dans votre carnet.']);
-
-    default:
-        header('Allow: GET, POST, DELETE');
-        repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+    },
+]);

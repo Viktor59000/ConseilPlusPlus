@@ -118,8 +118,7 @@ function demander_conseil_ia(array $reponses, PDO $bdd): array
     }
 
     // Générateur local de secours
-    $c = tirer_conseil($bdd);
-    return ['conseil' => "{$c['situation']} {$c['action']} {$c['resultat']}", 'source' => 'secours'];
+    return ['conseil' => texte_conseil(tirer_conseil($bdd)), 'source' => 'secours'];
 }
 
 /**

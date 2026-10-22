@@ -137,6 +137,22 @@ function lire_mot(PDO $bdd, string $jour): ?array
     return $e;
 }
 
+/** La chute d'un sketch (dernière réplique), ou null pour une entrée au format définition. */
+function chute_sketch(array $mot): ?string
+{
+    return $mot['format'] === 'sketch' && $mot['sketch'] ? end($mot['sketch']['repliques'])['texte'] : null;
+}
+
+/** Format public d'une entrée (API). */
+function presenter_mot(array $e): array
+{
+    $base = ['jour' => $e['jour'], 'mot' => $e['mot'], 'nature' => $e['nature'], 'format' => $e['format']];
+    $contenu = $e['format'] === 'sketch'
+        ? ['sketch' => $e['sketch'] + ['formule' => FORMULE_FINALE]]
+        : ['definition' => $e['definition'], 'exemple' => $e['exemple'], 'synonyme' => $e['synonyme']];
+    return $base + $contenu + ['certitude' => (int) $e['certitude'], 'source' => $e['source']];
+}
+
 /** Premier élément de $liste non publié récemment, en partant d'un point fixé par la date. */
 function choisir_non_recent(array $liste, string $jour, array $recents): array
 {

@@ -6,13 +6,10 @@
  *
  * Clé : en-tête X-API-Key. Contient des données personnelles : ne jamais exposer sans clé.
  */
-require("../includes/api.php");
-require("../includes/export-sql.php");
+require_once __DIR__ . '/../includes/api.php';
+require_once __DIR__ . '/../includes/export-sql.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    header('Allow: GET');
-    repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+exiger_methode('GET');
 exiger_cle('admin'); // sauvegarde complète : clé maîtresse uniquement
 
 $base = $bdd->query('SELECT DATABASE()')->fetchColumn();

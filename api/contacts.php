@@ -11,24 +11,11 @@
  * Clé : en-tête X-API-Key (voir config.php).
  * POST est limité à 5 demandes par minute et par IP (429 au-delà).
  */
-require("../includes/api.php");
-require("../includes/contacts.php");
+require_once __DIR__ . '/../includes/api.php';
+require_once __DIR__ . '/../includes/contacts.php';
 
-switch ($_SERVER['REQUEST_METHOD']) {
-
-    case 'POST':
-        limiter(5); // 5 demandes par minute et par visiteur (anti-spam)
-        [$valeurs, $erreurs] = valider_contact(lire_corps());
-        if ($erreurs) {
-            repondre(422, ['erreur' => 'Champs invalides.', 'champs' => $erreurs]);
-        }
-        $stmt = $bdd->prepare('INSERT INTO contacts (nom, email, message, type_demande) VALUES (:nom, :email, :message, :type_demande)');
-        $stmt->execute($valeurs);
-        $id = (int) $bdd->lastInsertId();
-        header("Location: contacts.php?id=$id");
-        repondre(201, ['id' => $id, 'statut' => 'nouveau']);
-
-    case 'GET':
+router([
+    'GET' => function () use ($bdd) {
         exiger_cle();
         if (isset($_GET['id'])) {
             $stmt = $bdd->prepare('SELECT * FROM contacts WHERE id = :id');
@@ -67,28 +54,29 @@ switch ($_SERVER['REQUEST_METHOD']) {
         if (!isset($tris[$tri])) {
             repondre(400, ['erreur' => 'Tri invalide (date, -date, nom ou -nom).']);
         }
-        $ordre = ' ORDER BY ' . $tris[$tri];
 
         // Sans ?page= : toute la liste (compatible avec Le Bureau). Avec ?page= : pagination.
-        if (!isset($_GET['page'])) {
-            $stmt = $bdd->prepare("SELECT * FROM contacts$where$ordre");
-            $stmt->execute($valeurs);
-            $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            repondre(200, ['total' => count($contacts), 'contacts' => $contacts]);
+        $pagine = isset($_GET['page']);
+        $limite = '';
+        if ($pagine) {
+            $page = lire_entier('page');
+            $par_page = lire_entier('par_page', 1, 100);
+            if (!$page || (isset($_GET['par_page']) && !$par_page)) {
+                repondre(400, ['erreur' => 'Pagination invalide (page ≥ 1, par_page de 1 à 100).']);
+            }
+            $par_page ??= 20;
+            $compte = $bdd->prepare("SELECT COUNT(*) FROM contacts$where");
+            $compte->execute($valeurs);
+            $total = (int) $compte->fetchColumn();
+            $pages = max(1, (int) ceil($total / $par_page));
+            $limite = " LIMIT $par_page OFFSET " . (($page - 1) * $par_page);
         }
-        $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        $par_page = filter_input(INPUT_GET, 'par_page', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100]]);
-        if (!$page || (isset($_GET['par_page']) && !$par_page)) {
-            repondre(400, ['erreur' => 'Pagination invalide (page ≥ 1, par_page de 1 à 100).']);
-        }
-        $par_page = $par_page ?: 20;
-        $compte = $bdd->prepare("SELECT COUNT(*) FROM contacts$where");
-        $compte->execute($valeurs);
-        $total = (int) $compte->fetchColumn();
-        $pages = max(1, (int) ceil($total / $par_page));
-        $stmt = $bdd->prepare("SELECT * FROM contacts$where$ordre LIMIT $par_page OFFSET " . (($page - 1) * $par_page));
+        $stmt = $bdd->prepare("SELECT * FROM contacts$where ORDER BY {$tris[$tri]}$limite");
         $stmt->execute($valeurs);
         $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!$pagine) {
+            repondre(200, ['total' => count($contacts), 'contacts' => $contacts]);
+        }
 
         // En-tête Link (RFC 8288) : pages suivante, précédente, première et dernière
         $lien = fn (int $p) => '<contacts.php?' . http_build_query(['page' => $p] + $_GET) . '>';
@@ -102,8 +90,20 @@ switch ($_SERVER['REQUEST_METHOD']) {
         header('Link: ' . implode(', ', $liens));
         header("X-Total-Count: $total");
         repondre(200, ['total' => $total, 'page' => $page, 'par_page' => $par_page, 'pages' => $pages, 'contacts' => $contacts]);
+    },
 
-    case 'PATCH':
+    'POST' => function () use ($bdd) {
+        limiter(5); // 5 demandes par minute et par visiteur (anti-spam)
+        [$valeurs, $erreurs] = valider_contact(lire_corps());
+        refuser_champs($erreurs);
+        $stmt = $bdd->prepare('INSERT INTO contacts (nom, email, message, type_demande) VALUES (:nom, :email, :message, :type_demande)');
+        $stmt->execute($valeurs);
+        $id = (int) $bdd->lastInsertId();
+        header("Location: contacts.php?id=$id");
+        repondre(201, ['id' => $id, 'statut' => 'nouveau']);
+    },
+
+    'PATCH' => function () use ($bdd) {
         exiger_cle('ecriture');
         $id = lire_id();
         $statut = lire_corps()['statut'] ?? 'importe';
@@ -115,14 +115,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $existe = $bdd->prepare('SELECT 1 FROM contacts WHERE id = :id');
         $existe->execute(['id' => $id]);
         $existe->fetchColumn() ? repondre(200, ['id' => $id, 'statut' => $statut]) : repondre(404, ['erreur' => 'Demande introuvable.']);
+    },
 
-    case 'DELETE':
+    'DELETE' => function () use ($bdd) {
         exiger_cle('ecriture');
         $stmt = $bdd->prepare('DELETE FROM contacts WHERE id = :id');
         $stmt->execute(['id' => lire_id()]);
         $stmt->rowCount() ? repondre(204) : repondre(404, ['erreur' => 'Demande introuvable.']);
-
-    default:
-        header('Allow: GET, POST, PATCH, DELETE');
-        repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+    },
+]);

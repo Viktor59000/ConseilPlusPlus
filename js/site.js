@@ -1,7 +1,6 @@
 // Comportements communs du site : menu mobile, en-tête au défilement, apparitions, surligneur, boucles de stylo.
 // Tout est facultatif : sans JavaScript, le contenu est simplement affiché tel quel.
 (() => {
-  const racine = document.documentElement;
   const calme = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---------- Menu repliable (petit écran) ----------

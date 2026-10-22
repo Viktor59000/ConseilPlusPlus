@@ -11,15 +11,12 @@
  * }
  * Aucune adresse IP n'est renvoyée : seulement des totaux.
  */
-require("../includes/api.php");
+require_once __DIR__ . '/../includes/api.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    header('Allow: GET');
-    repondre(405, ['erreur' => 'Méthode non autorisée.']);
-}
+exiger_methode('GET');
 exiger_cle();
 
-$jours = filter_input(INPUT_GET, 'jours', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 90]]) ?: 14;
+$jours = lire_entier('jours', 1, 90, 14);
 $depuis = (new DateTime('today'))->modify('-' . ($jours - 1) . ' days')->format('Y-m-d');
 
 $compter = function (string $colonne) use ($bdd, $depuis): array {

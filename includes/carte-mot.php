@@ -71,8 +71,7 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
 <?php endif; ?>
 <?php
 // Partage (js/partage.js) : définition + exemple, ou chute du sketch + découpage officiel
-if ($mot['format'] === 'sketch' && $mot['sketch']) {
-    $partage_texte = end($mot['sketch']['repliques'])['texte'];
+if (($partage_texte = chute_sketch($mot)) !== null) {
     $partage_detail = !empty($mot['sketch']['decoupage']) ? 'Découpage officiel : ' . $mot['sketch']['decoupage'] : '';
 } else {
     $partage_texte = $mot['definition'];
