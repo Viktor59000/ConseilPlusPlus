@@ -190,7 +190,8 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .etape-num path { stroke: #FF5F6D; }
 
 /* Note de service (accueil) : change selon le jour et les dates particulières */
-.note-service { margin: 28px 0 0; padding-left: 14px; border-left: 3px solid var(--rouge); color: var(--encre-2); font-size: .98rem; max-width: 46ch; }
+.article-jour { margin: 28px 0 0; padding-left: 14px; border-left: 3px solid var(--rouge); color: var(--encre-2); font-size: .98rem; max-width: 46ch; }
+.article-jour strong { color: var(--encre); }
 
 /* Témoignages de clients (inventés) */
 .temoignages-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 40px; }
@@ -474,6 +475,23 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 @media (max-width: 760px) { .messmerde { grid-template-columns: minmax(0, 1fr); } .credibilite { position: static; } .experience { padding: 28px 24px 32px; } .experience-tampon { top: auto; bottom: 20px; } }
 @media (prefers-reduced-motion: reduce) { .experience-tampon.tampon-anime, .experience-revelation.concentre, .experience.nouvelle, .credibilite.monte .credibilite-valeur { animation: none; } }
 
+/* Les prédictions rétroactives de Messmerde */
+.mention-hommage { font-size: .85rem; }
+.certificat { position: relative; max-width: 760px; margin-top: 24px; background: var(--surface); border-radius: var(--rayon-papier); box-shadow: var(--ombre-haute); padding: 30px 36px; }
+.certificat-num { margin: 0; color: var(--encre-2); }
+.certificat-quand { margin: 6px 0 0; font-weight: 650; }
+.certificat-texte { margin: 18px 0 20px; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 750; letter-spacing: -.01em; max-width: 40ch; }
+.certificat-texte p { margin: 0; }
+.certificat-dates { display: grid; gap: 6px; margin: 0; padding-top: 14px; border-top: 1px solid var(--filet); }
+.certificat-dates div { display: flex; flex-wrap: wrap; gap: 2px 12px; }
+.certificat-dates dt { color: var(--encre-2); min-width: 13em; }
+.certificat-dates dd { margin: 0; }
+.certificat-tampon { position: absolute; right: 28px; top: 26px; margin: 0; padding: 6px 16px; border: 3px double var(--rouge); border-radius: 8px; color: var(--rouge);
+  font: 700 1.2rem var(--mono); letter-spacing: .2em; text-transform: uppercase; transform: rotate(8deg); }
+.certificat-tampon.tampon-anime { animation: clac-prevu 420ms var(--rebond) both; }
+.retroactives .actions { margin-top: 20px; }
+@media (max-width: 760px) { .certificat { padding: 26px 22px; } .certificat-tampon { position: static; display: inline-block; margin-top: 16px; } }
+
 /* L'horoscope de Messmerde */
 .horoscope { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); gap: 18px; }
 .signe { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 22px 24px; display: grid; align-content: start; gap: 8px; }
@@ -501,13 +519,27 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 @media (max-width: 760px) { .diagnostic-tampon { position: static; display: inline-block; margin-bottom: 12px; } .diagnostic-resultat { padding: 28px 24px; } }
 
 /* ---------- Les attestations ---------- */
-.attestation { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 32px; align-items: start; }
+.attestation { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 32px; align-items: start; }
 .attestation-demande { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 26px 28px; display: grid; gap: 8px; }
 .attestation-demande h2 { font-size: 1.3rem; margin-bottom: 8px; }
 .attestation-demande label { font-weight: 650; margin-top: 8px; }
 .attestation-demande select, .attestation-demande input { width: 100%; min-height: 48px; padding: 10px 14px; border-radius: var(--rayon-petit); border: 1px solid var(--contour); background: var(--surface); color: var(--encre); font: inherit; }
 .attestation-apercu img { display: block; width: 100%; height: auto; border-radius: var(--rayon-petit); box-shadow: var(--ombre-haute); background: #fff; }
 .attestation-apercu.tamponne img { animation: apparition 500ms var(--ressort); }
+.attestation-verdict { margin: 0 0 16px; padding-left: 14px; border-left: 3px solid var(--rouge); font-weight: 600; }
+/* Le formulaire du jour de Bertrand */
+.formulaire-jour { margin: 0 0 12px; padding: 14px 16px 18px; border: 1px dashed var(--contour); border-radius: var(--rayon-petit); display: grid; gap: 14px; min-width: 0; }
+.formulaire-jour > legend { padding: 0 6px; font-weight: 700; }
+.formulaire-jour > legend .mono { display: block; color: var(--rouge); font-weight: 600; }
+.formulaire-jour .aide { margin: 0; font-size: .9rem; }
+.case { margin: 0; padding: 0; border: 0; display: grid; gap: 6px; min-width: 0; }
+.case > legend { float: left; width: 100%; padding: 0; margin-bottom: 4px; font-weight: 650; }
+.attestation-demande .case > label { margin-top: 0; }
+.case-n { color: var(--rouge); margin-right: 4px; font-size: .8rem; white-space: nowrap; }
+.attestation-demande .case-choix { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: 0; font-weight: 500; cursor: pointer; }
+.attestation-demande .case-choix input { width: 20px; height: 20px; min-height: 0; padding: 0; flex: none; accent-color: var(--rouge); }
+.case-reserve p { margin: 0; padding: 10px 12px; border: 1px solid var(--filet); border-radius: 6px; color: var(--encre-2); font-size: .92rem;
+  background: repeating-linear-gradient(-45deg, var(--surface-2) 0 6px, transparent 6px 12px); }
 @media (max-width: 860px) { .attestation { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- Le standard téléphonique ---------- */
@@ -648,6 +680,32 @@ kbd { font-family: var(--mono); font-size: .85em; padding: 1px 7px; border: 1px 
 .texte-long li { margin-bottom: 8px; }
 .plan { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 40px; padding-bottom: 48px; }
 .plan section { padding: 0; }
+/* ---------- Questions pour un stagiaire ---------- */
+.plateau { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.plateau-jeu { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 32px 36px 36px; min-height: 340px; }
+.plateau-jeu.nouvelle { animation: apparition 400ms var(--ressort); }
+.plateau-num { margin: 0 0 8px; color: var(--encre-2); }
+.plateau-question { margin: 0 0 16px; font-size: clamp(1.4rem, 3.6vw, 2rem); font-weight: 800; letter-spacing: -.015em; line-height: 1.25; max-width: 32ch; }
+.plateau-buzz { min-height: 1.5em; margin: 0; font-weight: 650; color: var(--rouge); }
+.plateau-buzz.buzz-anime { animation: apparition 300ms var(--ressort); }
+.plateau-reponse { margin: 16px 0 0; padding: 16px 18px; border-left: 4px solid var(--jaune); background: var(--surface-2); border-radius: 0 var(--rayon-petit) var(--rayon-petit) 0; }
+.plateau-stagiaire { margin: 0; font-size: 1.3rem; font-weight: 750; }
+.plateau-stagiaire .mono { display: block; font-size: .85rem; font-weight: 500; color: var(--encre-2); }
+.plateau-argument { margin: 8px 0 0; font-style: italic; max-width: 56ch; }
+.plateau-jury { margin-top: 22px; }
+.plateau-jury .mono { margin: 0 0 10px; color: var(--encre-2); }
+.plateau-verdict { min-height: 1.5em; margin: 18px 0 0; font-weight: 600; max-width: 56ch; }
+.plateau-details { margin-top: 18px; }
+.plateau-details summary { cursor: pointer; font-weight: 650; padding: 10px 0; }
+.plateau-score { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 24px 28px; text-align: center; position: sticky; top: 110px; }
+.plateau-score > .mono { margin: 0; color: var(--encre-2); }
+.plateau-score dl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0 0; }
+.plateau-score dt { font-size: .92rem; color: var(--encre-2); }
+.plateau-score dd { margin: 0; font: 800 3rem/1.1 var(--police); letter-spacing: -.04em; }
+.plateau-score dd.marque { animation: clac 420ms var(--rebond); }
+@media (max-width: 760px) { .plateau { grid-template-columns: minmax(0, 1fr); } .plateau-score { position: static; } .plateau-jeu { padding: 26px 22px 30px; min-height: 0; } }
+@media (prefers-reduced-motion: reduce) { .plateau-jeu.nouvelle, .plateau-buzz.buzz-anime, .plateau-score dd.marque, .certificat-tampon.tampon-anime { animation: none; } }
+
 .plan h2 { font-size: 1.25rem; }
 .plan ul { list-style: none; padding: 0; margin: 0; }
 .plan li { padding: 8px 0; border-bottom: 1px solid var(--filet); }

@@ -2,14 +2,17 @@
 /**
  * messmerde.php — Les expériences de Messmerde, mentaliste du cabinet : il « devine » des évidences
  * avec le plus grand sérieux, et tamponne « PRÉVU » à chaque fois. Tout se passe dans le navigateur
- * (js/messmerde.js) ; sans JavaScript, Messmerde l'avait évidemment prévu.
+ * (js/messmerde.js) ; sans JavaScript, Messmerde l'avait évidemment prévu. Suivent ses prédictions rétroactives
+ * (includes/messmerde.php : ce qui vient d'arriver, certifié après coup) et son horoscope.
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/horoscope.php';
+require_once __DIR__ . '/includes/messmerde.php';
 $horoscope = horoscope_du_jour();
+$retro = prediction_retroactive();
 
 $titre = 'Les expériences de Messmerde';
-$description = "Messmerde, mentaliste du cabinet ConseilPlus+, lit dans vos pensées avec une précision moyenne : une vingtaine d'expériences, un interrogatoire, que des évidences.";
+$description = "Messmerde, mentaliste du cabinet ConseilPlus+, lit dans vos pensées avec une précision moyenne : une vingtaine d'expériences, un interrogatoire, des prédictions rétroactives, que des évidences.";
 $page = 'autre';
 include __DIR__ . '/includes/header.php';
 ?>
@@ -19,6 +22,7 @@ include __DIR__ . '/includes/header.php';
     <p class="etiquette">Service de divination</p>
     <h1>Les expériences de Messmerde</h1>
     <p class="chapo">Messmerde, mentaliste du cabinet, lit dans les pensées depuis qu'il a appris à lire. Chaque séance : sept expériences tirées au sort, dont un interrogatoire, menées avec une précision moyenne et une assurance totale.</p>
+    <p class="aide mention-hommage">Hommage parodique non officiel, sans lien avec un artiste existant.</p>
   </div>
   <img class="messmerde-portrait" src="assets/equipe/messmerde-480.webp" srcset="assets/equipe/messmerde-360.webp 360w, assets/equipe/messmerde-480.webp 480w, assets/equipe/messmerde.webp 640w" sizes="(max-width: 760px) 240px, 360px" alt="Messmerde en pleine concentration, deux doigts sur la tempe, une boule à neige à la main" width="640" height="640" decoding="async">
 </section>
@@ -57,6 +61,26 @@ include __DIR__ . '/includes/header.php';
   </aside>
 </section>
 
+<section class="conteneur retroactives" aria-labelledby="titre-retroactives" id="retroactives">
+  <h2 id="titre-retroactives">Les prédictions rétroactives</h2>
+  <p class="chapo">Messmerde prédit ce qui vient d'arriver, puis fait certifier sa prédiction. Taux de réussite : cent pour cent, constaté après coup.</p>
+  <article class="certificat" aria-labelledby="certificat-titre">
+    <p class="certificat-num mono" id="certificat-titre">Prédiction rétroactive n° <span data-retro="numero"><?= $retro['numero'] ?></span></p>
+    <p class="certificat-quand">Événement visé : <span data-retro="quand"><?= htmlspecialchars($retro['quand']) ?></span></p>
+    <blockquote class="certificat-texte"><p data-retro="texte"><?= htmlspecialchars($retro['texte']) ?></p></blockquote>
+    <dl class="certificat-dates">
+      <div><dt>Événement survenu le</dt><dd class="mono" data-retro="evenement"><?= $retro['evenement'] ?></dd></div>
+      <div><dt>Prédiction déposée le</dt><dd class="mono" data-retro="depot"><?= $retro['depot'] ?></dd></div>
+      <div><dt>Avance de la prédiction</dt><dd class="mono">− <span data-retro="ecart"><?= $retro['ecart'] ?></span>, dans les tolérances du cabinet</dd></div>
+    </dl>
+    <p class="certificat-tampon" data-retro-tampon>Prévu</p>
+  </article>
+  <p class="visuellement-cache" role="status" data-retro-statut></p>
+  <div class="actions">
+    <button type="button" class="btn btn-tampon" data-retro-autre hidden>Une autre prédiction</button>
+  </div>
+</section>
+
 <section class="conteneur" aria-labelledby="titre-horoscope" id="horoscope">
   <h2 id="titre-horoscope">L'horoscope de Messmerde</h2>
   <p class="chapo">Chaque matin, Messmerde consulte les astres, puis le calendrier. Ses prédictions se réalisent toutes : il n'en fait que de sûres.</p>
@@ -75,6 +99,7 @@ include __DIR__ . '/includes/header.php';
   </ul>
 </section>
 
+<script type="application/json" id="retroactives-donnees"><?= json_encode(predictions_retroactives(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
 <script src="<?= fichier_versionne('js/messmerde.js') ?>" defer></script>
 <script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
 <?php include __DIR__ . '/includes/footer.php'; ?>

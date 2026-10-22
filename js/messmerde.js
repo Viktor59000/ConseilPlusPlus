@@ -1,6 +1,7 @@
 // Les expériences de Messmerde : il « devine » des évidences avec gravité, tamponne « PRÉVU »,
 // puis le visiteur juge (« Bluffant » ou « Moyennement bluffant »). L'indice de crédibilité ne fait que monter.
 // Chaque séance tire 7 expériences au sort dans le répertoire (toujours un interrogatoire, toujours « Le départ » à la fin).
+// Plus bas : les prédictions rétroactives (une autre prédiction, certificat horodaté après coup).
 (() => {
   const zone = document.querySelector('[data-experience]');
   if (zone) {
@@ -79,14 +80,14 @@
       ['Êtes-vous plutôt du matin ?', 'Vous êtes du matin.', "Vous n'êtes pas du matin."],
       ['Avez-vous un cousin ?', 'Vous avez un cousin.', "Vous n'avez pas de cousin."],
       ['Savez-vous faire du vélo ?', 'Vous savez faire du vélo.', 'Vous ne savez pas faire du vélo.'],
-      ['Avez-vous déjà mangé une raclette en été ?', 'Vous avez déjà mangé une raclette en été.', "Vous n'avez jamais mangé de raclette en été."],
+      ['Avez-vous déjà mangé une soupe en été ?', 'Vous avez déjà mangé une soupe en été.', "Vous n'avez jamais mangé de soupe en été."],
       ['Possédez-vous un tire-bouchon ?', 'Vous possédez un tire-bouchon.', "Vous n'avez pas de tire-bouchon."],
       ['Avez-vous déjà dit « à tes souhaits » à un inconnu ?', 'Vous avez déjà dit « à tes souhaits » à un inconnu.', "Vous n'avez jamais dit « à tes souhaits » à un inconnu."],
       ['Préférez-vous la croûte à la mie ?', 'Vous préférez la croûte.', 'Vous préférez la mie.'],
       ['Avez-vous déjà perdu une chaussette au lavage ?', 'Vous avez déjà perdu une chaussette au lavage.', "Vous n'avez jamais perdu de chaussette au lavage."],
       ['Êtes-vous du signe du Taureau ?', 'Vous êtes Taureau.', "Vous n'êtes pas Taureau."],
       ['Dormez-vous avec une couverture ?', 'Vous dormez avec une couverture.', 'Vous dormez sans couverture.'],
-      ['Avez-vous déjà vu un pigeon ?', 'Vous avez déjà vu un pigeon.', "Vous n'avez jamais vu de pigeon. Inquiétant."],
+      ['Avez-vous déjà vu un escargot ?', 'Vous avez déjà vu un escargot.', "Vous n'avez jamais vu d'escargot. Inquiétant."],
       ['Possédez-vous une clé USB perdue quelque part ?', 'Vous avez une clé USB perdue quelque part.', "Vous savez où sont toutes vos clés USB."],
       ['Avez-vous déjà applaudi à l\'atterrissage d\'un avion ?', "Vous avez déjà applaudi à l'atterrissage d'un avion.", "Vous n'avez jamais applaudi à l'atterrissage d'un avion."],
       ['Faites-vous la vaisselle tout de suite après manger ?', 'Vous faites la vaisselle tout de suite.', 'Vous laissez tremper.'],
@@ -474,5 +475,42 @@
     zone.hidden = false;
     panneau.hidden = false;
     demarrer();
+  }
+
+  // ---------- Les prédictions rétroactives : ce qui vient d'arriver, certifié « PRÉVU » quelques secondes après ----------
+  const autre = document.querySelector('[data-retro-autre]');
+  if (autre) {
+    const predictions = JSON.parse(document.getElementById('retroactives-donnees').textContent);
+    const champ = (cle) => document.querySelector(`[data-retro="${cle}"]`);
+    const tampon = document.querySelector('[data-retro-tampon]');
+    const statut = document.querySelector('[data-retro-statut]');
+    const deux = (n) => String(n).padStart(2, '0');
+    const jour = (d) => `${deux(d.getDate())}/${deux(d.getMonth() + 1)}/${d.getFullYear()} à ${deux(d.getHours())} h ${deux(d.getMinutes())}`;
+    const duree = (s) => {
+      for (const [unite, nom] of [[86400, 'jour'], [3600, 'heure'], [60, 'minute'], [1, 'seconde']]) {
+        if (s >= unite) { const n = Math.floor(s / unite); return `${n} ${nom}${n > 1 ? 's' : ''}`; }
+      }
+      return '0 seconde';
+    };
+    let actuelle = champ('texte').textContent;
+
+    autre.addEventListener('click', () => {
+      const choix = predictions.filter((p) => p[2] !== actuelle);
+      const [secondes, quand, texte] = choix[Math.floor(Math.random() * choix.length)];
+      actuelle = texte;
+      const depot = new Date(Date.now() + 3000); // le certificat est toujours déposé après l'événement
+      const evenement = new Date(depot - (secondes + 3) * 1000);
+      champ('numero').textContent = `PR-${depot.getFullYear()}-${1000 + Math.floor(Math.random() * 9000)}`;
+      champ('quand').textContent = quand;
+      champ('texte').textContent = texte;
+      champ('evenement').textContent = jour(evenement);
+      champ('depot').textContent = `${jour(depot)} min ${deux(depot.getSeconds())} s`;
+      champ('ecart').textContent = duree(secondes + 3);
+      tampon.classList.remove('tampon-anime');
+      void tampon.offsetWidth;
+      tampon.classList.add('tampon-anime');
+      statut.textContent = `${texte} Certificat « Prévu » déposé le ${champ('depot').textContent}.`;
+    });
+    autre.hidden = false;
   }
 })();

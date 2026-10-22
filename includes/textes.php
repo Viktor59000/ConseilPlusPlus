@@ -1,7 +1,8 @@
 <?php
 /**
- * Petits textes tournants du site (banque : data/textes.php) : tampons, mentions, note de service,
- * témoignages, FAQ, équipe, annonces du hall… Chaque appel tire au hasard, sauf la note de service (liée à la date).
+ * Petits textes tournants du site (banque : data/textes.php) : tampons, mentions, témoignages, FAQ, équipe, annonces du hall…
+ * Chaque appel tire au hasard, sauf les textes du jour (liés à la date, les mêmes pour tout le monde) :
+ * l'article du règlement intérieur (data/reglement.php) et le formulaire du jour de Bertrand (data/formulaires.php).
  */
 
 function textes(): array
@@ -17,11 +18,23 @@ function texte_hasard(string $liste): string
     return $choix[array_rand($choix)];
 }
 
-/** Note de service du jour : date particulière si c'en est une, sinon celle du jour de la semaine. */
-function note_de_service(): string
+/** Élément du jour d'une liste : tirage déterministe par date (AAAA-MM-JJ), $sel distinguant les listes. */
+function tirage_du_jour(array $liste, string $sel, ?string $jour = null): mixed
 {
-    $t = textes();
-    return $t['dates'][date('d-m')] ?? $t['jours'][(int) date('N')];
+    return $liste[crc32($sel . '-' . ($jour ?? date('Y-m-d'))) % count($liste)];
+}
+
+/** Article du règlement intérieur du jour (accueil) : ['numero' => '14', 'texte' => …]. */
+function article_du_jour(?string $jour = null): array
+{
+    [$numero, $texte] = tirage_du_jour(require __DIR__ . '/../data/reglement.php', 'reglement', $jour);
+    return ['numero' => $numero, 'texte' => $texte];
+}
+
+/** Formulaire du jour de Bertrand (attestation.php) : ['code', 'titre', 'cases' => […]]. */
+function formulaire_du_jour(?string $jour = null): array
+{
+    return tirage_du_jour((require __DIR__ . '/../data/formulaires.php')['formulaires'], 'formulaire', $jour);
 }
 
 /** Délai de traitement « estimé » d'un dossier : toujours le même pour un numéro donné (site et Bureau). */

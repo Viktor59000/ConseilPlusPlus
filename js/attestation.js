@@ -1,8 +1,9 @@
 // Les attestations officielles : dessinées dans le navigateur (1600 × 1131, paysage), jamais envoyées au serveur.
+// Le formulaire du jour de Bertrand est « vérifié » (cases comptées), puis validé quoi qu'il contienne.
 (() => {
   const demande = document.querySelector('[data-demande]');
   if (demande) {
-    const modeles = JSON.parse(document.getElementById('modeles-attestation').textContent);
+    const { modeles, formulaire, verdicts } = JSON.parse(document.getElementById('donnees-attestation').textContent);
     const apercu = document.querySelector('[data-apercu]');
     const image = apercu.querySelector('[data-image]');
     const C = { fond: '#FFFFFF', encre: '#1B2440', douce: '#525A73', filet: '#DDE1EC', rouge: '#C8102E', jaune: '#FFE14D' };
@@ -58,6 +59,7 @@
       ctx.textAlign = 'right';
       ctx.fillText(`N° ${numero}`, 1490, 130);
       ctx.fillText('Original — ne pas photocopier (ou alors en couleur)', 1490, 170);
+      ctx.fillText(`Formulaire préalable ${formulaire} : conforme`, 1490, 210);
 
       // Titre
       ctx.textAlign = 'center';
@@ -111,11 +113,23 @@
       return new Promise((ok) => c.toBlob(ok, 'image/png'));
     }
 
+    /** Constat de Bertrand sur le formulaire du jour : les cases sont comptées, le verdict est toujours favorable. */
+    function constat() {
+      const cases = [...demande.querySelectorAll('[data-case]')];
+      const remplies = cases.filter((c) => c.querySelector('input:checked')
+        || [...c.querySelectorAll('input:not([type="checkbox"])')].some((i) => i.value.trim())).length;
+      const total = cases.length;
+      const bilan = remplies === 0 ? `aucune case remplie sur ${total}`
+        : `${remplies} case${remplies > 1 ? 's' : ''} remplie${remplies > 1 ? 's' : ''} sur ${total}`;
+      return verdicts[Math.floor(Math.random() * verdicts.length)].replaceAll('{code}', formulaire).replaceAll('{bilan}', bilan);
+    }
+
     demande.addEventListener('submit', async (e) => {
       e.preventDefault();
       const nom = demande.querySelector('[data-nom]').value.trim().replace(/\s+/g, ' ').slice(0, 40);
       if (!nom) return;
       const type = demande.querySelector('[data-type]').value;
+      const verdict = constat();
       const blob = await dessiner(modeles[type], nom);
       fichier = new File([blob], `attestation-${type}.png`, { type: 'image/png' });
       if (image.src) URL.revokeObjectURL(image.src);
@@ -125,7 +139,8 @@
       apercu.classList.remove('tamponne');
       void apercu.offsetWidth;
       apercu.classList.add('tamponne');
-      apercu.querySelector('[data-statut]').textContent = `Document prêt : ${modeles[type].titre}, tamponné « VALIDÉ ».`;
+      apercu.querySelector('[data-verdict]').textContent = verdict;
+      apercu.querySelector('[data-statut]').textContent = `${verdict} Document prêt : ${modeles[type].titre}, tamponné « VALIDÉ ».`;
       apercu.querySelector('[data-telecharger]').focus({ preventScroll: true });
       apercu.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });

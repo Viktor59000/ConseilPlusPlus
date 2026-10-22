@@ -1,17 +1,19 @@
 <?php
 /**
- * index.php — Accueil : conseil du jour (générateur), mot (presque) du jour, témoignages.
+ * index.php — Accueil : conseil du jour (générateur), article du règlement intérieur du jour, mot (presque) du jour, témoignages.
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/tirage.php';
 require_once __DIR__ . '/includes/mot-du-jour.php';
+require_once __DIR__ . '/includes/textes.php';
 
 $titre = 'Accueil';
 $description = 'ConseilPlus+, le conseiller moyen : un cabinet qui répond à vos problèmes par des conseils absurdes, avec le plus grand sérieux.';
 $page = 'accueil';
 $conseil = tirer_conseil($bdd);
 $mot = mot_du_jour($bdd);
+$article = article_du_jour();
 include __DIR__ . '/includes/header.php';
 ?>
 
@@ -24,7 +26,7 @@ include __DIR__ . '/includes/header.php';
       <a class="btn btn-tampon" href="<?= isset($_SESSION['user_id']) ? 'conseil.php' : 'login.php' ?>">Demander conseil</a>
       <a class="btn btn-clair" href="produit.php">Voir nos formules</a>
     </div>
-    <p class="note-service"><?= htmlspecialchars(note_de_service()) ?></p>
+    <p class="article-jour"><strong>Règlement intérieur, art. <?= htmlspecialchars($article['numero']) ?>.</strong> <?= htmlspecialchars($article['texte']) ?></p>
   </div>
 
   <article class="fiche" id="copie-du-jour" aria-labelledby="fiche-titre" data-tampons="<?= htmlspecialchars(json_encode(textes()['tampons'], JSON_UNESCAPED_UNICODE)) ?>">

@@ -24,10 +24,11 @@ include __DIR__ . '/includes/header.php';
       <li><a href="cabinet.php">Le cabinet : l'équipe et les valeurs</a></li>
       <li><a href="petit-moyen.php">Le Petit Moyen : le mot (presque) du jour</a></li>
       <li><a href="produit.php">Nos formules</a></li>
-      <li><a href="messmerde.php">Les expériences de Messmerde (et son horoscope)</a></li>
+      <li><a href="messmerde.php">Les expériences de Messmerde (ses prédictions rétroactives et son horoscope)</a></li>
+      <li><a href="stagiaire.php">Questions pour un stagiaire</a></li>
       <li><a href="standard.php">Le standard téléphonique</a></li>
       <li><a href="diagnostic.php">Quel client êtes-vous ?</a></li>
-      <li><a href="attestation.php">Les attestations officielles</a></li>
+      <li><a href="attestation.php">Les attestations officielles (et le formulaire du jour)</a></li>
       <li><a href="contact.php">Nous contacter</a></li>
     </ul>
   </section>

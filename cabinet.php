@@ -37,9 +37,9 @@ $t = textes();
         <div><dt><?= htmlspecialchars($intitule) ?></dt><dd><?= htmlspecialchars($valeur) ?></dd></div>
 <?php endforeach; ?>
       </dl>
-<?php if (!empty($m['lien'])): ?>
-      <p class="membre-lien"><a href="<?= $m['lien'][0] ?>"><?= htmlspecialchars($m['lien'][1]) ?></a></p>
-<?php endif; ?>
+<?php foreach ($m['liens'] ?? [] as [$lien, $libelle]): ?>
+      <p class="membre-lien"><a href="<?= $lien ?>"><?= htmlspecialchars($libelle) ?></a></p>
+<?php endforeach; ?>
     </li>
 <?php endforeach; ?>
   </ul>

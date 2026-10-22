@@ -71,7 +71,11 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `includes/csrf.php`, `includes/header.php`, `includes/espace-nav.php`, `includes/consultation.php`, `includes/votes.php` | Commun |
 | `bureau/includes/amorce.php`, `bureau/includes/vues.php` | Début des pages du Bureau (`$agent`), `rediriger()`, `exiger_post()`, `barres()` |
 | `data/*.php` | Banques de contenu (fragments, kamoulox, cadres, questions, duel, mots, sketchs, textes) |
-| `data/textes.php`, `includes/textes.php` | Petits textes tournants : tampons, mentions, note de service (jour / dates), témoignages, équipe, valeurs, FAQ, titres d'onglet, conseils secrets |
+| `data/textes.php`, `includes/textes.php` | Petits textes tournants : tampons, mentions, annonces du hall, témoignages, équipe (`liens` vers ses services), valeurs, FAQ, titres d'onglet, conseils secrets ; `tirage_du_jour()` |
+| `data/reglement.php` | Le règlement intérieur : un article par jour sur l'accueil (`article_du_jour()`) |
+| `data/formulaires.php` | Le formulaire du jour de Bertrand, rempli avant l'attestation (`formulaire_du_jour()`, rien n'est envoyé) |
+| `stagiaire.php`, `js/stagiaire.js`, `data/stagiaire.php`, `includes/stagiaire.php` | « Questions pour un stagiaire » (parodie non officielle) : le visiteur arbitre les réponses du stagiaire |
+| `data/retroactives.php`, `includes/messmerde.php` | Les prédictions rétroactives de Messmerde (certificat « PRÉVU » horodaté après coup) |
 | `includes/limite-connexion.php`, `auth/.htaccess`, `docker/securite.ini` | Sécurité autour du code du cours : limite des essais (avant `auth/`), cookies protégés |
 | `api/statistiques.php`, `bureau/statistiques.php` | Statistiques d'usage de l'API, affichées dans Le Bureau |
 | `.github/workflows/tests.yml`, `tests/test_pages.php` | Tests automatiques à chaque push |
