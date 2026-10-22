@@ -5,12 +5,16 @@
  * Le fichier se réimporte dans n'importe quelle base vide : phpMyAdmin → base → Importer, ou
  * mysql -u root nom_de_la_base < fichier.sql
  */
-function export_sql(PDO $bdd, string $origine): string
+/**
+ * $filtre (facultatif) : fn(string $table, array $ligne): ?array — renvoie la ligne (éventuellement modifiée) à exporter,
+ * ou null pour la laisser de côté. Sert à ne jamais sortir de secrets (empreintes de mots de passe, jetons, clé privée).
+ */
+function export_sql(PDO $bdd, string $origine, ?callable $filtre = null): string
 {
     $base = $bdd->query('SELECT DATABASE()')->fetchColumn();
     $sql = "-- ConseilPlus+ : sauvegarde de la base « $base » ($origine)\n"
         . '-- Faite le ' . date('d/m/Y à H:i') . "\n"
-        . "-- Contient des données personnelles (adresses email, mots de passe chiffrés) : à garder hors de Git.\n\n"
+        . "-- Contient des données personnelles (adresses email) : à garder hors de Git.\n\n"
         . "SET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS = 0;\n\n";
 
     $tables = $bdd->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")->fetchAll(PDO::FETCH_NUM);
@@ -22,6 +26,9 @@ function export_sql(PDO $bdd, string $origine): string
         $colonnes = null;
         $lot = [];
         while ($ligne = $lignes->fetch(PDO::FETCH_ASSOC)) {
+            if ($filtre && ($ligne = $filtre($table, $ligne)) === null) {
+                continue;
+            }
             $colonnes ??= '(`' . implode('`, `', array_keys($ligne)) . '`)';
             $lot[] = '(' . implode(', ', array_map(fn($v) => valeur_sql($bdd, $v), $ligne)) . ')';
             if (count($lot) === 100) {   // insertions par paquets de 100 lignes

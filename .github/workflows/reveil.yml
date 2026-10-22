@@ -19,10 +19,12 @@ jobs:
       - name: Mot du jour (lit la base)
         run: curl --fail --silent --show-error --max-time 60 https://conseilplus.onrender.com/api/mot-du-jour.php
       - name: Préparer le mot de demain
-        run: curl --silent --show-error --max-time 90 -X POST https://conseilplus.onrender.com/api/mot-du-jour.php
+        # Clé d'API du site (secret du dépôt API_KEY, même valeur que sur Render) : sans elle, réponse 401
+        run: |
+          curl --fail --silent --show-error --max-time 90 -X POST -H "X-API-Key: ${{ secrets.API_KEY }}" https://conseilplus.onrender.com/api/mot-du-jour.php
       - name: Envoyer la notification du mot du jour (une fois par jour au plus)
         # seulement à la passe du matin (ou au lancement manuel) : jamais de notification la nuit
         if: github.event.schedule == '17 5 * * *' || github.event_name == 'workflow_dispatch'
         # (commande en bloc « | » : un « : » suivi d'une espace casserait le YAML et tout le workflow)
         run: |
-          curl --silent --show-error --max-time 120 -X POST -H "Content-Type: application/json" -d '{"action":"envoyer"}' https://conseilplus.onrender.com/api/notifications.php
+          curl --fail --silent --show-error --max-time 120 -X POST -H "Content-Type: application/json" -H "X-API-Key: ${{ secrets.API_KEY }}" -d '{"action":"envoyer"}' https://conseilplus.onrender.com/api/notifications.php

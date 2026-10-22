@@ -20,7 +20,8 @@ include __DIR__ . '/includes/header.php';
 <section class="conteneur texte-long" aria-label="Politique de confidentialité">
   <h2>Ce que nous gardons, et pourquoi</h2>
   <ul>
-    <li><strong>Compte client</strong> : prénom, nom, adresse email et mot de passe (enregistré sous forme chiffrée, jamais en clair).
+    <li><strong>Compte client</strong> : prénom, nom, adresse email et mot de passe (jamais enregistré en clair : seule une empreinte SHA-512 est gardée, méthode imposée par le cadre
+      du cours ; un site en production utiliserait bcrypt ou Argon2).
       Sert à l'espace client. Conservé jusqu'à la suppression du compte.</li>
     <li><strong>Mon carnet</strong> : les conseils que vous classez. Supprimés avec le compte.</li>
     <li><strong>Le Duel</strong> : le score de vos parties terminées. Vos victoires peuvent apparaître au tableau d'honneur,

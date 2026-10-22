@@ -5,7 +5,7 @@
  * GET                                        → 200 { cle_publique } (clé VAPID pour s'abonner dans le navigateur)
  * POST { action: "abonner", abonnement }      → 201 abonné | 422 abonnement invalide
  * POST { action: "desabonner", endpoint }     → 200
- * POST { action: "envoyer" }                  → 200 { envoyes, expires } | 200 { deja: true } (une fois par jour au plus)
+ * POST { action: "envoyer" } (clé « ecriture »)                → 200 { envoyes, expires } | 200 { deja: true } (une fois par jour au plus)
  *
  * Public, sans clé : l'envoi est déclenché chaque matin par la visite quotidienne (.github/workflows/reveil.yml)
  * et ne peut partir qu'une fois par jour, quel que soit le nombre d'appels. Limite : 10 appels par minute et par IP.
@@ -52,6 +52,7 @@ router([
                 repondre(200, ['abonne' => false]);
 
             case 'envoyer':
+                exiger_cle('ecriture'); // déclenché par GitHub Actions : personne d'autre ne peut écrire aux abonnés
                 $vapid = vapid_ou_503($bdd);
                 // Une seule notification par jour : la date du dernier envoi est réservée avant d'envoyer
                 $jour = date('Y-m-d');

@@ -95,11 +95,13 @@ function gabarit_courriel(array $o): string
  * Accusé de réception d'une demande de contact (envoyé par contact.php, prévisualisé par tests/apercu-courriel.php).
  * Retourne ['sujet', 'texte' (version sans HTML, signature comprise), 'html'].
  */
-function accuse_reception(string $nom, string $type_demande, int $id): array
+function accuse_reception(string $type_demande, int $id): array
 {
     require_once __DIR__ . '/textes.php'; // delai_estime()
     $numero = sprintf('%04d', $id);
-    $corps = "Madame, Monsieur $nom,\n\n"
+    // Aucun texte saisi par le visiteur : ce courriel part vers une adresse non vérifiée, il ne doit pas
+    // pouvoir servir à faire envoyer n'importe quel message par le cabinet ($type_demande vient d'une liste fermée).
+    $corps = "Madame, Monsieur,\n\n"
         . "Le cabinet ConseilPlus+ accuse réception de votre demande « $type_demande », enregistrée sous le n° $numero.\n\n"
         . "Votre dossier a été placé dans la file d'attente, entre un dossier urgent et un dossier qui l'était.\n"
         . 'Délai de traitement estimé : ' . delai_estime($id) . ".\n\n"
@@ -187,7 +189,7 @@ function envoyer_accuse_reception(PDO $bdd, array $demande, int $id): void
     if ($stmt->fetchColumn() > 2) {
         return;
     }
-    envoyer_courriel_site($demande['email'], $demande['nom'], accuse_reception($demande['nom'], $demande['type_demande'], $id));
+    envoyer_courriel_site($demande['email'], '', accuse_reception($demande['type_demande'], $id));
 }
 
 /**

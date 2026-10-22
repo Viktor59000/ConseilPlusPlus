@@ -21,7 +21,7 @@ Base : `http://localhost/Site/api/v1` (ou `/api`, alias sans version) — répon
 | `DELETE` | `/contacts.php?id=42` | écriture | Supprimer une demande traitée | `204` · `404` |
 
 **Liste** : filtres `statut` (`nouveau` / `importe`), `type` (type de demande), `q` (recherche dans nom, adresse, message) ;
-tri `tri=date` (défaut), `-date`, `nom`, `-nom`. Sans `page`, toute la liste est renvoyée `{ total, contacts[] }` (ce que lit Le Bureau).
+tri `tri=date` (défaut), `-date`, `nom`, `-nom`. Sans `page`, la liste est renvoyée d'un bloc `{ total, contacts[] }` (ce que lit Le Bureau), plafonnée à 500 demandes.
 Avec `page` (et `par_page`, 1 à 100, 20 par défaut) : `{ total, page, par_page, pages, contacts[] }`,
 en-têtes `Link` (`first`, `prev`, `next`, `last`, RFC 8288) et `X-Total-Count`.
 

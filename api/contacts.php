@@ -55,9 +55,9 @@ router([
             repondre(400, ['erreur' => 'Tri invalide (date, -date, nom ou -nom).']);
         }
 
-        // Sans ?page= : toute la liste (compatible avec Le Bureau). Avec ?page= : pagination.
+        // Sans ?page= : la liste d'un bloc (compatible avec Le Bureau), plafonnée à 500 réponses. Avec ?page= : pagination.
         $pagine = isset($_GET['page']);
-        $limite = '';
+        $limite = ' LIMIT 500';
         if ($pagine) {
             $page = lire_entier('page');
             $par_page = lire_entier('par_page', 1, 100);

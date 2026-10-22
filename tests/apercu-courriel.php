@@ -20,5 +20,5 @@ if (($_GET['type'] ?? 'accuse') === 'reponse') {
     ]);
 } else {
     // Le vrai courriel envoyé par contact.php, pour une demande fictive n° 42
-    echo accuse_reception('Jean Moyen', 'Demande de conseil', 42)['html'];
+    echo accuse_reception('Demande de conseil', 42)['html'];
 }

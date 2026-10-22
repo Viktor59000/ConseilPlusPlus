@@ -36,7 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (courriel_site_configure()) {
                     envoyer_courriel_site($email, trim($client['prenom'] . ' ' . $client['nom']),
                         courriel_reinitialisation($client['prenom'], $lien));
-                } else {
+                } elseif (str_starts_with($lien, 'http://localhost') || str_starts_with($lien, 'http://127.0.0.1')) {
+                    // En local seulement (sans Brevo) : le lien se lit dans le journal d'Apache. Jamais en ligne.
                     error_log("ConseilPlus+ : envoi de courriel non configuré, lien de réinitialisation : $lien");
                 }
             }

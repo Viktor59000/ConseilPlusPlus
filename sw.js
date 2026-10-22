@@ -3,7 +3,7 @@
 //   (ou si le site gratuit met trop longtemps à se réveiller).
 // - Polices, images, scripts : cache d'abord, mis à jour en arrière-plan.
 // - Espace client, formulaires, API d'écriture : jamais mis en cache.
-const VERSION = 'conseilplus-v5';
+const VERSION = 'conseilplus-v6';
 const HORS_LIGNE = 'hors-ligne.html';
 const A_PRECHARGER = [
   HORS_LIGNE,
