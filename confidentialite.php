@@ -3,12 +3,12 @@
  * confidentialite.php — Politique de confidentialité (RGPD) : données collectées, usages, durées, droits.
  * À tenir à jour à chaque nouvelle collecte de données.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 
 $titre = 'Confidentialité';
 $description = 'Politique de confidentialité de ConseilPlus+ : quelles données, pour quoi faire, combien de temps, et vos droits.';
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -57,4 +57,4 @@ include("includes/header.php");
   <p>Politique mise à jour le 16 octobre 2026.</p>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

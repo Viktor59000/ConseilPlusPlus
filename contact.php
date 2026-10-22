@@ -4,36 +4,13 @@
  * La demande est envoyée en POST à l'API (api/contacts.php), qui la valide et l'enregistre
  * avec le statut « nouveau ». Le logiciel de gestion la récupère ensuite via l'API.
  */
-session_start();
-require("includes/contacts.php");
-require("includes/http.php");
-require("includes/csrf.php");
-require("includes/courriel.php");
-require_once("config.php");
+require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/includes/bdd.php';
+require_once __DIR__ . '/includes/contacts.php';
+require_once __DIR__ . '/includes/http.php';
+require_once __DIR__ . '/includes/courriel.php';
+require_once __DIR__ . '/includes/formulaire.php';
 
-/**
- * Accusé de réception automatique par courriel (Brevo), si l'envoi est configuré.
- * Garde-fou : au plus 2 accusés par adresse et par jour, pour qu'on ne puisse pas se servir du formulaire
- * pour inonder la boîte d'un tiers. Un échec d'envoi ne bloque jamais la demande.
- */
-function envoyer_accuse_reception(array $demande, int $id): void
-{
-    if (COURRIEL_BREVO_CLE === '' || $id === 0) {
-        return;
-    }
-    require("db.php");
-    $stmt = $bdd->prepare('SELECT COUNT(*) FROM contacts WHERE email = :email AND date_creation > NOW() - INTERVAL 1 DAY');
-    $stmt->execute(['email' => $demande['email']]);
-    if ($stmt->fetchColumn() > 2) {
-        return;
-    }
-
-    $courriel = accuse_reception($demande['nom'], $demande['type_demande'], $id);
-    envoyer_courriel(COURRIEL_BREVO_CLE, COURRIEL_EXPEDITEUR, COURRIEL_EXPEDITEUR_NOM, $demande['email'], $demande['nom'],
-        $courriel['sujet'], $courriel['texte'], $courriel['html']);
-}
-
-$types = TYPES_DEMANDE;
 $valeurs = ['nom' => '', 'email' => '', 'message' => '', 'type_demande' => ''];
 $erreurs = [];
 $erreur_api = false;
@@ -54,28 +31,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // L'adresse IP du visiteur est transmise à l'API pour sa limite d'envois (l'appel part du serveur)
         $reponse = appeler_api('POST', url_interne() . '/api/contacts.php', $valeurs, ['X-Client-IP: ' . $_SERVER['REMOTE_ADDR']]);
-    }
-
-    if ($erreur_session) {
-        // message affiché plus bas
-    } elseif ($reponse['code'] === 429) {
-        $trop_de_demandes = true;
-    } elseif ($reponse['code'] === 201) {
-        envoyer_accuse_reception($valeurs, (int) ($reponse['data']['id'] ?? 0));
-        // Redirection après envoi pour éviter un double enregistrement au rechargement
-        header('location: contact.php?envoye=1');
-        exit();
-    } elseif ($reponse['code'] === 422) {
-        $erreurs = $reponse['data']['champs'] ?? [];
-    } else {
-        $erreur_api = true;
+        if ($reponse['code'] === 201) {
+            envoyer_accuse_reception(bdd(), $valeurs, (int) ($reponse['data']['id'] ?? 0));
+            // Redirection après envoi pour éviter un double enregistrement au rechargement
+            header('location: contact.php?envoye=1');
+            exit();
+        } elseif ($reponse['code'] === 429) {
+            $trop_de_demandes = true;
+        } elseif ($reponse['code'] === 422) {
+            $erreurs = $reponse['data']['champs'] ?? [];
+        } else {
+            $erreur_api = true;
+        }
     }
 }
 
 $titre = 'Contact';
 $description = 'Contactez ConseilPlus+ : demande de conseil, réclamation ou devis Premium. Réponse sous 3 jours ou jamais.';
 $page = 'contact';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -95,52 +69,44 @@ include("includes/header.php");
     <h2 id="titre-contact">Formulaire de demande</h2>
     <p class="obligatoire">Tous les champs sont obligatoires.</p>
 <?php if (isset($_GET['envoye'])): ?>
-    <p class="alerte alerte-ok" role="status">Demande enregistrée sous le statut « nouveau ». Nous la traiterons avec la lenteur qui nous caractérise.</p>
+    <?= alerte('Demande enregistrée sous le statut « nouveau ». Nous la traiterons avec la lenteur qui nous caractérise.', 'ok') ?>
 <?php elseif ($erreur_session): ?>
-    <p class="alerte alerte-erreur" role="alert">Le formulaire a expiré. Merci de le renvoyer.</p>
+    <?= alerte('Le formulaire a expiré. Merci de le renvoyer.') ?>
 <?php elseif ($trop_de_demandes): ?>
-    <p class="alerte alerte-erreur" role="alert">Vous avez envoyé beaucoup de demandes en peu de temps. Même nous, nous avons des limites : réessayez dans une minute.</p>
+    <?= alerte('Vous avez envoyé beaucoup de demandes en peu de temps. Même nous, nous avons des limites : réessayez dans une minute.') ?>
 <?php elseif ($erreur_api): ?>
-    <p class="alerte alerte-erreur" role="alert">Notre guichet est momentanément fermé (service indisponible). Réessayez dans quelques instants.</p>
+    <?= alerte('Notre guichet est momentanément fermé (service indisponible). Réessayez dans quelques instants.') ?>
 <?php elseif ($erreurs): ?>
-    <p class="alerte alerte-erreur" role="alert">Le formulaire contient <?= count($erreurs) ?> erreur(s). Corrigez les champs indiqués puis renvoyez-le.</p>
+    <?= alerte('Le formulaire contient ' . count($erreurs) . ' erreur(s). Corrigez les champs indiqués puis renvoyez-le.') ?>
 <?php endif; ?>
 
-    <div class="champ<?= isset($erreurs['nom']) ? ' champ-erreur' : '' ?>">
+    <div class="<?= classe_champ($erreurs, 'nom') ?>">
       <label for="ct-nom">Nom</label>
-      <input id="ct-nom" type="text" name="nom" maxlength="100" autocomplete="name" required value="<?= htmlspecialchars($valeurs['nom']) ?>"<?= isset($erreurs['nom']) ? ' aria-invalid="true" aria-describedby="err-nom"' : '' ?>>
-<?php if (isset($erreurs['nom'])): ?>
-      <p class="champ-msg" id="err-nom"><?= htmlspecialchars($erreurs['nom']) ?></p>
-<?php endif; ?>
+      <input id="ct-nom" type="text" name="nom" maxlength="100" autocomplete="name" required value="<?= htmlspecialchars($valeurs['nom']) ?>"<?= aria_erreur($erreurs, 'nom') ?>>
+      <?= erreur_champ($erreurs, 'nom') ?>
     </div>
 
-    <div class="champ<?= isset($erreurs['email']) ? ' champ-erreur' : '' ?>">
+    <div class="<?= classe_champ($erreurs, 'email') ?>">
       <label for="ct-email">Adresse email</label>
-      <input id="ct-email" type="email" name="email" maxlength="150" autocomplete="email" required value="<?= htmlspecialchars($valeurs['email']) ?>"<?= isset($erreurs['email']) ? ' aria-invalid="true" aria-describedby="err-email"' : '' ?>>
-<?php if (isset($erreurs['email'])): ?>
-      <p class="champ-msg" id="err-email"><?= htmlspecialchars($erreurs['email']) ?></p>
-<?php endif; ?>
+      <input id="ct-email" type="email" name="email" maxlength="150" autocomplete="email" required value="<?= htmlspecialchars($valeurs['email']) ?>"<?= aria_erreur($erreurs, 'email') ?>>
+      <?= erreur_champ($erreurs, 'email') ?>
     </div>
 
-    <div class="champ<?= isset($erreurs['type_demande']) ? ' champ-erreur' : '' ?>">
+    <div class="<?= classe_champ($erreurs, 'type_demande') ?>">
       <label for="ct-type">Type de demande</label>
-      <select id="ct-type" name="type_demande" required<?= isset($erreurs['type_demande']) ? ' aria-invalid="true" aria-describedby="err-type"' : '' ?>>
+      <select id="ct-type" name="type_demande" required<?= aria_erreur($erreurs, 'type_demande', 'type') ?>>
         <option value="">Choisir…</option>
-<?php foreach ($types as $type): ?>
+<?php foreach (TYPES_DEMANDE as $type): ?>
         <option<?= $valeurs['type_demande'] === $type ? ' selected' : '' ?>><?= htmlspecialchars($type) ?></option>
 <?php endforeach; ?>
       </select>
-<?php if (isset($erreurs['type_demande'])): ?>
-      <p class="champ-msg" id="err-type"><?= htmlspecialchars($erreurs['type_demande']) ?></p>
-<?php endif; ?>
+      <?= erreur_champ($erreurs, 'type_demande', 'type') ?>
     </div>
 
-    <div class="champ<?= isset($erreurs['message']) ? ' champ-erreur' : '' ?>">
+    <div class="<?= classe_champ($erreurs, 'message') ?>">
       <label for="ct-message">Message</label>
-      <textarea id="ct-message" name="message" rows="6" required<?= isset($erreurs['message']) ? ' aria-invalid="true" aria-describedby="err-message"' : '' ?>><?= htmlspecialchars($valeurs['message']) ?></textarea>
-<?php if (isset($erreurs['message'])): ?>
-      <p class="champ-msg" id="err-message"><?= htmlspecialchars($erreurs['message']) ?></p>
-<?php endif; ?>
+      <textarea id="ct-message" name="message" rows="6" required<?= aria_erreur($erreurs, 'message') ?>><?= htmlspecialchars($valeurs['message']) ?></textarea>
+      <?= erreur_champ($erreurs, 'message') ?>
     </div>
 
     <button class="btn btn-tampon" type="submit">Envoyer ma demande</button>
@@ -165,4 +131,4 @@ include("includes/header.php");
   </aside>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

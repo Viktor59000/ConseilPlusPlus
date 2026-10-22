@@ -4,13 +4,13 @@
  * Le document est dessiné dans le navigateur (js/attestation.js) : le nom saisi n'est jamais envoyé au serveur.
  * Modèles : data/attestations.php.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 $modeles = require __DIR__ . '/data/attestations.php';
 
 $titre = 'Les attestations';
 $description = 'Les attestations officielles de ConseilPlus+ : conseil non suivi, client moyen, passage au guichet… Tamponnées par le doyen du cabinet.';
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -49,4 +49,4 @@ include("includes/header.php");
 
 <script type="application/json" id="modeles-attestation"><?= json_encode($modeles, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
 <script src="<?= fichier_versionne('js/attestation.js') ?>" defer></script>
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

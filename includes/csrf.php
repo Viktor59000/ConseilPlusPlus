@@ -2,7 +2,7 @@
 /**
  * Protection CSRF : chaque formulaire envoie un jeton secret lié à la session.
  * Un site tiers ne peut pas le connaître, donc ne peut pas soumettre le formulaire à la place de l'utilisateur.
- * (La session doit être démarrée avant d'inclure ce fichier.)
+ * (La session doit être démarrée avant d'inclure ce fichier : includes/init.php le fait pour les pages du site.)
  */
 
 /** Jeton de la session (créé au premier appel). */

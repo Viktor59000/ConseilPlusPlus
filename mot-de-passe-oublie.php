@@ -5,12 +5,10 @@
  * La réponse est toujours la même, que l'adresse ait un compte ou non (on ne révèle pas qui est inscrit).
  * Au plus 3 demandes par compte et par heure.
  */
-session_start();
-require("db.php");
-require_once("config.php");
-require("includes/csrf.php");
-require("includes/courriel.php");
-require("includes/compte.php");
+require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/courriel.php';
+require_once __DIR__ . '/includes/formulaire.php';
 
 $envoye = false;
 $erreur = '';
@@ -35,24 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $bdd->prepare('INSERT INTO reinitialisations (id_utilisateur, jeton, expire) VALUES (?, ?, NOW() + INTERVAL 1 HOUR)')
                     ->execute([$client['id'], hash('sha256', $jeton)]);
                 $lien = url_des_liens() . '/reinitialiser.php?jeton=' . $jeton;
-                $corps = "Bonjour {$client['prenom']},\n\n"
-                    . "Une demande de nouveau mot de passe a été déposée pour votre compte ConseilPlus+. "
-                    . "Votre ancien mot de passe a été égaré par nos services, ce qui arrive.\n\n"
-                    . "Pour en choisir un nouveau, ouvrez ce lien (valable 1 heure, une seule fois) :\n$lien\n\n"
-                    . "Si vous n'êtes pas à l'origine de cette demande, ignorez ce courriel : votre mot de passe actuel reste valable.";
-                $html = gabarit_courriel([
-                    'titre' => 'Nouveau mot de passe',
-                    'corps' => $corps,
-                    'dossier' => null,
-                    'signataire' => 'Le service des mots de passe égarés',
-                    'fonction' => 'Guichet n° 3',
-                    'tampon' => 'Urgent',
-                    'apercu' => 'Votre lien pour choisir un nouveau mot de passe (valable 1 heure).',
-                ]);
-                if (COURRIEL_BREVO_CLE !== '') {
-                    envoyer_courriel(COURRIEL_BREVO_CLE, COURRIEL_EXPEDITEUR, COURRIEL_EXPEDITEUR_NOM, $email,
-                        trim($client['prenom'] . ' ' . $client['nom']), 'Votre nouveau mot de passe ConseilPlus+',
-                        $corps . signature_texte('Le service des mots de passe égarés', 'Guichet n° 3'), $html);
+                if (courriel_site_configure()) {
+                    envoyer_courriel_site($email, trim($client['prenom'] . ' ' . $client['nom']),
+                        courriel_reinitialisation($client['prenom'], $lien));
                 } else {
                     error_log("ConseilPlus+ : envoi de courriel non configuré, lien de réinitialisation : $lien");
                 }
@@ -65,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $titre = 'Mot de passe oublié';
 $description = 'Mot de passe oublié : recevez un lien pour en choisir un nouveau. Le cabinet égare parfois les choses.';
 $page = 'client';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -79,10 +62,10 @@ include("includes/header.php");
     <?= csrf_champ() ?>
     <h2 id="titre-oubli">Recevoir un lien</h2>
 <?php if ($envoye): ?>
-    <p class="alerte alerte-ok" role="status">Si un compte existe avec cette adresse, un courriel vient de partir. Le lien est valable 1 heure. Pensez à regarder dans les indésirables.</p>
+    <?= alerte('Si un compte existe avec cette adresse, un courriel vient de partir. Le lien est valable 1 heure. Pensez à regarder dans les indésirables.', 'ok') ?>
 <?php else: ?>
 <?php if ($erreur): ?>
-    <p class="alerte alerte-erreur" role="alert"><?= htmlspecialchars($erreur) ?></p>
+    <?= alerte($erreur) ?>
 <?php endif; ?>
     <div class="champ">
       <label for="oubli-email">Adresse email du compte</label>
@@ -94,4 +77,4 @@ include("includes/header.php");
   </form>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

@@ -2,23 +2,19 @@
 /**
  * conseil.php — Espace client : générateur de conseils (réservé aux connectés).
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
+exiger_connexion();
 
-if (!isset($_SESSION['user_id'])) {
-    header('location: login.php');
-    exit();
-}
-
-include("db.php");
-include("includes/tirage.php");
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/tirage.php';
 
 $titre = 'Mon conseil';
 $description = 'Votre recommandation officielle du jour, tamponnée par le conseiller moyen.';
 $page = 'espace';
 $onglet = 'conseil';
 $conseil = tirer_conseil($bdd);
-include("includes/header.php");
-include("includes/espace-nav.php");
+include __DIR__ . '/includes/header.php';
+include __DIR__ . '/includes/espace-nav.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -53,4 +49,4 @@ include("includes/espace-nav.php");
 <script src="<?= fichier_versionne('js/carnet.js') ?>" defer></script>
 <script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

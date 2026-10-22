@@ -4,7 +4,7 @@
  * Formulaires en POST vers auth/connexion.php et auth/inscription.php.
  * Alertes via ?error=1, ?error=mail, ?success=1, ?reinitialise=1 (mot de passe changé) ou ?supprime=1 (compte supprimé).
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 
 // Redirection si déjà authentifié
 if (isset($_SESSION['user_id'])) {
@@ -12,14 +12,14 @@ if (isset($_SESSION['user_id'])) {
     exit();
 }
 
-require("includes/csrf.php");
-require("includes/compte.php");
+require_once __DIR__ . '/includes/compte.php'; // MDP_LONGUEUR_MIN
+require_once __DIR__ . '/includes/formulaire.php';
 
 $titre = 'Espace client';
 $description = 'Connectez-vous à votre espace client ConseilPlus+ ou créez un compte pour accéder à des conseils absurdes illimités.';
 $page = 'client';
 $erreur = $_GET['error'] ?? null;
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -34,17 +34,17 @@ include("includes/header.php");
     <h2 id="titre-connexion">Connexion</h2>
     <p class="obligatoire">Tous les champs sont obligatoires.</p>
 <?php if (isset($_GET['success'])): ?>
-    <p class="alerte alerte-ok" role="status">Inscription enregistrée. Vous pouvez vous connecter.</p>
+    <?= alerte('Inscription enregistrée. Vous pouvez vous connecter.', 'ok') ?>
 <?php elseif (isset($_GET['reinitialise'])): ?>
-    <p class="alerte alerte-ok" role="status">Nouveau mot de passe enregistré. Vous pouvez vous connecter avec.</p>
+    <?= alerte('Nouveau mot de passe enregistré. Vous pouvez vous connecter avec.', 'ok') ?>
 <?php elseif (isset($_GET['supprime'])): ?>
-    <p class="alerte alerte-ok" role="status">Votre compte et votre carnet ont été supprimés. Le cabinet vous regrette, moyennement.</p>
+    <?= alerte('Votre compte et votre carnet ont été supprimés. Le cabinet vous regrette, moyennement.', 'ok') ?>
 <?php elseif ($erreur === 'session'): ?>
-    <p class="alerte alerte-erreur" role="alert">Le formulaire a expiré. Merci de le renvoyer.</p>
+    <?= alerte('Le formulaire a expiré. Merci de le renvoyer.') ?>
 <?php elseif ($erreur === 'trop'): ?>
-    <p class="alerte alerte-erreur" role="alert">Trop d'essais en peu de temps. Le guichet fait une pause : réessayez dans un quart d'heure, ou utilisez « Mot de passe oublié ».</p>
+    <?= alerte("Trop d'essais en peu de temps. Le guichet fait une pause : réessayez dans un quart d'heure, ou utilisez « Mot de passe oublié ».") ?>
 <?php elseif ($erreur === '1'): ?>
-    <p class="alerte alerte-erreur" role="alert">Email ou mot de passe incorrect. Vérifiez votre saisie, ou créez un compte ci-contre.</p>
+    <?= alerte('Email ou mot de passe incorrect. Vérifiez votre saisie, ou créez un compte ci-contre.') ?>
 <?php endif; ?>
     <div class="champ">
       <label for="co-email">Adresse email</label>
@@ -63,7 +63,7 @@ include("includes/header.php");
     <h2 id="titre-inscription">Ouvrir un dossier</h2>
     <p class="obligatoire">Tous les champs sont obligatoires.</p>
 <?php if ($erreur === 'mail'): ?>
-    <p class="alerte alerte-erreur" role="alert">Cet email possède déjà un dossier. Connectez-vous avec, ou utilisez une autre adresse.</p>
+    <?= alerte('Cet email possède déjà un dossier. Connectez-vous avec, ou utilisez une autre adresse.') ?>
 <?php endif; ?>
     <div class="champ-duo">
       <div class="champ">
@@ -87,4 +87,4 @@ include("includes/header.php");
   </form>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

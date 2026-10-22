@@ -3,9 +3,9 @@
  * petit-moyen.php — Le Petit Moyen : archives du mot (presque) du jour.
  * Affiche le mot du jour puis les mots des jours précédents (table mots_du_jour), jamais ceux à venir.
  */
-session_start();
-require("db.php");
-require("includes/mot-du-jour.php");
+require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/mot-du-jour.php';
 
 $mot_jour = mot_du_jour($bdd);
 $jours = $bdd->query('SELECT jour FROM mots_du_jour WHERE jour < CURDATE() ORDER BY jour DESC LIMIT 60')->fetchAll(PDO::FETCH_COLUMN);
@@ -27,7 +27,7 @@ $palmares = $bdd->query("SELECT mot, SUM(vote = 'moyen') AS moyen, SUM(vote = 'p
 $titre = 'Le Petit Moyen';
 $description = 'Le Petit Moyen, dictionnaire officieux de ConseilPlus+ : un mot (presque) du jour, défini avec une précision moyenne.';
 $page = 'petit-moyen';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -38,13 +38,13 @@ include("includes/header.php");
 
 <section class="conteneur" aria-labelledby="titre-aujourdhui">
   <h2 id="titre-aujourdhui">Aujourd'hui</h2>
-<?php $mot = $mot_jour; $titre_niveau = 'h3'; include("includes/carte-mot.php"); ?>
+<?php $mot = $mot_jour; $titre_niveau = 'h3'; include __DIR__ . '/includes/carte-mot.php'; ?>
 </section>
 
 <section class="conteneur feuilleter" id="feuilleter" aria-labelledby="titre-feuilleter">
   <h2 id="titre-feuilleter">Feuilleter le dictionnaire</h2>
   <p class="chapo">Vous ne pouvez pas attendre demain ? Le cabinet comprend. Ouvrez le Petit Moyen à n'importe quelle page.</p>
-<?php $mot = $feuillet; $titre_niveau = 'h3'; include("includes/carte-mot.php"); ?>
+<?php $mot = $feuillet; $titre_niveau = 'h3'; include __DIR__ . '/includes/carte-mot.php'; ?>
   <div class="actions">
     <a class="btn btn-tampon" href="petit-moyen.php?page=<?= $autre ?>#feuilleter">Ouvrir à une autre page</a>
   </div>
@@ -80,7 +80,7 @@ include("includes/header.php");
   <h2 id="titre-archives">Les jours précédents</h2>
   <ul class="archives">
 <?php foreach ($archives as $mot): ?>
-    <li><?php $titre_niveau = 'h3'; include("includes/carte-mot.php"); ?></li>
+    <li><?php $titre_niveau = 'h3'; include __DIR__ . '/includes/carte-mot.php'; ?></li>
 <?php endforeach; ?>
   </ul>
 </section>
@@ -89,4 +89,4 @@ include("includes/header.php");
 <script src="<?= fichier_versionne('js/sketch.js') ?>" defer></script>
 <script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
 <script src="<?= fichier_versionne('js/votes.js') ?>" defer></script>
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

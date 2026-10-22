@@ -3,12 +3,12 @@
  * application.php — Installer ConseilPlus+ sur son téléphone (application web installable).
  * Le bouton « Installer » n'apparaît que si le navigateur le permet (Android, Chrome, Edge) : js/pwa.js.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 
 $titre = "L'application";
 $description = "Installez ConseilPlus+ sur votre téléphone : le conseil et le mot (presque) du jour, à portée de pouce.";
 $page = 'application';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -124,4 +124,4 @@ $formules = [
 </section>
 
 <script src="<?= fichier_versionne('js/notifications.js') ?>" defer></script>
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

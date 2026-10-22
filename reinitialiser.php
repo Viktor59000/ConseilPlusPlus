@@ -4,11 +4,10 @@
  * Le jeton doit exister, ne pas avoir expiré, et ne sert qu'une fois (tous les jetons du compte sont effacés).
  * Le mot de passe est enregistré avec la même méthode que l'inscription du cours (includes/compte.php).
  */
-session_start();
-require("db.php");
-require("includes/csrf.php");
-require("includes/courriel.php");
-require("includes/compte.php");
+require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/compte.php';
+require_once __DIR__ . '/includes/formulaire.php';
 
 $jeton = (string) ($_GET['jeton'] ?? $_POST['jeton'] ?? '');
 $demande = false;
@@ -39,7 +38,7 @@ if ($demande && $_SERVER['REQUEST_METHOD'] === 'POST') {
 $titre = 'Nouveau mot de passe';
 $description = 'Choisissez un nouveau mot de passe pour votre compte ConseilPlus+.';
 $page = 'client';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -60,21 +59,17 @@ include("includes/header.php");
     <h2 id="titre-nouveau">Votre nouveau mot de passe</h2>
     <p class="obligatoire">Tous les champs sont obligatoires.</p>
 <?php if (isset($erreurs['session'])): ?>
-    <p class="alerte alerte-erreur" role="alert"><?= htmlspecialchars($erreurs['session']) ?></p>
+    <?= alerte($erreurs['session']) ?>
 <?php endif; ?>
-    <div class="champ<?= isset($erreurs['mdp']) ? ' champ-erreur' : '' ?>">
+    <div class="<?= classe_champ($erreurs, 'mdp') ?>">
       <label for="re-mdp">Nouveau mot de passe <span class="facultatif">(<?= MDP_LONGUEUR_MIN ?> caractères minimum)</span></label>
-      <input id="re-mdp" type="password" name="mdp" minlength="<?= MDP_LONGUEUR_MIN ?>" autocomplete="new-password" required<?= isset($erreurs['mdp']) ? ' aria-invalid="true" aria-describedby="err-mdp"' : '' ?>>
-<?php if (isset($erreurs['mdp'])): ?>
-      <p class="champ-msg" id="err-mdp"><?= htmlspecialchars($erreurs['mdp']) ?></p>
-<?php endif; ?>
+      <input id="re-mdp" type="password" name="mdp" minlength="<?= MDP_LONGUEUR_MIN ?>" autocomplete="new-password" required<?= aria_erreur($erreurs, 'mdp') ?>>
+      <?= erreur_champ($erreurs, 'mdp') ?>
     </div>
-    <div class="champ<?= isset($erreurs['mdp2']) ? ' champ-erreur' : '' ?>">
+    <div class="<?= classe_champ($erreurs, 'mdp2') ?>">
       <label for="re-mdp2">Le même, une seconde fois</label>
-      <input id="re-mdp2" type="password" name="mdp2" minlength="<?= MDP_LONGUEUR_MIN ?>" autocomplete="new-password" required<?= isset($erreurs['mdp2']) ? ' aria-invalid="true" aria-describedby="err-mdp2"' : '' ?>>
-<?php if (isset($erreurs['mdp2'])): ?>
-      <p class="champ-msg" id="err-mdp2"><?= htmlspecialchars($erreurs['mdp2']) ?></p>
-<?php endif; ?>
+      <input id="re-mdp2" type="password" name="mdp2" minlength="<?= MDP_LONGUEUR_MIN ?>" autocomplete="new-password" required<?= aria_erreur($erreurs, 'mdp2') ?>>
+      <?= erreur_champ($erreurs, 'mdp2') ?>
     </div>
     <button class="btn btn-tampon" type="submit">Enregistrer le mot de passe</button>
   </form>
@@ -87,4 +82,4 @@ include("includes/header.php");
 <?php endif; ?>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

@@ -3,12 +3,12 @@
  * developpeurs.php — Documentation publique de l'API du cabinet (endpoints : data/api.php).
  * Les GET publics ont un bouton « Essayer » (js/api-doc.js) qui appelle l'API en direct et affiche la réponse JSON.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 
 $titre = 'L\'API du cabinet';
 $description = 'Documentation de l\'API REST de ConseilPlus+ : conseils, mot du jour, votes, notifications, demandes de contact. Essayez-la en direct.';
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 $groupes = require __DIR__ . '/data/api.php';
 $base = url_publique() . '/api';
 $acces = [
@@ -84,4 +84,4 @@ $acces = [
 </section>
 
 <script src="<?= fichier_versionne('js/api-doc.js') ?>" defer></script>
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

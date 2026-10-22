@@ -4,17 +4,12 @@
  * La suppression efface le carnet, les liens de réinitialisation et la ligne utilisateurs.
  * Confirmation obligatoire + jeton CSRF.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
+$utilisateur = exiger_connexion();
 
-if (!isset($_SESSION['user_id'])) {
-    header('location: login.php');
-    exit();
-}
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/formulaire.php';
 
-require("db.php");
-require("includes/csrf.php");
-
-$utilisateur = (int) $_SESSION['user_id'];
 $erreur = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_compte'])) {
@@ -47,8 +42,8 @@ $titre = 'Mon compte';
 $description = 'Vos informations et la suppression de votre compte ConseilPlus+.';
 $page = 'espace';
 $onglet = 'compte';
-include("includes/header.php");
-include("includes/espace-nav.php");
+include __DIR__ . '/includes/header.php';
+include __DIR__ . '/includes/espace-nav.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -74,7 +69,7 @@ include("includes/espace-nav.php");
     <h2 id="titre-suppression">Supprimer mon compte</h2>
     <p>La suppression est définitive : votre compte et votre carnet sont effacés tout de suite. Aucun conseil ne pourra être récupéré, ce qui n'est pas une grande perte.</p>
 <?php if ($erreur): ?>
-    <p class="alerte alerte-erreur" role="alert"><?= htmlspecialchars($erreur) ?></p>
+    <?= alerte($erreur) ?>
 <?php endif; ?>
     <div class="champ champ-case">
       <input id="confirmation" type="checkbox" name="confirmation" value="oui" required>
@@ -84,4 +79,4 @@ include("includes/espace-nav.php");
   </form>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

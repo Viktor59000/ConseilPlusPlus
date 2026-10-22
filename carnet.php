@@ -4,17 +4,10 @@
  * Les conseils sont ajoutés depuis « Mon conseil » et la consultation (API api/mes-conseils.php).
  * La suppression fonctionne aussi sans JavaScript (formulaire POST + jeton CSRF).
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
+$utilisateur = exiger_connexion();
 
-if (!isset($_SESSION['user_id'])) {
-    header('location: login.php');
-    exit();
-}
-
-require("db.php");
-require("includes/csrf.php");
-
-$utilisateur = (int) $_SESSION['user_id'];
+require_once __DIR__ . '/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer'])) {
     if (csrf_valide()) {
@@ -35,8 +28,8 @@ $titre = 'Mon carnet';
 $description = 'Les conseils que vous avez classés au dossier.';
 $page = 'espace';
 $onglet = 'carnet';
-include("includes/header.php");
-include("includes/espace-nav.php");
+include __DIR__ . '/includes/header.php';
+include __DIR__ . '/includes/espace-nav.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -78,4 +71,4 @@ include("includes/espace-nav.php");
 <?php endif; ?>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

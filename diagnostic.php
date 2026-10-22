@@ -4,7 +4,9 @@
  * Formulaire GET (aucune donnée enregistrée), résultat calculé ici : fonctionne sans JavaScript.
  * Contenus : data/diagnostic.php.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/includes/formulaire.php';
+
 $d = require __DIR__ . '/data/diagnostic.php';
 
 // Réponses reçues : q0 … q6, chacune a, b, c ou d
@@ -30,7 +32,7 @@ if ($complet) {
 $titre = 'Quel client êtes-vous ?';
 $description = 'Le diagnostic du conseiller moyen : sept questions pour savoir quel client moyen vous êtes. Résultat garanti moyen.';
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -60,7 +62,7 @@ include("includes/header.php");
 <section class="conteneur" aria-labelledby="titre-questions">
   <h2 id="titre-questions" class="visuellement-cache">Les questions</h2>
 <?php if ($incomplet): ?>
-  <p class="alerte alerte-erreur" role="alert">Le conseiller a besoin de toutes vos réponses pour vous trouver moyen.</p>
+  <?= alerte('Le conseiller a besoin de toutes vos réponses pour vous trouver moyen.') ?>
 <?php endif; ?>
   <form class="diagnostic" method="get" action="diagnostic.php#resultat">
 <?php foreach ($d['questions'] as $i => [$question, $choix]): ?>
@@ -79,4 +81,4 @@ include("includes/header.php");
 <?php endif; ?>
 
 <script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

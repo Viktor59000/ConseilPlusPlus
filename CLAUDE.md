@@ -61,12 +61,15 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `api/conseils.php` | Conseils aléatoires (public) |
 | `api/mes-conseils.php` | Carnet de l'utilisateur (session + jeton CSRF) |
 | `api/mot-du-jour.php` | Mot du jour (GET) + préparation IA du lendemain (POST) |
-| `includes/api.php` | Réponses JSON, clé, journal `api_logs`, limite de débit |
+| `includes/api.php` | Squelette des points d'accès : `router()`, `exiger_methode()`, `lire_entier()`, `refuser_champs()`, réponses JSON, clé, journal `api_logs`, limite de débit |
+| `includes/init.php`, `includes/formulaire.php` | Début de chaque page (session, CSRF, `exiger_connexion()`) ; `e()`, `alerte()` et champs en erreur |
+| `includes/http.php`, `includes/url.php` | Seul client cURL (`requete_http()`, `appeler_api()`, aussi utilisé par Le Bureau) ; toutes les adresses du site |
 | `includes/ia.php` | `groq_completer()` (tentatives, filtres, repli) + verdict de la consultation |
 | `includes/kamoulox.php`, `includes/tirage.php` | Générateur de conseils (gabarits Kamoulox) |
 | `includes/duel.php` | Mode Duel (barème calculé par le code) |
 | `includes/mot-du-jour.php`, `includes/carte-mot.php` | Le Petit Moyen (définitions + sketchs) |
-| `includes/csrf.php`, `includes/http.php`, `includes/header.php`, `includes/espace-nav.php` | Commun |
+| `includes/csrf.php`, `includes/header.php`, `includes/espace-nav.php`, `includes/consultation.php`, `includes/votes.php` | Commun |
+| `bureau/includes/amorce.php`, `bureau/includes/vues.php` | Début des pages du Bureau (`$agent`), `rediriger()`, `exiger_post()`, `barres()` |
 | `data/*.php` | Banques de contenu (fragments, kamoulox, cadres, questions, duel, mots, sketchs, textes) |
 | `data/textes.php`, `includes/textes.php` | Petits textes tournants : tampons, mentions, note de service (jour / dates), témoignages, équipe, valeurs, FAQ, titres d'onglet, conseils secrets |
 | `includes/limite-connexion.php`, `auth/.htaccess`, `docker/securite.ini` | Sécurité autour du code du cours : limite des essais (avant `auth/`), cookies protégés |
@@ -94,6 +97,8 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `tests/test_api.php`, `tests/test_push.php` | Tests de l'API et du chiffrement Web Push |
 
 ### Règles à respecter
+- **Architecture** : une page = `require_once __DIR__ . '/includes/init.php'` + ses bibliothèques en `require_once __DIR__`, gabarits en `include`, données en `require __DIR__ . '/data/…'`.
+  Aucune fonction définie dans une page ; logique dans `includes/`. Pas de second client cURL ni de nouvelle source d'URL. Chaque script JS dans sa propre portée `(() => { … })();`.
 - **Sécurité** : jeton CSRF sur tous les formulaires POST, `htmlspecialchars` sur toute sortie, requêtes préparées,
   `session_regenerate_id()` à la connexion, jamais de secret dans Git (`config.php`, `bureau/config.php` ignorés ; `db.php` ne contient aucun secret).
 - **DA** : suivre `design-system/conseilplus/MASTER.md` (identité « La note » : C+ entouré au stylo rouge, Schibsted Grotesk, thèmes clair/sombre avec bouton, animations ;

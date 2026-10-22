@@ -1,11 +1,14 @@
 <?php
-session_start();
+/**
+ * produit.php — Nos formules : Conseil Unique, Conseil Illimité, Conseil Premium.
+ */
+require_once __DIR__ . '/includes/init.php';
 
 $titre = 'Nos formules';
 $description = 'Conseil Unique, Conseil Illimité ou Conseil Premium : comparez les formules de ConseilPlus+, toutes garanties sans aucune garantie.';
 $page = 'formules';
 $lien_client = isset($_SESSION['user_id']) ? 'conseil.php' : 'login.php';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -97,4 +100,4 @@ include("includes/header.php");
 <?php endforeach; ?>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

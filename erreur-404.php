@@ -4,10 +4,10 @@
  * (ErrorDocument dans docker/apache.conf). L'adresse demandée peut être n'importe où : <base> remet les liens
  * et les fichiers du site (CSS, images, scripts) à la racine.
  */
-session_start();
-require("db.php");
-require("includes/tirage.php");
-require_once("includes/url.php");
+require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/tirage.php';
+require_once __DIR__ . '/includes/url.php';
 
 http_response_code(404);
 $conseil = tirer_conseil($bdd);
@@ -16,7 +16,7 @@ $base = dossier_du_site() . '/';
 $titre = 'Dossier introuvable';
 $description = 'Cette page n\'existe pas, ou plus. Le cabinet a peut-être classé votre dossier sans suite.';
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur hero">
@@ -44,4 +44,4 @@ include("includes/header.php");
   </article>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

@@ -4,12 +4,12 @@
  * Contenus : data/textes.php (« equipe », « valeurs »). Portraits facultatifs : assets/equipe/<cle>.webp ;
  * sans image, un monogramme entouré au stylo les remplace.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 
 $titre = 'Le cabinet';
 $description = 'Le cabinet ConseilPlus+ : un conseiller moyen, un stagiaire depuis 2009, une machine à café et des valeurs moyennes.';
 $page = 'cabinet';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 $t = textes();
 ?>
 
@@ -87,4 +87,4 @@ $t = textes();
   <a class="btn btn-tampon avance" href="contact.php">Nous contacter</a>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

@@ -6,16 +6,12 @@
  * et le cabinet joue son coup. Le premier à 100 points gagne. Partie gardée en session.
  * Réservé aux clients connectés. Hommage non officiel au Kamoulox de Kad Merad et Olivier Baroux.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
+$utilisateur = exiger_connexion();
 
-if (!isset($_SESSION['user_id'])) {
-    header('location: login.php');
-    exit();
-}
-
-require("db.php");
-require("includes/duel.php");
-require("includes/csrf.php");
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/duel.php';
+require_once __DIR__ . '/includes/formulaire.php';
 
 // Ancien format de session (avant les parties en 100 points) : on repart de zéro
 if (!isset($_SESSION['duel']['mot'])) {
@@ -61,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($partie['gagnant'] !== null) {
                 // Partie terminée : résultat gardé pour le tableau d'honneur (prénom seulement)
                 $bdd->prepare('INSERT INTO duels (id_utilisateur, prenom, joueur, cabinet, manches, victoire) VALUES (?, ?, ?, ?, ?, ?)')
-                    ->execute([$_SESSION['user_id'], $_SESSION['prenom'], $partie['joueur'], $partie['cabinet'], $partie['manches'],
+                    ->execute([$utilisateur, $_SESSION['prenom'], $partie['joueur'], $partie['cabinet'], $partie['manches'],
                         (int) ($partie['gagnant'] === 'joueur')]);
             }
         }
@@ -78,8 +74,8 @@ $titre = 'Le Duel';
 $description = 'Affrontez le cabinet ConseilPlus+ en 100 points, à coups de phrases absurdes. Règlement disponible sur demande, puis égaré.';
 $page = 'espace';
 $onglet = 'duel';
-include("includes/header.php");
-include("includes/espace-nav.php");
+include __DIR__ . '/includes/header.php';
+include __DIR__ . '/includes/espace-nav.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -144,7 +140,7 @@ include("includes/espace-nav.php");
     <h2 id="titre-coup"><?= $manche ? 'Manche suivante' : 'Votre coup' ?></h2>
     <p class="mot-impose">Mot imposé : <strong><?= htmlspecialchars($partie['mot']) ?></strong></p>
 <?php if ($erreur): ?>
-    <p class="alerte alerte-erreur" role="alert"><?= htmlspecialchars($erreur) ?></p>
+    <?= alerte($erreur) ?>
 <?php endif; ?>
     <div class="champ">
       <label for="d-coup">Votre coup <span class="facultatif">(« Je… et je… »)</span></label>
@@ -194,4 +190,4 @@ include("includes/espace-nav.php");
 
 <script src="<?= fichier_versionne('js/duel.js') ?>" defer></script>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

@@ -3,12 +3,12 @@
  * guichet.php — Le guichet du cabinet : prenez un ticket, patientez, le guichet ferme à votre tour.
  * Tout se passe dans le navigateur (js/guichet.js) ; sans JavaScript, le guichet est simplement fermé.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 
 $titre = 'Le guichet';
 $description = 'Le guichet de ConseilPlus+ : prenez un ticket et patientez. Le cabinet vous recevra dans les meilleurs délais, moyens.';
 $page = 'guichet';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -46,4 +46,4 @@ include("includes/header.php");
 </section>
 
 <script src="<?= fichier_versionne('js/guichet.js') ?>" defer></script>
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

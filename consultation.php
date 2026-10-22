@@ -5,29 +5,15 @@
  * Les questions changent à chaque visite : 4 sont tirées dans data/questions.php.
  * Réservé aux clients connectés.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
+exiger_connexion();
 
-if (!isset($_SESSION['user_id'])) {
-    header('location: login.php');
-    exit();
-}
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/ia.php';
+require_once __DIR__ . '/includes/consultation.php';
+require_once __DIR__ . '/includes/formulaire.php';
 
-require("db.php");
-require("includes/ia.php");
-require("includes/csrf.php");
-
-const NB_QUESTIONS = 4;
-$banque = require("data/questions.php");
-
-/** Tire de nouvelles questions et les garde en session pour valider l'envoi. */
-function tirer_questions(array $banque): array
-{
-    $cles = (array) array_rand($banque, NB_QUESTIONS);
-    shuffle($cles);
-    $_SESSION['questionnaire'] = $cles;
-    return $cles;
-}
-
+$banque = require __DIR__ . '/data/questions.php';
 $erreurs = [];
 $resultat = null;
 $valeurs = ['probleme' => ''];
@@ -43,38 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tirees = tirer_questions($banque);
         $erreurs['session'] = 'Le questionnaire a expiré. Voici de nouvelles questions, tout aussi inutiles.';
     } else {
-        foreach ($tirees as $cle) {
-            $q = $banque[$cle];
-            $valeur = trim((string) ($_POST[$cle] ?? ''));
-            $valeurs[$cle] = $valeur;
-
-            if ($q['type'] === 'texte' && ($valeur === '' || mb_strlen($valeur) > $q['max'])) {
-                $erreurs[$cle] = "Répondez à cette question ({$q['max']} caractères maximum).";
-            } elseif ($q['type'] === 'nombre' && filter_var($valeur, FILTER_VALIDATE_INT, ['options' => ['min_range' => $q['min'], 'max_range' => $q['max']]]) === false) {
-                $erreurs[$cle] = "Indiquez un nombre entier entre {$q['min']} et {$q['max']}.";
-            } elseif ($q['type'] === 'choix' && !in_array($valeur, $q['options'], true)) {
-                $erreurs[$cle] = 'Choisissez une réponse.';
-            }
-        }
-
-        $valeurs['probleme'] = trim((string) ($_POST['probleme'] ?? ''));
-        if (mb_strlen($valeurs['probleme']) > 300) {
-            $erreurs['probleme'] = 'Votre problème est trop long (300 caractères maximum). Ayez des problèmes plus courts.';
-        }
-        if (empty($_POST['accord'])) {
-            $erreurs['accord'] = 'Vous devez accepter que ce conseil ne serve à rien.';
-        }
+        [$valeurs, $erreurs] = valider_consultation($banque, $tirees, $_POST);
     }
 
     if (!$erreurs) {
-        $reponses = [];
-        foreach ($tirees as $cle) {
-            $reponses[$banque[$cle]['libelle']] = $valeurs[$cle];
-        }
-        if ($valeurs['probleme'] !== '') {
-            $reponses['Son problème'] = $valeurs['probleme'];
-        }
-        $resultat = demander_conseil_ia($reponses, $bdd);
+        $resultat = demander_conseil_ia(reponses_consultation($banque, $tirees, $valeurs), $bdd);
         $dossier = sprintf('%04d-IA', random_int(1, 9999));
         unset($_SESSION['questionnaire']);
     }
@@ -86,21 +45,8 @@ $titre = 'Consultation approfondie';
 $description = 'Répondez à un questionnaire sans rapport avec votre situation et recevez un verdict officiel de notre intelligence artificielle moyenne.';
 $page = 'espace';
 $onglet = 'consultation';
-include("includes/header.php");
-include("includes/espace-nav.php");
-
-/** Affiche le message d'erreur d'un champ, s'il y en a un. */
-function erreur_champ(array $erreurs, string $champ): void
-{
-    if (isset($erreurs[$champ])) {
-        echo '<p class="champ-msg" id="err-' . $champ . '">' . htmlspecialchars($erreurs[$champ]) . "</p>\n";
-    }
-}
-/** Attributs ARIA d'un champ en erreur. */
-function aria_erreur(array $erreurs, string $champ): string
-{
-    return isset($erreurs[$champ]) ? ' aria-invalid="true" aria-describedby="err-' . $champ . '"' : '';
-}
+include __DIR__ . '/includes/header.php';
+include __DIR__ . '/includes/espace-nav.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -134,9 +80,9 @@ function aria_erreur(array $erreurs, string $champ): string
     <?= csrf_champ() ?>
     <h2 id="titre-questionnaire">Questionnaire</h2>
 <?php if (isset($erreurs['session'])): ?>
-    <p class="alerte alerte-erreur" role="alert"><?= htmlspecialchars($erreurs['session']) ?></p>
+    <?= alerte($erreurs['session']) ?>
 <?php elseif ($erreurs): ?>
-    <p class="alerte alerte-erreur" role="alert">Le questionnaire contient <?= count($erreurs) ?> erreur(s). Même pour un formulaire inutile, nous avons des exigences.</p>
+    <?= alerte('Le questionnaire contient ' . count($erreurs) . ' erreur(s). Même pour un formulaire inutile, nous avons des exigences.') ?>
 <?php endif; ?>
 
 <?php foreach ($tirees as $cle):
@@ -144,7 +90,7 @@ function aria_erreur(array $erreurs, string $champ): string
     $id = 'q-' . $cle;
     $valeur = $valeurs[$cle] ?? '';
 ?>
-    <div class="champ<?= isset($erreurs[$cle]) ? ' champ-erreur' : '' ?>">
+    <div class="<?= classe_champ($erreurs, $cle) ?>">
       <label for="<?= $id ?>"><?= htmlspecialchars($q['libelle']) ?></label>
 <?php if ($q['type'] === 'choix'): ?>
       <select id="<?= $id ?>" name="<?= $cle ?>" required<?= aria_erreur($erreurs, $cle) ?>>
@@ -158,20 +104,20 @@ function aria_erreur(array $erreurs, string $champ): string
 <?php else: ?>
       <input id="<?= $id ?>" type="text" name="<?= $cle ?>" maxlength="<?= $q['max'] ?>" required value="<?= htmlspecialchars($valeur) ?>"<?= aria_erreur($erreurs, $cle) ?>>
 <?php endif; ?>
-      <?php erreur_champ($erreurs, $cle); ?>
+      <?= erreur_champ($erreurs, $cle) ?>
     </div>
 <?php endforeach; ?>
 
-    <div class="champ<?= isset($erreurs['probleme']) ? ' champ-erreur' : '' ?>">
+    <div class="<?= classe_champ($erreurs, 'probleme') ?>">
       <label for="q-probleme">Votre problème <span class="facultatif">(facultatif, nous ne le lirons pas)</span></label>
       <textarea id="q-probleme" name="probleme" rows="3" maxlength="300"<?= aria_erreur($erreurs, 'probleme') ?>><?= htmlspecialchars($valeurs['probleme']) ?></textarea>
-      <?php erreur_champ($erreurs, 'probleme'); ?>
+      <?= erreur_champ($erreurs, 'probleme') ?>
     </div>
 
-    <div class="champ champ-case<?= isset($erreurs['accord']) ? ' champ-erreur' : '' ?>">
+    <div class="<?= classe_champ($erreurs, 'accord', 'champ champ-case') ?>">
       <input id="q-accord" type="checkbox" name="accord" value="1" required<?= !empty($_POST['accord']) ? ' checked' : '' ?><?= aria_erreur($erreurs, 'accord') ?>>
       <label for="q-accord">J'accepte que ce conseil ne serve à rien.</label>
-      <?php erreur_champ($erreurs, 'accord'); ?>
+      <?= erreur_champ($erreurs, 'accord') ?>
     </div>
 
     <button class="btn btn-tampon" type="submit">Lancer l'expertise</button>
@@ -189,4 +135,4 @@ function aria_erreur(array $erreurs, string $champ): string
 </section>
 <?php endif; ?>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

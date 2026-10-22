@@ -2,12 +2,12 @@
 /**
  * mentions-legales.php — Mentions légales (éditeur, hébergement, prestataires, propriété intellectuelle).
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 
 $titre = 'Mentions légales';
 $description = 'Mentions légales de ConseilPlus+ : éditeur, hébergement et prestataires du cabinet.';
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -44,4 +44,4 @@ include("includes/header.php");
   <p>Voir la <a href="accessibilite.php">déclaration d'accessibilité</a>.</p>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

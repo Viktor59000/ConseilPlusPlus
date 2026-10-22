@@ -4,14 +4,14 @@
  * avec le plus grand sérieux, et tamponne « PRÉVU » à chaque fois. Tout se passe dans le navigateur
  * (js/messmerde.js) ; sans JavaScript, Messmerde l'avait évidemment prévu.
  */
-session_start();
-require("includes/horoscope.php");
+require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/includes/horoscope.php';
 $horoscope = horoscope_du_jour();
 
 $titre = 'Les expériences de Messmerde';
 $description = "Messmerde, mentaliste du cabinet ConseilPlus+, lit dans vos pensées avec une précision moyenne : une vingtaine d'expériences, un interrogatoire, que des évidences.";
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page messmerde-entete">
@@ -78,4 +78,4 @@ include("includes/header.php");
 
 <script src="<?= fichier_versionne('js/messmerde.js') ?>" defer></script>
 <script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

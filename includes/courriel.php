@@ -2,13 +2,14 @@
 /**
  * Courriels du cabinet ConseilPlus+ : gabarit HTML (logo, cartouche du dossier, signature, tampon)
  * et envoi par l'API HTTPS de Brevo (Render bloque le SMTP sur l'offre gratuite).
- * Partagé par le site (accusé de réception du formulaire de contact) et par Le Bureau (réponses officielles).
- * Les fonctions reçoivent leurs réglages en paramètres : chaque application garde sa propre configuration.
+ * Partagé par le site (accusé de réception, mot de passe oublié) et par Le Bureau (réponses officielles).
+ * Les fonctions reçoivent leurs réglages en paramètres : chaque application garde sa propre configuration
+ * (seules les fonctions « _site » lisent celle du site, config.php).
  *
  * Gabarit compatible avec les messageries (Gmail, Outlook, mobile) : tableaux, styles en ligne,
  * images en PNG hébergées sur le site (le SVG n'est pas affiché par la plupart des messageries).
  */
-require_once __DIR__ . '/http.php'; // requete_http(), url_publique()
+require_once __DIR__ . '/http.php'; // appeler_api(), url_publique()
 
 /** Signature en texte brut (version sans HTML du courriel). */
 function signature_texte(string $signataire, string $fonction): string
@@ -118,6 +119,75 @@ function accuse_reception(string $nom, string $type_demande, int $id): array
             'apercu' => "Votre demande n° $numero est enregistrée. Elle sera traitée, un jour.",
         ]),
     ];
+}
+
+/**
+ * Lien pour choisir un nouveau mot de passe (envoyé par mot-de-passe-oublie.php).
+ * Retourne ['sujet', 'texte' (version sans HTML, signature comprise), 'html'].
+ */
+function courriel_reinitialisation(string $prenom, string $lien): array
+{
+    $corps = "Bonjour $prenom,
+
+"
+        . "Une demande de nouveau mot de passe a été déposée pour votre compte ConseilPlus+. "
+        . "Votre ancien mot de passe a été égaré par nos services, ce qui arrive.
+
+"
+        . "Pour en choisir un nouveau, ouvrez ce lien (valable 1 heure, une seule fois) :
+$lien
+
+"
+        . "Si vous n'êtes pas à l'origine de cette demande, ignorez ce courriel : votre mot de passe actuel reste valable.";
+    return [
+        'sujet' => 'Votre nouveau mot de passe ConseilPlus+',
+        'texte' => $corps . signature_texte('Le service des mots de passe égarés', 'Guichet n° 3'),
+        'html' => gabarit_courriel([
+            'titre' => 'Nouveau mot de passe',
+            'corps' => $corps,
+            'dossier' => null,
+            'signataire' => 'Le service des mots de passe égarés',
+            'fonction' => 'Guichet n° 3',
+            'tampon' => 'Urgent',
+            'apercu' => 'Votre lien pour choisir un nouveau mot de passe (valable 1 heure).',
+        ]),
+    ];
+}
+
+/** Vrai si l'envoi de courriels du site est configuré (clé Brevo dans config.php). */
+function courriel_site_configure(): bool
+{
+    require_once __DIR__ . '/../config.php';
+    return COURRIEL_BREVO_CLE !== '';
+}
+
+/** Envoie un courriel du site ([sujet, texte, html]) avec les réglages de config.php. Retourne vrai si Brevo l'accepte. */
+function envoyer_courriel_site(string $destinataire, string $nom, array $courriel): bool
+{
+    if (!courriel_site_configure()) {
+        return false;
+    }
+    [$ok] = envoyer_courriel(COURRIEL_BREVO_CLE, COURRIEL_EXPEDITEUR, COURRIEL_EXPEDITEUR_NOM, $destinataire, $nom,
+        $courriel['sujet'], $courriel['texte'], $courriel['html']);
+    return $ok;
+}
+
+/**
+ * Accusé de réception automatique d'une demande de contact, si l'envoi est configuré.
+ * Garde-fou : au plus 2 accusés par adresse et par jour, pour qu'on ne puisse pas se servir du formulaire
+ * pour inonder la boîte d'un tiers. Un échec d'envoi ne bloque jamais la demande.
+ */
+function envoyer_accuse_reception(PDO $bdd, array $demande, int $id): void
+{
+    if ($id === 0 || !courriel_site_configure()) {
+        return;
+    }
+    $stmt = $bdd->prepare('SELECT COUNT(*) FROM contacts WHERE email = :email AND date_creation > NOW() - INTERVAL 1 DAY');
+    $stmt->execute(['email' => $demande['email']]);
+    if ($stmt->fetchColumn() > 2) {
+        return;
+    }
+    envoyer_courriel_site($demande['email'], $demande['nom'], accuse_reception($demande['nom'], $demande['type_demande'], $id));
 }
 
 /**

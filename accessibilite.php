@@ -3,12 +3,12 @@
  * accessibilite.php — Déclaration d'accessibilité (modèle RGAA 4.1).
  * À mettre à jour après chaque audit : état de conformité, non-conformités, date.
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 
 $titre = 'Accessibilité';
 $description = 'Déclaration d\'accessibilité de ConseilPlus+ : état de conformité au RGAA 4.1 et moyens de nous signaler un problème.';
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -58,4 +58,4 @@ include("includes/header.php");
   </ul>
 </section>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

@@ -2,13 +2,13 @@
 /**
  * plan-du-site.php — Plan du site : second moyen de navigation exigé par le RGAA (critère 12.1).
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 $connecte = isset($_SESSION['user_id']);
 
 $titre = 'Plan du site';
 $description = 'Plan du site de ConseilPlus+ : toutes les pages du cabinet, rangées avec un soin moyen.';
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -62,4 +62,4 @@ include("includes/header.php");
   </section>
 </div>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

@@ -4,12 +4,12 @@
  * Un répondeur interactif : clavier, menus qui tournent en rond, musique d'attente, et l'appel finit
  * immanquablement sur la machine à café. Tout se passe dans le navigateur (js/standard.js).
  */
-session_start();
+require_once __DIR__ . '/includes/init.php';
 
 $titre = 'Le standard';
 $description = 'Le standard téléphonique de ConseilPlus+ : tapez 1 pour un conseil, 2 pour une réclamation… Votre appel est important, il sera donc mis en attente.';
 $page = 'autre';
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="conteneur entete-page">
@@ -48,4 +48,4 @@ include("includes/header.php");
 </section>
 
 <script src="<?= fichier_versionne('js/standard.js') ?>" defer></script>
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>

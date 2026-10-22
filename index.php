@@ -1,15 +1,18 @@
 <?php
-session_start();
-include("db.php");
-include("includes/tirage.php");
-include("includes/mot-du-jour.php");
+/**
+ * index.php — Accueil : conseil du jour (générateur), mot (presque) du jour, témoignages.
+ */
+require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/tirage.php';
+require_once __DIR__ . '/includes/mot-du-jour.php';
 
 $titre = 'Accueil';
 $description = 'ConseilPlus+, le conseiller moyen : un cabinet qui répond à vos problèmes par des conseils absurdes, avec le plus grand sérieux.';
 $page = 'accueil';
 $conseil = tirer_conseil($bdd);
 $mot = mot_du_jour($bdd);
-include("includes/header.php");
+include __DIR__ . '/includes/header.php';
 ?>
 
 <section class="hero conteneur">
@@ -51,7 +54,7 @@ include("includes/header.php");
     <p>Extrait du dictionnaire officieux du cabinet. Un nouveau mot chaque jour, défini avec une précision moyenne.</p>
     <a class="btn btn-clair avance" href="petit-moyen.php">Consulter Le Petit Moyen</a>
   </div>
-<?php $titre_niveau = 'h3'; include("includes/carte-mot.php"); ?>
+<?php $titre_niveau = 'h3'; include __DIR__ . '/includes/carte-mot.php'; ?>
 </section>
 
 <section class="conteneur temoignages" aria-labelledby="titre-temoignages">
@@ -100,4 +103,4 @@ include("includes/header.php");
 <script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
 <script src="<?= fichier_versionne('js/votes.js') ?>" defer></script>
 
-<?php include("includes/footer.php"); ?>
+<?php include __DIR__ . '/includes/footer.php'; ?>
