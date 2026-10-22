@@ -18,6 +18,12 @@ $numero = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, ['options' => ['m
     ?: random_int(1, $total);
 $feuillet = $pages[$numero - 1];
 $autre = ($numero + random_int(1, $total - 1) - 1) % $total + 1; // une autre page, jamais la même
+$lettres = lettres_dictionnaire();
+$etymologies = count(array_filter($pages, fn($p) => !empty($p['etymologie'])));
+
+// Le sigle du jour (abréviationnisme), tiré selon la date comme le mot
+$sigle = sigle_du_jour();
+$sigles = sigles_banque();
 
 // Palmarès du public : les mots qui ont reçu le plus de « Moyen » (au moins un vote positif)
 $palmares = $bdd->query("SELECT mot, SUM(vote = 'moyen') AS moyen, SUM(vote = 'pas_moyen') AS pas_moyen
@@ -33,11 +39,34 @@ include __DIR__ . '/includes/header.php';
 <section class="conteneur entete-page">
   <h1>Le Petit Moyen</h1>
   <p class="chapo">Le dictionnaire du cabinet. Un mot par jour, parfois un jeu de mots, parfois pas, toujours défini avec une précision moyenne. Certains jours, le conseiller et son stagiaire tentent même une démonstration.</p>
+  <p class="pm-chiffres mono"><?= $total ?> pages · <?= $etymologies ?> étymologies établies par le cabinet · <?= count($sigles['sigles']) ?> sigles redéfinis</p>
 </section>
 
 <section class="conteneur" aria-labelledby="titre-aujourdhui">
   <h2 id="titre-aujourdhui">Aujourd'hui</h2>
 <?php $mot = $mot_jour; $titre_niveau = 'h3'; include __DIR__ . '/includes/carte-mot.php'; ?>
+</section>
+
+<section class="conteneur" aria-labelledby="titre-sigle">
+  <h2 id="titre-sigle">Le sigle du jour</h2>
+  <p class="chapo">Glossaire de l'abréviationnisme, mouvement interne du cabinet.</p>
+  <article class="sigle-jour">
+    <p class="sigle-lettres"><abbr title="<?= htmlspecialchars($sigle['developpement']) ?>"><?= htmlspecialchars($sigle['sigle']) ?></abbr></p>
+    <div>
+      <p class="sigle-developpement"><?= htmlspecialchars($sigle['developpement']) ?></p>
+      <p class="sigle-definition"><?= htmlspecialchars($sigle['definition']) ?></p>
+      <p class="sigle-exemple"><span class="mono">En réunion</span> « <?= htmlspecialchars($sigle['exemple']) ?> »</p>
+    </div>
+  </article>
+  <details class="sommaire">
+    <summary>Le glossaire complet : <?= count($sigles['sigles']) ?> sigles</summary>
+    <p class="glossaire-intro"><?= htmlspecialchars($sigles['introduction']) ?></p>
+    <dl class="glossaire">
+<?php foreach ($sigles['sigles'] as $s): ?>
+      <div><dt><?= htmlspecialchars($s['sigle']) ?> <span><?= htmlspecialchars($s['developpement']) ?></span></dt><dd><?= htmlspecialchars($s['definition']) ?> <em>« <?= htmlspecialchars($s['exemple']) ?> »</em></dd></div>
+<?php endforeach; ?>
+    </dl>
+  </details>
 </section>
 
 <section class="conteneur feuilleter" id="feuilleter" aria-labelledby="titre-feuilleter">
@@ -47,6 +76,11 @@ include __DIR__ . '/includes/header.php';
   <div class="actions">
     <a class="btn btn-tampon" href="petit-moyen.php?page=<?= $autre ?>#feuilleter">Ouvrir à une autre page</a>
   </div>
+  <nav class="lettrines" aria-label="Ouvrir le dictionnaire à la lettre">
+<?php foreach ($lettres as $lettre => $premiere): ?>
+    <a href="petit-moyen.php?page=<?= $premiere ?>#feuilleter"><?= $lettre ?></a>
+<?php endforeach; ?>
+  </nav>
   <details class="sommaire">
     <summary>Sommaire : les <?= $total ?> mots du dictionnaire</summary>
     <ol class="sommaire-liste">
@@ -54,6 +88,18 @@ include __DIR__ . '/includes/header.php';
       <li><a href="petit-moyen.php?page=<?= $p['page'] ?>#feuilleter"<?= $p['page'] === $numero ? ' aria-current="page"' : '' ?>><?= htmlspecialchars($p['mot']) ?></a><?= $p['format'] === 'sketch' ? ' <span class="sommaire-sketch">(sketch)</span>' : '' ?></li>
 <?php endforeach; ?>
     </ol>
+  </details>
+  <details class="sommaire">
+    <summary>Abréviations et conventions du Petit Moyen</summary>
+    <dl class="conventions">
+      <div><dt>n. m., n. f., v. tr., adj.</dt><dd>Nature grammaticale, établie par le cabinet à l'issue d'un vote à main levée.</dd></div>
+      <div><dt>Étymologie</dt><dd>Origine du mot, reconstituée à partir de registres que le cabinet est seul à avoir consultés. Les dates sont exactes au siècle près.</dd></div>
+      <div><dt>Attesté</dt><dd>Vu au moins une fois par quelqu'un de confiance.</dd></div>
+      <div><dt>Source fragile</dt><dd>Vu une fois, de loin, par temps de brouillard.</dd></div>
+      <div><dt>Synonyme douteux</dt><dd>Mot que le cabinet a jugé interchangeable, sans l'avoir essayé.</dd></div>
+      <div><dt>Découpage officiel</dt><dd>Démonstration sonore du stagiaire, tamponnée sans réserve.</dd></div>
+      <div><dt>Certitude</dt><dd>Niveau de confiance du cabinet dans sa propre définition, en pourcentage. Au-dessous de 50 %, l'entrée est maintenue par principe.</dd></div>
+    </dl>
   </details>
 </section>
 
@@ -78,7 +124,16 @@ include __DIR__ . '/includes/header.php';
   <h2 id="titre-archives">Les jours précédents</h2>
   <ul class="archives">
 <?php foreach ($archives as $mot): ?>
-    <li><?php $titre_niveau = 'h3'; include __DIR__ . '/includes/carte-mot.php'; ?></li>
+    <li>
+      <details class="archive">
+        <summary>
+          <span class="archive-date mono"><?= htmlspecialchars((new IntlDateFormatter('fr_FR', IntlDateFormatter::NONE, IntlDateFormatter::NONE, 'Europe/Paris', null, 'd MMM y'))->format(new DateTime($mot['jour']))) ?></span>
+          <span class="archive-mot"><?= htmlspecialchars($mot['mot']) ?></span>
+          <span class="archive-extrait"><?= htmlspecialchars(chute_sketch($mot) ?? $mot['definition']) ?></span>
+        </summary>
+<?php $titre_niveau = 'h3'; include __DIR__ . '/includes/carte-mot.php'; ?>
+      </details>
+    </li>
 <?php endforeach; ?>
   </ul>
 </section>

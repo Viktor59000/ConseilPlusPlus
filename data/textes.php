@@ -18,8 +18,8 @@ return [
         'Imprimé sur papier recyclé, puis égaré.',
     ],
 
-    // Délais de traitement « estimés » (accusé de réception du site, dossiers du Bureau) : l'ordre compte,
-    // un même numéro de dossier donne toujours le même délai
+    // Délais de traitement « estimés » (accusé de réception du site, dossiers du Bureau, standard de Mireille) :
+    // seule liste de délais du site. L'ordre compte : un même numéro de dossier donne toujours le même délai
     'delais' => [
         'entre 3 jours et jamais', 'sous 48 h, ouvrables, hors jours ouvrables', 'dès que possible, voire après',
         'avant la fin de l\'année (sans précision)', 'aussitôt que le stagiaire revient', 'quelques semaines, à la louche',
@@ -72,7 +72,7 @@ return [
         ["Ma plante verte a repris des couleurs depuis que je lui lis le conseil du jour. Elle a peur, je pense.", 'Céline', 'jardinière d\'intérieur'],
         ["Huit conseils dans mon carnet, aucun appliqué. Je me sens organisé.", 'Julien', 'client Illimité'],
         ["J'ai perdu au Duel contre le cabinet. Puis j'ai perdu au Duel contre le cabinet.", 'Rodolphe', 'adversaire régulier'],
-        ["Au guichet, on m'a appelé au moment exact où il fermait. Quelle précision.", 'Martine', 'ticket n° 0057'],
+        ["Bertrand m'a fait remplir le formulaire de demande de formulaire. Sans une rature. J'en ai redemandé un.", 'Martine', 'formulaire n° 0057'],
         ["Je recommande à toute personne qui n'a besoin de rien.", 'Fabrice', 'consultant (le vrai)'],
         ["J'ai demandé à parler à un responsable. On m'a passé la machine à café.", 'Hélène', 'réclamation n° 0112'],
         ["Conseil reçu : repasser mes rideaux en chantant. Les voisins m'ont applaudi. Je ne sais pas pourquoi.", 'Arnaud', 'chanteur malgré lui'],
@@ -93,14 +93,14 @@ return [
             'bio' => "Lit les mots de travers avec un aplomb remarquable. Responsable des sketchs du Petit Moyen, de la photocopieuse et, par erreur, de la comptabilité.",
             'fiche' => ['Ancienneté' => '17 ans de stage', 'Spécialité' => 'le calembour justifié', 'Gratification' => 'un ticket de cantine'],
             'lien' => ['petit-moyen.php', 'Lire ses sketchs']],
-        ['cle' => 'delais', 'nom' => 'Mireille', 'role' => 'Responsable des délais',
-            'bio' => "N'a jamais respecté un délai, par cohérence avec sa fonction. Tient le standard téléphonique, où elle annonce des délais avec une précision inégalée. Auteure de la formule « entre 3 jours et jamais ».",
-            'fiche' => ['Ancienneté' => 'arrivée en avance, une fois', 'Spécialité' => 'le fourchettage', 'Agenda' => 'complet jusqu\'en 2031'],
+        ['cle' => 'delais', 'nom' => 'Mireille', 'role' => 'Standardiste, responsable des délais',
+            'bio' => "Tient le standard et le calendrier du cabinet, où chaque rendez-vous tombe un mardi 31. Annonce chaque délai d'une voix parfaitement posée, sans jamais se tromper de fourchette. Auteure de la formule « entre 3 jours et jamais », qu'elle n'a jamais eu à corriger.",
+            'fiche' => ['Appels perdus' => 'aucun (ils sont tous en attente)', 'Spécialité' => 'le fourchettage', 'Agenda' => 'complet jusqu\'en 2031'],
             'lien' => ['standard.php', 'Appeler son standard']],
-        ['cle' => 'guichet', 'nom' => 'Bertrand', 'role' => 'Agent d\'accueil, guichet n° 7',
-            'bio' => "Appelle les numéros dans un ordre qui lui est propre. Ferme le guichet au moment exact où vient votre tour. Personne ne sait comment il fait.",
-            'fiche' => ['Ancienneté' => '22 pauses café par jour', 'Spécialité' => 'la fermeture', 'Devise' => '« Suivant ! » (jamais vous)'],
-            'lien' => ['guichet.php', 'Prendre un ticket']],
+        ['cle' => 'accueil', 'nom' => 'Bertrand', 'role' => 'Agent d\'accueil, gardien du règlement intérieur',
+            'bio' => "Connaît par cœur les 412 articles du règlement intérieur, y compris ceux qui se contredisent, et les applique tous à la fois. Remet le formulaire du jour avec une courtoisie irréprochable ; le tampon s'occupe du reste.",
+            'fiche' => ['Ancienneté' => '31 ans sans une rature', 'Spécialité' => 'l\'article 12 bis (et son contraire)', 'Devise' => '« Ce n\'est pas moi, c\'est l\'alinéa. »'],
+            'lien' => ['attestation.php', 'Remplir le formulaire du jour']],
         ['cle' => 'cafe', 'nom' => 'La machine à café', 'role' => 'Membre le plus utile de l\'équipe',
             'bio' => "Seul membre du cabinet à avoir une utilité prouvée. Fait office de responsable des réclamations : c'est elle qui décroche au bout de la file d'attente du standard.",
             'fiche' => ['Ancienneté' => 'modèle 2004', 'Spécialité' => 'le café tiède', 'Pannes' => 'uniquement le lundi']],
@@ -136,10 +136,31 @@ return [
         ['Puis-je devenir conseiller moyen ?', "Non : le poste est occupé. Mais le stagiaire cherche quelqu'un pour le remplacer pendant sa pause, depuis 2009."],
     ],
 
+    // Annonces du hall (reprises de l'ancien guichet) : diffusées pendant l'attente au standard
+    'annonces' => [
+        "Le système informatique redémarre. Veuillez ne pas bouger.",
+        "Une personne demande « juste un renseignement ». La file est suspendue.",
+        "Merci de patienter : la patience est un service inclus.",
+        "Un ticket a été retrouvé sous la machine à café. Son propriétaire est prié de ne pas se manifester.",
+        "Le tampon est en rupture d'encre. Les conseils seront validés oralement.",
+        "Rappel : les formulaires ne sont ni repris, ni échangés, ni compris.",
+        "La file d'attente est priée de s'aligner. Plus droit. Non, pas comme ça.",
+        "Le stagiaire a appelé le numéro 0000. Personne ne s'est présenté. Il est déçu.",
+        "Une imprimante fait un bruit nouveau. La direction suit la situation de près.",
+        "Le chauffage est réglé sur « moyen ». C'est la règle de la maison.",
+        "Les personnes arrivées avant vous sont priées de rester avant vous.",
+        "Un formulaire B-12 a été rempli correctement. Une enquête est ouverte.",
+        "Mireille annonce un léger retard sur le retard prévu. Il est conforme au calendrier.",
+        "Bertrand rappelle que l'article 4 du règlement intérieur interdit de lire l'article 4.",
+        "Une plante verte a été déplacée sans autorisation. Merci de la remettre où elle s'ennuyait.",
+        "Un conseil a été délivré trop vite. Toutes nos excuses, cela ne se reproduira pas.",
+        "Le numéro affiché est indicatif. Le vrai numéro est connu de la direction seule.",
+    ],
+
     // Titre de l'onglet quand on quitte la page des yeux
     'onglet_absent' => [
         'Revenez, le conseiller s\'ennuie', 'Votre dossier vous attend', 'Le tampon est prêt', 'On vous a vu partir',
-        'Le stagiaire vous cherche', 'Votre conseil refroidit', 'Guichet en attente de vous',
+        'Le stagiaire vous cherche', 'Votre conseil refroidit', 'Mireille vous a mis en attente',
     ],
 
     // Conseils « premium cachés » (code Konami) : le cabinet récompense la curiosité, moyennement

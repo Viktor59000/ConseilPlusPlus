@@ -1,21 +1,24 @@
 <?php
 /**
- * standard.php — Le standard téléphonique du cabinet, tenu par Mireille (responsable des délais).
- * Un répondeur interactif : clavier, menus qui tournent en rond, musique d'attente, et l'appel finit
- * immanquablement sur la machine à café. Tout se passe dans le navigateur (js/standard.js).
+ * standard.php — Le standard téléphonique du cabinet, tenu par Mireille (standardiste, responsable des délais).
+ * Un répondeur interactif sans clavier : choix cliquables, menus qui tournent en rond, musique d'attente, et l'appel
+ * finit immanquablement sur la machine à café. Textes : data/standard.php, transmis en JSON à js/standard.js.
  */
 require_once __DIR__ . '/includes/init.php';
 
 $titre = 'Le standard';
-$description = 'Le standard téléphonique de ConseilPlus+ : tapez 1 pour un conseil, 2 pour une réclamation… Votre appel est important, il sera donc mis en attente.';
+$description = 'Le standard téléphonique de ConseilPlus+ : un conseil, une réclamation, le stagiaire… Votre appel est important, il sera donc mis en attente.';
 $page = 'autre';
 include __DIR__ . '/includes/header.php';
+$standard = require __DIR__ . '/data/standard.php';
+$standard['delais'] = textes()['delais'];
+$standard['annonces'] = textes()['annonces'];
 ?>
 
 <section class="conteneur entete-page">
   <p class="etiquette">Service téléphonique</p>
   <h1>Le standard</h1>
-  <p class="chapo">Tenu par Mireille, responsable des délais. Votre appel est important pour nous : il sera donc traité avec importance, et avec délai.</p>
+  <p class="chapo">Tenu par Mireille, standardiste et responsable des délais. Votre appel est important pour nous : il sera donc traité avec importance, et avec délai.</p>
 </section>
 
 <section class="conteneur standard" aria-labelledby="titre-telephone">
@@ -28,11 +31,7 @@ include __DIR__ . '/includes/header.php';
       <p class="telephone-message" data-message aria-live="polite">Décrochez pour joindre le cabinet.</p>
     </div>
 
-    <div class="clavier" role="group" aria-label="Clavier du téléphone">
-<?php foreach (['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'] as $touche): ?>
-      <button type="button" class="touche" data-touche="<?= $touche ?>" disabled aria-label="Touche <?= $touche === '*' ? 'étoile' : ($touche === '#' ? 'dièse' : $touche) ?>"><?= $touche ?></button>
-<?php endforeach; ?>
-    </div>
+    <div class="standard-choix" role="group" aria-label="Vos choix" data-choix></div>
 
     <div class="telephone-commandes">
       <button type="button" class="btn btn-tampon" data-decrocher>Décrocher</button>
@@ -41,11 +40,12 @@ include __DIR__ . '/includes/header.php';
     </div>
   </div>
 
-  <aside class="standard-journal">
-    <h3>Historique de l'appel</h3>
+  <aside class="standard-journal" aria-labelledby="titre-transcription">
+    <h3 id="titre-transcription">Transcription de l'appel</h3>
     <ol data-journal></ol>
   </aside>
 </section>
 
+<script type="application/json" id="standard-donnees"><?= json_encode($standard, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
 <script src="<?= fichier_versionne('js/standard.js') ?>" defer></script>
 <?php include __DIR__ . '/includes/footer.php'; ?>

@@ -62,6 +62,19 @@ Conseils classés par l'utilisateur connecté. Authentification par la session d
 | `GET` | `/conseils.php` | non | Un conseil aléatoire |
 | `GET` | `/conseils.php?nombre=3` | non | Plusieurs conseils (5 max) |
 
+## Mot du jour — `api/mot-du-jour.php`
+
+| Méthode | URL | Clé | Rôle |
+|---|---|---|---|
+| `GET` | `/mot-du-jour.php` | non | Le mot (presque) du jour du Petit Moyen |
+| `GET` | `/mot-du-jour.php?date=2026-10-14` | non | Le mot d'un jour passé : `200` · `400` date invalide · `404` aucun mot publié |
+| `POST` | `/mot-du-jour.php` | écriture | Fait préparer par l'IA le sketch de demain : `201` · `200` (déjà prêt ou IA indisponible) |
+
+Réponse : `jour`, `mot`, `nature`, `format` (`definition` ou `sketch`), `etymologie` (fausse étymologie, **facultative** :
+`null` pour les entrées qui n'en ont pas), puis `definition`, `exemple`, `synonyme` (format définition) ou `sketch`
+(`pistes`, `epellation`, `scene`, `repliques`, `relance`, `decoupage`, `formule`), `certitude`, `source` (`banque` / `ia`)
+et `sigle` : le sigle du jour de l'abréviationnisme (`{ sigle, developpement, definition, exemple }`, tiré selon la date).
+
 ## Widget — `api/widget.php`
 
 | Méthode | URL | Clé | Rôle |

@@ -43,6 +43,7 @@ function installer_schema(PDO $bdd): void
             definition VARCHAR(300) NULL,
             exemple VARCHAR(300) NULL,
             synonyme VARCHAR(120) NULL,
+            etymologie VARCHAR(300) NULL,
             sketch JSON NULL,
             certitude TINYINT UNSIGNED NOT NULL,
             source ENUM('banque', 'ia') NOT NULL DEFAULT 'banque'
@@ -130,16 +131,19 @@ function installer_schema(PDO $bdd): void
             ADD COLUMN sketch JSON NULL AFTER synonyme");
     }
 
-    // Synchronise la table fragments avec data/fragments.php (au premier lancement ou si le fichier a changé)
+    // Migration : fausse étymologie (facultative) du mot du jour
+    if (!$bdd->query("SHOW COLUMNS FROM mots_du_jour LIKE 'etymologie'")->fetch()) {
+        $bdd->exec("ALTER TABLE mots_du_jour ADD COLUMN etymologie VARCHAR(300) NULL AFTER synonyme");
+    }
+
+    // Recharge la table fragments depuis data/fragments.php. Pas de comparaison du nombre de lignes : cette fonction ne
+    // tourne que si le fichier a changé, et un texte réécrit à nombre égal doit aussi arriver en base.
     $fragments = require __DIR__ . '/../data/fragments.php';
-    $total = array_sum(array_map('count', $fragments));
-    if ($bdd->query("SELECT COUNT(*) FROM fragments")->fetchColumn() != $total) {
-        $bdd->exec("DELETE FROM fragments");
-        $stmt = $bdd->prepare("INSERT INTO fragments (type, texte) VALUES (:type, :texte)");
-        foreach ($fragments as $type => $textes) {
-            foreach ($textes as $texte) {
-                $stmt->execute(['type' => $type, 'texte' => $texte]);
-            }
+    $bdd->exec("DELETE FROM fragments");
+    $stmt = $bdd->prepare("INSERT INTO fragments (type, texte) VALUES (:type, :texte)");
+    foreach ($fragments as $type => $textes) {
+        foreach ($textes as $texte) {
+            $stmt->execute(['type' => $type, 'texte' => $texte]);
         }
     }
 }

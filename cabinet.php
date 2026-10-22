@@ -65,7 +65,7 @@ $t = textes();
   <dl class="chiffres-cabinet">
     <div><dt>Conseils suivis à notre connaissance</dt><dd>0</dd></div>
     <div><dt>Stagiaire, depuis 2009</dt><dd>1</dd></div>
-    <div><dt>Délai moyen de traitement</dt><dd>entre 3 jours et jamais</dd></div>
+    <div><dt>Délai moyen de traitement</dt><dd><?= htmlspecialchars($t['delais'][0]) ?></dd></div>
     <div><dt>Dossiers sans numéro</dt><dd>aucun</dd></div>
   </dl>
 </section>

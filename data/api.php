@@ -11,7 +11,7 @@ return [
         ['methode' => 'GET', 'chemin' => '/mot-du-jour.php', 'acces' => 'public', 'essayer' => 'mot-du-jour.php',
             'role' => 'Le mot (presque) du jour du Petit Moyen : fausse définition ou sketch.',
             'parametres' => ['date' => 'facultatif, AAAA-MM-JJ : le mot d\'un jour passé'],
-            'reponses' => ['200' => '{ jour, mot, nature, format, … }', '400' => 'date invalide', '404' => 'aucun mot ce jour-là']],
+            'reponses' => ['200' => '{ jour, mot, nature, format, etymologie (ou null), definition, exemple, synonyme | sketch, certitude, source, sigle }', '400' => 'date invalide', '404' => 'aucun mot ce jour-là']],
         ['methode' => 'POST', 'chemin' => '/mot-du-jour.php', 'acces' => 'cle',
             'role' => 'Fait préparer par l\'IA le mot de demain (appelé chaque nuit par GitHub Actions). 3 appels par minute.',
             'parametres' => [],

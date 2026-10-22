@@ -84,9 +84,10 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `Dockerfile`, `docker/apache.conf`, `.github/workflows/reveil.yml`, `.github/workflows/garde-eveille.yml` | Mise en ligne (Render + TiDB Cloud), passes de contrôle toutes les 6 h, garde de 6 h relancée chaque heure, visite toutes les 9 min (site jamais endormi) |
 | `android/`, `.github/workflows/android.yml` | Appli Android (WebView + widget « Le Petit Moyen » via `api/widget.php?conseils=12`), APK construit par GitHub à chaque push touchant `android/` (seul code hors PHP/JS/HTML/CSS, voulu) |
 | `bureau/` | **Le Bureau**, logiciel de gestion séparé (base `gestion`), consomme l'API (`docs/BUREAU.md`) |
-| `guichet.php`, `js/guichet.js` | Le guichet (ticket, file absurde, fermeture à votre tour) |
+| `guichet.php` | Ancien guichet : redirection 301 vers `cabinet.php` (ses annonces vivent dans `data/textes.php`, clé `annonces`) |
 | `messmerde.php`, `js/messmerde.js` | Les expériences de Messmerde, mentaliste du cabinet : 20 « prédictions » évidentes (7 tirées par séance) dont un interrogatoire, tampon « PRÉVU » |
-| `standard.php`, `js/standard.js` | Le standard téléphonique de Mireille (clavier, musique d'attente WebAudio, file qui finit à la machine à café) |
+| `standard.php`, `js/standard.js`, `data/standard.php` | Le standard téléphonique de Mireille (choix cliquables, pas de clavier ; musique d'attente WebAudio ; file qui finit à la machine à café) |
+| `data/sigles.php` | « Le sigle du jour » du Petit Moyen : sigles connus redéfinis par le cabinet (mouvement abréviationniste), tirage par date |
 | `includes/horoscope.php`, `data/horoscope.php`, `api/horoscope.php` | Horoscope de Messmerde (déterministe par jour, 12 signes, API GET) |
 | `diagnostic.php`, `data/diagnostic.php` | « Quel client êtes-vous ? » du conseiller (formulaire GET, toujours moyen) |
 | `attestation.php`, `js/attestation.js`, `data/attestations.php` | Attestations officielles du tampon, dessinées dans le navigateur (rien envoyé au serveur) |
@@ -104,7 +105,7 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 - **DA** : suivre `design-system/conseilplus/MASTER.md` (identité « La note » : C+ entouré au stylo rouge, Schibsted Grotesk, thèmes clair/sombre avec bouton, animations ;
   socle commun `css/base.css`, skills `logo-design` et `apple-design`).
   Le logo C++ est en encre ; jamais de « + » rouge isolé (emblème de la Croix-Rouge).
-- **Navigation** : menu principal à 5 entrées (Le cabinet, Le mot du jour, Nos formules, Le guichet, Contact) ; l'espace client a son propre sous-menu.
+- **Navigation** : menu principal à 5 entrées (Le cabinet, Le mot du jour, Nos formules, Messmerde, Contact) ; l'espace client a son propre sous-menu.
   Les autres services (Messmerde, standard, diagnostic, attestations) passent par les cartes de l'équipe (Le cabinet) et le plan du site, pas par le menu. Pas de boutons de navigation en double.
 - **Qualité** : viser Lighthouse 100/100/100/100 sur chaque page (CSS intégré et minifié, police préchargée, `$description` par page)
   et la conformité RGAA 4.1 (`accessibilite.php` à tenir à jour).

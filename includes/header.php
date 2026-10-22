@@ -3,7 +3,8 @@
 //   $titre       titre de l'onglet
 //   $description résumé pour les moteurs de recherche (meta description)
 //   $base        (facultatif) dossier racine du site, pour les pages servies à une autre adresse (erreur 404)
-//   $page        accueil | cabinet | petit-moyen | formules | guichet | contact | client | espace | autre
+//   $page        accueil | cabinet | petit-moyen | formules | contact | client | espace | autre
+//               (une entrée du menu est aussi marquée quand l'adresse de la page est la sienne : messmerde.php)
 require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/theme.php';
 require_once __DIR__ . '/boucle.php';
@@ -73,11 +74,11 @@ $liens = [
     'cabinet' => ['cabinet.php', 'Le cabinet'],
     'petit-moyen' => ['petit-moyen.php', 'Le mot du jour'],
     'formules' => ['produit.php', 'Nos formules'],
-    'guichet' => ['guichet.php', 'Le guichet'],
+    'messmerde' => ['messmerde.php', 'Messmerde'],
     'contact' => ['contact.php', 'Contact'],
 ];
 foreach ($liens as $cle => [$lien, $libelle]): ?>
-        <a href="<?= $lien ?>"<?= $page === $cle ? ' aria-current="page"' : '' ?>><?= $libelle ?></a>
+        <a href="<?= $lien ?>"<?= $page === $cle || basename($_SERVER['SCRIPT_NAME']) === $lien ? ' aria-current="page"' : '' ?>><?= $libelle ?></a>
 <?php endforeach; ?>
 <?php if ($connecte): ?>
         <a class="btn btn-tampon btn-petit" href="conseil.php"<?= $page === 'espace' ? ' aria-current="true"' : '' ?>>Mon espace</a>

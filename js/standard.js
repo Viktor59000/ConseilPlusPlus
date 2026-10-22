@@ -1,12 +1,15 @@
-// Le standard téléphonique : un répondeur interactif dont tous les chemins mènent à la machine à café.
-// Touches du clavier à l'écran ou du clavier de l'ordinateur ; voix et musique d'attente facultatives.
+// Le standard téléphonique : un répondeur à choix cliquables dont tous les chemins mènent à la machine à café.
+// Arborescence et textes : data/standard.php (JSON dans la page). Voix et musique d'attente facultatives.
 (() => {
   const tel = document.querySelector('[data-telephone]');
-  if (tel) {
+  const source = document.getElementById('standard-donnees');
+  if (tel && source) {
+    const D = JSON.parse(source.textContent);
+    const A = D.appareil;
     const elEtat = tel.querySelector('[data-etat]');
     const elDuree = tel.querySelector('[data-duree]');
     const elMessage = tel.querySelector('[data-message]');
-    const touches = [...tel.querySelectorAll('[data-touche]')];
+    const elChoix = tel.querySelector('[data-choix]');
     const decrocher = tel.querySelector('[data-decrocher]');
     const caseVoix = tel.querySelector('[data-voix]');
     const caseMusique = tel.querySelector('[data-musique]');
@@ -14,15 +17,12 @@
     const synthese = 'speechSynthesis' in window ? window.speechSynthesis : null;
     const auHasard = (l) => l[Math.floor(Math.random() * l.length)];
     const dort = (ms) => new Promise((r) => setTimeout(r, ms));
+    const remplir = (texte, valeurs) => texte.replace(/\{(\w+)\}/g, (m, cle) => valeurs[cle] ?? m);
     if (!synthese) caseVoix.closest('label').hidden = true;
-
-    const DELAIS = ['entre 3 jours et jamais', 'quelques instants administratifs', 'le temps d\'un café tiède',
-      'à peu près une saison', 'moins que la dernière fois, sans doute', 'non communiqué, pour votre sérénité'];
 
     let enLigne = false;
     let debut = 0;
     let horloge = null;
-    let menu = null;
     let jeton = 0; // change à chaque nouvel écran : annule les suites programmées de l'écran précédent
 
     // ---------- Musique d'attente (composée ici, quelques notes au synthétiseur) ----------
@@ -54,13 +54,12 @@
     }
     caseMusique.addEventListener('change', () => { if (!caseMusique.checked) couperMusique(); });
 
-    // ---------- Affichage, voix, historique ----------
+    // ---------- Affichage, voix, transcription ----------
     function noter(texte, qui = 'standard') {
       const li = document.createElement('li');
-      li.className = qui === 'vous' ? 'journal-vous' : '';
+      if (qui === 'vous') li.className = 'journal-vous';
       li.textContent = texte;
-      journal.prepend(li);
-      while (journal.children.length > 12) journal.lastChild.remove();
+      journal.append(li);
     }
 
     function dire(texte) {
@@ -75,102 +74,67 @@
       }
     }
 
-    /** Affiche un écran (texte + touches attendues). touches = { '1': () => …, autre: () => … } */
-    function ecran(texte, touchesEcran = {}) {
+    /** Remplace les boutons de choix ; le focus suit si l'on pilotait déjà au clavier depuis les choix. */
+    function proposer(choix = []) {
+      const garderFocus = elChoix.contains(document.activeElement) || document.activeElement === document.body;
+      elChoix.replaceChildren(...choix.map(([libelle, cible]) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'btn btn-clair btn-petit standard-bouton';
+        b.textContent = libelle;
+        b.addEventListener('click', () => {
+          if (!enLigne) return;
+          noter(remplir(A.vous, { choix: libelle }), 'vous');
+          afficher(cible);
+        });
+        return b;
+      }));
+      if (choix.length && garderFocus && enLigne) elChoix.firstChild.focus();
+    }
+
+    // ---------- La machine d'états ----------
+    async function afficher(nom, valeurs = {}) {
+      const e = D.ecrans[nom];
       jeton += 1;
-      menu = touchesEcran;
+      const moi = jeton;
       couperMusique();
-      dire(texte);
-    }
+      proposer();
+      valeurs.delai ??= auHasard(D.delais);
+      valeurs.numero ??= 'R-' + String(Math.floor(1000 + Math.random() * 9000));
+      dire(remplir(e.texte, valeurs));
 
-    // ---------- Les écrans ----------
-    const ACCUEIL = () => ecran(
-      'Bienvenue au standard de ConseilPlus+. Votre appel est important pour nous : il sera donc traité avec importance. '
-      + 'Pour un conseil, tapez 1. Pour une réclamation, tapez 2. Pour parler au stagiaire, tapez 3. '
-      + 'Pour connaître votre délai, tapez 4. Pour réécouter ce message, tapez 5. Pour un conseiller, tapez dièse.',
-      { '1': CONSEIL, '2': RECLAMATION, '3': STAGIAIRE, '4': DELAI, '5': ACCUEIL, '#': ATTENTE, '0': OPERATEUR, '9': PRECEDENT },
-    );
-
-    async function CONSEIL() {
-      ecran('Un instant, le conseiller cherche un conseil…');
-      const moi = jeton;
-      let conseil = 'Patientez. Si cela ne suffit pas, patientez davantage.';
-      try {
-        const r = await fetch('api/conseils.php', { headers: { Accept: 'application/json' } });
-        if (r.ok) conseil = (await r.json()).conseil;
-      } catch { /* conseil de secours */ }
-      if (moi !== jeton) return;
-      ecran(`Voici votre conseil : ${conseil} Pour un autre conseil, tapez 1. Pour revenir au menu principal, tapez étoile.`,
-        { '1': CONSEIL, '*': ACCUEIL });
-    }
-
-    const RECLAMATION = () => ecran(
-      'Service des réclamations. Pour une réclamation concernant un conseil, tapez 1. Concernant le standard, tapez 2. '
-      + 'Concernant cette réclamation, tapez 3.',
-      { '1': RECLAMATION_ENREGISTREE, '2': RECLAMATION_ENREGISTREE, '3': RECLAMATION_ENREGISTREE, '*': ACCUEIL },
-    );
-
-    const RECLAMATION_ENREGISTREE = () => {
-      const n = 'R-' + String(Math.floor(1000 + Math.random() * 9000));
-      ecran(`Votre réclamation est enregistrée sous le numéro ${n}. Elle sera traitée par ordre de réclamation. `
-        + 'Pour réclamer au sujet de ce numéro, tapez 1. Pour revenir au menu principal, tapez étoile.',
-      { '1': RECLAMATION, '*': ACCUEIL });
-    };
-
-    const STAGIAIRE = async () => {
-      ecran('Mise en relation avec le stagiaire…');
-      const moi = jeton;
-      await dort(2200);
-      if (moi !== jeton) return;
-      ecran('Allô ? Oui ? Ah. Je… Je ne sais pas trop quoi vous dire. Le conseiller n\'est pas là. Vous voulez un café ? '
-        + 'Pour dire oui, tapez 1. Pour dire non, tapez 2.',
-      { '1': MACHINE, '2': MACHINE });
-    };
-
-    const DELAI = () => ecran(
-      `Bonjour, ici Mireille, responsable des délais. Votre délai estimé est : ${auHasard(DELAIS)}. `
-      + 'Ce délai est indicatif, et il ne l\'indique pas. Pour un autre délai, tapez 4. Pour revenir au menu principal, tapez étoile.',
-      { '4': DELAI, '*': ACCUEIL },
-    );
-
-    const OPERATEUR = () => ecran('Vous avez demandé un opérateur. L\'opérateur, c\'est vous. Pour revenir au menu principal, tapez étoile.', { '*': ACCUEIL });
-
-    const PRECEDENT = () => ecran('Pour revenir au menu précédent, tapez 1. Vous êtes déjà au menu précédent.', { '1': PRECEDENT, '*': ACCUEIL });
-
-    async function ATTENTE() {
-      ecran('Tous nos conseillers sont occupés. Votre appel va être pris dans l\'ordre d\'arrivée, ou presque. Veuillez patienter.');
-      const moi = jeton;
-      jouerMusique();
-      let rang = 4 + Math.floor(Math.random() * 6);
-      for (let i = 0; i < 4; i++) {
-        await dort(3500);
-        if (moi !== jeton) return;
-        rang += auHasard([-1, -1, -2, 1]);
-        elMessage.textContent = `Vous êtes ${Math.max(1, rang)}${rang <= 1 ? 'er' : 'e'} dans la file d'attente. Temps d'attente estimé : ${auHasard(DELAIS)}.`;
+      if (e.action === 'conseil') {
+        let conseil = D.conseil_secours;
+        try {
+          const r = await fetch('api/conseils.php', { headers: { Accept: 'application/json' } });
+          if (r.ok) conseil = (await r.json()).conseil;
+        } catch { /* conseil de secours */ }
+        if (moi === jeton) afficher(e.suite, { conseil });
+        return;
       }
-      await dort(3000);
-      if (moi !== jeton) return;
-      couperMusique();
-      ecran('Votre interlocuteur est momentanément indisponible. Nous vous transférons vers le membre le plus disponible du cabinet.');
-      const transfert = jeton;
-      await dort(3500);
-      if (transfert !== jeton) return;
-      MACHINE();
-    }
-
-    function MACHINE() {
-      ecran('Bzzz. Ici la machine à café. Café tiède en préparation. Pour un sucre, tapez 1. Pour deux sucres, tapez 1 deux fois.', {
-        '1': async () => {
-          ecran('Sucre ajouté. Bzzz… Clac.');
-          const moi = jeton;
-          await dort(2500);
-          if (moi !== jeton) return;
-          ecran('Gobelet coincé. Le cabinet vous remercie de votre appel. Fin de la communication.');
-          const fin = jeton;
+      if (e.action === 'attente') {
+        jouerMusique();
+        let rang = 4 + Math.floor(Math.random() * 6);
+        for (let i = 0; i < 4; i++) {
           await dort(3500);
-          if (fin === jeton) raccrocher('Appel terminé par la machine à café');
-        },
-      });
+          if (moi !== jeton) return;
+          rang = Math.max(1, rang + auHasard([-1, -1, -2, 1]));
+          elMessage.textContent = i % 2
+            ? remplir(D.annonce, { annonce: auHasard(D.annonces) })
+            : remplir(D.file, { rang: rang === 1 ? '1er' : `${rang}e`, delai: auHasard(D.delais) });
+        }
+        await dort(3000);
+        if (moi === jeton) afficher(e.suite);
+        return;
+      }
+      if (e.pause) {
+        await dort(e.pause);
+        if (moi !== jeton) return;
+        if (e.fin) raccrocher(e.fin);
+        else afficher(e.suite);
+        return;
+      }
+      proposer(e.choix);
     }
 
     // ---------- Combiné ----------
@@ -183,49 +147,32 @@
       enLigne = true;
       debut = Date.now();
       journal.replaceChildren();
-      elEtat.textContent = 'Appel en cours';
+      elEtat.textContent = A.en_ligne;
       majDuree();
       horloge = setInterval(majDuree, 1000);
-      touches.forEach((t) => { t.disabled = false; });
-      decrocher.textContent = 'Raccrocher';
+      decrocher.textContent = A.raccrocher;
       tel.classList.add('en-ligne');
-      ACCUEIL();
+      afficher('accueil');
+      elChoix.firstChild?.focus();
     }
 
-    function raccrocher(raison = 'Vous avez raccroché') {
+    function raccrocher(raison = A.vous_raccrochez) {
+      const avaitFocus = elChoix.contains(document.activeElement) || document.activeElement === document.body;
       enLigne = false;
       jeton += 1;
-      menu = null;
       clearInterval(horloge);
       couperMusique();
       if (synthese) synthese.cancel();
-      elEtat.textContent = 'Combiné raccroché';
-      elMessage.textContent = `${raison}. Durée de l'appel : ${elDuree.textContent || '00:00'}. Merci d'avoir patienté.`;
+      proposer();
+      elEtat.textContent = A.raccroche;
+      elMessage.textContent = remplir(A.bilan, { raison, duree: elDuree.textContent || '00:00' });
       noter(raison + '.');
-      touches.forEach((t) => { t.disabled = true; });
-      decrocher.textContent = 'Rappeler';
+      decrocher.textContent = A.rappeler;
       tel.classList.remove('en-ligne');
-    }
-
-    function appuyer(t) {
-      if (!enLigne || !menu) return;
-      noter(`Vous tapez ${t === '*' ? 'étoile' : t === '#' ? 'dièse' : t}.`, 'vous');
-      const bouton = touches.find((b) => b.dataset.touche === t);
-      bouton?.classList.remove('enfoncee');
-      void bouton?.offsetWidth;
-      bouton?.classList.add('enfoncee');
-      const suite = menu[t];
-      if (suite) suite();
-      else dire('Ce choix n\'existe pas. Ce n\'est pas grave : les autres non plus. Pour revenir au menu principal, tapez étoile.');
-      if (!suite) menu = { ...menu, '*': ACCUEIL };
+      if (avaitFocus) decrocher.focus();
     }
 
     decrocher.addEventListener('click', () => (enLigne ? raccrocher() : decrocherAppel()));
-    touches.forEach((b) => b.addEventListener('click', () => appuyer(b.dataset.touche)));
-    document.addEventListener('keydown', (e) => {
-      if (/^[0-9*#]$/.test(e.key) && !e.target.closest('input, textarea, select')) appuyer(e.key);
-    });
-
     tel.hidden = false;
   }
 })();

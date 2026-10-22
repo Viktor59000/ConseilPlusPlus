@@ -50,6 +50,10 @@ leur assurance totale et la faiblesse du jeu de mots qui sert d'« explication �
       sonores, les répète une fois comme une évidence (« Miro, bol, an. »), et ajoute un détail bête
       ou « comme par hasard ». Cette réplique est la chute : elle ne contient jamais le mot cible lui-même.
 5. Relance : une phrase du stagiaire qui file la blague ou ajoute un détail matériel absurde.
+6. Étymologie (clé "etymologie", facultative mais souhaitée) : une fausse étymologie de dictionnaire savant, en une ou
+   deux phrases (250 caractères au plus), exposée avec un sérieux absolu : « Du latin… », « De l'ancien français… »,
+   avec une date ou une attestation inventée (une ville, un registre, une année). Jamais la vraie étymologie,
+   jamais une personne réelle, et sans reprendre le découpage du sketch.
 
 # RÈGLES
 - Tout est inventé par toi : n'utilise aucun mot, aucune situation ni aucun calembour de l'émission originale.
@@ -58,10 +62,10 @@ leur assurance totale et la faiblesse du jeu de mots qui sert d'« explication �
 - Rien de sexuel, haineux, violent, politique ou humiliant. Pas d'alcool fort ni de drogue. Humour bienveillant.
 
 # EXEMPLE (format attendu)
-{"mot":"Mirobolant","nature":"adj.","decoupage":"miro · bol · an","pistes":["Mirabelle"],"epellation":"M, I, R, O, B, O, L, A, N, T. Le T est muet, il a été prévenu.","scene":"Le matin du 1er janvier. Le stagiaire, sans ses lunettes, cherche son bol de café.","repliques":[{"qui":"conseiller","texte":"C'est donc un réveil mirobolant."},{"qui":"stagiaire","texte":"C'est vrai. Je suis miro, j'ai pas vu le bol, et c'était le premier de l'an. Miro, bol, an. Le café est sur le chat."}],"relance":"Bonne année quand même. Surtout au chat.","certitude":61}
+{"mot":"Mirobolant","nature":"adj.","decoupage":"miro · bol · an","pistes":["Mirabelle"],"epellation":"M, I, R, O, B, O, L, A, N, T. Le T est muet, il a été prévenu.","scene":"Le matin du 1er janvier. Le stagiaire, sans ses lunettes, cherche son bol de café.","repliques":[{"qui":"conseiller","texte":"C'est donc un réveil mirobolant."},{"qui":"stagiaire","texte":"C'est vrai. Je suis miro, j'ai pas vu le bol, et c'était le premier de l'an. Miro, bol, an. Le café est sur le chat."}],"relance":"Bonne année quand même. Surtout au chat.","etymologie":"Du latin mirabolus, « qui voit des bols partout ». Attesté en 1712 dans l'inventaire d'une faïencerie de Gien, à la rubrique des pertes.","certitude":61}
 
 # SORTIE
-Uniquement un objet JSON sur une ligne, avec exactement ces clés : mot, nature, decoupage, pistes, epellation, scene, repliques, relance, certitude
+Uniquement un objet JSON sur une ligne, avec exactement ces clés : mot, nature, decoupage, pistes, epellation, scene, repliques, relance, etymologie, certitude
 (qui ∈ conseiller | stagiaire ; certitude entre 1 et 100).
 TXT;
 
@@ -75,6 +79,20 @@ function sketchs_banque(): array
 {
     static $banque = null;
     return $banque ??= require __DIR__ . '/../data/sketchs.php';
+}
+
+/** Glossaire de l'abréviationnisme (data/sigles.php) : introduction et sigles. */
+function sigles_banque(): array
+{
+    static $banque = null;
+    return $banque ??= require __DIR__ . '/../data/sigles.php';
+}
+
+/** Le sigle du jour : tirage déterministe par date, le même pour tout le monde dans la journée. */
+function sigle_du_jour(?string $jour = null): array
+{
+    $sigles = sigles_banque()['sigles'];
+    return $sigles[crc32('sigle-' . ($jour ?? date('Y-m-d'))) % count($sigles)];
 }
 
 /**
@@ -91,12 +109,23 @@ function pages_dictionnaire(): array
     foreach (sketchs_banque()['sketchs'] as $s) {
         $pages[] = [
             'mot' => $s['mot'], 'nature' => $s['nature'], 'format' => 'sketch', 'certitude' => $s['certitude'],
+            'etymologie' => $s['etymologie'] ?? null,
             'sketch' => array_intersect_key($s, array_flip(CHAMPS_SKETCH)),
         ];
     }
     $collator = new Collator('fr_FR');
     usort($pages, fn($a, $b) => $collator->compare($a['mot'], $b['mot']));
     return $pages = array_map(fn($p, $i) => $p + ['jour' => null, 'page' => $i + 1], $pages, array_keys($pages));
+}
+
+/** Index alphabétique du dictionnaire : lettre (sans accent) → numéro de la première page qui commence par elle. */
+function lettres_dictionnaire(): array
+{
+    $lettres = [];
+    foreach (pages_dictionnaire() as $p) {
+        $lettres[strtoupper(texte_compare(mb_substr($p['mot'], 0, 1)))] ??= $p['page'];
+    }
+    return $lettres;
 }
 
 /** Mots déjà publiés récemment (pour éviter les répétitions). */
@@ -114,12 +143,12 @@ function enregistrer_mot(PDO $bdd, string $jour, array $e, string $source): bool
     $sketch = $e['format'] === 'sketch'
         ? json_encode(array_intersect_key($e, array_flip(CHAMPS_SKETCH)), JSON_UNESCAPED_UNICODE)
         : null;
-    $stmt = $bdd->prepare('INSERT IGNORE INTO mots_du_jour (jour, mot, nature, format, definition, exemple, synonyme, sketch, certitude, source)
-                           VALUES (:jour, :mot, :nature, :format, :definition, :exemple, :synonyme, :sketch, :certitude, :source)');
+    $stmt = $bdd->prepare('INSERT IGNORE INTO mots_du_jour (jour, mot, nature, format, definition, exemple, synonyme, etymologie, sketch, certitude, source)
+                           VALUES (:jour, :mot, :nature, :format, :definition, :exemple, :synonyme, :etymologie, :sketch, :certitude, :source)');
     $stmt->execute([
         'jour' => $jour, 'mot' => $e['mot'], 'nature' => $e['nature'], 'format' => $e['format'],
         'definition' => $e['definition'] ?? null, 'exemple' => $e['exemple'] ?? null, 'synonyme' => $e['synonyme'] ?? null,
-        'sketch' => $sketch, 'certitude' => $e['certitude'], 'source' => $source,
+        'etymologie' => $e['etymologie'] ?? null, 'sketch' => $sketch, 'certitude' => $e['certitude'], 'source' => $source,
     ]);
     return $stmt->rowCount() > 0;
 }
@@ -143,14 +172,15 @@ function chute_sketch(array $mot): ?string
     return $mot['format'] === 'sketch' && $mot['sketch'] ? end($mot['sketch']['repliques'])['texte'] : null;
 }
 
-/** Format public d'une entrée (API). */
+/** Format public d'une entrée (API). L'étymologie est facultative (null si absente) ; le sigle du jour l'accompagne. */
 function presenter_mot(array $e): array
 {
-    $base = ['jour' => $e['jour'], 'mot' => $e['mot'], 'nature' => $e['nature'], 'format' => $e['format']];
+    $base = ['jour' => $e['jour'], 'mot' => $e['mot'], 'nature' => $e['nature'], 'format' => $e['format'],
+        'etymologie' => $e['etymologie'] ?? null];
     $contenu = $e['format'] === 'sketch'
         ? ['sketch' => $e['sketch'] + ['formule' => FORMULE_FINALE]]
         : ['definition' => $e['definition'], 'exemple' => $e['exemple'], 'synonyme' => $e['synonyme']];
-    return $base + $contenu + ['certitude' => (int) $e['certitude'], 'source' => $e['source']];
+    return $base + $contenu + ['certitude' => (int) $e['certitude'], 'source' => $e['source'], 'sigle' => sigle_du_jour($e['jour'])];
 }
 
 /** Premier élément de $liste non publié récemment, en partant d'un point fixé par la date. */
@@ -229,12 +259,14 @@ function valider_sketch(string $json, array $deja): ?array
         return null;
     }
     $relance = is_string($s['relance'] ?? null) ? mb_substr(trim($s['relance']), 0, 150) : '';
+    // Étymologie facultative : absente ou mal formée, elle est simplement omise (le sketch reste valable)
+    $etymologie = $chaine($s['etymologie'] ?? null, 300) ? trim($s['etymologie']) : null;
     return [
         'format' => 'sketch',
         'mot' => mb_strtoupper(mb_substr(trim($s['mot']), 0, 1)) . mb_substr(trim($s['mot']), 1), 'nature' => trim($s['nature']),
         'pistes' => $pistes, 'epellation' => trim($s['epellation']), 'scene' => trim($s['scene']),
         'repliques' => array_map(fn($r) => ['qui' => $r['qui'], 'texte' => trim($r['texte'])], $repliques),
-        'relance' => $relance, 'decoupage' => trim($s['decoupage']),
+        'relance' => $relance, 'decoupage' => trim($s['decoupage']), 'etymologie' => $etymologie,
         'certitude' => max(1, min(100, (int) ($s['certitude'] ?? 50))),
     ];
 }

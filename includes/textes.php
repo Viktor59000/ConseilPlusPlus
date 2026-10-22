@@ -1,7 +1,7 @@
 <?php
 /**
  * Petits textes tournants du site (banque : data/textes.php) : tampons, mentions, note de service,
- * témoignages, FAQ, équipe… Chaque appel tire au hasard, sauf la note de service (liée à la date).
+ * témoignages, FAQ, équipe, annonces du hall… Chaque appel tire au hasard, sauf la note de service (liée à la date).
  */
 
 function textes(): array

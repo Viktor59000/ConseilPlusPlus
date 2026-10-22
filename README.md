@@ -38,7 +38,7 @@ le site que par cette API.
   préparé chaque nuit par une IA (Groq), avec 120 mots et 30 sketchs de secours. Votes « Moyen / Pas moyen ».
 - **Espace client** : Mon conseil, une **Consultation** (questionnaire inutile et verdict de l'IA), **Le Duel**
   (partie en 100 points contre le cabinet, tableau d'honneur), **Mon carnet**, **Mon compte** (suppression RGPD).
-- **Le guichet** (ticket, file absurde, fermeture pile à votre tour), **Le cabinet** (l'équipe), les formules
+- **Le standard** de Mireille (répondeur à choix, file qui finit à la machine à café), **Le cabinet** (l'équipe), les formules
   (et le faux paiement Premium), le formulaire de contact avec accusé de réception par courriel.
 - **Mobile** : site installable, notification quotidienne du mot du jour (Web Push écrit à la main), appli Android
   avec widget, partage d'un conseil en image story.
@@ -131,7 +131,7 @@ que se passe-t-il si l'IA ne répond pas (banques de secours, le site ne dépend
 ## Arborescence
 
 ```
-index.php, cabinet.php, petit-moyen.php, produit.php, guichet.php, contact.php      pages publiques
+index.php, cabinet.php, petit-moyen.php, produit.php, messmerde.php, contact.php      pages publiques
 login.php, conseil.php, consultation.php, duel.php, carnet.php, compte.php         espace client
 mot-de-passe-oublie.php, reinitialiser.php, developpeurs.php, erreur-404.php
 mentions-legales.php, confidentialite.php, accessibilite.php, plan-du-site.php, application.php

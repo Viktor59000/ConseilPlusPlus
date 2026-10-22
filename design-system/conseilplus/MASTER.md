@@ -73,7 +73,7 @@ les erreurs. Il ne sert jamais de fond de bouton.
 - Tout est coupé si le système demande de réduire les animations.
 
 ## Navigation (architecture)
-- **En-tête** : logo (= accueil) · Le mot du jour · Nos formules · Le guichet · Contact · [Espace client] / [Mon espace] ·
+- **En-tête** : logo (= accueil) · Le cabinet · Le mot du jour · Nos formules · Messmerde · Contact · [Espace client] / [Mon espace] ·
   bouton de thème. Sous 880 px : menu repliable (« Menu », `aria-expanded`, Échap).
 - **Espace client** (`includes/espace-nav.php`) : Mon conseil · Consultation · Le Duel · Mon carnet · Déconnexion.
 - **Pied** : accroche, Plan du site · Accessibilité · Application mobile · Contact.
@@ -86,7 +86,8 @@ les erreurs. Il ne sert jamais de fond de bouton.
 | Le cabinet | `cabinet.php` | Équipe, valeurs, chiffres, témoignages |
 | Le Petit Moyen | `petit-moyen.php` | Mot (presque) du jour, archives, feuilleter |
 | Nos formules | `produit.php` | 3 formules, comparatif, FAQ |
-| Le guichet | `guichet.php` | Ticket, file d'attente absurde |
+| Messmerde | `messmerde.php` | Expériences du mentaliste, horoscope (entrée du menu) |
+| Le standard | `standard.php` | Répondeur de Mireille à choix cliquables (`data/standard.php`) |
 | Contact | `contact.php` | Formulaire envoyé à l'API, accusé de réception par courriel |
 | Espace client | `login.php` | Connexion / inscription |
 | Mon conseil · Consultation · Le Duel · Mon carnet | `conseil.php` … | Espace client |

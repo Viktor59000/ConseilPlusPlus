@@ -13,6 +13,9 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
 <article class="entree-mot">
   <p class="entree-date mono"><?= htmlspecialchars($date) ?></p>
   <<?= $balise ?> class="entree-titre"><?= htmlspecialchars($mot['mot']) ?> <span class="entree-nature"><?= htmlspecialchars($mot['nature']) ?></span></<?= $balise ?>>
+<?php if (!empty($mot['etymologie'])): // facultative : les entrées anciennes n'en ont pas ?>
+  <p class="entree-etymologie"><span class="entree-etymologie-titre mono">Étymologie</span> <?= htmlspecialchars($mot['etymologie']) ?></p>
+<?php endif; ?>
 <?php if ($mot['format'] === 'sketch' && $mot['sketch']):
     $s = $mot['sketch'];
     $ouverture = OUVERTURES[crc32($mot['jour'] ?? $mot['mot']) % count(OUVERTURES)];
