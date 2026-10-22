@@ -7,10 +7,11 @@
 session_start();
 require("db.php");
 require("includes/tirage.php");
+require_once("includes/url.php");
 
 http_response_code(404);
 $conseil = tirer_conseil($bdd);
-$base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/') . '/';
+$base = dossier_du_site() . '/';
 
 $titre = 'Dossier introuvable';
 $description = 'Cette page n\'existe pas, ou plus. Le cabinet a peut-être classé votre dossier sans suite.';

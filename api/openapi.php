@@ -5,7 +5,7 @@
  * GET (public) → 200, à importer dans Postman, Insomnia ou Swagger UI.
  */
 require("../includes/api.php");
-require("../includes/courriel.php"); // url_publique()
+require_once __DIR__ . '/../includes/url.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     header('Allow: GET');

@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $jeton = bin2hex(random_bytes(32));
                 $bdd->prepare('INSERT INTO reinitialisations (id_utilisateur, jeton, expire) VALUES (?, ?, NOW() + INTERVAL 1 HOUR)')
                     ->execute([$client['id'], hash('sha256', $jeton)]);
-                $lien = url_du_site() . '/reinitialiser.php?jeton=' . $jeton;
+                $lien = url_des_liens() . '/reinitialiser.php?jeton=' . $jeton;
                 $corps = "Bonjour {$client['prenom']},\n\n"
                     . "Une demande de nouveau mot de passe a été déposée pour votre compte ConseilPlus+. "
                     . "Votre ancien mot de passe a été égaré par nos services, ce qui arrive.\n\n"

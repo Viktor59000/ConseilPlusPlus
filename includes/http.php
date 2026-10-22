@@ -1,45 +1,44 @@
 <?php
 /**
- * Appel HTTP vers une API (JSON) avec cURL.
- * Retourne ['code' => statut HTTP (0 si échec réseau), 'data' => réponse décodée ou null].
+ * Appels HTTP sortants (cURL), partagés par le site et Le Bureau : API du site, Groq, Brevo, Web Push.
+ * Certificats racine fournis par certs/cacert.pem (WAMP n'en a pas) : la vérification SSL reste toujours active.
  */
-function appeler_api(string $methode, string $url, ?array $corps = null, array $entetes = [], int $timeout = 10): array
+require_once __DIR__ . '/url.php';
+
+/**
+ * Requête brute. $corps : null (aucun corps) ou chaîne déjà encodée.
+ * Retourne ['code' => statut HTTP (0 si échec réseau), 'brut' => corps de la réponse (null si échec)].
+ */
+function requete_http(string $methode, string $url, ?string $corps = null, array $entetes = [], int $timeout = 10): array
 {
     $ch = curl_init($url);
-    $entetes[] = 'Accept: application/json';
-    if ($corps !== null) {
-        $entetes[] = 'Content-Type: application/json';
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($corps, JSON_INVALID_UTF8_SUBSTITUTE));
-    }
     curl_setopt_array($ch, [
         CURLOPT_CUSTOMREQUEST => $methode,
         CURLOPT_HTTPHEADER => $entetes,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => $timeout,
-        // Certificats racine (WAMP n'en fournit pas) : nécessaire pour les API en HTTPS
         CURLOPT_CAINFO => __DIR__ . '/../certs/cacert.pem',
     ]);
+    if ($corps !== null) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $corps);
+    }
     $reponse = curl_exec($ch);
     $code = $reponse === false ? 0 : curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-
-    return ['code' => $code, 'data' => $reponse === false ? null : json_decode($reponse, true)];
-}
-
-/** URL de base du site (ex. http://localhost/Site), pour appeler sa propre API. */
-function url_site(): string
-{
-    $protocole = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http';
-    return $protocole . '://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+    return ['code' => $code, 'brut' => $reponse === false ? null : $reponse];
 }
 
 /**
- * URL pour que le site appelle sa propre API depuis le serveur.
- * En ligne (conteneur Render), URL_INTERNE vaut http://127.0.0.1 : l'appel reste dans le conteneur
- * et l'API le reconnaît comme venant du site (adresse locale).
+ * Appel d'une API JSON : le corps (tableau) est encodé, la réponse décodée.
+ * Retourne ['code' => statut HTTP (0 si échec réseau), 'data' => réponse décodée ou null].
  */
-function url_interne(): string
+function appeler_api(string $methode, string $url, ?array $corps = null, array $entetes = [], int $timeout = 10): array
 {
-    $interne = getenv('URL_INTERNE');
-    return $interne ? rtrim($interne, '/') . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') : url_site();
+    $entetes[] = 'Accept: application/json';
+    if ($corps !== null) {
+        $entetes[] = 'Content-Type: application/json';
+    }
+    $r = requete_http($methode, $url, $corps === null ? null : json_encode($corps, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE),
+        $entetes, $timeout);
+    return ['code' => $r['code'], 'data' => $r['brut'] === null ? null : json_decode($r['brut'], true)];
 }

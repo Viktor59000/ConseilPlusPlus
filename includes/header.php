@@ -8,7 +8,7 @@ require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/theme.php';
 require_once __DIR__ . '/boucle.php';
 require_once __DIR__ . '/textes.php';
-require_once __DIR__ . '/courriel.php'; // url_publique()
+require_once __DIR__ . '/url.php';
 // Adresse publique de la page (aperçus de partage, adresse canonique)
 $url_page = url_publique() . '/' . (basename($_SERVER['SCRIPT_NAME']) === 'index.php' ? '' : basename($_SERVER['SCRIPT_NAME']));
 $connecte = isset($_SESSION['user_id']);

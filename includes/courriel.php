@@ -8,12 +8,7 @@
  * Gabarit compatible avec les messageries (Gmail, Outlook, mobile) : tableaux, styles en ligne,
  * images en PNG hébergées sur le site (le SVG n'est pas affiché par la plupart des messageries).
  */
-
-/** Adresse publique du site, pour les liens et les images des courriels (jamais localhost). */
-function url_publique(): string
-{
-    return rtrim(getenv('URL_PUBLIQUE') ?: 'https://conseilplus.onrender.com', '/');
-}
+require_once __DIR__ . '/http.php'; // requete_http(), url_publique()
 
 /** Signature en texte brut (version sans HTML du courriel). */
 function signature_texte(string $signataire, string $fonction): string
@@ -142,22 +137,11 @@ function envoyer_courriel(string $cle_api, string $expediteur, string $expediteu
         'textContent' => $texte,
         'htmlContent' => $html,
     ];
-    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
-    curl_setopt_array($ch, [
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($corps, JSON_UNESCAPED_UNICODE),
-        CURLOPT_HTTPHEADER => ['api-key: ' . $cle_api, 'Content-Type: application/json', 'Accept: application/json'],
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 20,
-        CURLOPT_CAINFO => __DIR__ . '/../certs/cacert.pem',
-    ]);
-    $reponse = curl_exec($ch);
-    $code = $reponse === false ? 0 : curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+    ['code' => $code, 'data' => $reponse] = appeler_api('POST', 'https://api.brevo.com/v3/smtp/email', $corps, ['api-key: ' . $cle_api], 20);
     if ($code >= 200 && $code < 300) {
         return [true, ''];
     }
-    $message = json_decode((string) $reponse, true)['message'] ?? ($code ? "erreur $code" : 'service injoignable');
+    $message = $reponse['message'] ?? ($code ? "erreur $code" : 'service injoignable');
     error_log("ConseilPlus+ : envoi Brevo impossible ($code) : $message");
     return [false, $message];
 }

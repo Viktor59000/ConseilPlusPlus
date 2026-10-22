@@ -2,6 +2,7 @@
 /**
  * Outils du compte client ajoutés autour du code du cours (auth/), sans le modifier :
  * mot de passe oublié (reinitialiser.php), suppression du compte (compte.php).
+ * Les liens des courriels utilisent url_des_liens() (includes/url.php).
  */
 
 const MDP_LONGUEUR_MIN = 8;
@@ -15,17 +16,4 @@ const MDP_LONGUEUR_MIN = 8;
 function empreinte_comme_le_cours(string $mdp): string
 {
     return hash('sha512', $mdp . 'dTbZ!912cV@2Ad');
-}
-
-/**
- * Adresse du site pour les liens envoyés par courriel. En ligne : URL_PUBLIQUE (jamais l'en-tête Host, qu'un
- * attaquant pourrait falsifier pour détourner le lien). En local uniquement : l'adresse localhost courante.
- */
-function url_du_site(): string
-{
-    $hote = $_SERVER['HTTP_HOST'] ?? '';
-    if (preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', $hote)) {
-        return 'http://' . $hote . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-    }
-    return url_publique();
 }

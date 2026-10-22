@@ -6,6 +6,7 @@
  * Les clés VAPID sont créées automatiquement au premier usage et gardées dans la table « reglages »
  * (jamais dans Git) : rien à configurer, en local comme en ligne.
  */
+require_once __DIR__ . '/http.php'; // requete_http()
 
 const PUSH_SUJET = 'https://conseilplus.onrender.com';
 // Services de notification acceptés (un abonnement pointant ailleurs est refusé : pas d'envoi vers n'importe quelle URL)
@@ -132,23 +133,11 @@ function push_envoyer(array $vapid, array $abonne, array $donnees): int
 {
     $corps = push_chiffrer(json_encode($donnees, JSON_UNESCAPED_UNICODE),
         b64url_decoder($abonne['p256dh']), b64url_decoder($abonne['auth']));
-    $ch = curl_init($abonne['endpoint']);
-    curl_setopt_array($ch, [
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $corps,
-        CURLOPT_HTTPHEADER => [
-            'Authorization: ' . push_en_tete_vapid($vapid, $abonne['endpoint']),
-            'Content-Encoding: aes128gcm',
-            'Content-Type: application/octet-stream',
-            'TTL: 43200',
-            'Urgency: normal',
-        ],
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 15,
-        CURLOPT_CAINFO => __DIR__ . '/../certs/cacert.pem',
-    ]);
-    curl_exec($ch);
-    $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    return $code;
+    return requete_http('POST', $abonne['endpoint'], $corps, [
+        'Authorization: ' . push_en_tete_vapid($vapid, $abonne['endpoint']),
+        'Content-Encoding: aes128gcm',
+        'Content-Type: application/octet-stream',
+        'TTL: 43200',
+        'Urgency: normal',
+    ], 15)['code'];
 }
