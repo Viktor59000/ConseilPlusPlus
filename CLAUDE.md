@@ -9,7 +9,7 @@ ou dans `docs/JOURNAL.md`.
 **Au début de chaque session :**
 1. `git pull` (le travail a pu avancer depuis l'autre PC).
 2. Lire `docs/JOURNAL.md` (état du projet, dernière session, prochaines étapes, points ouverts).
-3. Vérifier que `config.php` et `db.php` existent (sinon : voir `docs/REPRISE.md`, étape 3).
+3. Vérifier que `config.php` et `bureau/config.php` existent (sinon : voir `docs/REPRISE.md`, étape 3).
 
 **Après chaque modification terminée et vérifiée :**
 - Commit + push immédiatement, sans demander (préférence explicite de l'utilisateur).
@@ -74,7 +74,7 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 | `.github/workflows/tests.yml`, `tests/test_pages.php` | Tests automatiques à chaque push |
 | `developpeurs.php`, `data/api.php`, `js/api-doc.js` | Documentation publique de l'API (bouton « Essayer ») : tenir `data/api.php` à jour avec `docs/API.md` |
 | `cabinet.php` | Le cabinet : équipe (portraits facultatifs `assets/equipe/<cle>.webp`), valeurs, chiffres, témoignages |
-| `db.example.php` → `db.php` | Connexion + création/migration automatique des tables (ignoré par Git) |
+| `db.php` → `includes/bdd.php`, `includes/schema.php` | Connexion unique (`bdd()`), tables créées/migrées automatiquement quand `schema.php` change (empreinte dans `reglages`) |
 | `config.example.php` → `config.php` | Clés `API_KEY` et `GROQ_API_KEY` (ignoré par Git) |
 | `design-system/conseilplus/MASTER.md` | Charte graphique (source de vérité de la DA) |
 | `docs/API.md`, `docs/IDEES.md`, `docs/JOURNAL.md`, `docs/REPRISE.md`, `docs/DEPLOIEMENT.md` | Documentation |
@@ -95,7 +95,7 @@ et donne des conseils absurdes (esprit Kamoulox). Ton sérieux, fond absurde, ja
 
 ### Règles à respecter
 - **Sécurité** : jeton CSRF sur tous les formulaires POST, `htmlspecialchars` sur toute sortie, requêtes préparées,
-  `session_regenerate_id()` à la connexion, jamais de secret dans Git (`config.php`, `db.php` ignorés).
+  `session_regenerate_id()` à la connexion, jamais de secret dans Git (`config.php`, `bureau/config.php` ignorés ; `db.php` ne contient aucun secret).
 - **DA** : suivre `design-system/conseilplus/MASTER.md` (identité « La note » : C+ entouré au stylo rouge, Schibsted Grotesk, thèmes clair/sombre avec bouton, animations ;
   socle commun `css/base.css`, skills `logo-design` et `apple-design`).
   Le logo C++ est en encre ; jamais de « + » rouge isolé (emblème de la Croix-Rouge).

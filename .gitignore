@@ -1,6 +1,5 @@
 # Fichiers de configuration réels
 config.php
-db.php
 
 # Fichiers systèmes ou IDE
 .vscode/

@@ -3,7 +3,6 @@
 .gitignore
 .vscode
 .idea
-db.php
 config.php
 bureau/config.php
 tests

@@ -40,7 +40,6 @@ jobs:
 
       - name: Configuration (comme sur Render)
         run: |
-          cp db.example.php db.php
           cp config.example.php config.php
           cp bureau/config.example.php bureau/config.php
 

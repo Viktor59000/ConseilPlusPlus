@@ -24,10 +24,12 @@ Variante (cloner ailleurs, par exemple dans tes cours) : crée un lien depuis `w
 New-Item -ItemType Junction -Path C:\wamp64\www\Site -Target "C:\chemin\vers\le\clone"
 ```
 
-## 3. Recréer les deux fichiers de configuration (ils ne sont PAS sur GitHub)
+## 3. Recréer le fichier de configuration (il n'est PAS sur GitHub)
 
-1. Copier `db.example.php` en `db.php` : identifiants MySQL (par défaut `root` sans mot de passe sur WAMP).
-2. Copier `config.example.php` en `config.php`, puis renseigner :
+`db.php` est versionné (aucun secret : identifiants MySQL lus dans les variables `DB_*`, sinon `root` sans mot de passe).
+Si `git pull` refuse d'écraser un ancien `db.php` local, le supprimer puis relancer `git pull`.
+
+1. Copier `config.example.php` en `config.php`, puis renseigner :
    - `API_KEY` : n'importe quelle longue chaîne aléatoire (clé du futur logiciel de gestion) ;
    - `GROQ_API_KEY` : ta clé Groq (https://console.groq.com/keys). Laisse vide pour tester sans IA :
      le site utilise alors ses générateurs locaux.
@@ -70,8 +72,8 @@ l'état exact et la suite prévue. Rien d'autre à copier.
 
 | Problème | Solution |
 |---|---|
-| Page blanche ou « Erreur de connexion à la BDD » | WAMP démarré ? `db.php` présent et identifiants corrects ? |
+| Page blanche ou « Erreur de connexion à la BDD » | WAMP démarré ? identifiants MySQL corrects (variables `DB_*`, sinon root sans mot de passe) ? |
 | L'IA ne répond jamais (« Rédigé par : le stagiaire ») | `GROQ_API_KEY` vide ou invalide dans `config.php`, ou quota Groq dépassé |
 | « SSL certificate problem » dans les logs | Le fichier `certs/cacert.pem` doit être présent (il est dans le dépôt) |
 | Conflit au `git pull` | Ne pas forcer : demander à Claude de résoudre le conflit |
-| Dates étranges (mot du jour qui change à minuit) | Le fuseau est fixé à Europe/Paris dans `db.php` : vérifier qu'il est bien copié depuis `db.example.php` |
+| Dates étranges (mot du jour qui change à minuit) | Le fuseau est fixé à Europe/Paris dans `includes/bdd.php` |

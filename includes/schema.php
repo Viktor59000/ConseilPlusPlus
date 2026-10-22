@@ -1,38 +1,11 @@
 <?php
-// Copier ce fichier en db.php. En local (WAMP), les valeurs par défaut suffisent.
-// En ligne (Render), les identifiants viennent des variables d'environnement DB_* (voir docs/DEPLOIEMENT.md).
-// Fuseau horaire du site (le « jour » du mot du jour doit être le même pour PHP et MySQL)
-date_default_timezone_set('Europe/Paris');
+/**
+ * Schéma de la base du site : tables, migrations et données de départ.
+ * Exécuté par bdd() seulement quand ce fichier ou data/fragments.php change (empreinte gardée dans `reglages`).
+ */
 
-$servername = getenv('DB_HOST') ?: 'localhost';
-$port = getenv('DB_PORT') ?: '3306';
-$dbname = getenv('DB_NAME') ?: 'site';
-$user = getenv('DB_USER') ?: 'root';
-$pass = getenv('DB_PASS') ?: '';
-
-$options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
-// Base distante (Aiven) : connexion chiffrée, vérifiée avec le certificat public de l'hébergeur
-// DB_SSL_CA = chemin depuis la racine du site (certs/…) ou chemin absolu
-// (/etc/ssl/certs/ca-certificates.crt : certificats du système, pour TiDB Cloud)
-if ($ca = getenv('DB_SSL_CA')) {
-    $options[PDO::MYSQL_ATTR_SSL_CA] = str_starts_with($ca, '/') ? $ca : __DIR__ . '/' . $ca;
-}
-
-try {
-    $bdd_init = new PDO("mysql:host=$servername;port=$port", $user, $pass, $options);
-    // Création de la base si besoin. Sur un hébergement mutualisé (panneau Pterodactyl, cPanel…), la base est créée
-    // depuis le panneau et l'utilisateur n'a pas le droit d'en créer : on continue alors avec la base existante.
-    try {
-        $bdd_init->exec("CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    } catch (PDOException $e) {
-        // droit refusé : la base doit déjà exister (la connexion ci-dessous le vérifie)
-    }
-    $bdd_init = null;
-
-    $bdd = new PDO("mysql:host=$servername;port=$port;dbname=$dbname;charset=utf8mb4", $user, $pass, $options);
-    // MySQL suit le même fuseau que PHP (un serveur distant est souvent en UTC)
-    $bdd->exec("SET time_zone = '" . date('P') . "'");
-
+function installer_schema(PDO $bdd): void
+{
     $bdd->exec("
         CREATE TABLE IF NOT EXISTS utilisateurs (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -158,7 +131,7 @@ try {
     }
 
     // Synchronise la table fragments avec data/fragments.php (au premier lancement ou si le fichier a changé)
-    $fragments = require __DIR__ . '/data/fragments.php';
+    $fragments = require __DIR__ . '/../data/fragments.php';
     $total = array_sum(array_map('count', $fragments));
     if ($bdd->query("SELECT COUNT(*) FROM fragments")->fetchColumn() != $total) {
         $bdd->exec("DELETE FROM fragments");
@@ -169,24 +142,4 @@ try {
             }
         }
     }
-} catch (PDOException $e) {
-    // Le détail (adresse du serveur, message MySQL) va dans les journaux, jamais dans la page publique
-    error_log('ConseilPlus+ : base de données indisponible (' . $e->getMessage() . ')');
-    http_response_code(503); // « service indisponible » : visible des outils de surveillance, contrairement à un 200
-    header('Retry-After: 120');
-    if (str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/api/')) {
-        header('Content-Type: application/json; charset=utf-8');
-        exit(json_encode(['erreur' => 'Service momentanément indisponible. Réessayez dans quelques minutes.'], JSON_UNESCAPED_UNICODE));
-    }
-    header('Content-Type: text/html; charset=utf-8');
-    exit('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
-        . '<title>Guichet fermé — ConseilPlus+</title><style>:root{color-scheme:light dark}body{margin:0;min-height:100vh;display:grid;'
-        . 'place-items:center;background:#F5F6FA;color:#1B2440;font:17px/1.6 Arial,Helvetica,sans-serif}'
-        . 'main{max-width:32rem;margin:24px;padding:32px;background:#FFF;border-radius:20px}h1{margin:0 0 12px;font-size:1.6rem;letter-spacing:-.02em}'
-        . 'p{margin:0 0 10px}.mono{font-family:ui-monospace,monospace;font-size:.85rem;color:#525A73}'
-        . '@media (prefers-color-scheme:dark){body{background:#0E1220;color:#F3F1EC}main{background:#171C2E}.mono{color:#A9AFC3}}</style></head>'
-        . '<body><main><h1>Guichet momentanément fermé</h1><p>Nos archives sont indisponibles. Le cabinet ne voit pas '
-        . 'd\'autre explication.</p><p>Réessayez dans quelques minutes : le guichet rouvre généralement sans prévenir.</p>'
-        . '<p class="mono">Erreur 503 — service indisponible</p></main></body></html>');
 }
-?>

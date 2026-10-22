@@ -14,9 +14,9 @@ en 2 à 4 minutes.
 
 | Fichier | Rôle |
 |---|---|
-| `Dockerfile` | Image PHP 8.3 + Apache, extensions `pdo_mysql` et `intl`, copie `db.example.php` et `config.example.php` |
+| `Dockerfile` | Image PHP 8.3 + Apache, extensions `pdo_mysql` et `intl`, copie `config.example.php` |
 | `docker/apache.conf` | IP réelle du visiteur derrière le proxy Render, HTTPS, dossiers internes bloqués |
-| `.dockerignore` | Exclut `db.php`, `config.php`, `.git`, `tests` de l'image |
+| `.dockerignore` | Exclut `config.php`, `.git`, `tests` de l'image |
 | `certs/aiven-ca.pem` | Ancien certificat Aiven (inutile avec TiDB, qui utilise les autorités du système) |
 | `includes/courriel.php` | Gabarit HTML des courriels (logo, signature, tampon) et envoi par l'API Brevo |
 | `assets/email/` | Logo et icône PNG des courriels (servis par le site en ligne) |

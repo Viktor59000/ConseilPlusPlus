@@ -90,7 +90,7 @@ curl https://conseilplus.onrender.com/api/conseils.php
 
 | Sujet | Ce qui est en place |
 |---|---|
-| **PHP / MySQL** | PDO et requêtes préparées partout, tables créées et migrées automatiquement (`db.example.php`) |
+| **PHP / MySQL** | PDO et requêtes préparées partout, tables créées et migrées automatiquement (`includes/schema.php`) |
 | **Authentification** | Code du cours conservé tel quel (`auth/` : sel statique + SHA-512) ; mot de passe oublié par courriel (jeton haché, 1 h, usage unique) |
 | **Sécurité** | Jetons CSRF, champ piège anti-robots, cookies `HttpOnly` / `Secure` / `SameSite`, CSP, HSTS, `X-Frame-Options`, limite des essais de connexion, limites de débit de l'API |
 | **Accessibilité** | RGAA 4.1 (déclaration : partiellement conforme, audit interne), contrastes vérifiés dans les deux thèmes, 320 px et texte à 200 % |
@@ -102,7 +102,7 @@ curl https://conseilplus.onrender.com/api/conseils.php
 ## Installation locale (WAMP)
 
 1. Placer le dossier dans le `www` de WAMP.
-2. Copier `db.example.php` en `db.php`, `config.example.php` en `config.php` et `bureau/config.example.php` en
+2. Copier `config.example.php` en `config.php` et `bureau/config.example.php` en
    `bureau/config.php` (valeurs locales par défaut ; clés Groq et Brevo facultatives).
 3. Ouvrir `http://localhost/<dossier>/` : les bases `site` et `gestion` et leurs tables se créent au premier chargement.
 4. Tests : `php tests/test_pages.php`, `php tests/test_api.php`, `php tests/test_push.php`.
