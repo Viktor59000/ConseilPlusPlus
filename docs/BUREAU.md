@@ -26,10 +26,19 @@ les demandes de contact arrivent uniquement par l'API REST (`api/contacts.php`, 
    - **Autres demandes de cette personne** : les autres dossiers ouverts à la même adresse email.
    - **Purger du site** (dossier classé) : `DELETE /api/contacts.php?id=…` supprime la demande dans la base du site ;
      le dossier reste au Bureau avec sa date de purge. Case de confirmation obligatoire (`bureau/purge.php`).
+   - **Boucle retour** : au classement (email envoyé ou réponse archivée), le Bureau dépose aussi la réponse sur le site
+     (`PATCH /api/contacts.php?id=…` avec `{ "statut": "repondu", "reponse": … }`) : le client qui était connecté en
+     écrivant la lit dans « Mon compte ». Si le site ne répond pas, le dossier est quand même classé et l'annonce le dit :
+     le bouton « Redéposer sur le site » refait seulement ce dépôt, sans renvoyer d'email. Demande déjà supprimée
+     sur le site (par le client ou par une purge) : `404`, signalé sans erreur.
 4. **Tableau de bord** : chiffres (dont le nombre de dossiers en retard), « Mes dossiers », « En retard » (échéance
    dépassée, dossier non classé), dossiers en attente, et **purge en lot** des dossiers classés depuis plus de 6 mois
    (200 au plus par passage, avec confirmation).
 5. **Journal** (`journal.php`) : chaque relevé (nombre de dossiers créés, erreurs) et chaque purge du site.
+6. **Petit Moyen** (`petit-moyen.php`) : modération du mot de demain avant sa publication à minuit, uniquement par l'API.
+   Relecture (`GET /api/mot-du-jour.php?date=<demain>`, clé requise), correction des textes (`PATCH`, erreurs `422`
+   affichées champ par champ), rejet avec confirmation (`DELETE` : le jour venu, la banque choisira), ou préparation
+   d'un sketch par l'IA quand rien n'est prêt (`POST`, attente jusqu'à 90 s). Les jours déjà publiés ne se modifient pas.
 
 Statuts d'un dossier : `a_traiter` → `en_cours` → `classe` (réouverture possible).
 

@@ -21,8 +21,12 @@ function installer_schema(PDO $bdd): void
             email VARCHAR(150) NOT NULL,
             message TEXT NOT NULL,
             type_demande VARCHAR(50) NOT NULL,
-            statut ENUM('nouveau', 'importe') NOT NULL DEFAULT 'nouveau',
-            date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+            statut ENUM('nouveau', 'importe', 'repondu') NOT NULL DEFAULT 'nouveau',
+            date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            id_utilisateur INT NULL,
+            reponse TEXT NULL,
+            date_reponse DATETIME NULL,
+            INDEX (id_utilisateur)
         );
 
         CREATE TABLE IF NOT EXISTS carnet (
@@ -134,6 +138,20 @@ function installer_schema(PDO $bdd): void
     // Migration : fausse étymologie (facultative) du mot du jour
     if (!$bdd->query("SHOW COLUMNS FROM mots_du_jour LIKE 'etymologie'")->fetch()) {
         $bdd->exec("ALTER TABLE mots_du_jour ADD COLUMN etymologie VARCHAR(300) NULL AFTER synonyme");
+    }
+
+    // Migration : boucle retour des demandes (client connecté, réponse du cabinet relayée par Le Bureau)
+    if (!$bdd->query("SHOW COLUMNS FROM contacts LIKE 'id_utilisateur'")->fetch()) {
+        // Une modification par instruction (TiDB n'indexe pas une colonne créée par le même ALTER)
+        $bdd->exec("ALTER TABLE contacts ADD COLUMN id_utilisateur INT NULL");
+        $bdd->exec("ALTER TABLE contacts ADD INDEX (id_utilisateur)");
+    }
+    if (!$bdd->query("SHOW COLUMNS FROM contacts LIKE 'reponse'")->fetch()) {
+        $bdd->exec("ALTER TABLE contacts ADD COLUMN reponse TEXT NULL");
+        $bdd->exec("ALTER TABLE contacts ADD COLUMN date_reponse DATETIME NULL");
+    }
+    if (!str_contains($bdd->query("SHOW COLUMNS FROM contacts LIKE 'statut'")->fetch(PDO::FETCH_ASSOC)['Type'], 'repondu')) {
+        $bdd->exec("ALTER TABLE contacts MODIFY statut ENUM('nouveau', 'importe', 'repondu') NOT NULL DEFAULT 'nouveau'");
     }
 
     // Recharge la table fragments depuis data/fragments.php. Pas de comparaison du nombre de lignes : cette fonction ne

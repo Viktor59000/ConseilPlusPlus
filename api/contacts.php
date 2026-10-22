@@ -6,6 +6,7 @@
  * GET    ?statut=nouveau    Le logiciel de gestion liste les demandes (clé requise)        → 200
  * GET    ?id=42             Détail d'une demande (clé requise)                             → 200 | 404
  * PATCH  ?id=42             Change le statut, par défaut « importe » (clé requise)         → 200 | 404 | 422
+ *                           « repondu » + reponse : la réponse du cabinet, lue par le client dans compte.php
  * DELETE ?id=42             Supprime une demande traitée (clé requise)                     → 204 | 404
  *
  * Clé : en-tête X-API-Key (voir config.php).
@@ -25,7 +26,7 @@ router([
         }
         $statut = $_GET['statut'] ?? null;
         if ($statut !== null && !in_array($statut, STATUTS, true)) {
-            repondre(400, ['erreur' => 'Statut invalide (nouveau ou importe).']);
+            repondre(400, ['erreur' => 'Statut invalide (' . implode(', ', STATUTS) . ').']);
         }
         // Filtres facultatifs
         $conditions = [];
@@ -106,15 +107,16 @@ router([
     'PATCH' => function () use ($bdd) {
         exiger_cle('ecriture');
         $id = lire_id();
-        $statut = lire_corps()['statut'] ?? 'importe';
-        if (!in_array($statut, STATUTS, true)) {
-            repondre(422, ['erreur' => 'Statut invalide (nouveau ou importe).']);
-        }
-        $stmt = $bdd->prepare('UPDATE contacts SET statut = :statut WHERE id = :id');
-        $stmt->execute(['statut' => $statut, 'id' => $id]);
+        [$statut, $reponse, $erreurs] = valider_statut(lire_corps());
+        refuser_champs($erreurs);
+        // « repondu » : la réponse du cabinet devient lisible par le client (compte.php) ; autre statut : elle s'efface
+        $stmt = $bdd->prepare('UPDATE contacts SET statut = :statut, reponse = :reponse,
+                               date_reponse = IF(:repondu, NOW(), NULL) WHERE id = :id');
+        $stmt->execute(['statut' => $statut, 'reponse' => $reponse, 'repondu' => (int) ($reponse !== null), 'id' => $id]);
         $existe = $bdd->prepare('SELECT 1 FROM contacts WHERE id = :id');
         $existe->execute(['id' => $id]);
-        $existe->fetchColumn() ? repondre(200, ['id' => $id, 'statut' => $statut]) : repondre(404, ['erreur' => 'Demande introuvable.']);
+        $existe->fetchColumn() ? repondre(200, ['id' => $id, 'statut' => $statut] + ($reponse !== null ? ['reponse' => $reponse] : []))
+            : repondre(404, ['erreur' => 'Demande introuvable.']);
     },
 
     'DELETE' => function () use ($bdd) {

@@ -136,6 +136,27 @@ function envoyer_reponse(array $dossier, string $texte, string $agent): array
         $texte . signature_texte($agent, 'Conseiller moyen'), $html);
 }
 
+/**
+ * Dépose la réponse officielle sur le site (PATCH /api/contacts.php : statut « repondu » + reponse), où le client
+ * connecté la lit dans son compte. Retourne 'publiee', 'absente' (demande supprimée du site : 404) ou 'erreur'.
+ */
+function publier_reponse(array $dossier, string $texte): string
+{
+    $r = api('PATCH', 'contacts.php?id=' . (int) $dossier['id_site'], ['statut' => 'repondu', 'reponse' => $texte]);
+    return match ($r['code']) {
+        200 => 'publiee',
+        404 => 'absente',
+        default => 'erreur',
+    };
+}
+
+/** Phrase de compte rendu d'une publication (publier_reponse()), à ajouter à l'annonce de l'agent. */
+const PUBLICATION_REPONSE = [
+    'publiee' => 'La réponse est aussi lisible par le client dans son compte sur le site.',
+    'absente' => 'La demande n\'existe plus sur le site (supprimée par le client ou purgée) : la réponse n\'y a pas été déposée.',
+    'erreur' => 'Attention : le site n\'a pas reçu la réponse (API injoignable). Utilisez « Redéposer sur le site » plus tard.',
+];
+
 /** Vues rapides de la liste des dossiers (dossiers.php, export CSV). */
 const VUES_DOSSIERS = [
     'moi' => 'Assignés à moi',

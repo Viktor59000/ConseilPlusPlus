@@ -3,6 +3,7 @@
  * contact.php — Formulaire de contact.
  * La demande est envoyée en POST à l'API (api/contacts.php), qui la valide et l'enregistre
  * avec le statut « nouveau ». Le logiciel de gestion la récupère ensuite via l'API.
+ * Client connecté : la demande lui est rattachée (id_utilisateur) pour qu'il lise la réponse dans compte.php.
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/bdd.php';
@@ -10,6 +11,7 @@ require_once __DIR__ . '/includes/contacts.php';
 require_once __DIR__ . '/includes/http.php';
 require_once __DIR__ . '/includes/courriel.php';
 require_once __DIR__ . '/includes/formulaire.php';
+require_once __DIR__ . '/includes/textes.php';
 
 $valeurs = ['nom' => '', 'email' => '', 'message' => '', 'type_demande' => ''];
 $erreurs = [];
@@ -32,7 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // L'adresse IP du visiteur est transmise à l'API pour sa limite d'envois (l'appel part du serveur)
         $reponse = appeler_api('POST', url_interne() . '/api/contacts.php', $valeurs, ['X-Client-IP: ' . $_SERVER['REMOTE_ADDR']]);
         if ($reponse['code'] === 201) {
-            envoyer_accuse_reception(bdd(), $valeurs, (int) ($reponse['data']['id'] ?? 0));
+            $id = (int) ($reponse['data']['id'] ?? 0);
+            // Client connecté : la demande rejoint « Mes demandes » (compte.php), où il lira la réponse du cabinet
+            if (isset($_SESSION['user_id']) && $id) {
+                rattacher_contact(bdd(), $id, (int) $_SESSION['user_id']);
+            }
+            envoyer_accuse_reception(bdd(), $valeurs, $id);
             // Redirection après envoi pour éviter un double enregistrement au rechargement
             header('location: contact.php?envoye=1');
             exit();
@@ -69,7 +76,8 @@ include __DIR__ . '/includes/header.php';
     <h2 id="titre-contact">Formulaire de demande</h2>
     <p class="obligatoire">Tous les champs sont obligatoires.</p>
 <?php if (isset($_GET['envoye'])): ?>
-    <?= alerte('Demande enregistrée sous le statut « nouveau ». Nous la traiterons avec la lenteur qui nous caractérise.', 'ok') ?>
+    <?= alerte('Demande enregistrée sous le statut « nouveau ». Nous la traiterons avec la lenteur qui nous caractérise.'
+        . (isset($_SESSION['user_id']) ? ' Vous suivrez sa réponse dans « Mon compte ».' : ''), 'ok') ?>
 <?php elseif ($erreur_session): ?>
     <?= alerte('Le formulaire a expiré. Merci de le renvoyer.') ?>
 <?php elseif ($trop_de_demandes): ?>
@@ -125,7 +133,7 @@ include __DIR__ . '/includes/header.php';
       </div>
       <div>
         <dt class="mono">Délai de réponse</dt>
-        <dd>Entre 3 jours et jamais.</dd>
+        <dd><?= htmlspecialchars(ucfirst(texte_hasard('delais'))) ?>.</dd>
       </div>
     </dl>
   </aside>

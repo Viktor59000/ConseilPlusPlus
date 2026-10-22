@@ -3,7 +3,8 @@
  * bureau/dossier.php — Fiche d'un dossier : la demande, son statut, son affectation, la réponse officielle du cabinet,
  * les notes internes et les autres demandes de la même personne.
  * Actions (POST + CSRF) : examiner, rédiger une réponse (conseil tiré de l'API), enregistrer, classer, rouvrir,
- * affecter (responsable + échéance), noter. La purge du site passe par purge.php.
+ * affecter (responsable + échéance), noter, redéposer sur le site. La purge du site passe par purge.php.
+ * Classer dépose aussi la réponse sur le site (PATCH statut « repondu ») : le client connecté la lit dans son compte.
  * id_agent = dernier intervenant (mis à jour par les actions qui modifient le dossier, pas par « rédiger »).
  */
 require_once __DIR__ . '/includes/amorce.php';
@@ -33,6 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bdd->prepare('INSERT INTO notes (id_dossier, id_agent, texte) VALUES (?, ?, ?)')
             ->execute([$dossier['id'], $agent['id'], mb_substr($note, 0, 2000)]);
         rediriger($retour . '#notes', 'Note ajoutée au dossier. Elle restera entre nous.');
+    }
+
+    if ($action === 'publier') {
+        // Nouvel essai de dépôt sur le site, sans renvoyer d'email
+        if ($dossier['statut'] !== 'classe' || $dossier['date_purge']) {
+            rediriger($retour, 'Seule la réponse d\'un dossier classé, et encore présent sur le site, peut y être déposée.', 'erreur');
+        }
+        $publication = publier_reponse($dossier, (string) $dossier['reponse']);
+        rediriger($retour, PUBLICATION_REPONSE[$publication], $publication === 'erreur' ? 'erreur' : 'ok');
     }
 
     $maj = $bdd->prepare('UPDATE dossiers SET statut = :statut, reponse = :reponse, date_reponse = :date_reponse, envoi = :envoi,
@@ -87,9 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $valeurs['statut'] = 'classe';
             $valeurs['date_reponse'] = date('Y-m-d H:i:s');
             $valeurs['envoi'] = $parti ? 'envoye' : 'archive';
-            annoncer($parti
+            // Boucle retour : la réponse est aussi déposée sur le site (sauf demande déjà purgée)
+            $publication = $dossier['date_purge'] ? 'absente' : publier_reponse($dossier, $valeurs['reponse']);
+            annoncer(($parti
                 ? "Réponse envoyée par email à {$dossier['email']}. Dossier classé."
-                : "Réponse archivée et dossier classé (envoi par email non configuré : aucun mail n'est parti).");
+                : "Réponse archivée et dossier classé (envoi par email non configuré : aucun mail n'est parti).")
+                . ' ' . PUBLICATION_REPONSE[$publication], $publication === 'erreur' ? 'erreur' : 'ok');
             break;
         case 'rouvrir':
             $valeurs['statut'] = 'en_cours';
@@ -179,10 +192,16 @@ require __DIR__ . '/includes/haut.php';
 <?php if ($classe): ?>
     <p class="aide mono"><?= $dossier['envoi'] === 'envoye' ? 'Envoyée par email' : "Archivée (pas d'email envoyé)" ?> le <?= date_courte($dossier['date_reponse']) ?>.</p>
     <pre class="lettre"><?= htmlspecialchars($dossier['reponse']) ?></pre>
-    <form method="post">
+    <form method="post" class="actions">
       <?= csrf_champ() ?>
       <button class="btn btn-clair" name="action" value="rouvrir" type="submit">Rouvrir le dossier</button>
+<?php if (!$dossier['date_purge']): ?>
+      <button class="btn btn-clair" name="action" value="publier" type="submit">Redéposer sur le site</button>
+<?php endif; ?>
     </form>
+<?php if (!$dossier['date_purge']): ?>
+    <p class="aide">La réponse est déposée dans l'espace client du site au classement (<code>PATCH /api/contacts.php</code>, statut « repondu ») ; « Redéposer » refait seulement ce dépôt, sans email.</p>
+<?php endif; ?>
 <?php if (!$dossier['date_purge']): ?>
     <form method="post" action="purge.php" class="purge">
       <?= csrf_champ() ?>

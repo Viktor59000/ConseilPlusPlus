@@ -8,11 +8,12 @@ require_once __DIR__ . '/../../includes/http.php'; // appeler_api(), partagé av
 /**
  * Appel JSON à l'API du site. $ressource : « contacts.php?statut=nouveau », « conseils.php »…
  * Retourne ['code' => statut HTTP (0 si le site est injoignable), 'data' => réponse décodée ou null].
+ * $delai : attente maximale en secondes (plus long pour la préparation du mot de demain par l'IA).
  */
-function api(string $methode, string $ressource, ?array $corps = null, bool $avec_cle = true): array
+function api(string $methode, string $ressource, ?array $corps = null, bool $avec_cle = true, int $delai = 20): array
 {
     return appeler_api($methode, rtrim(BUREAU_API_URL, '/') . '/' . $ressource, $corps,
-        $avec_cle ? ['X-API-Key: ' . BUREAU_API_KEY] : [], 20);
+        $avec_cle ? ['X-API-Key: ' . BUREAU_API_KEY] : [], $delai);
 }
 
 /** Message lisible pour un appel à l'API qui a échoué (sans point final : l'appelant complète). */

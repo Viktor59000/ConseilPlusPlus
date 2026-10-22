@@ -28,9 +28,10 @@ foreach ($groupes as $groupe => $endpoints) {
             $champs = [];
             foreach ($e['parametres'] as $nom => $detail) {
                 foreach (array_map('trim', explode(',', $nom)) as $n) {
-                    // Paramètres d'URL pour les lectures et l'identifiant ; corps JSON pour les écritures
-                    if ($n === 'id' || in_array($methode, ['get', 'delete'], true)) {
-                        $parametres[] = ['name' => $n, 'in' => 'query', 'required' => false, 'description' => $detail, 'schema' => ['type' => $n === 'id' ? 'integer' : 'string']];
+                    // Paramètres d'URL pour les lectures, l'identifiant et la date ; corps JSON pour les écritures
+                    if (in_array($n, ['id', 'date'], true) || in_array($methode, ['get', 'delete'], true)) {
+                        $parametres[] = ['name' => $n, 'in' => 'query', 'required' => false, 'description' => $detail,
+                            'schema' => match ($n) { 'id' => ['type' => 'integer'], 'date' => ['type' => 'string', 'format' => 'date'], default => ['type' => 'string'] }];
                     } else {
                         $champs[$n] = ['description' => $detail];
                     }
@@ -50,6 +51,8 @@ foreach ($groupes as $groupe => $endpoints) {
             }
             if (in_array($e['acces'], ['cle', 'admin'], true)) {
                 $operation['security'] = [['cleApi' => []]];
+            } elseif (!empty($e['cle_facultative'])) {
+                $operation['security'] = [new stdClass(), ['cleApi' => []]]; // sans clé, ou avec une clé (usage réservé)
             } elseif ($e['acces'] === 'session') {
                 $operation['security'] = [['session' => []]];
             }

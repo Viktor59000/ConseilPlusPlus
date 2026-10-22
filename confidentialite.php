@@ -27,7 +27,9 @@ include __DIR__ . '/includes/header.php';
     <li><strong>Le Duel</strong> : le score de vos parties terminées. Vos victoires peuvent apparaître au tableau d'honneur,
       visible des autres clients, avec votre prénom seulement. Supprimé avec le compte.</li>
     <li><strong>Formulaire de contact</strong> : nom, adresse email et message. Sert à vous répondre (accusé de réception et réponse
-      par courriel). Conservé le temps du traitement, puis archivé ; supprimé sur simple demande.</li>
+      par courriel). Une demande envoyée en étant connecté est rattachée à votre compte : vous y lisez la réponse du cabinet
+      et pouvez la supprimer depuis « Mon compte ». Les demandes classées sont effacées du site au plus tard 6 mois après
+      la réponse ; supprimées sur simple demande.</li>
     <li><strong>Votes « Moyen / Pas moyen »</strong> : aucune donnée personnelle, seulement une empreinte anonyme qui empêche
       de voter deux fois.</li>
     <li><strong>Notifications du mot du jour</strong> (si vous les activez) : l'adresse technique d'envoi fournie par votre

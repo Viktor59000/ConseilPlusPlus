@@ -17,10 +17,10 @@ Base : `http://localhost/Site/api/v1` (ou `/api`, alias sans version) — répon
 | `POST` | `/contacts.php` | non | Le site vitrine envoie une demande | `201` créée · `422` champs invalides |
 | `GET` | `/contacts.php?statut=nouveau` | lecture | Lister les demandes (filtres, tri et pagination ci-dessous) | `200` · `400` · `401` |
 | `GET` | `/contacts.php?id=42` | lecture | Détail d'une demande | `200` · `404` |
-| `PATCH` | `/contacts.php?id=42` | écriture | Changer le statut (par défaut `importe`) | `200` · `404` · `422` |
+| `PATCH` | `/contacts.php?id=42` | écriture | Changer le statut (par défaut `importe`), ou déposer la réponse du cabinet (`repondu`) | `200` · `404` · `422` |
 | `DELETE` | `/contacts.php?id=42` | écriture | Supprimer une demande traitée | `204` · `404` |
 
-**Liste** : filtres `statut` (`nouveau` / `importe`), `type` (type de demande), `q` (recherche dans nom, adresse, message) ;
+**Liste** : filtres `statut` (`nouveau` / `importe` / `repondu`), `type` (type de demande), `q` (recherche dans nom, adresse, message) ;
 tri `tri=date` (défaut), `-date`, `nom`, `-nom`. Sans `page`, la liste est renvoyée d'un bloc `{ total, contacts[] }` (ce que lit Le Bureau), plafonnée à 500 demandes.
 Avec `page` (et `par_page`, 1 à 100, 20 par défaut) : `{ total, page, par_page, pages, contacts[] }`,
 en-têtes `Link` (`first`, `prev`, `next`, `last`, RFC 8288) et `X-Total-Count`.
@@ -41,6 +41,14 @@ Corps du `POST` (JSON ou formulaire) :
 `type_demande` ∈ `Demande de conseil`, `Réclamation`, `Devis Premium`, `Autre`.
 
 Corps du `PATCH` (facultatif) : `{ "statut": "importe" }`.
+
+**Boucle retour** : quand Le Bureau classe un dossier, il dépose la réponse officielle sur le site :
+`{ "statut": "repondu", "reponse": "Madame, Monsieur…" }` (`reponse` obligatoire avec `repondu`, 5 000 caractères au plus :
+sinon `422` ; `date_reponse` est remplie par le site). Un autre statut efface la réponse. Si le visiteur était connecté
+quand il a écrit, la demande porte son `id_utilisateur` (jamais déduit de l'adresse email) : il lit le statut et la
+réponse dans « Mon compte » (`compte.php`) et peut y supprimer ses demandes.
+
+Statuts : `nouveau` (déposée sur le site) → `importe` (relevée par Le Bureau) → `repondu` (réponse du cabinet lisible par le client).
 
 ## Carnet — `api/mes-conseils.php`
 
@@ -69,6 +77,18 @@ Conseils classés par l'utilisateur connecté. Authentification par la session d
 | `GET` | `/mot-du-jour.php` | non | Le mot (presque) du jour du Petit Moyen |
 | `GET` | `/mot-du-jour.php?date=2026-10-14` | non | Le mot d'un jour passé : `200` · `400` date invalide · `404` aucun mot publié |
 | `POST` | `/mot-du-jour.php` | écriture | Fait préparer par l'IA le sketch de demain : `201` · `200` (déjà prêt ou IA indisponible) |
+| `GET` | `/mot-du-jour.php?date=<demain>` | lecture | Relecture du mot de demain : `200` · `404` (sans clé, ou rien de préparé) · `401` · `403` |
+| `PATCH` | `/mot-du-jour.php?date=<demain>` | écriture | Corrige ses textes : `200` (le mot corrigé) · `404` · `409` jour publié · `422` |
+| `DELETE` | `/mot-du-jour.php?date=<demain>` | écriture | Rejette le mot de demain (la banque reprendra le relais) : `204` · `404` · `409` jour publié |
+
+**Modération** (page « Petit Moyen » du Bureau) : seul le mot de **demain** se relit, se corrige ou se rejette.
+Sans clé, demain reste invisible (`404`, rien n'est publié à l'avance). Un jour déjà publié ne se réécrit pas : `409`.
+`date` est facultative pour `PATCH` et `DELETE` (demain par défaut).
+Corps du `PATCH` (seuls les champs envoyés changent) : `mot`, `nature`, `etymologie` (vide = effacée), plus
+`definition`, `exemple`, `synonyme` (format définition) ou `epellation`, `scene`, `decoupage`, `relance`,
+`conseiller` (la conclusion), `stagiaire` (la chute, qui commence par « C'est vrai. ») pour un sketch.
+Un champ inconnu ou d'un autre format, un texte vide ou trop long, une chute hors schéma ou un calembour de
+l'émission originale : `422` avec le détail par champ. Après un rejet, `POST` peut préparer un autre sketch.
 
 Réponse : `jour`, `mot`, `nature`, `format` (`definition` ou `sketch`), `etymologie` (fausse étymologie, **facultative** :
 `null` pour les entrées qui n'en ont pas), puis `definition`, `exemple`, `synonyme` (format définition) ou `sketch`
@@ -140,6 +160,10 @@ Le nom de l'application apparaît dans le journal `api_logs` (colonne `applicati
 curl -X POST -H "Content-Type: application/json" -d '{"nom":"Jean","email":"jean@exemple.fr","type_demande":"Autre","message":"Bonjour le conseiller"}' http://localhost/Site/api/contacts.php
 curl -H "X-API-Key: VOTRE_CLE" "http://localhost/Site/api/v1/contacts.php?statut=nouveau&page=1&par_page=10&tri=-date"
 curl -X PATCH -H "X-API-Key: VOTRE_CLE" "http://localhost/Site/api/contacts.php?id=1"
+curl -X PATCH -H "X-API-Key: VOTRE_CLE" -H "Content-Type: application/json" -d '{"statut":"repondu","reponse":"Patientez."}' "http://localhost/Site/api/contacts.php?id=1"
+curl -H "X-API-Key: VOTRE_CLE" "http://localhost/Site/api/mot-du-jour.php?date=AAAA-MM-JJ"
+curl -X PATCH -H "X-API-Key: VOTRE_CLE" -H "Content-Type: application/json" -d '{"etymologie":"Du latin moyennus."}' http://localhost/Site/api/mot-du-jour.php
+curl -X DELETE -H "X-API-Key: VOTRE_CLE" http://localhost/Site/api/mot-du-jour.php
 curl http://localhost/Site/api/conseils.php
 ```
 

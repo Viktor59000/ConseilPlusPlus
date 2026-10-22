@@ -333,3 +333,76 @@ function preparer_mot(PDO $bdd, string $jour): bool
 
     return $entree !== null && enregistrer_mot($bdd, $jour, $entree, 'ia');
 }
+
+// Modération du mot de demain (PATCH api/mot-du-jour.php, Le Bureau) : champs corrigeables => longueur maximale
+const CORRECTIONS_COMMUNES = ['mot' => 80, 'nature' => 80, 'etymologie' => 300];
+const CORRECTIONS_DEFINITION = ['definition' => 300, 'exemple' => 300, 'synonyme' => 120];
+// conseiller / stagiaire : texte de la conclusion et de la chute (les deux répliques du sketch)
+const CORRECTIONS_SKETCH = ['epellation' => 200, 'scene' => 160, 'decoupage' => 120, 'relance' => 150, 'conseiller' => 200, 'stagiaire' => 200];
+const CORRECTIONS_FACULTATIVES = ['etymologie', 'relance']; // peuvent être vidées
+
+/**
+ * Applique une correction ($corps : champ => texte) à une entrée lue par lire_mot(), sans l'enregistrer.
+ * Retourne [$entree corrigée, $erreurs (champ => message)]. Un champ d'un autre format ou inconnu est refusé ;
+ * la chute d'un sketch garde le schéma (« C'est vrai. … ») et n'a pas le droit de reprendre un calembour de l'émission.
+ */
+function corriger_mot(array $e, array $corps): array
+{
+    $sketch = $e['format'] === 'sketch';
+    $permis = CORRECTIONS_COMMUNES + ($sketch ? CORRECTIONS_SKETCH : CORRECTIONS_DEFINITION);
+    $erreurs = [];
+    foreach ($corps as $champ => $valeur) {
+        if (!isset($permis[$champ])) {
+            $erreurs[$champ] = isset(CORRECTIONS_SKETCH[$champ]) || isset(CORRECTIONS_DEFINITION[$champ])
+                ? "Champ sans objet pour un mot au format « {$e['format']} »." : 'Champ inconnu.';
+            continue;
+        }
+        $facultatif = in_array($champ, CORRECTIONS_FACULTATIVES, true);
+        $texte = $valeur === null ? '' : (is_string($valeur) ? trim($valeur) : null);
+        if ($texte === null || ($texte === '' && !$facultatif) || mb_strlen($texte) > $permis[$champ]) {
+            $erreurs[$champ] = ($facultatif ? 'Texte facultatif' : 'Texte obligatoire') . ", {$permis[$champ]} caractères au plus.";
+            continue;
+        }
+        if ($champ === 'conseiller') {
+            $e['sketch']['repliques'][0]['texte'] = $texte;
+        } elseif ($champ === 'stagiaire') {
+            $e['sketch']['repliques'][array_key_last($e['sketch']['repliques'])]['texte'] = $texte;
+        } elseif (isset(CORRECTIONS_SKETCH[$champ])) {
+            $e['sketch'][$champ] = $texte;
+        } else {
+            $e[$champ] = $texte === '' ? null : $texte;
+        }
+    }
+    if (!$corps) {
+        $erreurs['corps'] = 'Aucun champ à corriger.';
+    }
+    if ($sketch && !$erreurs) {
+        $chute = chute_sketch($e);
+        if (!preg_match("/^C['’]est vrai/u", $chute)) {
+            $erreurs['stagiaire'] = 'La chute du stagiaire commence par « C\'est vrai. ».';
+        } elseif (calembour_interdit($e['mot'], $chute . ' ' . ($e['sketch']['decoupage'] ?? ''))) {
+            $erreurs['stagiaire'] = 'Ce calembour vient de l\'émission originale : le cabinet invente les siens.';
+        }
+    }
+    return [$e, $erreurs];
+}
+
+/** Enregistre une entrée corrigée par corriger_mot() (le jour, le format et la source ne changent pas). */
+function enregistrer_correction(PDO $bdd, array $e): void
+{
+    $bdd->prepare('UPDATE mots_du_jour SET mot = :mot, nature = :nature, definition = :definition, exemple = :exemple,
+                   synonyme = :synonyme, etymologie = :etymologie, sketch = :sketch WHERE jour = :jour')
+        ->execute([
+            'mot' => $e['mot'], 'nature' => $e['nature'], 'definition' => $e['definition'], 'exemple' => $e['exemple'],
+            'synonyme' => $e['synonyme'], 'etymologie' => $e['etymologie'],
+            'sketch' => $e['sketch'] === null ? null : json_encode($e['sketch'], JSON_UNESCAPED_UNICODE), 'jour' => $e['jour'],
+        ]);
+}
+
+/** Rejette l'entrée préparée d'un jour : le jour venu, la banque choisira (ou l'IA, si on la relance). */
+function rejeter_mot(PDO $bdd, string $jour): bool
+{
+    $stmt = $bdd->prepare('DELETE FROM mots_du_jour WHERE jour = :jour');
+    $stmt->execute(['jour' => $jour]);
+    return $stmt->rowCount() > 0;
+}
