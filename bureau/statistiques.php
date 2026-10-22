@@ -1,30 +1,15 @@
 <?php
 // bureau/statistiques.php — Usage de l'API du site, lu par l'API elle-même (GET /api/statistiques.php, clé requise).
-require("includes/bdd.php");
-require("includes/session.php");
-require("includes/metier.php");
-$agent = exiger_agent();
+require_once __DIR__ . '/includes/amorce.php';
 
 $jours = (int) ($_GET['jours'] ?? 14);
 $jours = in_array($jours, [7, 14, 30], true) ? $jours : 14;
 $r = api('GET', 'statistiques.php?jours=' . $jours);
 $stats = $r['code'] === 200 ? $r['data'] : null;
 
-/** Barres horizontales : [libellé => valeur], la plus grande valeur fait 100 %. */
-function barres(array $lignes, string $cle): string
-{
-    $max = max(array_column($lignes, 'appels') ?: [1]);
-    $html = '<ul class="barres">';
-    foreach ($lignes as $l) {
-        $html .= '<li><span class="barres-libelle">' . htmlspecialchars((string) $l[$cle]) . ' <span class="mono">(' . $l['appels'] . ')</span></span>'
-            . '<span class="barres-fond"><span class="barres-plein" style="width: ' . round(100 * $l['appels'] / $max) . '%"></span></span></li>';
-    }
-    return $html . '</ul>';
-}
-
 $titre = 'Statistiques de l\'API';
 $page = 'statistiques';
-include("includes/haut.php");
+require __DIR__ . '/includes/haut.php';
 ?>
 <div class="entete-page">
   <div>
@@ -40,7 +25,7 @@ include("includes/haut.php");
 </div>
 
 <?php if (!$stats): ?>
-<p class="annonce annonce-erreur">Statistiques indisponibles : <?= $r['code'] === 401 ? 'clé d\'API refusée par le site.' : 'le site ne répond pas (code ' . $r['code'] . ').' ?></p>
+<p class="annonce annonce-erreur">Statistiques indisponibles : <?= htmlspecialchars(lcfirst(message_erreur_api($r))) ?>.</p>
 <?php else:
     $max = max(array_column($stats['par_jour'], 'appels') ?: [1]) ?: 1; ?>
 <section class="chiffres" aria-label="Résumé">
@@ -77,4 +62,4 @@ include("includes/haut.php");
   </section>
 </div>
 <?php endif; ?>
-<?php include("includes/bas.php"); ?>
+<?php require __DIR__ . '/includes/bas.php'; ?>

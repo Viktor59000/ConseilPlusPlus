@@ -1,12 +1,9 @@
 <?php
 // bureau/tableau.php — Tableau de bord : chiffres du jour, relevé du courrier, dossiers à traiter.
-require("includes/bdd.php");
-require("includes/session.php");
-require("includes/metier.php");
-$agent = exiger_agent();
+require_once __DIR__ . '/includes/amorce.php';
 
 $compte = $bdd->query("SELECT statut, COUNT(*) AS n FROM dossiers GROUP BY statut")->fetchAll(PDO::FETCH_KEY_PAIR);
-$par_type = $bdd->query("SELECT type_demande, COUNT(*) AS n FROM dossiers GROUP BY type_demande ORDER BY n DESC")->fetchAll(PDO::FETCH_KEY_PAIR);
+$par_type = $bdd->query("SELECT type_demande, COUNT(*) AS n FROM dossiers GROUP BY type_demande ORDER BY n DESC")->fetchAll();
 $a_traiter = $bdd->query("SELECT * FROM dossiers WHERE statut <> 'classe' ORDER BY date_demande LIMIT 8")->fetchAll();
 $dernier = $bdd->query("SELECT * FROM releves ORDER BY date_releve DESC LIMIT 1")->fetch();
 // Palmarès des votes du public, lu par l'API publique du site (le Bureau ne touche pas à sa base)
@@ -16,7 +13,7 @@ $total = array_sum($compte);
 
 $titre = 'Tableau de bord';
 $page = 'tableau';
-include("includes/haut.php");
+require __DIR__ . '/includes/haut.php';
 ?>
 <div class="entete-page">
   <div>
@@ -48,7 +45,7 @@ include("includes/haut.php");
       <tbody>
 <?php foreach ($a_traiter as $d): ?>
         <tr>
-          <td class="mono"><a href="dossier.php?id=<?= $d['id'] ?>"><?= sprintf('%04d', $d['id_site']) ?></a></td>
+          <td class="mono"><a href="dossier.php?id=<?= $d['id'] ?>"><?= numero_dossier($d['id_site']) ?></a></td>
           <td><?= htmlspecialchars($d['nom']) ?></td>
           <td><?= htmlspecialchars($d['type_demande']) ?></td>
           <td class="mono"><?= date_courte($d['date_demande']) ?></td>
@@ -66,14 +63,7 @@ include("includes/haut.php");
 <?php if (!$par_type): ?>
     <p class="aide">Pas encore de dossier. La répartition est donc parfaitement équilibrée.</p>
 <?php else: ?>
-    <ul class="barres">
-<?php foreach ($par_type as $type => $n): ?>
-      <li>
-        <span class="barres-libelle"><?= htmlspecialchars($type) ?> <span class="mono">(<?= $n ?>)</span></span>
-        <span class="barres-fond"><span class="barres-plein" style="width: <?= round(100 * $n / $total) ?>%"></span></span>
-      </li>
-<?php endforeach; ?>
-    </ul>
+    <?= barres($par_type, 'type_demande', 'n', $total) ?>
 <?php endif; ?>
     <p class="aide mono">Priorité de tous les dossiers : moyenne.</p>
 
@@ -109,4 +99,4 @@ include("includes/haut.php");
     </form>
   </div>
 </section>
-<?php include("includes/bas.php"); ?>
+<?php require __DIR__ . '/includes/bas.php'; ?>

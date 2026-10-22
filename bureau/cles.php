@@ -1,31 +1,28 @@
 <?php
 // bureau/cles.php — Clés d'API par application : délivrer, révoquer, effacer (API /api/cles.php, clé maîtresse du Bureau).
 // La clé neuve n'est affichée qu'une fois : le site n'en garde que l'empreinte.
-require("includes/bdd.php");
-require("includes/session.php");
-require("includes/metier.php");
-$agent = exiger_agent();
+require_once __DIR__ . '/includes/amorce.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!csrf_valide()) {
-        annoncer('Session expirée : action annulée.', 'erreur');
-    } elseif (($_POST['action'] ?? '') === 'creer') {
-        $droits = array_values(array_intersect(['lecture', 'ecriture'], (array) ($_POST['droits'] ?? [])));
-        $r = api('POST', 'cles.php', ['nom' => trim((string) ($_POST['nom'] ?? '')), 'droits' => $droits]);
+    exiger_post('cles.php');
+    $action = $_POST['action'] ?? '';
+    if ($action === 'creer') {
+        // Nom et droits sont validés par l'API (422 avec le détail des champs)
+        $r = api('POST', 'cles.php', ['nom' => trim((string) ($_POST['nom'] ?? '')), 'droits' => array_values((array) ($_POST['droits'] ?? []))]);
         if ($r['code'] === 201) {
             $_SESSION['cle_neuve'] = [$r['data']['nom'], $r['data']['cle']];
-            annoncer('Clé délivrée. Elle ne sera affichée qu\'une seule fois.');
-        } else {
-            annoncer($r['code'] === 422 ? implode(' ', $r['data']['champs'] ?? []) : "Le site n'a pas répondu (code {$r['code']}).", 'erreur');
+            rediriger('cles.php', 'Clé délivrée. Elle ne sera affichée qu\'une seule fois.');
         }
-    } elseif (in_array($_POST['action'] ?? '', ['revoquer', 'effacer'], true)) {
-        $id = (int) ($_POST['id'] ?? 0);
-        $r = api('DELETE', "cles.php?id=$id");
-        annoncer($r['code'] === 204 ? ($_POST['action'] === 'revoquer' ? 'Clé révoquée : elle ne fonctionne plus.' : 'Clé effacée de la liste.')
-            : 'Clé introuvable.', $r['code'] === 204 ? 'ok' : 'erreur');
+        rediriger('cles.php', $r['code'] === 422 ? implode(' ', $r['data']['champs'] ?? []) : message_erreur_api($r) . '.', 'erreur');
     }
-    header('Location: cles.php');
-    exit();
+    if ($action === 'revoquer' || $action === 'effacer') {
+        $r = api('DELETE', 'cles.php?id=' . (int) ($_POST['id'] ?? 0));
+        if ($r['code'] === 204) {
+            rediriger('cles.php', $action === 'revoquer' ? 'Clé révoquée : elle ne fonctionne plus.' : 'Clé effacée de la liste.');
+        }
+        rediriger('cles.php', $r['code'] === 404 ? 'Clé introuvable.' : message_erreur_api($r) . '.', 'erreur');
+    }
+    rediriger('cles.php');
 }
 
 $cle_neuve = $_SESSION['cle_neuve'] ?? null;
@@ -35,7 +32,7 @@ $cles = $r['code'] === 200 ? $r['data']['cles'] : null;
 
 $titre = 'Clés d\'API';
 $page = 'cles';
-include("includes/haut.php");
+require __DIR__ . '/includes/haut.php';
 ?>
 <div class="entete-page">
   <div>
@@ -57,7 +54,7 @@ include("includes/haut.php");
   <section class="carte" aria-labelledby="titre-liste">
     <h2 id="titre-liste">Clés délivrées</h2>
 <?php if ($cles === null): ?>
-    <p class="alerte">Le site n'a pas répondu (code <?= (int) $r['code'] ?>).</p>
+    <p class="alerte"><?= htmlspecialchars(message_erreur_api($r)) ?>.</p>
 <?php elseif (!$cles): ?>
     <p class="aide">Aucune clé délivrée pour l'instant. Le Bureau travaille seul, ce qui lui convient.</p>
 <?php else: ?>
@@ -99,4 +96,4 @@ include("includes/haut.php");
     </form>
   </section>
 </div>
-<?php include("includes/bas.php"); ?>
+<?php require __DIR__ . '/includes/bas.php'; ?>

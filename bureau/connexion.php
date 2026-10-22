@@ -4,12 +4,11 @@
  * Tant qu'aucun agent n'existe, la page propose la création du premier compte, protégée par la clé d'API
  * du site (connue seulement de l'administrateur) : personne d'autre ne peut s'approprier le Bureau en ligne.
  */
-require("includes/bdd.php");
-require("includes/session.php");
+require_once __DIR__ . '/includes/bdd.php';
+require_once __DIR__ . '/includes/session.php';
 
 if (isset($_SESSION['agent'])) {
-    header('Location: tableau.php');
-    exit();
+    rediriger('tableau.php');
 }
 
 $installation = (int) $bdd->query('SELECT COUNT(*) FROM agents')->fetchColumn() === 0;
@@ -44,15 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($agent && password_verify($mdp, $agent['mdp'])) {
             session_regenerate_id(true);
             $_SESSION['agent'] = ['id' => (int) $agent['id'], 'nom' => $agent['nom']];
-            header('Location: tableau.php');
-            exit();
+            rediriger('tableau.php');
         }
         $erreur = 'Identifiants incorrects. Le Bureau ne vous reconnaît pas, ce qui ne veut rien dire.';
     }
 }
 
 $titre = $installation ? 'Installation' : 'Connexion';
-include("includes/haut.php");
+require __DIR__ . '/includes/haut.php';
 ?>
 <section class="carte carte-etroite">
   <p class="etiquette mono"><?= $installation ? 'Première ouverture du Bureau' : 'Accès réservé aux agents' ?></p>
@@ -78,4 +76,4 @@ include("includes/haut.php");
     <button class="btn btn-tampon" type="submit"><?= $installation ? 'Créer le compte et entrer' : 'Entrer au Bureau' ?></button>
   </form>
 </section>
-<?php include("includes/bas.php"); ?>
+<?php require __DIR__ . '/includes/bas.php'; ?>

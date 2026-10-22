@@ -3,92 +3,82 @@
  * bureau/dossier.php — Fiche d'un dossier : la demande, son statut, et la réponse officielle du cabinet.
  * Actions (POST + CSRF) : examiner, rédiger une réponse (conseil tiré de l'API), enregistrer, classer, rouvrir.
  */
-require("includes/bdd.php");
-require("includes/session.php");
-require("includes/metier.php");
-$agent = exiger_agent();
+require_once __DIR__ . '/includes/amorce.php';
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 $stmt = $bdd->prepare('SELECT d.*, a.nom AS agent FROM dossiers d LEFT JOIN agents a ON a.id = d.id_agent WHERE d.id = ?');
 $stmt->execute([$id ?: 0]);
 $dossier = $stmt->fetch();
 if (!$dossier) {
-    http_response_code(404);
-    annoncer('Dossier introuvable. Il a peut-être été égaré, ce qui arrive.', 'erreur');
-    header('Location: dossiers.php');
-    exit();
+    rediriger('dossiers.php', 'Dossier introuvable. Il a peut-être été égaré, ce qui arrive.', 'erreur');
 }
 
 $brouillon = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!csrf_valide()) {
-        annoncer('Session expirée : action annulée.', 'erreur');
-    } else {
-        $maj = $bdd->prepare('UPDATE dossiers SET statut = :statut, reponse = :reponse, date_reponse = :date_reponse, envoi = :envoi,
-                              id_agent = :agent WHERE id = :id');
-        $valeurs = ['statut' => $dossier['statut'], 'reponse' => $dossier['reponse'], 'date_reponse' => $dossier['date_reponse'],
-            'envoi' => $dossier['envoi'], 'agent' => $agent['id'], 'id' => $dossier['id']];
-        $texte = trim((string) ($_POST['reponse'] ?? ''));
-        switch ($_POST['action'] ?? '') {
-            case 'examiner':
+    exiger_post('dossier.php?id=' . $dossier['id']);
+    $maj = $bdd->prepare('UPDATE dossiers SET statut = :statut, reponse = :reponse, date_reponse = :date_reponse, envoi = :envoi,
+                          id_agent = :agent WHERE id = :id');
+    $valeurs = ['statut' => $dossier['statut'], 'reponse' => $dossier['reponse'], 'date_reponse' => $dossier['date_reponse'],
+        'envoi' => $dossier['envoi'], 'agent' => $agent['id'], 'id' => $dossier['id']];
+    $texte = trim((string) ($_POST['reponse'] ?? ''));
+    switch ($_POST['action'] ?? '') {
+        case 'examiner':
+            $valeurs['statut'] = 'en_cours';
+            annoncer('Dossier pris en charge. Il est désormais « en cours d\'examen », ce qui ne garantit rien.');
+            break;
+        case 'rediger':
+            $ton = array_key_exists($_POST['ton'] ?? '', TONS_REPONSE) ? $_POST['ton'] : 'standard';
+            $brouillon = rediger_reponse($dossier, $ton);
+            $valeurs['statut'] = $dossier['statut'] === 'a_traiter' ? 'en_cours' : $dossier['statut'];
+            break;
+        case 'enregistrer':
+            $valeurs['reponse'] = mb_substr($texte, 0, 5000) ?: null;
+            $valeurs['statut'] = $dossier['statut'] === 'a_traiter' ? 'en_cours' : $dossier['statut'];
+            annoncer('Réponse enregistrée.');
+            break;
+        case 'classer':
+            if ($texte === '') {
+                annoncer('Impossible de classer un dossier sans réponse. Même le Bureau a ses principes.', 'erreur');
+                break;
+            }
+            $valeurs['reponse'] = mb_substr($texte, 0, 5000);
+            [$parti, $raison] = envoyer_reponse($dossier, $valeurs['reponse'], $agent['nom']);
+            if (!$parti && envoi_actif()) {
+                // L'envoi a échoué : la réponse est gardée, le dossier reste ouvert pour réessayer
                 $valeurs['statut'] = 'en_cours';
-                annoncer('Dossier pris en charge. Il est désormais « en cours d\'examen », ce qui ne garantit rien.');
+                $valeurs['envoi'] = 'echec';
+                annoncer("L'email n'est pas parti ($raison). La réponse est enregistrée : réessayez plus tard.", 'erreur');
                 break;
-            case 'rediger':
-                $ton = array_key_exists($_POST['ton'] ?? '', TONS_REPONSE) ? $_POST['ton'] : 'standard';
-                $brouillon = rediger_reponse($dossier, $agent['nom'], $ton);
-                $valeurs['statut'] = $dossier['statut'] === 'a_traiter' ? 'en_cours' : $dossier['statut'];
-                break;
-            case 'enregistrer':
-                $valeurs['reponse'] = mb_substr($texte, 0, 5000) ?: null;
-                $valeurs['statut'] = $dossier['statut'] === 'a_traiter' ? 'en_cours' : $dossier['statut'];
-                annoncer('Réponse enregistrée.');
-                break;
-            case 'classer':
-                if ($texte === '') {
-                    annoncer('Impossible de classer un dossier sans réponse. Même le Bureau a ses principes.', 'erreur');
-                    break;
-                }
-                $valeurs['reponse'] = mb_substr($texte, 0, 5000);
-                [$parti, $raison] = envoyer_reponse($dossier, $valeurs['reponse'], $agent['nom']);
-                if (!$parti && envoi_actif()) {
-                    // L'envoi a échoué : la réponse est gardée, le dossier reste ouvert pour réessayer
-                    $valeurs['statut'] = 'en_cours';
-                    $valeurs['envoi'] = 'echec';
-                    annoncer("L'email n'est pas parti ($raison). La réponse est enregistrée : réessayez plus tard.", 'erreur');
-                    break;
-                }
-                $valeurs['statut'] = 'classe';
-                $valeurs['date_reponse'] = date('Y-m-d H:i:s');
-                $valeurs['envoi'] = $parti ? 'envoye' : 'archive';
-                annoncer($parti
-                    ? "Réponse envoyée par email à {$dossier['email']}. Dossier classé."
-                    : "Réponse archivée et dossier classé (envoi par email non configuré : aucun mail n'est parti).");
-                break;
-            case 'rouvrir':
-                $valeurs['statut'] = 'en_cours';
-                annoncer('Dossier rouvert. Le classement était peut-être prématuré.');
-                break;
-        }
-        $maj->execute($valeurs);
-        if ($brouillon === null) {
-            header('Location: dossier.php?id=' . $dossier['id']);
-            exit();
-        }
-        $dossier = array_merge($dossier, ['statut' => $valeurs['statut']]);
+            }
+            $valeurs['statut'] = 'classe';
+            $valeurs['date_reponse'] = date('Y-m-d H:i:s');
+            $valeurs['envoi'] = $parti ? 'envoye' : 'archive';
+            annoncer($parti
+                ? "Réponse envoyée par email à {$dossier['email']}. Dossier classé."
+                : "Réponse archivée et dossier classé (envoi par email non configuré : aucun mail n'est parti).");
+            break;
+        case 'rouvrir':
+            $valeurs['statut'] = 'en_cours';
+            annoncer('Dossier rouvert. Le classement était peut-être prématuré.');
+            break;
     }
+    $maj->execute($valeurs);
+    if ($brouillon === null) {
+        rediriger('dossier.php?id=' . $dossier['id']);
+    }
+    $dossier = array_merge($dossier, ['statut' => $valeurs['statut']]);
 }
 
 $reponse = $brouillon ?? $dossier['reponse'] ?? '';
 $classe = $dossier['statut'] === 'classe';
-$titre = 'Dossier n° ' . sprintf('%04d', $dossier['id_site']);
+$titre = 'Dossier n° ' . numero_dossier($dossier['id_site']);
 $page = 'dossiers';
-include("includes/haut.php");
+require __DIR__ . '/includes/haut.php';
 ?>
 <p><a class="lien-fort" href="dossiers.php">← Tous les dossiers</a></p>
 <div class="entete-page">
   <div>
-    <p class="etiquette mono">Dossier n° <?= sprintf('%04d', $dossier['id_site']) ?></p>
+    <p class="etiquette mono">Dossier n° <?= numero_dossier($dossier['id_site']) ?></p>
     <h1><?= htmlspecialchars($dossier['type_demande']) ?></h1>
     <p><span class="pastille pastille-<?= $dossier['statut'] ?>"><?= STATUTS_DOSSIER[$dossier['statut']] ?></span>
       <?php if (!$classe): ?><span class="aide">Délai estimé : <?= htmlspecialchars(delai_estime((int) $dossier['id'])) ?>.</span><?php endif; ?></p>
@@ -151,4 +141,4 @@ include("includes/haut.php");
 <?php endif; ?>
   </section>
 </div>
-<?php include("includes/bas.php"); ?>
+<?php require __DIR__ . '/includes/bas.php'; ?>

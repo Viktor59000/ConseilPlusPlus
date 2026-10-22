@@ -34,7 +34,7 @@ router([
         if (!preg_match('/^[\p{L}\p{N} ._-]{2,40}$/u', $nom) || in_array(mb_strtolower($nom), [APPLICATION_GESTION, 'site', 'public'], true)) {
             $erreurs['nom'] = "2 à 40 lettres, chiffres, espaces, points ou tirets (gestion, site et public sont réservés).";
         }
-        if (!is_array($droits) || !$droits || array_diff($droits, DROITS)) {
+        if (!is_array($droits) || !$droits || array_filter($droits, fn($d) => !in_array($d, DROITS, true))) {
             $erreurs['droits'] = 'Liste de droits : lecture et/ou ecriture.';
         }
         refuser_champs($erreurs);

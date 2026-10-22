@@ -21,8 +21,7 @@ function exiger_agent(): array
     }
     if (!$existe) {
         unset($_SESSION['agent']);
-        header('Location: connexion.php');
-        exit();
+        rediriger('connexion.php');
     }
     return $_SESSION['agent'];
 }
@@ -38,4 +37,22 @@ function annonce(): ?array
     $a = $_SESSION['annonce'] ?? null;
     unset($_SESSION['annonce']);
     return $a;
+}
+
+/** Redirige vers $url (page du Bureau), avec un message éventuel pour la page suivante. */
+function rediriger(string $url, ?string $annonce = null, string $genre = 'ok'): never
+{
+    if ($annonce !== null) {
+        annoncer($annonce, $genre);
+    }
+    header('Location: ' . $url);
+    exit();
+}
+
+/** Garde des actions : POST avec jeton CSRF valide, sinon retour à $retour (avec $annonce, en erreur). */
+function exiger_post(string $retour, ?string $annonce = 'Session expirée : action annulée.'): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !csrf_valide()) {
+        rediriger($retour, $annonce, 'erreur');
+    }
 }

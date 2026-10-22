@@ -4,25 +4,15 @@
  *   base=gestion → la base du Bureau, exportée directement
  *   base=site    → la base du site, demandée à son API (api/export.php) : le Bureau ne lit jamais la base du site
  */
-require("includes/bdd.php");
-require("includes/session.php");
-require("includes/api.php");
-require("../includes/export-sql.php");
-$agent = exiger_agent();
+require_once __DIR__ . '/includes/amorce.php';
+require_once __DIR__ . '/../includes/export-sql.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !csrf_valide()) {
-    annoncer('Session expirée : sauvegarde annulée. Recommencez.', 'erreur');
-    header('Location: tableau.php');
-    exit();
-}
+exiger_post('tableau.php', 'Session expirée : sauvegarde annulée. Recommencez.');
 
 if (($_POST['base'] ?? '') === 'site') {
     $r = api('GET', 'export.php');
     if ($r['code'] !== 200 || !isset($r['data']['sql'])) {
-        annoncer($r['code'] === 401 ? 'Clé d\'API refusée par le site : sauvegarde impossible.'
-            : 'Le site ne répond pas (code ' . $r['code'] . ') : réessayez dans une minute.', 'erreur');
-        header('Location: tableau.php');
-        exit();
+        rediriger('tableau.php', message_erreur_api($r) . ($r['code'] === 401 ? ' : sauvegarde impossible.' : ' : réessayez dans une minute.'), 'erreur');
     }
     $fichier = $r['data']['fichier'];
     $sql = $r['data']['sql'];

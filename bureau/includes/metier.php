@@ -22,8 +22,7 @@ function relever_courrier(PDO $bdd, ?int $id_agent): array
 {
     $liste = api('GET', 'contacts.php?statut=nouveau');
     if ($liste['code'] !== 200 || !isset($liste['data']['contacts'])) {
-        $detail = $liste['code'] === 401 ? 'Clé d\'API refusée par le site.' : 'Site injoignable (code ' . $liste['code'] . ').';
-        return journaliser_releve($bdd, 0, 1, $detail, $id_agent);
+        return journaliser_releve($bdd, 0, 1, message_erreur_api($liste) . '.', $id_agent);
     }
 
     $inserer = $bdd->prepare('INSERT IGNORE INTO dossiers (id_site, nom, email, type_demande, message, date_demande)
@@ -71,7 +70,7 @@ const TONS_REPONSE = [
 ];
 
 /** Projet de réponse officielle, à relire et modifier par l'agent avant envoi. $ton : clé de TONS_REPONSE. */
-function rediger_reponse(array $dossier, string $agent, string $ton = 'standard'): string
+function rediger_reponse(array $dossier, string $ton = 'standard'): string
 {
     $date = (new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE, 'Europe/Paris'))
         ->format(new DateTime($dossier['date_demande']));
@@ -109,7 +108,7 @@ function rediger_reponse(array $dossier, string $agent, string $ton = 'standard'
     // La signature (nom de l'agent, adresse, tampon) est ajoutée automatiquement à l'envoi : includes/courriel.php
 }
 
-/** Vrai si l'envoi d'emails est configuré (clé Brevo + adresse d'expédition). */
+/** Vrai si l'envoi d'emails est configuré (clé Brevo + adresse d'expédition) : libellés et suites de dossier.php. */
 function envoi_actif(): bool
 {
     return BREVO_API_KEY !== '' && filter_var(BUREAU_EXPEDITEUR, FILTER_VALIDATE_EMAIL) !== false;
@@ -121,10 +120,8 @@ function envoi_actif(): bool
  */
 function envoyer_reponse(array $dossier, string $texte, string $agent): array
 {
-    if (!envoi_actif()) {
-        return [false, 'envoi par email non configuré'];
-    }
-    $numero = sprintf('%04d', $dossier['id_site']);
+    // Sans configuration (clé, expéditeur), envoyer_courriel() renvoie [false, 'envoi par email non configuré']
+    $numero = numero_dossier((int) $dossier['id_site']);
     $html = gabarit_courriel([
         'titre' => 'Réponse officielle du cabinet',
         'corps' => $texte,
@@ -137,6 +134,12 @@ function envoyer_reponse(array $dossier, string $texte, string $agent): array
     return envoyer_courriel(BREVO_API_KEY, BUREAU_EXPEDITEUR, BUREAU_EXPEDITEUR_NOM, $dossier['email'], $dossier['nom'],
         "Votre demande n° $numero — réponse du cabinet ConseilPlus+",
         $texte . signature_texte($agent, 'Conseiller moyen'), $html);
+}
+
+/** Numéro de dossier affiché (« 0042 ») : celui de la demande sur le site. */
+function numero_dossier(int $id): string
+{
+    return sprintf('%04d', $id);
 }
 
 /** Date courte à la française (« 14/10/2026 à 13 h 36 »). */

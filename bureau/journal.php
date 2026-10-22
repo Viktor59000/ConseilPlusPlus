@@ -1,16 +1,13 @@
 <?php
 // bureau/journal.php — Journal des relevés de courrier (chaque import depuis l'API du site).
-require("includes/bdd.php");
-require("includes/session.php");
-require("includes/metier.php");
-$agent = exiger_agent();
+require_once __DIR__ . '/includes/amorce.php';
 
 $releves = $bdd->query('SELECT r.*, a.nom AS agent FROM releves r LEFT JOIN agents a ON a.id = r.id_agent
                         ORDER BY r.date_releve DESC LIMIT 100')->fetchAll();
 
 $titre = 'Journal des relevés';
 $page = 'journal';
-include("includes/haut.php");
+require __DIR__ . '/includes/haut.php';
 ?>
 <div class="entete-page">
   <div>
@@ -39,4 +36,4 @@ include("includes/haut.php");
   </table>
 <?php endif; ?>
 </section>
-<?php include("includes/bas.php"); ?>
+<?php require __DIR__ . '/includes/bas.php'; ?>

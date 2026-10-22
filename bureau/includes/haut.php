@@ -14,7 +14,6 @@ envoyer_csp();
   <title><?= htmlspecialchars($titre) ?> — Le Bureau</title>
   <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#F5F6FA">
-  <?php require_once __DIR__ . '/../../includes/theme.php'; ?>
   <?= theme_script() ?>
 
   <link rel="preload" href="../assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin>

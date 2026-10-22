@@ -1,9 +1,6 @@
 <?php
 // bureau/dossiers.php — Liste des dossiers, filtrable par statut et type, avec recherche par nom ou email.
-require("includes/bdd.php");
-require("includes/session.php");
-require("includes/metier.php");
-$agent = exiger_agent();
+require_once __DIR__ . '/includes/amorce.php';
 
 $statut = array_key_exists($_GET['statut'] ?? '', STATUTS_DOSSIER) ? $_GET['statut'] : '';
 $type = trim((string) ($_GET['type'] ?? ''));
@@ -31,7 +28,7 @@ $types = $bdd->query('SELECT DISTINCT type_demande FROM dossiers ORDER BY type_d
 
 $titre = 'Dossiers';
 $page = 'dossiers';
-include("includes/haut.php");
+require __DIR__ . '/includes/haut.php';
 ?>
 <div class="entete-page">
   <div>
@@ -76,7 +73,7 @@ include("includes/haut.php");
     <tbody>
 <?php foreach ($dossiers as $d): ?>
       <tr>
-        <td class="mono"><a href="dossier.php?id=<?= $d['id'] ?>"><?= sprintf('%04d', $d['id_site']) ?></a></td>
+        <td class="mono"><a href="dossier.php?id=<?= $d['id'] ?>"><?= numero_dossier($d['id_site']) ?></a></td>
         <td><?= htmlspecialchars($d['nom']) ?><br><span class="mono petit"><?= htmlspecialchars($d['email']) ?></span></td>
         <td><?= htmlspecialchars($d['type_demande']) ?></td>
         <td class="mono"><?= date_courte($d['date_demande']) ?></td>
@@ -88,4 +85,4 @@ include("includes/haut.php");
   </table>
 <?php endif; ?>
 </section>
-<?php include("includes/bas.php"); ?>
+<?php require __DIR__ . '/includes/bas.php'; ?>
