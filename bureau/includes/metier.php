@@ -136,6 +136,105 @@ function envoyer_reponse(array $dossier, string $texte, string $agent): array
         $texte . signature_texte($agent, 'Conseiller moyen'), $html);
 }
 
+/** Vues rapides de la liste des dossiers (dossiers.php, export CSV). */
+const VUES_DOSSIERS = [
+    'moi' => 'Assignés à moi',
+    'retard' => 'En retard',
+];
+
+/** Condition SQL d'un dossier en retard : échéance dépassée et pas encore classé. */
+const SQL_EN_RETARD = "d.echeance < CURDATE() AND d.statut <> 'classe'";
+
+/**
+ * Critères de la liste des dossiers, lus dans $source ($_GET, ou $_POST pour l'export) et nettoyés.
+ * statut, type, q (nom, email ou message), vue (VUES_DOSSIERS), tri (date | echeance).
+ */
+function criteres_dossiers(array $source): array
+{
+    $lire = fn (string $cle) => trim((string) ($source[$cle] ?? ''));
+    return [
+        'statut' => array_key_exists($lire('statut'), STATUTS_DOSSIER) ? $lire('statut') : '',
+        'type' => $lire('type'),
+        'q' => mb_substr($lire('q'), 0, 100),
+        'vue' => array_key_exists($lire('vue'), VUES_DOSSIERS) ? $lire('vue') : '',
+        'tri' => $lire('tri') === 'echeance' ? 'echeance' : 'date',
+    ];
+}
+
+/** Dossiers correspondant aux critères (criteres_dossiers()), avec les noms du responsable et du dernier intervenant. */
+function filtrer_dossiers(PDO $bdd, array $criteres, int $id_agent, int $limite = 200): array
+{
+    $conditions = [];
+    $params = [];
+    if ($criteres['statut'] !== '') {
+        $conditions[] = 'd.statut = :statut';
+        $params['statut'] = $criteres['statut'];
+    }
+    if ($criteres['type'] !== '') {
+        $conditions[] = 'd.type_demande = :type';
+        $params['type'] = $criteres['type'];
+    }
+    if ($criteres['q'] !== '') {
+        $conditions[] = '(d.nom LIKE :q1 OR d.email LIKE :q2 OR d.message LIKE :q3)';
+        $params += ['q1' => '%' . $criteres['q'] . '%', 'q2' => '%' . $criteres['q'] . '%', 'q3' => '%' . $criteres['q'] . '%'];
+    }
+    if ($criteres['vue'] === 'moi') {
+        $conditions[] = 'd.id_responsable = :moi';
+        $params['moi'] = $id_agent;
+    } elseif ($criteres['vue'] === 'retard') {
+        $conditions[] = SQL_EN_RETARD;
+    }
+    $ordre = $criteres['tri'] === 'echeance' ? 'd.echeance IS NULL, d.echeance, d.date_demande' : 'd.date_demande DESC';
+    $stmt = $bdd->prepare('SELECT d.*, r.nom AS responsable, i.nom AS intervenant FROM dossiers d
+                           LEFT JOIN agents r ON r.id = d.id_responsable LEFT JOIN agents i ON i.id = d.id_agent'
+        . ($conditions ? ' WHERE ' . implode(' AND ', $conditions) : '') . " ORDER BY $ordre LIMIT " . max(1, $limite));
+    $stmt->execute($params);
+    return $stmt->fetchAll();
+}
+
+/** Vrai si le dossier a une échéance dépassée et n'est pas classé. */
+function en_retard(array $dossier): bool
+{
+    return $dossier['echeance'] !== null && $dossier['statut'] !== 'classe' && $dossier['echeance'] < date('Y-m-d');
+}
+
+/** Échéance à la française (« 14/10/2026 »), ou « — ». */
+function date_echeance(?string $date): string
+{
+    return $date ? (new DateTime($date))->format('d/m/Y') : '—';
+}
+
+/**
+ * Purge du site : supprime la demande d'un dossier classé sur le site (DELETE /api/contacts.php), le dossier reste
+ * au Bureau avec la date de purge. Retourne 'purgee', 'absente' (déjà supprimée sur le site : 404) ou 'erreur'.
+ */
+function purger_du_site(PDO $bdd, array $dossier): string
+{
+    $r = api('DELETE', 'contacts.php?id=' . (int) $dossier['id_site']);
+    if ($r['code'] !== 204 && $r['code'] !== 404) {
+        return 'erreur';
+    }
+    $bdd->prepare('UPDATE dossiers SET date_purge = NOW() WHERE id = ?')->execute([$dossier['id']]);
+    return $r['code'] === 204 ? 'purgee' : 'absente';
+}
+
+/** Dossiers classés depuis plus de 6 mois et encore présents sur le site (candidats à la purge en lot). */
+const SQL_PURGEABLES = "statut = 'classe' AND date_purge IS NULL AND date_reponse < NOW() - INTERVAL 6 MONTH";
+
+/** Trace d'une purge dans le journal du Bureau (table releves, nature « purge »). */
+function journaliser_purge(PDO $bdd, int $erreurs, string $detail, ?int $id_agent): void
+{
+    $bdd->prepare("INSERT INTO releves (nature, importes, erreurs, detail, id_agent) VALUES ('purge', 0, ?, ?, ?)")
+        ->execute([$erreurs, mb_substr($detail, 0, 255), $id_agent]);
+}
+
+/** Cellule de CSV sûre pour Excel : une valeur commençant par = + - @ n'est jamais lue comme une formule. */
+function cellule_csv(?string $valeur): string
+{
+    $valeur = (string) $valeur;
+    return preg_match('/^[=+\-@\t\r]/', $valeur) ? "'" . $valeur : $valeur;
+}
+
 /** Numéro de dossier affiché (« 0042 ») : celui de la demande sur le site. */
 function numero_dossier(int $id): string
 {

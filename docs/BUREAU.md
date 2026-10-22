@@ -12,10 +12,24 @@ les demandes de contact arrivent uniquement par l'API REST (`api/contacts.php`, 
    `GET /api/contacts.php?statut=nouveau` → chaque demande devient un dossier dans la base `gestion`,
    puis `PATCH /api/contacts.php?id=…` la marque `importe` sur le site.
    Sans doublon possible : `id_site` est unique, et une demande dont le marquage a échoué est re-marquée au relevé suivant.
-2. **Dossiers** : liste filtrable (statut, type, nom ou email).
+2. **Dossiers** : liste filtrable (statut, type, « assignés à moi », « en retard »), recherche dans le nom, l'email
+   **et le message**, tri par date de réception ou par échéance. **Exporter en CSV** télécharge la sélection affichée
+   (`bureau/export-dossiers.php`, POST + CSRF ; BOM UTF-8, séparateur `;`, lisible directement par Excel ; une cellule
+   commençant par `=`, `+`, `-` ou `@` est préfixée d'une apostrophe pour ne jamais être lue comme une formule).
 3. **Fiche dossier** : prise en charge, réponse officielle proposée par le cabinet (conseil tiré de `GET /api/conseils.php`),
    modifiable, puis « Envoyer par email et classer » (voir ci-dessous ; sans configuration, la réponse est archivée).
-4. **Journal des relevés** : chaque import, avec le nombre de dossiers créés et les erreurs.
+   - **Affectation** : un agent responsable (liste des agents) et une **échéance** interne (vraie date), à ne pas confondre
+     avec le « délai estimé » absurde annoncé au client. « Prendre en charge » fait de l'agent le responsable s'il n'y en a pas.
+   - **Dernier intervenant** : mis à jour par les actions qui modifient le dossier (prise en charge, affectation,
+     enregistrement, classement, réouverture), pas par « Rédiger une réponse », qui ne fait que proposer un texte.
+   - **Notes internes** : visibles des seuls agents, jamais envoyées au demandeur ni exportées.
+   - **Autres demandes de cette personne** : les autres dossiers ouverts à la même adresse email.
+   - **Purger du site** (dossier classé) : `DELETE /api/contacts.php?id=…` supprime la demande dans la base du site ;
+     le dossier reste au Bureau avec sa date de purge. Case de confirmation obligatoire (`bureau/purge.php`).
+4. **Tableau de bord** : chiffres (dont le nombre de dossiers en retard), « Mes dossiers », « En retard » (échéance
+   dépassée, dossier non classé), dossiers en attente, et **purge en lot** des dossiers classés depuis plus de 6 mois
+   (200 au plus par passage, avec confirmation).
+5. **Journal** (`journal.php`) : chaque relevé (nombre de dossiers créés, erreurs) et chaque purge du site.
 
 Statuts d'un dossier : `a_traiter` → `en_cours` → `classe` (réouverture possible).
 
@@ -54,8 +68,12 @@ Réimport : phpMyAdmin → base vide → *Importer*. Testé : réimport sans err
 | Table | Rôle |
 |---|---|
 | `agents` | Comptes du Bureau (mot de passe `password_hash`) |
-| `dossiers` | Demandes importées (`id_site` = id de la demande sur le site), statut, réponse, agent |
-| `releves` | Journal des relevés de courrier |
+| `dossiers` | Demandes importées (`id_site` = id de la demande sur le site), statut, réponse, `id_agent` (dernier intervenant), `id_responsable`, `echeance`, `date_purge` |
+| `notes` | Notes internes des dossiers (`id_dossier`, `id_agent`, `texte`, `date`) |
+| `releves` | Journal du Bureau : relevés de courrier et purges (colonne `nature` : `releve` ou `purge`) |
+
+Les colonnes et tables ajoutées après coup sont créées par des migrations idempotentes (`bureau/includes/bdd.php`).
+Pas de clé étrangère sur les nouvelles colonnes : la base locale (WAMP) crée des tables MyISAM.
 
 ## Installation
 

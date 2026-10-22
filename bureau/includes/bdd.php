@@ -60,11 +60,35 @@ try {
             id_agent INT NULL,
             FOREIGN KEY (id_agent) REFERENCES agents(id) ON DELETE SET NULL
         );
+
+        CREATE TABLE IF NOT EXISTS notes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            id_dossier INT NOT NULL,
+            id_agent INT NULL,
+            texte TEXT NOT NULL,
+            date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            INDEX (id_dossier)
+        );
     ");
 
     // Migration : suivi de l'envoi de la réponse par email (envoye | archive | echec)
     if (!$bdd->query("SHOW COLUMNS FROM dossiers LIKE 'envoi'")->fetch()) {
         $bdd->exec("ALTER TABLE dossiers ADD COLUMN envoi VARCHAR(20) NULL AFTER date_reponse");
+    }
+    // Migration : id_agent = dernier intervenant ; id_responsable = agent à qui le dossier est affecté, avec une échéance
+    // réelle (distincte du délai affiché au client). Les dossiers déjà pris en charge gardent leur agent comme responsable.
+    // Ni ici ni dans « notes » de clé étrangère : la base locale (WAMP) crée des tables MyISAM, qui n'en acceptent pas.
+    if (!$bdd->query("SHOW COLUMNS FROM dossiers LIKE 'id_responsable'")->fetch()) {
+        $bdd->exec("ALTER TABLE dossiers ADD COLUMN id_responsable INT NULL AFTER id_agent, ADD COLUMN echeance DATE NULL AFTER id_responsable");
+        $bdd->exec("UPDATE dossiers SET id_responsable = id_agent WHERE statut <> 'a_traiter'");
+    }
+    // Migration : date de suppression de la demande sur le site (« Purger du site »)
+    if (!$bdd->query("SHOW COLUMNS FROM dossiers LIKE 'date_purge'")->fetch()) {
+        $bdd->exec("ALTER TABLE dossiers ADD COLUMN date_purge DATETIME NULL AFTER echeance");
+    }
+    // Migration : le journal du Bureau trace aussi les purges (nature : releve | purge)
+    if (!$bdd->query("SHOW COLUMNS FROM releves LIKE 'nature'")->fetch()) {
+        $bdd->exec("ALTER TABLE releves ADD COLUMN nature VARCHAR(20) NOT NULL DEFAULT 'releve' AFTER date_releve");
     }
 } catch (PDOException $e) {
     error_log('Le Bureau : base de données indisponible (' . $e->getMessage() . ')');

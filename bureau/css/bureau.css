@@ -136,3 +136,21 @@ textarea { line-height: 1.5; resize: vertical; }
 .cle-neuve { border-left: 4px solid var(--jaune); }
 .cle-valeur { display: inline-block; font: 500 1rem var(--mono); padding: 10px 14px; background: var(--fond); border-radius: var(--rayon-petit); overflow-wrap: anywhere; user-select: all; }
 .cle-revoquee td { color: var(--encre-2); }
+
+/* Dossiers : affectation, retard, notes internes, autres demandes, purge */
+.sous-titre { margin-top: 24px; }
+.colonnes-suite { margin-top: 24px; }
+.colonnes-egales { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 24px; }
+.pastille-retard { background: transparent; color: var(--rouge); border-color: currentColor; }
+.notes { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 12px; }
+.notes li { padding: 10px 14px; background: var(--fond); border-radius: var(--rayon-petit); border-left: 4px solid var(--surface-2); }
+.notes p { margin: 0; overflow-wrap: anywhere; }
+.notes .mono { color: var(--encre-2); margin-bottom: 4px; }
+.historique { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 8px; }
+.historique li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.purge { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--filet); }
+.sauvegarde .purge { margin-top: 0; padding-top: 0; border-top: 0; }
+.purge h3 { font-size: 1.05rem; margin: 0 0 4px; }
+.confirmer { display: flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; }
+.confirmer input { width: 20px; height: 20px; min-height: 0; padding: 0; accent-color: var(--rouge); }
+@media (max-width: 860px) { .colonnes-egales { grid-template-columns: minmax(0, 1fr); } }
