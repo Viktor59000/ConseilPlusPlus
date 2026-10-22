@@ -5,10 +5,12 @@
  * GET                                        → 200 { cle_publique } (clé VAPID pour s'abonner dans le navigateur)
  * POST { action: "abonner", abonnement }      → 201 abonné | 422 abonnement invalide
  * POST { action: "desabonner", endpoint }     → 200
- * POST { action: "envoyer" } (clé « ecriture »)                → 200 { envoyes, expires } | 200 { deja: true } (une fois par jour au plus)
+ * POST { action: "envoyer" } (clé « ecriture ») → 200 { envoyes, expires } | 200 { deja: true } (une fois par jour au plus)
+ *                                              | 401 clé absente ou invalide | 403 droit insuffisant
  *
- * Public, sans clé : l'envoi est déclenché chaque matin par la visite quotidienne (.github/workflows/reveil.yml)
- * et ne peut partir qu'une fois par jour, quel que soit le nombre d'appels. Limite : 10 appels par minute et par IP.
+ * GET, abonner et desabonner : publics, sans clé. Envoyer : clé X-API-Key avec le droit « ecriture » (déclenché chaque matin
+ * par la visite quotidienne, .github/workflows/reveil.yml) ; l'envoi ne part qu'une fois par jour, quel que soit le nombre
+ * d'appels. Limite : 10 appels par minute et par IP.
  */
 require_once __DIR__ . '/../includes/api.php';
 require_once __DIR__ . '/../includes/push.php';

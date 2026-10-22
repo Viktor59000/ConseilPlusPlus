@@ -22,6 +22,14 @@ $erreurs = [];
 $saisie = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exiger_post('petit-moyen.php');
+    // Le formulaire porte la date qu'il affichait : passé minuit, « demain » a changé et l'action viserait un autre mot
+    $jour = (string) ($_POST['jour'] ?? '');
+    if ($jour !== $demain) {
+        $lu = DateTime::createFromFormat('!Y-m-d', $jour);
+        $affiche = $lu && $lu->format('Y-m-d') === $jour ? 'du ' . $lu->format('d/m/Y') : 'affiché';
+        rediriger('petit-moyen.php', "Action refusée : le mot $affiche n'est plus celui de demain (minuit est passé entre-temps). "
+            . "Rien n'a été modifié. Voici le mot du " . date_echeance($demain) . ", à relire avant d'agir.", 'erreur');
+    }
     $action = $_POST['action'] ?? '';
     if ($action === 'preparer') {
         // L'IA peut réfléchir un moment : attente plus longue que d'habitude
@@ -95,6 +103,7 @@ require __DIR__ . '/includes/haut.php';
 <?php if (!$mot && !$indisponible): ?>
   <form method="post">
     <?= csrf_champ() ?>
+    <input type="hidden" name="jour" value="<?= $demain ?>">
     <button class="btn btn-clair" name="action" value="preparer" type="submit">Faire préparer par l'IA</button>
   </form>
 <?php endif; ?>
@@ -117,6 +126,7 @@ require __DIR__ . '/includes/haut.php';
 <?php endif; ?>
     <form method="post" class="formulaire">
       <?= csrf_champ() ?>
+      <input type="hidden" name="jour" value="<?= $demain ?>">
       <input type="hidden" name="format" value="<?= htmlspecialchars($format) ?>">
 <?php foreach ($champs_communs + $champs_format[$format] + ['etymologie' => 'Fausse étymologie (facultative)'] as $champ => $libelle):
       $id_champ = 'pm-' . $champ;
@@ -160,6 +170,7 @@ require __DIR__ . '/includes/haut.php';
 
     <form method="post" class="purge">
       <?= csrf_champ() ?>
+      <input type="hidden" name="jour" value="<?= $demain ?>">
       <h3>Rejeter ce mot</h3>
       <p class="aide">Supprime l'entrée préparée (<code>DELETE</code>). Le jour venu, la banque choisira ; une nouvelle préparation reste possible d'ici là.</p>
       <label class="confirmer"><input type="checkbox" name="confirmer" value="1" required> Je confirme le rejet</label>

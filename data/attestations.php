@@ -12,10 +12,10 @@ return [
         'texte' => "Après examen attentif, {nom} obtient le statut de client moyen, ni plus ni moins, avec effet immédiat et sans date de fin.",
         'mention' => 'Taux de moyenneté constaté : 50 %.',
     ],
-    'guichet' => [
-        'titre' => 'Justificatif de passage au guichet',
-        'texte' => "Le cabinet certifie que {nom} a pris un ticket au guichet n° 7 le {date}, et que le guichet a fermé exactement à son tour.",
-        'mention' => 'Réouverture prévue à 14 h 02, sous réserve.',
+    'avis-favorable' => [
+        'titre' => 'Avis favorable du cabinet',
+        'texte' => "Le cabinet émet un avis favorable au sujet de {nom}, sans avoir examiné la question, ce qui garantit son impartialité.",
+        'mention' => 'Avis consultatif. Le cabinet n\'a pas été consulté.',
     ],
     'patience' => [
         'titre' => 'Diplôme de patience administrative',

@@ -65,7 +65,7 @@ function connecter_bdd(): PDO
     return $bdd;
 }
 
-/** Base injoignable : page « Guichet fermé » (ou JSON pour l'API) en 503, détail technique dans les journaux seulement. */
+/** Base injoignable : page « Archives momentanément égarées » (ou JSON pour l'API) en 503, détail technique dans les journaux seulement. */
 function base_indisponible(PDOException $e): never
 {
     // Le détail (adresse du serveur, message MySQL) va dans les journaux, jamais dans la page publique
@@ -78,12 +78,13 @@ function base_indisponible(PDOException $e): never
     }
     header('Content-Type: text/html; charset=utf-8');
     exit('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
-        . '<title>Guichet fermé — ConseilPlus+</title><style>:root{color-scheme:light dark}body{margin:0;min-height:100vh;display:grid;'
+        . '<title>Archives égarées — ConseilPlus+</title><style>:root{color-scheme:light dark}body{margin:0;min-height:100vh;display:grid;'
         . 'place-items:center;background:#F5F6FA;color:#1B2440;font:17px/1.6 Arial,Helvetica,sans-serif}'
         . 'main{max-width:32rem;margin:24px;padding:32px;background:#FFF;border-radius:20px}h1{margin:0 0 12px;font-size:1.6rem;letter-spacing:-.02em}'
         . 'p{margin:0 0 10px}.mono{font-family:ui-monospace,monospace;font-size:.85rem;color:#525A73}'
         . '@media (prefers-color-scheme:dark){body{background:#0E1220;color:#F3F1EC}main{background:#171C2E}.mono{color:#A9AFC3}}</style></head>'
-        . '<body><main><h1>Guichet momentanément fermé</h1><p>Nos archives sont indisponibles. Le cabinet ne voit pas '
-        . 'd\'autre explication.</p><p>Réessayez dans quelques minutes : le guichet rouvre généralement sans prévenir.</p>'
+        . '<body><main><h1>Archives momentanément égarées</h1><p>Nos archives sont indisponibles. Le cabinet ne voit pas '
+        . 'd\'autre explication.</p><p>Le classeur a été prêté à un autre service, qui ne se souvient plus lequel. '
+        . 'Réessayez dans quelques minutes : il revient généralement par le courrier interne.</p>'
         . '<p class="mono">Erreur 503 — service indisponible</p></main></body></html>');
 }

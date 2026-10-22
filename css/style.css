@@ -189,7 +189,7 @@ main > section:not(.bande) + section:not(.bande):not(.appel) { padding-top: clam
 .etape-num { width: 64px; height: 56px; margin-bottom: 22px; font: 800 1.6rem var(--police); color: #F3F1EC; }
 .etape-num path { stroke: #FF5F6D; }
 
-/* Note de service (accueil) : change selon le jour et les dates particulières */
+/* Règlement intérieur (accueil) : un article par jour, voir data/reglement.php */
 .article-jour { margin: 28px 0 0; padding-left: 14px; border-left: 3px solid var(--rouge); color: var(--encre-2); font-size: .98rem; max-width: 46ch; }
 .article-jour strong { color: var(--encre); }
 

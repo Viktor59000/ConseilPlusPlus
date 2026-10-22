@@ -16,7 +16,7 @@ $donnees = [
 ];
 
 $titre = 'Les attestations';
-$description = 'Les attestations officielles de ConseilPlus+ : conseil non suivi, client moyen, passage au guichet… Formulaire du jour rempli, tamponnées par le doyen du cabinet.';
+$description = 'Les attestations officielles de ConseilPlus+ : conseil non suivi, client moyen, avis favorable… Formulaire du jour rempli, tamponnées par le doyen du cabinet.';
 $page = 'autre';
 include __DIR__ . '/includes/header.php';
 ?>

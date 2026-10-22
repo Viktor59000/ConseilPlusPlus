@@ -91,7 +91,7 @@ include __DIR__ . '/includes/header.php';
 <section class="conteneur appel">
   <div>
     <h2>Une question ?</h2>
-    <p class="chapo">Notre guichet est ouvert. Enfin, le formulaire.</p>
+    <p class="chapo">Le formulaire de contact est ouvert jour et nuit. Les réponses suivent leur propre horaire.</p>
   </div>
   <a class="btn btn-tampon" href="contact.php">Nous contacter</a>
 </section>

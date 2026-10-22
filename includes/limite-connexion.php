@@ -2,7 +2,7 @@
 /**
  * Limite le nombre d'essais sur la connexion et l'inscription, sans modifier le code du cours (auth/).
  * Ce fichier s'exécute juste AVANT auth/connexion.php et auth/inscription.php (directive PHP auto_prepend_file :
- * docker/apache.conf en ligne, auth/.user.ini sous WAMP). Il ne fait que compter, et renvoie vers l'espace
+ * docker/apache.conf en ligne, auth/.htaccess sous WAMP). Il ne fait que compter, et renvoie vers l'espace
  * client quand la limite est atteinte ; sinon le code du cours s'exécute normalement.
  *   connexion   : 10 essais par adresse IP et par quart d'heure (contre les essais de mots de passe à la chaîne)
  *   inscription : 5 comptes par adresse IP et par heure (contre les comptes créés en masse)

@@ -51,6 +51,6 @@ return [
     ['350', "Les dossiers sont empilés par ordre d'urgence. Le plus urgent se trouve donc en bas de la pile, où il demeure."],
     ['368', "Toute personne surprise à attendre sans numéro prend un numéro pour attendre son numéro."],
     ['389', "Le chauffage est réglé sur « moyen ». Les réclamations relatives au chauffage sont réglées sur « moyen » également."],
-    ['401', "Le présent règlement ne peut être contesté qu'en personne, au guichet n° 7, pendant sa fermeture."],
+    ['401', "Le présent règlement ne peut être contesté que par écrit, sur le formulaire de contestation prévu à l'article 413."],
     ['412', "Le présent article est le dernier. Les suivants sont en cours de rédaction."],
 ];

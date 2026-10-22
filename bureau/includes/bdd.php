@@ -78,13 +78,14 @@ try {
     // Migration : id_agent = dernier intervenant ; id_responsable = agent à qui le dossier est affecté, avec une échéance
     // réelle (distincte du délai affiché au client). Les dossiers déjà pris en charge gardent leur agent comme responsable.
     // Ni ici ni dans « notes » de clé étrangère : la base locale (WAMP) crée des tables MyISAM, qui n'en acceptent pas.
+    // Un test par colonne et une modification par instruction : TiDB refuse plusieurs changements liés dans un même ALTER
     if (!$bdd->query("SHOW COLUMNS FROM dossiers LIKE 'id_responsable'")->fetch()) {
-        // Une colonne par instruction : TiDB refuse qu'un même ALTER place une colonne après une autre qu'il crée
         $bdd->exec("ALTER TABLE dossiers ADD COLUMN id_responsable INT NULL AFTER id_agent");
+        // Une seule fois, juste après l'ajout : ensuite, le responsable se choisit dans le Bureau
+        $bdd->exec("UPDATE dossiers SET id_responsable = id_agent WHERE statut <> 'a_traiter'");
     }
     if (!$bdd->query("SHOW COLUMNS FROM dossiers LIKE 'echeance'")->fetch()) {
         $bdd->exec("ALTER TABLE dossiers ADD COLUMN echeance DATE NULL AFTER id_responsable");
-        $bdd->exec("UPDATE dossiers SET id_responsable = id_agent WHERE statut <> 'a_traiter'");
     }
     // Migration : date de suppression de la demande sur le site (« Purger du site »)
     if (!$bdd->query("SHOW COLUMNS FROM dossiers LIKE 'date_purge'")->fetch()) {

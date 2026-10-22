@@ -36,7 +36,7 @@ $standard['annonces'] = textes()['annonces'];
     <div class="telephone-commandes">
       <button type="button" class="btn btn-tampon" data-decrocher>Décrocher</button>
       <label class="standard-option"><input type="checkbox" data-voix> Haut-parleur (voix)</label>
-      <label class="standard-option"><input type="checkbox" data-musique checked> Musique d'attente</label>
+      <label class="standard-option"><input type="checkbox" data-musique> Musique d'attente</label>
     </div>
   </div>
 

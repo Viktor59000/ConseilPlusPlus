@@ -125,32 +125,44 @@ function installer_schema(PDO $bdd): void
         );
     ");
 
+    // Migrations : un test par colonne et une modification par instruction (TiDB refuse plusieurs changements liés
+    // dans un même ALTER, et une migration interrompue reprend ainsi là où elle s'est arrêtée)
+    $colonne = fn(string $table, string $nom) => $bdd->query("SHOW COLUMNS FROM $table LIKE '$nom'")->fetch(PDO::FETCH_ASSOC);
+
     // Migration : ajout du format « sketch » au mot du jour (bases créées avant cette version)
-    if (!$bdd->query("SHOW COLUMNS FROM mots_du_jour LIKE 'format'")->fetch()) {
-        $bdd->exec("ALTER TABLE mots_du_jour
-            ADD COLUMN format ENUM('definition', 'sketch') NOT NULL DEFAULT 'definition' AFTER nature,
-            MODIFY definition VARCHAR(300) NULL,
-            MODIFY exemple VARCHAR(300) NULL,
-            MODIFY synonyme VARCHAR(120) NULL,
-            ADD COLUMN sketch JSON NULL AFTER synonyme");
+    if (!$colonne('mots_du_jour', 'format')) {
+        $bdd->exec("ALTER TABLE mots_du_jour ADD COLUMN format ENUM('definition', 'sketch') NOT NULL DEFAULT 'definition' AFTER nature");
+    }
+    // Un sketch n'a ni définition, ni exemple, ni synonyme : ces colonnes deviennent facultatives
+    foreach (['definition' => 'VARCHAR(300)', 'exemple' => 'VARCHAR(300)', 'synonyme' => 'VARCHAR(120)'] as $nom => $type) {
+        if (($colonne('mots_du_jour', $nom)['Null'] ?? 'YES') === 'NO') {
+            $bdd->exec("ALTER TABLE mots_du_jour MODIFY $nom $type NULL");
+        }
+    }
+    if (!$colonne('mots_du_jour', 'sketch')) {
+        $bdd->exec("ALTER TABLE mots_du_jour ADD COLUMN sketch JSON NULL AFTER synonyme");
     }
 
     // Migration : fausse étymologie (facultative) du mot du jour
-    if (!$bdd->query("SHOW COLUMNS FROM mots_du_jour LIKE 'etymologie'")->fetch()) {
+    if (!$colonne('mots_du_jour', 'etymologie')) {
         $bdd->exec("ALTER TABLE mots_du_jour ADD COLUMN etymologie VARCHAR(300) NULL AFTER synonyme");
     }
 
     // Migration : boucle retour des demandes (client connecté, réponse du cabinet relayée par Le Bureau)
-    if (!$bdd->query("SHOW COLUMNS FROM contacts LIKE 'id_utilisateur'")->fetch()) {
-        // Une modification par instruction (TiDB n'indexe pas une colonne créée par le même ALTER)
+    if (!$colonne('contacts', 'id_utilisateur')) {
         $bdd->exec("ALTER TABLE contacts ADD COLUMN id_utilisateur INT NULL");
+    }
+    // Index à part : TiDB n'indexe pas une colonne créée par le même ALTER
+    if (!in_array('id_utilisateur', array_column($bdd->query('SHOW INDEX FROM contacts')->fetchAll(PDO::FETCH_ASSOC), 'Column_name'), true)) {
         $bdd->exec("ALTER TABLE contacts ADD INDEX (id_utilisateur)");
     }
-    if (!$bdd->query("SHOW COLUMNS FROM contacts LIKE 'reponse'")->fetch()) {
+    if (!$colonne('contacts', 'reponse')) {
         $bdd->exec("ALTER TABLE contacts ADD COLUMN reponse TEXT NULL");
+    }
+    if (!$colonne('contacts', 'date_reponse')) {
         $bdd->exec("ALTER TABLE contacts ADD COLUMN date_reponse DATETIME NULL");
     }
-    if (!str_contains($bdd->query("SHOW COLUMNS FROM contacts LIKE 'statut'")->fetch(PDO::FETCH_ASSOC)['Type'], 'repondu')) {
+    if (!str_contains($colonne('contacts', 'statut')['Type'], 'repondu')) {
         $bdd->exec("ALTER TABLE contacts MODIFY statut ENUM('nouveau', 'importe', 'repondu') NOT NULL DEFAULT 'nouveau'");
     }
 
