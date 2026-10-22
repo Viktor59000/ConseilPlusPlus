@@ -9,12 +9,18 @@
  * Crée une demande de test, la lit, la passe en « importe » puis « repondu », puis la supprime.
  * Modération du mot de demain : en local (base accessible), le mot de demain est sauvegardé avant les tests
  * (ou un mot provisoire est créé) puis remis exactement dans son état d'origine.
+ * Contrôle d'accès : chaque route déclarée dans data/api.php (seule source de vérité) est appelée sans clé.
+ * Demandes d'autrui (en local) : deux clients provisoires, créés en base puis effacés.
  */
 require __DIR__ . '/../config.php';
 require __DIR__ . '/../includes/http.php';
 
-$base = rtrim($argv[1] ?? 'http://localhost/Site', '/') . '/api';
+$site = rtrim($argv[1] ?? 'http://localhost/Site', '/');
+$base = "$site/api";
 $cle = ['X-API-Key: ' . API_KEY];
+// Écritures publiques des tests : une adresse de documentation (RFC 5737) tirée au hasard, transmise comme le fait
+// contact.php, pour que la limite de débit (par IP) ne bloque pas un second passage des tests dans la minute
+$ip_test = ['X-Client-IP: 198.51.100.' . random_int(1, 254)];
 $echecs = 0;
 
 function verifier(string $test, int $attendu, array $reponse): void
@@ -24,6 +30,59 @@ function verifier(string $test, int $attendu, array $reponse): void
     $echecs += $ok ? 0 : 1;
     printf("[%s] %-45s HTTP %d (attendu %d)\n", $ok ? 'OK' : 'ECHEC', $test, $reponse['code'], $attendu);
 }
+
+/** Vérification libre (condition déjà calculée), avec un détail facultatif. */
+function constater(string $test, bool $ok, string $detail = ''): void
+{
+    global $echecs;
+    $echecs += $ok ? 0 : 1;
+    printf("[%s] %-45s%s\n", $ok ? 'OK' : 'ECHEC', $test, $detail === '' ? '' : " $detail");
+}
+
+/** Navigateur minimal (cookies gardés d'une page à l'autre, redirections non suivies) pour les pages du site. */
+function navigateur(): CurlHandle
+{
+    $ch = curl_init();
+    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_COOKIEFILE => '', CURLOPT_TIMEOUT => 30]);
+    return $ch;
+}
+
+/** Ouvre une page (GET) ou envoie un formulaire (POST, $champs) ; retourne le code, le HTML et le jeton CSRF de la page. */
+function visiter(CurlHandle $ch, string $url, ?array $champs = null): array
+{
+    curl_setopt($ch, CURLOPT_URL, $url);
+    $champs === null ? curl_setopt($ch, CURLOPT_HTTPGET, true) : curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($champs));
+    $html = (string) curl_exec($ch);
+    preg_match('/name="csrf" value="([0-9a-f]+)"/', $html, $m);
+    return ['code' => curl_getinfo($ch, CURLINFO_HTTP_CODE), 'html' => $html, 'jeton' => $m[1] ?? ''];
+}
+
+// --- Contrôle d'accès, dérivé de data/api.php : sans clé, une route « cle » ou « admin » répond 401 (une clé
+// inconnue aussi) ; une route « session » répond 401 sans connexion ; une route « public » ne répond jamais 401.
+// Les écritures publiques reçoivent un corps invalide (400 ou 422 : rien n'est créé).
+$inconnue = ['X-API-Key: cle-inconnue-des-tests'];
+foreach (require __DIR__ . '/../data/api.php' as $routes) {
+    foreach ($routes as $route) {
+        $url = $base . str_replace('AAAA-MM-JJ', date('Y-m-d', strtotime('+1 day')), $route['chemin']);
+        foreach (explode(' · ', $route['methode']) as $methode) {
+            $corps = $methode === 'GET' ? null : [];
+            $nom = "$methode {$route['chemin']}";
+            if ($route['acces'] === 'public') {
+                $r = appeler_api($methode, $url, $corps, $methode === 'GET' ? [] : $ip_test);
+                $ok = $methode === 'GET' ? !in_array($r['code'], [0, 401], true) : in_array($r['code'], [400, 422], true);
+                constater("$nom sans clé (public)", $ok, "HTTP {$r['code']}" . ($methode === 'GET' ? '' : ' (attendu 400 ou 422)'));
+                continue;
+            }
+            verifier("$nom sans clé", 401, appeler_api($methode, $url, $corps));
+            if ($route['acces'] !== 'session') {
+                verifier("$nom clé inconnue", 401, appeler_api($methode, $url, $corps, $inconnue));
+            }
+        }
+    }
+}
+// Route publique à usage réservé (cle_facultative) : l'envoi des notifications exige une clé
+verifier('POST /notifications.php envoyer sans clé', 401, appeler_api('POST', "$base/notifications.php", ['action' => 'envoyer'], $ip_test));
+verifier('POST /notifications.php envoyer clé inconnue', 401, appeler_api('POST', "$base/notifications.php", ['action' => 'envoyer'], array_merge($inconnue, $ip_test)));
 
 // --- Site vitrine → API
 $demande = ['nom' => 'Test API', 'email' => 'test-api@site.test', 'type_demande' => 'Réclamation', 'message' => 'Mon grille-pain me juge.'];
@@ -78,6 +137,9 @@ verifier('POST cles.php (clé lecture seule)', 201, $r);
 verifier('POST cles.php nom réservé', 422, appeler_api('POST', "$base/cles.php", ['nom' => 'gestion'], $cle));
 verifier('GET contacts avec clé lecture', 200, appeler_api('GET', "$base/contacts.php?id=$id", null, $lecture));
 verifier('PATCH avec clé lecture (refusé)', 403, appeler_api('PATCH', "$base/contacts.php?id=$id", null, $lecture));
+verifier('DELETE avec clé lecture (refusé)', 403, appeler_api('DELETE', "$base/contacts.php?id=$id", null, $lecture));
+verifier('POST mot-du-jour avec clé lecture (refusé)', 403, appeler_api('POST', "$base/mot-du-jour.php", null, $lecture));
+verifier('POST envoyer avec clé lecture (refusé)', 403, appeler_api('POST', "$base/notifications.php", ['action' => 'envoyer'], array_merge($lecture, $ip_test)));
 verifier('GET cles.php avec clé lecture (refusé)', 403, appeler_api('GET', "$base/cles.php", null, $lecture));
 verifier('GET export.php avec clé lecture (refusé)', 403, appeler_api('GET', "$base/export.php", null, $lecture));
 
@@ -124,6 +186,61 @@ if ($local) {
     }
 } else {
     echo "      (base distante : relecture, correction et rejet du mot de demain non testés)\n";
+}
+
+// --- « Mes demandes » (compte.php) : un client ne supprime que ses propres demandes.
+// Deux clients provisoires (A et B) créés en base, avec le hachage du code du cours (auth/, sel statique + SHA-512) :
+// l'inscription par le formulaire est limitée à 5 comptes par heure et par IP. Une demande par client, envoyée à l'API
+// puis rattachée comme le fait contact.php (qui ne peut pas appeler sa propre API sous php -S, mono-processus).
+if ($local) {
+    require_once __DIR__ . '/../includes/bdd.php';
+    require_once __DIR__ . '/../includes/compte.php'; // empreinte_comme_le_cours()
+    $suffixe = bin2hex(random_bytes(4));
+    $mdp = bin2hex(random_bytes(8));
+    $clients = $demandes = [];
+    try {
+        foreach (['a', 'b'] as $lettre) {
+            bdd()->prepare('INSERT INTO utilisateurs (prenom, nom, mail, mdp) VALUES (?, ?, ?, ?)')
+                ->execute(['Test', strtoupper($lettre), "test-$lettre-$suffixe@site.test", empreinte_comme_le_cours($mdp)]);
+            $clients[$lettre] = (int) bdd()->lastInsertId();
+            $r = appeler_api('POST', "$base/contacts.php", ['nom' => "Test $lettre", 'email' => "test-$lettre-$suffixe@site.test",
+                'type_demande' => 'Autre', 'message' => 'Demande provisoire des tests automatiques.'], $ip_test);
+            $demandes[$lettre] = (int) ($r['data']['id'] ?? 0);
+            bdd()->prepare('UPDATE contacts SET id_utilisateur = ? WHERE id = ?')->execute([$clients[$lettre], $demandes[$lettre]]);
+        }
+        constater('demandes de A et B enregistrées', $demandes['a'] > 0 && $demandes['b'] > 0);
+
+        // Connexion de B comme dans un navigateur : page, cookie de session, jeton CSRF
+        $b = navigateur();
+        $page = visiter($b, "$site/login.php");
+        $r = visiter($b, "$site/auth/connexion.php", ['email' => "test-b-$suffixe@site.test", 'mdp' => $mdp, 'csrf' => $page['jeton']]);
+        constater('connexion du client B', $r['code'] === 302 && str_contains((string) curl_getinfo($b, CURLINFO_REDIRECT_URL), 'conseil.php'),
+            "HTTP {$r['code']}");
+        $page = visiter($b, "$site/compte.php");
+        constater('B voit sa demande, pas celle de A', $page['code'] === 200 && str_contains($page['html'], 'value="' . $demandes['b'] . '"')
+            && !str_contains($page['html'], 'value="' . $demandes['a'] . '"'));
+
+        // B tente de supprimer la demande de A : refus affiché, la demande reste
+        $r = visiter($b, "$site/compte.php", ['supprimer_demande' => $demandes['a'], 'csrf' => $page['jeton']]);
+        constater('B supprime la demande de A : refusé', $r['code'] === 200 && str_contains($r['html'], 'Demande introuvable'), "HTTP {$r['code']}");
+        verifier('la demande de A existe toujours', 200, appeler_api('GET', "$base/contacts.php?id={$demandes['a']}", null, $cle));
+        // Témoin : B supprime bien sa propre demande (le refus ci-dessus ne vient donc pas d'un jeton invalide)
+        $r = visiter($b, "$site/compte.php", ['supprimer_demande' => $demandes['b'], 'csrf' => $page['jeton']]);
+        constater('B supprime sa propre demande', $r['code'] === 302, "HTTP {$r['code']}");
+        verifier('la demande de B est effacée', 404, appeler_api('GET', "$base/contacts.php?id={$demandes['b']}", null, $cle));
+        curl_close($b);
+    } finally {
+        // Nettoyage, même après un échec : demandes puis clients provisoires
+        foreach ($demandes as $id_demande) {
+            bdd()->prepare('DELETE FROM contacts WHERE id = ?')->execute([$id_demande]);
+        }
+        foreach ($clients as $id_client) {
+            bdd()->prepare('DELETE FROM contacts WHERE id_utilisateur = ?')->execute([$id_client]);
+            bdd()->prepare('DELETE FROM utilisateurs WHERE id = ?')->execute([$id_client]);
+        }
+    }
+} else {
+    echo "      (base distante : suppression d'une demande d'autrui non testée)\n";
 }
 verifier('DELETE cles.php (révocation)', 204, appeler_api('DELETE', "$base/cles.php?id=$id_cle", null, $cle));
 verifier('GET avec clé révoquée', 401, appeler_api('GET', "$base/contacts.php?id=$id", null, $lecture));
