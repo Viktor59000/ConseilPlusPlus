@@ -21,10 +21,10 @@ return [
         // cuisine
         ['épluchez', 'éplucher'], ['panez', 'paner'], ['flambez', 'flamber'], ['déglacez', 'déglacer'],
         ['farcissez', 'farcir'], ['dénoyautez', 'dénoyauter'], ['émincez', 'émincer'], ['gratinez', 'gratiner'],
-        ['marinez', 'mariner'], ['blanchissez', 'blanchir'], ['caramélisez', 'caraméliser'], ['passez au airfryer', 'passer au airfryer'],
-        ['fumez au bois de hêtre', 'fumer au bois de hêtre'], ['congelez', 'congeler'], ['mixez au Thermomix', 'mixer au Thermomix'],
+        ['marinez', 'mariner'], ['blanchissez', 'blanchir'], ['caramélisez', 'caraméliser'], ['passez au gril', 'passer au gril'],
+        ['fumez au bois de hêtre', 'fumer au bois de hêtre'], ['congelez', 'congeler'], ['mixez', 'mixer'],
         // numérique
-        ['likez', 'liker'], ['géolocalisez', 'géolocaliser'], ['mettez en story', 'mettre en story'],
+        ['likez', 'liker'], ['rembourrez', 'rembourrer'], ['mettez en story', 'mettre en story'],
         ['mettez en vente sur Vinted', 'mettre en vente sur Vinted'], ['épinglez dans le groupe WhatsApp', 'épingler dans le groupe WhatsApp'],
         ['abonnez-vous à', 's\'abonner à'], ['bloquez', 'bloquer'], ['mettez à jour', 'mettre à jour'],
         ['filmez en slow motion', 'filmer en slow motion'], ['notez cinq étoiles', 'noter cinq étoiles'],
@@ -39,9 +39,9 @@ return [
     'verbes_sociaux' => [
         ['tutoyez', 'tutoyer'], ['vouvoyez', 'vouvoyer'], ['félicitez', 'féliciter'], ['amadouez', 'amadouer'],
         ['saluez', 'saluer'], ['envoyez un fax à', 'envoyer un fax à'], ['souhaitez bon courage à', 'souhaiter bon courage à'],
-        ['offrez une raclette à', 'offrir une raclette à'],
+        ['offrez un pot de cornichons à', 'offrir un pot de cornichons à'],
         ['demandez l\'heure à', 'demander l\'heure à'], ['envoyez un vocal de quatre minutes à', 'envoyer un vocal de quatre minutes à'],
-        ['prêtez votre trottinette à', 'prêter votre trottinette à'], ['tenez la porte à', 'tenir la porte à'],
+        ['prêtez votre escabeau à', 'prêter votre escabeau à'], ['tenez la porte à', 'tenir la porte à'],
         ['proposez un covoiturage à', 'proposer un covoiturage à'], ['demandez une dédicace à', 'demander une dédicace à'],
         ['offrez un Kinder Bueno à', 'offrir un Kinder Bueno à'], ['remerciez', 'remercier'],
         ['souhaitez un bon week-end à', 'souhaiter un bon week-end à'], ['applaudissez', 'applaudir'],
@@ -55,22 +55,22 @@ return [
         'un horodateur', 'une calculatrice', 'une perruque', 'un parcmètre', 'une serpillière', 'un bigoudi',
         'un presse-ail', 'une caravane', 'un cendrier', 'une raquette de ping-pong', 'un porte-manteau',
         'une boîte de cassoulet', 'un rouleau de scotch', 'un vélo d\'appartement', 'une tringle à rideaux',
-        'un appareil à raclette', 'une yaourtière', 'un chausse-pied', 'une clé à molette', 'un tabouret de bar',
+        'un moule à gaufres', 'une yaourtière', 'un chausse-pied', 'une clé à molette', 'un tabouret de bar',
         // produits et marques d'hier
         'un minitel', 'une Safrane', 'une Fuego', 'un Kinder Bueno', 'la Carte Vitale', 'un Paris Match de 1994',
         'un pot de Mamie Nova', 'un Tamagotchi', 'un Walkman', 'un Bescherelle', 'un Carambar', 'une 2CV',
         // produits et objets d'aujourd'hui
         'une trottinette électrique', 'un airfryer', 'un Thermomix', 'une gourde isotherme', 'des AirPods',
-        'un ring light', 'une enceinte Bluetooth', 'un pass Navigo', 'une box internet', 'un robot aspirateur',
-        'un colis Vinted', 'une Tesla', 'un QR code', 'une manette de PS5', 'un bob Cochonou',
+        'un ring light', 'une enceinte Bluetooth', 'un pass Navigo', 'une bouée canard', 'un fer à friser',
+        'un carton de déménagement', 'une Tesla', 'un QR code', 'une manette de PS5', 'un bob Cochonou',
         'un pot de Nutella', 'une perche à selfie', 'un vélo en libre-service', 'une liseuse', 'un bubble tea',
         'un tote bag', 'une montre connectée', 'un Fanta citron', 'un kebab', 'une galette-saucisse',
     ],
     // pour « inventez [objet impossible] »
     'objets_nus' => [
-        'le lampadaire', 'la brouette', 'le pluviomètre', 'le grille-pain', 'la tanche', 'le rond-point', 'la serpillière',
+        'le lampadaire', 'la brouette', 'le pluviomètre', 'le presse-agrumes', 'la tanche', 'le tabouret', 'la serpillière',
         'le dentier', 'la soupière', 'l\'horodateur', 'le paillasson', 'la bétonnière', 'le bigoudi', 'la passoire',
-        'la trottinette', 'l\'airfryer', 'le Thermomix', 'le robot aspirateur', 'la box internet', 'le pass Navigo',
+        'la tringle', 'l\'escabeau', 'le moule à cake', 'le fer à repasser', 'la bouillotte', 'le pass Navigo',
         'la galette-saucisse', 'le chausse-pied', 'la yaourtière', 'le QR code', 'la perche à selfie', 'le Tamagotchi',
     ],
     'qualificatifs' => [
@@ -86,7 +86,7 @@ return [
         'au salon de l\'agriculture', 'chez le contrôleur technique', 'au vide-grenier', 'à la laverie automatique',
         'en visio', 'dans un open space', 'au drive', 'dans un escape game', 'au point relais', 'à la salle de sport',
         'dans un Airbnb', 'à la caisse automatique', 'en télétravail', 'au rayon bricolage', 'dans le TER',
-        'à la fête des voisins', 'au barbecue de la mairie', 'pendant un webinaire', 'au marché de Noël',
+        'à la fête des voisins', 'au barbecue du camping', 'pendant un webinaire', 'au marché de Noël',
     ],
     'animaux' => [
         'une tanche', 'un lama', 'un furet', 'un pélican', 'une loutre', 'un poulpe', 'une chèvre', 'un ragondin',
@@ -103,18 +103,18 @@ return [
         'suisse', 'islandais', 'maltais', 'slovène', 'lituanien', 'chypriote', 'québécois',
     ],
     'personnes' => [
-        'un paysan', 'un pompier', 'un scout', 'un notaire', 'un douanier', 'votre belle-mère', 'Mamie', 'le facteur',
+        'un paysan', 'un pompier', 'un scout', 'un notaire', 'un douanier', 'votre parrain', 'Mamie', 'le facteur',
         'un contrôleur SNCF', 'un maître-nageur', 'votre dentiste', 'un garde-champêtre', 'le maire adjoint',
-        'un agent immobilier', 'votre voisin de palier', 'un moniteur d\'auto-école', 'un livreur Deliveroo',
-        'votre manager', 'un coach sportif', 'un influenceur culinaire', 'votre stagiaire', 'un chauffeur VTC',
-        'le syndic de copropriété', 'votre conseiller France Travail', 'un vendeur Vinted', 'le service client',
-        'un arbitre de Ligue 1', 'votre prof de yoga', 'un youtubeur bricolage', 'le gardien de l\'immeuble',
+        'une agente immobilière', 'votre voisine de palier', 'une monitrice d\'auto-école', 'un livreur Deliveroo',
+        'votre manager', 'une coach sportive', 'une influenceuse culinaire', 'votre stagiaire', 'un chauffeur VTC',
+        'le syndic de copropriété', 'votre conseiller France Travail', 'une brocanteuse', 'le service client',
+        'un arbitre de Ligue 1', 'votre prof de yoga', 'une youtubeuse bricolage', 'le gardien de l\'immeuble',
     ],
     // Célébrités grand public, d'hier et d'aujourd'hui : uniquement des actions inoffensives
     // (tutoyer, saluer, faxer, ressembler à…). Pas de politiques, pas de personnalités au cœur d'une polémique.
     'celebrites' => [
         // un peu datées
-        'Philippe Lavil', 'Philippe Bouvard', 'David Charvet', 'Francis Lalanne', 'Tex', 'Patrick Sabatier',
+        'Philippe Lavil', 'Philippe Bouvard', 'David Charvet', 'Tex', 'Patrick Sabatier',
         'Jean-Pierre Foucault', 'Pierre Bellemare', 'Évelyne Leclercq', 'Roger Pierre', 'Julien Lepers', 'Michel Drucker',
         'Mimie Mathy', 'Évelyne Dhéliat', 'Christophe Dechavanne',
         // d'aujourd'hui, grand public
@@ -133,9 +133,9 @@ return [
         'Le sulfate de charbon', 'La sédentarité métabolique', 'Le coefficient de friture', 'La jurisprudence du flan',
         'Le théorème du parcmètre', 'La loi de conservation des biscottes', 'Le principe de précaution capillaire',
         'L\'indice de rugosité du mardi', 'La convention de Genève sur les nouilles', 'L\'algorithme du pot-au-feu',
-        'Le bilan carbone de la mayonnaise', 'La neuroscience du Kinder Bueno', 'Le RGPD des escargots',
+        'Le bilan carbone de la mayonnaise', 'La neuroscience du petit-beurre', 'Le RGPD des escargots',
         'La transition énergétique du gratin', 'Le règlement européen sur les bigoudis', 'La blockchain du camembert',
-        'Le protocole sanitaire du flan', 'L\'intelligence artificielle de la raclette',
+        'Le protocole sanitaire du clafoutis', 'L\'intelligence artificielle du hachis parmentier',
     ],
     'aliments' => [
         'raclette', 'cassoulet', 'pâté en croûte', 'flan', 'tartiflette', 'couscous', 'endive au jambon', 'rillettes',

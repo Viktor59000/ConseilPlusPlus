@@ -14,19 +14,19 @@ return [
             'a' => 'le suivez', 'b' => 'l\'encadrez', 'c' => 'le contestez, puis le suivez', 'd' => 'le transférez à un ami']],
         ['Votre café, en général :', [
             'a' => 'tiède', 'b' => 'oublié sur un coin de bureau', 'c' => 'jamais commandé', 'd' => 'encore dans la machine']],
-        ['Le lundi, pour vous, c\'est…', [
-            'a' => 'une chance de recommencer', 'b' => 'une épreuve', 'c' => 'un dimanche raté', 'd' => 'un jour comme un autre lundi']],
+        ['Quand la photocopieuse se bloque, vous…', [
+            'a' => 'appelez quelqu\'un', 'b' => 'attendez qu\'elle se débloque', 'c' => 'lisez le message d\'erreur', 'd' => 'changez d\'étage']],
         ['Votre signature ressemble à…', [
             'a' => 'votre nom, lisible', 'b' => 'un trait', 'c' => 'autre chose à chaque fois', 'd' => 'celle du cabinet']],
-        ['Votre devise :', [
-            'a' => '« Ça peut aller »', 'b' => '« On verra »', 'c' => '« Bof »', 'd' => '« Moyennement »']],
+        ['Votre formule de fin de courriel :', [
+            'a' => '« Bien à vous »', 'b' => '« Dans l\'attente »', 'c' => '« Cordialement (ou presque) »', 'd' => '« Moyennement vôtre »']],
     ],
 
     'profils' => [
-        'a' => ['Le client moyen, variante A', "L'optimiste prudent. Vous suivez les conseils avec confiance, mais en gardant un parapluie. Le cabinet vous recommande de continuer, à peu près."],
-        'b' => ['Le client moyen, variante B', "Le patient résigné. Vous attendez que les choses s'arrangent, et parfois elles s'arrangent. Le cabinet salue votre endurance, de loin."],
-        'c' => ['Le client moyen, variante C', "Le sceptique convaincu. Vous doutez de tout, sauf de vos doutes. Le cabinet vous recommande un conseil, puis de le contester."],
-        'd' => ['Le client moyen, variante D', "Le délégateur serein. Vous confiez vos problèmes aux autres, qui les confient au stagiaire. Le circuit est fermé, et il fonctionne."],
+        'a' => ['Le client moyen, variante A', "Optimisme prudent. Vous suivez les conseils avec confiance, mais en gardant un parapluie. Le cabinet vous recommande de continuer, à peu près."],
+        'b' => ['Le client moyen, variante B', "Patience résignée. Vous attendez que les choses s'arrangent, et parfois elles s'arrangent. Le cabinet admire votre constance, de loin."],
+        'c' => ['Le client moyen, variante C', "Scepticisme convaincu. Vous doutez de tout, sauf de vos doutes. Le cabinet vous recommande un conseil, puis de le contester."],
+        'd' => ['Le client moyen, variante D', "Délégation sereine. Vous confiez vos problèmes aux autres, qui les confient au stagiaire. Le circuit est fermé, et il fonctionne."],
         'e' => ['Le client moyen, variante E', "Parfaitement moyen. Vos réponses se répartissent avec une régularité exemplaire. Le cabinet vous propose comme étalon officiel de la moyenne."],
     ],
 ];
