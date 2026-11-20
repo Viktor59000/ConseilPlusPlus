@@ -22,3 +22,6 @@ android/local.properties
 *.p12
 *.jks
 *.keystore
+
+# Outils de design (skill taste : historique des tirages)
+.taste-skill/
