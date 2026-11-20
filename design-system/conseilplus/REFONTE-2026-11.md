@@ -104,3 +104,14 @@ du type `https://conseilplus-bureau.onrender.com` (nom choisi à la création). 
 éveillé (UptimeRobot) ; le Bureau s'endort quand personne ne l'utilise (≈ 50 s de réveil), pour rester sous les 750 h
 gratuites par mois. À la mise en ligne de la refonte : `/bureau/` du site vitrine redirige (301) vers la nouvelle adresse.
 Création du service et saisie des secrets (API_KEY, DB_*, BREVO_API_KEY…) : par l'auteur, guidé par docs/DEPLOIEMENT.md.
+
+## Planche de références (recherche du 20/11/2026 — on retient des principes, on ne copie rien)
+| Référence | Ce qu'on en retient pour « Le Guichet » |
+|---|---|
+| Stripe Press (édition) | Fond papier uni, presque rien d'autre ; libellés d'interface en petites capitales machine entre crochets « [ Mon dossier ] » ; un très grand titre qui défile comme une enseigne ; l'objet (le livre) traité en héros. → nos numéros, tickets et libellés en mono entre crochets ; le tampon et la chemise comme objets-héros. |
+| Standards Manual (manuels de normes) | Navigation en grandes lettres grasses alignées sur une grille, une barre de couleur unique (rouge) sous le logo ; l'objet photographié en très grand sur fond noir ; mosaïque de médias de tailles différentes. → la grille stricte d'un manuel administratif, un seul accent (rouge tampon) très présent, des gravures en très grand. |
+| Order (archives, identités) | Libellés minuscules en mono, beaucoup de vide, des planches d'objets juxtaposés bord à bord comme dans un classeur. → les services présentés comme des fiches d'un classeur, alignées bord à bord. |
+| Cooper Hewitt (musée) | Grille de collection pleine largeur, menus en colonnes sous filets fins, liens d'action en couleur d'accent en petites capitales. → le Personnel et les archives du Petit Moyen en « collection » ; filets fins, pas de cartes à ombre. |
+| Teenage Engineering (objets) | Pictogrammes au trait fin à côté de chaque entrée du menu ; l'objet seul, éclairé, au centre. → pictogrammes maison au trait (guichet, chemise, tampon, plume) dans la navigation et la barre latérale du Bureau. |
+| Linear (application) | Pour Le Bureau : thème sombre profond, barre latérale fine, densité maîtrisée, une seule couleur d'accent, filets 1 px, statuts en petites pastilles, panneau de détail à droite. → la Salle de tri : sombre « archives » possible, laiton comme seul accent, casiers en colonnes, tiroir de détail. |
+Ce qu'on évite : les rangées de logos clients, les grands chiffres décoratifs, les dégradés, les cartes à ombre partout, le fondu au défilement.
