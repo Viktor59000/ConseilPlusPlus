@@ -1,7 +1,8 @@
 <?php
-// bureau/tableau.php — Page d'arrivée du Bureau (le « tableau » de la séance) : tuiles (à synchroniser, rendez-vous du
-// jour, à traiter, en retard), débit du guichet sur 14 jours, répartition des statuts, prochains rendez-vous, mes
-// dossiers et dossiers en retard ; au second plan : palmarès du Petit Moyen, types de demandes, purge, sauvegardes.
+// bureau/tableau.php — Page d'arrivée du Bureau (le « tableau » de la séance) : quatre files d'attente (à synchroniser,
+// rendez-vous du jour, à traiter, en retard), les listes de travail (prochains rendez-vous, mes dossiers, retards), puis
+// la vue d'ensemble (débit du guichet sur 14 jours, statuts) ; au second plan : types de demandes, palmarès du Petit
+// Moyen, sauvegardes, purge.
 require_once __DIR__ . '/includes/amorce.php';
 
 $compte = $bdd->query("SELECT statut, COUNT(*) AS n FROM dossiers GROUP BY statut")->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -34,14 +35,16 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span><?= e(ucfirst(jour_long(date('Y-m-d')))) ?></span><span>Dernier relevé : <?= $dernier ? date_courte($dernier['date_releve']) : 'jamais' ?></span></p>
+    <p class="tete__ref"><span><?= e(ucfirst(jour_long(date('Y-m-d')))) ?></span></p>
     <h1>Bonjour, <?= e($agent['nom']) ?>.</h1>
-    <p class="tete__sous"><?= $dernier ? e($dernier['detail']) : 'Le courrier s\'accumule, sereinement.' ?></p>
+    <p class="tete__sous"><?= $dernier
+        ? 'Dernier relevé du courrier le ' . date_courte($dernier['date_releve']) . ' : ' . e(lcfirst($dernier['detail']))
+        : 'Le courrier n\'a jamais été relevé. Il s\'accumule, sereinement.' ?></p>
   </div>
   <div class="tete__actions">
     <form method="post" action="releve.php">
       <?= csrf_champ() ?>
-      <?= bouton('Relever le courrier', null, ['variante' => 'secondaire', 'icone_html' => picto_bureau('courrier')]) ?>
+      <?= bouton('Relever le courrier', null, ['variante' => 'secondaire', 'fleche' => false, 'icone_html' => picto_bureau('courrier')]) ?>
     </form>
     <form method="post" action="synchro.php">
       <?= csrf_champ() ?>
@@ -51,45 +54,34 @@ require __DIR__ . '/includes/haut.php';
 </header>
 
 <div class="zone">
-  <section class="tuiles" aria-label="Chiffres du jour">
-    <a class="tuile tuile--accent" href="synchro.php">
-      <span class="tuile__libelle"><?= picto_bureau('synchro') ?>À synchroniser</span>
+  <section class="tuiles" aria-label="Files d'attente">
+    <a class="tuile<?= $a_synchroniser ? ' tuile--accent' : '' ?>" href="synchro.php">
+      <span class="tuile__libelle">À synchroniser</span>
       <span class="tuile__valeur"><?= $a_synchroniser ?? '—' ?></span>
-      <span class="tuile__detail"><?= $a_synchroniser === null ? e(message_erreur_api($attente)) : 'inscriptions en attente sur le site' ?></span>
+      <span class="tuile__detail"><?= $a_synchroniser === null ? e(message_erreur_api($attente)) : ($a_synchroniser ? 'inscriptions attendent sur le site' : 'rien n\'attend sur le site') ?></span>
     </a>
     <a class="tuile" href="planning.php">
-      <span class="tuile__libelle"><?= picto_bureau('planning') ?>Rendez-vous du jour</span>
+      <span class="tuile__libelle">Rendez-vous du jour</span>
       <span class="tuile__valeur"><?= count($rdv_du_jour) ?></span>
-      <span class="tuile__detail"><?= $rdv_du_jour ? 'premier à ' . horaire_court($rdv_du_jour[0]['horaire']) : 'le guichet reste ouvert, par principe' ?></span>
+      <span class="tuile__detail"><?= $rdv_du_jour ? 'le premier à ' . horaire_court($rdv_du_jour[0]['horaire']) : 'le guichet reste ouvert, par principe' ?></span>
     </a>
-    <a class="tuile" href="salle-de-tri.php">
-      <span class="tuile__libelle"><?= picto('casier') ?>À traiter</span>
+    <a class="tuile<?= $dossiers_a_traiter + $inscris_a_traiter ? ' tuile--accent' : '' ?>" href="salle-de-tri.php">
+      <span class="tuile__libelle">À traiter</span>
       <span class="tuile__valeur"><?= $dossiers_a_traiter + $inscris_a_traiter ?></span>
-      <span class="tuile__detail"><?= nombre_de($dossiers_a_traiter, 'dossier') ?> · <?= nombre_de($inscris_a_traiter, 'rendez-vous', 'rendez-vous') ?></span>
+      <span class="tuile__detail"><?= $dossiers_a_traiter ?> réclamation<?= $dossiers_a_traiter > 1 ? 's' : '' ?> et <?= $inscris_a_traiter ?> rendez-vous</span>
     </a>
     <a class="tuile<?= $nb_retard ? ' tuile--alerte' : '' ?>" href="dossiers.php?vue=retard&amp;tri=echeance">
-      <span class="tuile__libelle"><?= picto_bureau('horloge') ?>En retard</span>
+      <span class="tuile__libelle">En retard</span>
       <span class="tuile__valeur"><?= $nb_retard ?></span>
       <span class="tuile__detail"><?= $nb_retard ? 'échéance interne dépassée' : 'le Bureau est, pour une fois, dans les temps' ?></span>
     </a>
   </section>
 
-  <div class="grille-b">
-    <section class="panneau s-8" aria-labelledby="titre-debit">
+  <div class="grille-b grille-b--etiree">
+    <section class="panneau s-6" aria-labelledby="titre-prochains">
       <div class="panneau__tete">
-        <h2 id="titre-debit"><?= picto('guichet') ?>Débit du guichet</h2>
-        <span class="note-b">Demandes et inscriptions déposées sur le site, par jour</span>
-      </div>
-      <div class="panneau__corps">
-        <?= graphique_barres($debit, ['titre' => '14 derniers jours', 'sous_titre' => 'du ' . date('d/m', strtotime('-13 day')) . ' au ' . date('d/m') . ', aujourd\'hui en laiton',
-            'unite' => 'dépôts', 'entete' => 'Jour du mois', 'accent' => 13, 'hauteur' => 168]) ?>
-      </div>
-    </section>
-
-    <section class="panneau s-4" aria-labelledby="titre-prochains">
-      <div class="panneau__tete">
-        <h2 id="titre-prochains"><?= picto_bureau('planning') ?>Prochains rendez-vous</h2>
-        <a class="lien-b" href="planning.php">Planning</a>
+        <h2 id="titre-prochains">Prochains rendez-vous</h2>
+        <a class="lien-b" href="planning.php">Ouvrir le planning</a>
       </div>
 <?php if (!$prochains): ?>
       <p class="vide">Aucun rendez-vous à venir. Lancez une synchro : ils attendent peut-être sur le site.</p>
@@ -104,54 +96,24 @@ require __DIR__ . '/includes/haut.php';
 <?php endif; ?>
     </section>
 
-    <section class="panneau s-4 m-6" aria-labelledby="titre-statuts-dossiers">
+    <section class="panneau s-6" aria-labelledby="titre-mes-dossiers">
       <div class="panneau__tete">
-        <h2 id="titre-statuts-dossiers"><?= picto('chemise') ?>Dossiers par statut</h2>
-        <a class="lien-b" href="salle-de-tri.php">Salle de tri</a>
-      </div>
-      <div class="panneau__corps">
-        <?= graphique_anneau([
-            ['libelle' => STATUTS_BUREAU['a_traiter'], 'valeur' => $compte['a_traiter'] ?? 0, 'serie' => 4],
-            ['libelle' => STATUTS_BUREAU['en_cours'], 'valeur' => $compte['en_cours'] ?? 0, 'serie' => 1],
-            ['libelle' => STATUTS_BUREAU['classe'], 'valeur' => $compte['classe'] ?? 0, 'serie' => 3],
-        ], ['titre' => 'Réclamations', 'total' => 'dossiers', 'entete' => 'Statut']) ?>
-        <p class="note-b">Taux de classement : <?= $total ? round(100 * ($compte['classe'] ?? 0) / $total) : 0 ?> %. Objectif : moyen.</p>
-      </div>
-    </section>
-
-    <section class="panneau s-4 m-6" aria-labelledby="titre-statuts-rdv">
-      <div class="panneau__tete">
-        <h2 id="titre-statuts-rdv"><?= picto_bureau('inscrits') ?>Rendez-vous à venir</h2>
-        <a class="lien-b" href="inscrits.php">Inscrits</a>
-      </div>
-      <div class="panneau__corps">
-        <?= graphique_anneau([
-            ['libelle' => STATUTS_INSCRIS['a_traiter'], 'valeur' => $compte_rdv['a_traiter'] ?? 0, 'serie' => 4],
-            ['libelle' => STATUTS_INSCRIS['confirme'], 'valeur' => $compte_rdv['confirme'] ?? 0, 'serie' => 3],
-            ['libelle' => STATUTS_INSCRIS['annule'], 'valeur' => $compte_rdv['annule'] ?? 0, 'serie' => 2],
-        ], ['titre' => 'Inscriptions', 'total' => 'rendez-vous', 'entete' => 'Statut']) ?>
-        <p class="note-b">Aujourd'hui compris ; les jours passés sont au registre des inscrits.</p>
-      </div>
-    </section>
-
-    <section class="panneau s-4" aria-labelledby="titre-mes-dossiers">
-      <div class="panneau__tete">
-        <h2 id="titre-mes-dossiers"><?= picto('tampon') ?>Mes dossiers</h2>
-        <a class="lien-b" href="dossiers.php?vue=moi&amp;tri=echeance">Tous</a>
+        <h2 id="titre-mes-dossiers">Mes dossiers</h2>
+        <a class="lien-b" href="dossiers.php?vue=moi&amp;tri=echeance">Tous mes dossiers</a>
       </div>
 <?php if (!$mes_dossiers): ?>
-      <p class="vide">Aucun dossier ouvert ne vous est affecté. Une situation enviable, et provisoire.</p>
+      <p class="vide">Aucun dossier ouvert ne vous est affecté. Prenez-en un dans la <a href="salle-de-tri.php">Salle de tri</a>.</p>
 <?php else: ?>
       <ul class="lignes">
 <?php foreach ($mes_dossiers as $d): ?>
         <li><a class="mono" href="dossier.php?id=<?= $d['id'] ?>"><?= numero_dossier($d['id_site']) ?></a>
           <span class="reste"><?= e($d['nom']) ?></span>
-          <span class="pousse mono<?= en_retard($d) ? ' note-b--alerte' : '' ?>"><?= date_echeance($d['echeance']) ?></span></li>
+          <span class="pousse"><?= en_retard($d) ? pastille('retard', 'Échéance ' . date_echeance($d['echeance'])) : '<span class="note-b">' . ($d['echeance'] ? 'Échéance ' . date_echeance($d['echeance']) : 'Sans échéance') . '</span>' ?></span></li>
 <?php endforeach; ?>
       </ul>
 <?php endif; ?>
 <?php if ($en_retard): ?>
-      <div class="panneau__tete panneau__tete--suite"><h3>En retard</h3><a class="lien-b" href="dossiers.php?vue=retard&amp;tri=echeance">Tous</a></div>
+      <div class="panneau__tete panneau__tete--suite"><h3>En retard, tous agents confondus</h3><a class="lien-b" href="dossiers.php?vue=retard&amp;tri=echeance">Voir les retards</a></div>
       <ul class="lignes">
 <?php foreach ($en_retard as $d): ?>
         <li><a class="mono" href="dossier.php?id=<?= $d['id'] ?>"><?= numero_dossier($d['id_site']) ?></a>
@@ -161,13 +123,44 @@ require __DIR__ . '/includes/haut.php';
       </ul>
 <?php endif; ?>
     </section>
+
+    <section class="panneau s-7" aria-labelledby="titre-debit">
+      <div class="panneau__tete">
+        <h2 id="titre-debit">Débit du guichet</h2>
+        <span class="note-b">Demandes et rendez-vous déposés sur le site</span>
+      </div>
+      <div class="panneau__corps">
+        <?= graphique_barres($debit, ['titre' => '14 derniers jours', 'sous_titre' => 'du ' . date('d/m', strtotime('-13 day')) . ' au ' . date('d/m') . ', aujourd\'hui en surbrillance',
+            'unite' => 'dépôts', 'entete' => 'Jour du mois', 'accent' => 13, 'hauteur' => 168]) ?>
+      </div>
+    </section>
+
+    <section class="panneau s-5" aria-labelledby="titre-statuts">
+      <div class="panneau__tete">
+        <h2 id="titre-statuts">Où en sont les dossiers</h2>
+        <a class="lien-b" href="salle-de-tri.php">Salle de tri</a>
+      </div>
+      <div class="panneau__corps">
+        <?= repartition('Réclamations', [
+            [STATUTS_BUREAU['a_traiter'], (int) ($compte['a_traiter'] ?? 0)],
+            [STATUTS_BUREAU['en_cours'], (int) ($compte['en_cours'] ?? 0)],
+            [STATUTS_BUREAU['classe'], (int) ($compte['classe'] ?? 0)],
+        ], 'dossier', 'dossiers', 'rep-dossiers') ?>
+        <?= repartition('Rendez-vous à venir', [
+            [STATUTS_INSCRIS['a_traiter'], (int) ($compte_rdv['a_traiter'] ?? 0)],
+            [STATUTS_INSCRIS['confirme'], (int) ($compte_rdv['confirme'] ?? 0)],
+            [STATUTS_INSCRIS['annule'], (int) ($compte_rdv['annule'] ?? 0)],
+        ], 'rendez-vous', 'rendez-vous', 'rep-rdv') ?>
+        <p class="note-b">Taux de classement : <?= $total ? round(100 * ($compte['classe'] ?? 0) / $total) : 0 ?> %. Objectif : moyen.</p>
+      </div>
+    </section>
   </div>
 
   <section class="second-plan" aria-labelledby="titre-reste">
     <h2 id="titre-reste" class="second-plan__titre">Le reste du Bureau</h2>
     <div class="grille-b">
       <section class="panneau s-4" aria-labelledby="titre-types">
-        <div class="panneau__tete"><h3 id="titre-types">Demandes par type</h3><span class="note-b">Priorité : moyenne</span></div>
+        <div class="panneau__tete"><h3 id="titre-types">Demandes par type</h3></div>
         <div class="panneau__corps">
 <?php if (!$par_type): ?>
           <p class="note-b">Pas encore de dossier. La répartition est donc parfaitement équilibrée.</p>
@@ -178,7 +171,7 @@ require __DIR__ . '/includes/haut.php';
       </section>
 
       <section class="panneau s-4" aria-labelledby="titre-palmares">
-        <div class="panneau__tete"><h3 id="titre-palmares">Palmarès du Petit Moyen</h3><a class="lien-b" href="petit-moyen.php">Mot de demain</a></div>
+        <div class="panneau__tete"><h3 id="titre-palmares">Palmarès du Petit Moyen</h3><a class="lien-b" href="petit-moyen.php">Relire le mot de demain</a></div>
 <?php if ($palmares === null): ?>
         <p class="vide">Palmarès indisponible : le site ne répond pas.</p>
 <?php elseif (!$palmares): ?>
@@ -187,16 +180,16 @@ require __DIR__ . '/includes/haut.php';
         <ol class="lignes">
 <?php foreach ($palmares as $rang => $p): ?>
           <li><span class="mono"><?= $rang + 1 ?></span><strong class="reste"><?= e($p['mot']) ?></strong>
-            <span class="pousse mono">Moyen <?= (int) $p['moyen'] ?> · Pas moyen <?= (int) $p['pas_moyen'] ?></span></li>
+            <span class="pousse note-b"><?= (int) $p['moyen'] ?> moyen, <?= (int) $p['pas_moyen'] ?> pas moyen</span></li>
 <?php endforeach; ?>
         </ol>
 <?php endif; ?>
       </section>
 
       <section class="panneau s-4" aria-labelledby="titre-sauvegarde">
-        <div class="panneau__tete"><h3 id="titre-sauvegarde">Sauvegardes</h3><span class="note-b">Fichiers .sql complets</span></div>
+        <div class="panneau__tete"><h3 id="titre-sauvegarde">Sauvegardes</h3></div>
         <div class="panneau__corps">
-          <p class="note-b">À garder en lieu sûr : ils contiennent les adresses email et les mots de passe chiffrés. Réimport : phpMyAdmin, base vide, Importer.</p>
+          <p class="note-b">Fichiers .sql complets, à garder en lieu sûr : ils contiennent les adresses email et les mots de passe chiffrés. Pour les réimporter : phpMyAdmin, base vide, Importer.</p>
           <div class="boutons">
             <form method="post" action="export.php"><?= csrf_champ() ?><button class="mini" name="base" value="site" type="submit">Base du site</button></form>
             <form method="post" action="export.php"><?= csrf_champ() ?><button class="mini" name="base" value="gestion" type="submit">Base du Bureau</button></form>
@@ -204,17 +197,18 @@ require __DIR__ . '/includes/haut.php';
         </div>
       </section>
 
-      <section class="panneau s-12 panneau--plat" aria-labelledby="titre-purge">
-        <div class="panneau__tete"><h3 id="titre-purge">Purge des anciens dossiers</h3>
-          <span class="note-b"><?= nombre_de($purgeables, 'dossier classé', 'dossiers classés') ?> depuis plus de 6 mois, encore présent(s) sur le site</span></div>
+      <section class="panneau s-12" aria-labelledby="titre-purge">
+        <div class="panneau__tete"><h3 id="titre-purge">Purge des anciens dossiers</h3></div>
         <div class="panneau__corps">
-          <p class="note-b">La purge supprime ces demandes dans la base du site (<code>DELETE /api/contacts.php</code>, 200 au plus par passage) ; les dossiers restent au Bureau.</p>
+          <p class="note-b"><?= $purgeables
+              ? e(ucfirst(nombre_de($purgeables, 'dossier classé', 'dossiers classés'))) . ' depuis plus de 6 mois, encore sur le site. La purge les supprime de la base du site (<code>DELETE /api/contacts.php</code>, 200 au plus par passage) ; les dossiers restent au Bureau.'
+              : 'Aucun dossier classé depuis plus de 6 mois n\'est encore sur le site : rien à purger.' ?></p>
 <?php if ($purgeables): ?>
           <form method="post" action="purge.php" class="filtres-b">
             <?= csrf_champ() ?>
             <input type="hidden" name="lot" value="1">
             <label class="confirmer-b"><input type="checkbox" name="confirmer" value="1" required> Je confirme la suppression sur le site</label>
-            <button class="mini mini--danger" type="submit">Purger <?= $purgeables ?> demande(s)</button>
+            <button class="mini mini--danger" type="submit">Purger <?= nombre_de($purgeables, 'demande') ?></button>
           </form>
 <?php endif; ?>
         </div>

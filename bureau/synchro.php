@@ -32,7 +32,6 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Synchro</span><span>Site → API → Bureau</span></p>
     <h1>Synchroniser les inscriptions</h1>
     <p class="tete__sous">Les rendez-vous pris au guichet du site arrivent ici par l'API, sans doublon. Le site apprend ensuite qu'ils sont en instruction.</p>
   </div>
@@ -41,14 +40,11 @@ require __DIR__ . '/includes/haut.php';
 <div class="zone">
   <div class="grille-b">
     <section class="panneau synchro-b s-7" aria-labelledby="titre-lancer">
-      <div class="panneau__tete"><h2 id="titre-lancer"><?= picto_bureau('synchro') ?>Guichet du site</h2>
+      <div class="panneau__tete"><h2 id="titre-lancer">Guichet du site</h2>
         <span class="note-b">Dernière synchro : <?= $derniere ? date_courte($derniere['date_releve']) . ($derniere['agent'] ? ', par ' . e($derniere['agent']) : '') : 'jamais' ?></span></div>
       <div class="synchro-b__corps">
         <div class="synchro-b__attente">
-          <span class="synchro-b__nombre"><?= $a_synchroniser ?? '—' ?></span>
-          <span class="synchro-b__libelle"><?= $a_synchroniser === null
-              ? e(message_erreur_api($attente)) . ' : nombre inconnu'
-              : ($a_synchroniser === 0 ? 'aucune inscription en attente sur le site' : ($a_synchroniser > 1 ? 'inscriptions attendent' : 'inscription attend') . ' sur le site') ?></span>
+          <p class="synchro-b__libelle"><?php if ($a_synchroniser === null): ?><?= e(message_erreur_api($attente)) ?> : nombre d'inscriptions en attente inconnu.<?php elseif ($a_synchroniser === 0): ?>Aucune inscription n'attend sur le site.<?php else: ?><span class="synchro-b__nombre"><?= $a_synchroniser ?></span> <?= $a_synchroniser > 1 ? 'inscriptions attendent' : 'inscription attend' ?> sur le site.<?php endif; ?></p>
           <span class="note-b"><?= nombre_de($total_inscris, 'inscrit') ?> dans la base du Bureau.</span>
         </div>
         <form method="post" action="synchro.php" class="synchro-b__action">
@@ -59,7 +55,7 @@ require __DIR__ . '/includes/haut.php';
       </div>
 <?php if ($compte_rendu): ?>
       <div class="compte-rendu" data-papier aria-labelledby="titre-compte-rendu" role="group">
-        <h3 id="titre-compte-rendu" class="compte-rendu__titre">Compte rendu de la synchro</h3>
+        <h3 id="titre-compte-rendu" class="compte-rendu__titre">Compte rendu de la dernière synchro</h3>
         <dl class="compte-rendu__chiffres">
           <div><dt>Importées</dt><dd><?= (int) $compte_rendu['importees'] ?></dd></div>
           <div><dt>Déjà présentes</dt><dd><?= (int) $compte_rendu['deja'] ?></dd></div>
@@ -74,7 +70,7 @@ require __DIR__ . '/includes/haut.php';
     </section>
 
     <section class="panneau s-5" aria-labelledby="titre-fonctionnement">
-      <div class="panneau__tete"><h2 id="titre-fonctionnement">Ce que fait la synchro</h2></div>
+      <div class="panneau__tete"><h2 id="titre-fonctionnement">Ce que fait la synchro, dans l'ordre</h2></div>
       <ol class="etapes-b">
         <li><strong>Elle lit les inscriptions nouvelles du site</strong><code>GET /api/inscriptions.php?statut=nouveau</code></li>
         <li><strong>Elle les range dans la table inscris</strong><span class="note-b">sans doublon : <code>remote_id</code> est unique</span></li>
@@ -86,7 +82,7 @@ require __DIR__ . '/includes/haut.php';
   </div>
 
   <section class="panneau" aria-labelledby="titre-historique">
-    <div class="panneau__tete"><h2 id="titre-historique"><?= picto_bureau('journal') ?>Dernières synchros</h2><a class="lien-b" href="journal.php">Tout le journal</a></div>
+    <div class="panneau__tete"><h2 id="titre-historique">Dernières synchros</h2><a class="lien-b" href="journal.php">Ouvrir le journal</a></div>
 <?php if (!$synchros): ?>
     <p class="vide">Aucune synchro pour l'instant. Les inscriptions attendent, avec la patience des gens qui ont pris rendez-vous.</p>
 <?php else: ?>

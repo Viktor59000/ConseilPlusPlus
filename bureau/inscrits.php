@@ -47,13 +47,13 @@ require __DIR__ . '/includes/haut.php';
     $numero = numero_dossier((int) $fiche['remote_id']); ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><a href="inscrits.php">Inscrits</a><span>Inscrit n° <?= $numero ?></span></p>
+    <p class="tete__ref"><a href="inscrits.php">Inscrits</a><span class="mono">N° <?= $numero ?></span></p>
     <h1><?= e($fiche['prenom'] . ' ' . $fiche['nom']) ?></h1>
     <p class="tete__sous"><?= pastille($fiche['statut'], STATUTS_INSCRIS[$fiche['statut']]) ?>
       Rendez-vous le <?= e(jour_long($fiche['jour'])) ?> à <?= horaire_court($fiche['horaire']) ?>.</p>
   </div>
   <div class="tete__actions">
-    <?= bouton('Voir dans le planning', 'planning.php?semaine=' . $fiche['jour'], ['variante' => 'secondaire', 'icone_html' => picto_bureau('planning')]) ?>
+    <?= bouton('Voir dans le planning', 'planning.php?semaine=' . $fiche['jour'], ['variante' => 'secondaire', 'fleche' => false, 'icone_html' => picto_bureau('planning')]) ?>
   </div>
 </header>
 
@@ -61,7 +61,7 @@ require __DIR__ . '/includes/haut.php';
   <div class="grille-b">
     <div class="s-8 pile-b">
       <section class="panneau" aria-labelledby="titre-probleme">
-        <div class="panneau__tete"><h2 id="titre-probleme"><?= picto('guichet') ?>Problème déposé au guichet</h2><span class="note-b">Lu par l'API, non copié</span></div>
+        <div class="panneau__tete"><h2 id="titre-probleme">Problème déposé au guichet</h2><span class="note-b">Lu par l'API, non copié</span></div>
         <div class="panneau__corps">
 <?php if ($distante['code'] === 200): ?>
           <div class="feuille-b"><?= $distante['data']['message'] !== null ? e($distante['data']['message']) : 'Aucun. Le client vient pour le principe.' ?></div>
@@ -78,7 +78,7 @@ require __DIR__ . '/includes/haut.php';
       </section>
 
       <section class="panneau" aria-labelledby="titre-decision">
-        <div class="panneau__tete"><h2 id="titre-decision"><?= picto('tampon') ?>Décision du cabinet</h2><span class="note-b">Part au site : <code>PATCH /api/inscriptions.php</code></span></div>
+        <div class="panneau__tete"><h2 id="titre-decision">Décision du cabinet</h2><span class="note-b">Envoyée au site par <code>PATCH /api/inscriptions.php</code></span></div>
         <div class="panneau__corps">
           <form class="formulaire-b" method="post" action="inscrits.php">
             <?= csrf_champ() ?>
@@ -99,9 +99,9 @@ require __DIR__ . '/includes/haut.php';
       </section>
     </div>
 
-    <aside class="s-4 pile-b" aria-label="Fiche de l'inscrit">
+    <aside class="s-4 pile-b inspecteur" aria-label="Fiche de l'inscrit">
       <section class="panneau" aria-labelledby="titre-fiche">
-        <div class="panneau__tete"><h2 id="titre-fiche">Fiche</h2></div>
+        <div class="panneau__tete"><h2 id="titre-fiche">Coordonnées et rendez-vous</h2></div>
         <div class="panneau__corps">
           <dl class="fiche-b">
             <dt>Statut</dt><dd><?= pastille($fiche['statut'], STATUTS_INSCRIS[$fiche['statut']]) ?></dd>
@@ -110,9 +110,9 @@ require __DIR__ . '/includes/haut.php';
             <dt>Email</dt><dd><a href="mailto:<?= e($fiche['email']) ?>"><?= e($fiche['email']) ?></a></dd>
             <dt>Téléphone</dt><dd class="mono"><?= e($fiche['telephone']) ?></dd>
             <dt>Déposée le</dt><dd class="mono"><?= date_courte($fiche['create_at']) ?></dd>
-            <dt>remote_id</dt><dd class="mono"><?= (int) $fiche['remote_id'] ?> <span class="note-b">(id sur le site)</span></dd>
+            <dt>N° sur le site</dt><dd><span class="mono"><?= (int) $fiche['remote_id'] ?></span> <span class="note-b">(remote_id)</span></dd>
 <?php if ($distante['code'] === 200): ?>
-            <dt>Sur le site</dt><dd><?= pastille((string) $distante['data']['statut'], (string) $distante['data']['statut']) ?></dd>
+            <dt>Sur le site</dt><dd><?= pastille((string) $distante['data']['statut'], ['nouveau' => 'Nouveau', 'importe' => 'Importé', 'confirme' => 'Confirmé', 'annule' => 'Annulé'][$distante['data']['statut']] ?? (string) $distante['data']['statut']) ?></dd>
 <?php endif; ?>
           </dl>
         </div>
@@ -123,7 +123,6 @@ require __DIR__ . '/includes/haut.php';
 <?php else: ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Inscrits</span><span>Table inscris</span></p>
     <h1>Affichage des inscrits</h1>
     <p class="tete__sous"><span data-filtre-compte><?= count($inscrits) ?></span> inscrit(s) affiché(s), par date de rendez-vous. Confirmez ou annulez : la décision part au site.</p>
   </div>
@@ -133,7 +132,7 @@ require __DIR__ . '/includes/haut.php';
 <?php foreach ($criteres as $cle => $valeur): ?>
       <input type="hidden" name="<?= $cle ?>" value="<?= e($valeur) ?>">
 <?php endforeach; ?>
-      <?= bouton('Exporter la sélection', null, ['variante' => 'secondaire', 'icone_html' => picto_bureau('export')]) ?>
+      <?= bouton('Exporter la sélection', null, ['variante' => 'secondaire', 'fleche' => false, 'icone_html' => picto_bureau('export')]) ?>
     </form>
   </div>
 </header>
@@ -159,7 +158,7 @@ require __DIR__ . '/includes/haut.php';
   <section class="panneau" aria-labelledby="titre-table-inscrits">
     <h2 id="titre-table-inscrits" class="visuellement-cache">Liste des inscrits</h2>
 <?php if (!$inscrits): ?>
-    <p class="vide">Aucun inscrit ne correspond. Lancez une <a href="synchro.php">synchro</a> : ils attendent peut-être sur le site.</p>
+    <p class="vide"><?= array_filter($criteres) ? 'Aucun inscrit ne correspond à ces filtres. <a href="inscrits.php">Effacer les filtres</a>' : 'Aucun inscrit pour l\'instant. Lancez une <a href="synchro.php">synchro</a> : ils attendent peut-être sur le site.' ?></p>
 <?php else: ?>
     <div class="defile">
       <table class="table-b" id="table-inscrits">
@@ -171,7 +170,7 @@ require __DIR__ . '/includes/haut.php';
             <td class="mono"><a href="inscrits.php?id=<?= (int) $i['id'] ?>"><?= numero_dossier((int) $i['remote_id']) ?></a></td>
             <td><span class="double"><a href="inscrits.php?id=<?= (int) $i['id'] ?>"><?= e($nom) ?></a><small><?= e($i['email']) ?></small></span></td>
             <td class="mono"><?= e($i['telephone']) ?></td>
-            <td class="mono"><?= date_echeance($i['jour']) ?> · <?= horaire_court($i['horaire']) ?></td>
+            <td class="mono"><?= date_echeance($i['jour']) ?> à <?= horaire_court($i['horaire']) ?></td>
             <td class="mono muet"><?= date_courte($i['create_at']) ?></td>
             <td><?= pastille($i['statut'], STATUTS_INSCRIS[$i['statut']]) ?></td>
             <td>

@@ -96,7 +96,7 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Modération du dictionnaire</span><span>Publication le <?= date_echeance($demain) ?> à minuit</span></p>
+    <p class="tete__ref"><span>Publication le <?= date_echeance($demain) ?> à minuit</span></p>
     <h1>Le mot de demain</h1>
     <p class="tete__sous">Le Bureau le relit par l'API (<code>GET /api/mot-du-jour.php?date=<?= $demain ?></code>), le corrige (<code>PATCH</code>) ou le rejette (<code>DELETE</code>). Une fois publié, un mot ne se réécrit plus.</p>
   </div>
@@ -114,14 +114,14 @@ require __DIR__ . '/includes/haut.php';
   <?= bloc_alerte('Mot de demain indisponible : ' . lcfirst(message_erreur_api($r)) . '.', 'erreur') ?>
 <?php elseif (!$mot): ?>
   <section class="panneau" aria-labelledby="titre-aucun">
-    <div class="panneau__tete"><h2 id="titre-aucun"><?= picto('plume') ?>Aucun mot préparé pour demain</h2></div>
+    <div class="panneau__tete"><h2 id="titre-aucun">Aucun mot préparé pour demain</h2></div>
     <p class="vide">Le jour venu, la banque du site choisira une définition ou un sketch déjà relus. Pour un sketch inédit, demandez sa préparation à l'IA (bouton ci-dessus, jusqu'à 90 secondes de réflexion), puis relisez-le ici.</p>
   </section>
 <?php else:
     $format = $mot['format']; ?>
   <div class="grille-b">
     <section class="panneau s-7" aria-labelledby="titre-correction">
-      <div class="panneau__tete"><h2 id="titre-correction"><?= picto('plume') ?>Corriger</h2><span class="note-b"><?= $format === 'sketch' ? 'Sketch' : 'Définition' ?></span></div>
+      <div class="panneau__tete"><h2 id="titre-correction">Corriger</h2><span class="note-b"><?= $format === 'sketch' ? 'Sketch' : 'Définition' ?></span></div>
       <div class="panneau__corps">
 <?php if (isset($erreurs['corps'])): ?>
         <?= bloc_alerte($erreurs['corps'], 'erreur') ?>
@@ -153,7 +153,7 @@ require __DIR__ . '/includes/haut.php';
     <div class="s-5 pile-b">
       <section class="panneau" aria-labelledby="titre-apercu">
         <div class="panneau__tete"><h2 id="titre-apercu">Tel qu'il sera publié</h2>
-          <span class="note-b"><?= $mot['source'] === 'ia' ? 'Préparé par l\'IA' : 'Banque du site' ?> · certitude <?= (int) $mot['certitude'] ?> %</span></div>
+          <span class="note-b"><?= $mot['source'] === 'ia' ? 'Préparé par l\'IA' : 'Banque du site' ?>, certitude <?= (int) $mot['certitude'] ?> %</span></div>
         <div class="panneau__corps">
           <div class="entree-b">
             <p class="entree-b__mot"><strong><?= e($mot['mot']) ?></strong>, <em><?= e($mot['nature']) ?></em></p>
@@ -167,7 +167,8 @@ require __DIR__ . '/includes/haut.php';
 <?php endif; ?>
 <?php else: ?>
             <p><?= e($mot['definition']) ?></p>
-            <p class="note-b">Ex. : <?= e($mot['exemple']) ?> · Syn. : <?= e($mot['synonyme']) ?></p>
+            <p class="note-b">Ex. : <?= e($mot['exemple']) ?></p>
+            <p class="note-b">Syn. : <?= e($mot['synonyme']) ?></p>
 <?php endif; ?>
 <?php if ($mot['etymologie']): ?>
             <p class="note-b">Étym. : <?= e($mot['etymologie']) ?></p>

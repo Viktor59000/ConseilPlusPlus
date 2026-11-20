@@ -13,9 +13,8 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Tableau technique</span><span><code>api_logs</code></span></p>
     <h1>Statistiques de l'API</h1>
-    <p class="tete__sous">Chaque échange avec l'API du site est journalisé. Ces chiffres sont lus par l'API elle-même : <code>GET /api/statistiques.php?jours=<?= $jours ?></code>.</p>
+    <p class="tete__sous">Chaque échange avec l'API du site est journalisé (table <code>api_logs</code>). Ces chiffres sont lus par l'API elle-même : <code>GET /api/statistiques.php?jours=<?= $jours ?></code>.</p>
   </div>
   <nav class="segments tete__actions" aria-label="Période">
 <?php foreach ([7, 14, 30] as $j): ?>
@@ -29,15 +28,12 @@ require __DIR__ . '/includes/haut.php';
   <?= bloc_alerte('Statistiques indisponibles : ' . lcfirst(message_erreur_api($r)) . '.', 'erreur') ?>
 <?php else:
     $lignes = array_map(fn ($j) => ['libelle' => (new DateTime($j['jour']))->format($jours > 14 ? 'd' : 'd/m'), 'valeur' => (int) $j['appels']], $stats['par_jour']); ?>
-  <section class="tuiles" aria-label="Résumé">
-    <div class="tuile tuile--accent"><span class="tuile__libelle"><?= picto_bureau('statistiques') ?>Appels</span><span class="tuile__valeur"><?= (int) $stats['total'] ?></span><span class="tuile__detail">sur <?= $jours ?> jours</span></div>
-    <div class="tuile"><span class="tuile__libelle">Par jour</span><span class="tuile__valeur"><?= e(graphique_nombre(round($stats['total'] / $jours, 1))) ?></span><span class="tuile__detail">en moyenne</span></div>
-    <div class="tuile<?= $stats['erreurs'] ? ' tuile--alerte' : '' ?>"><span class="tuile__libelle">Erreurs</span><span class="tuile__valeur"><?= (int) $stats['erreurs'] ?></span><span class="tuile__detail">réponses 4xx et 5xx</span></div>
-    <div class="tuile"><span class="tuile__libelle">Réussite</span><span class="tuile__valeur"><?= $stats['total'] ? round(100 * ($stats['total'] - $stats['erreurs']) / $stats['total']) : 100 ?> %</span><span class="tuile__detail">des réponses</span></div>
-  </section>
-
   <section class="panneau" aria-labelledby="titre-par-jour">
-    <div class="panneau__tete"><h2 id="titre-par-jour"><?= picto_bureau('statistiques') ?>Appels par jour</h2><span class="note-b">Aujourd'hui en laiton</span></div>
+    <div class="panneau__tete"><h2 id="titre-par-jour">Appels par jour</h2>
+      <p class="note-b"><span class="nombre-b"><?= e(graphique_nombre((int) $stats['total'])) ?></span> appels en <?= $jours ?> jours,
+        soit <span class="nombre-b"><?= e(graphique_nombre(round($stats['total'] / $jours, 1))) ?></span> par jour ;
+        <span class="<?= $stats['erreurs'] ? 'note-b--alerte' : 'nombre-b' ?>"><?= (int) $stats['erreurs'] ?> erreur<?= $stats['erreurs'] > 1 ? 's' : '' ?></span> (4xx et 5xx),
+        <span class="nombre-b"><?= $stats['total'] ? round(100 * ($stats['total'] - $stats['erreurs']) / $stats['total']) : 100 ?> %</span> de réussite.</p></div>
     <div class="panneau__corps">
       <?= graphique_barres($lignes, ['titre' => $jours . ' derniers jours', 'unite' => 'appels', 'entete' => 'Jour', 'accent' => count($lignes) - 1, 'hauteur' => 180]) ?>
     </div>

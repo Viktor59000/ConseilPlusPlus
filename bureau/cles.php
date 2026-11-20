@@ -36,16 +36,15 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Accès à l'API</span><span>En-tête <code>X-API-Key</code></span></p>
     <h1>Clés d'API</h1>
-    <p class="tete__sous">Chaque application qui consomme l'API du site reçoit sa propre clé, avec ses droits : lecture (lister, statistiques) et/ou écriture (changer un statut, supprimer). Le Bureau garde la clé maîtresse.</p>
+    <p class="tete__sous">Chaque application qui consomme l'API du site reçoit sa propre clé (en-tête <code>X-API-Key</code>), avec ses droits : lecture (lister, statistiques) et/ou écriture (changer un statut, supprimer). Le Bureau garde la clé maîtresse.</p>
   </div>
 </header>
 
 <div class="zone">
 <?php if ($cle_neuve): ?>
   <section class="panneau cle-neuve" aria-labelledby="titre-cle-neuve">
-    <div class="panneau__tete"><h2 id="titre-cle-neuve"><?= picto_bureau('cles') ?>Clé de « <?= e($cle_neuve[0]) ?> »</h2><span class="note-b">Affichée une seule fois</span></div>
+    <div class="panneau__tete"><h2 id="titre-cle-neuve">Clé de « <?= e($cle_neuve[0]) ?> »</h2><span class="note-b">Affichée une seule fois</span></div>
     <div class="panneau__corps">
       <p class="note-b">Copiez-la maintenant et transmettez-la à l'application. Le site n'en garde que l'empreinte : elle ne sera plus jamais affichée.</p>
       <p><code class="cle-valeur"><?= e($cle_neuve[1]) ?></code></p>
@@ -55,7 +54,7 @@ require __DIR__ . '/includes/haut.php';
 
   <div class="grille-b">
     <section class="panneau s-8" aria-labelledby="titre-liste">
-      <div class="panneau__tete"><h2 id="titre-liste"><?= picto_bureau('cles') ?>Clés délivrées</h2></div>
+      <div class="panneau__tete"><h2 id="titre-liste">Clés délivrées</h2></div>
 <?php if ($cles === null): ?>
       <p class="vide note-b--alerte"><?= e(message_erreur_api($r)) ?>.</p>
 <?php elseif (!$cles): ?>

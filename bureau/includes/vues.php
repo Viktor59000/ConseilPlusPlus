@@ -75,6 +75,29 @@ function pastille(string $cle, string $libelle): string
     return '<span class="pastille pastille--' . e(preg_replace('/[^a-z_]/', '', $cle)) . '">' . e($libelle) . '</span>';
 }
 
+/**
+ * Répartition par statut : un titre, le total, une barre segmentée (décorative) et la légende chiffrée (le texte porte
+ * les valeurs). $lignes : liste de [libellé, valeur] dans l'ordre du circuit ; la première (ce qui attend l'agent) prend
+ * l'accent, les suivantes deux tons d'encre (.r-1 à .r-3, css/v2/bureau.css).
+ */
+function repartition(string $titre, array $lignes, string $singulier, string $pluriel, string $id): string
+{
+    $total = array_sum(array_column($lignes, 1));
+    $barre = '';
+    $legende = '';
+    foreach (array_values($lignes) as $k => [$libelle, $valeur]) {
+        $r = 'r-' . min(3, $k + 1);
+        if ($valeur > 0) {
+            $barre .= '<span class="' . $r . '" style="flex: ' . (int) $valeur . ' 1 0"></span>';
+        }
+        $legende .= '<li class="' . $r . '"><span>' . e($libelle) . '</span><b>' . (int) $valeur . '</b></li>';
+    }
+    return '<section class="repartition" aria-labelledby="' . e($id) . '"><div class="repartition__tete"><h3 id="' . e($id) . '">' . e($titre) . '</h3>'
+        . '<span>' . e($total === 0 ? 'aucun ' . $singulier : $total . ' ' . ($total > 1 ? $pluriel : $singulier)) . '</span></div>'
+        . '<div class="repartition__barre" aria-hidden="true">' . $barre . '</div>'
+        . '<ul class="repartition__legende">' . $legende . '</ul></section>';
+}
+
 /** Initiales d'un agent pour sa pastille ronde (« Viktor Venet » → « VV »). */
 function initiales(string $nom): string
 {

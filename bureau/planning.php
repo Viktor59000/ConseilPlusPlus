@@ -22,11 +22,10 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Planning</span><span>Semaine <?= (int) date('W', strtotime($lundi)) ?></span></p>
+    <p class="tete__ref"><span>Semaine <?= (int) date('W', strtotime($lundi)) ?></span></p>
     <h1>Du <?= e(jour_long($lundi)) ?> au <?= e(jour_long($vendredi)) ?></h1>
-    <p class="tete__sous"><?= nombre_de($actifs, 'rendez-vous', 'rendez-vous') ?> cette semaine
-      (<?= (int) ($par_statut['a_traiter'] ?? 0) ?> à traiter, <?= (int) ($par_statut['confirme'] ?? 0) ?> confirmé(s), <?= (int) ($par_statut['annule'] ?? 0) ?> annulé(s)).
-      Le guichet reçoit du lundi au vendredi, à la minute près.</p>
+    <p class="tete__sous"><?= ucfirst(nombre_de($actifs, 'rendez-vous', 'rendez-vous')) ?> cette semaine, dont <?= (int) ($par_statut['a_traiter'] ?? 0) ?> à traiter<?php if (!empty($par_statut['annule'])): ?>,
+      sans compter <?= nombre_de((int) $par_statut['annule'], 'annulation') ?><?php endif; ?>. Le guichet reçoit du lundi au vendredi, à la minute près.</p>
   </div>
   <div class="tete__actions">
     <nav class="semaines-b" aria-label="Changer de semaine">
@@ -35,8 +34,8 @@ require __DIR__ . '/includes/haut.php';
       <a class="mini" href="<?= e($lien(['semaine' => $suivante, 'vue' => $liste ? 'liste' : ''])) ?>" aria-label="Semaine suivante"><span class="masque-etroit">Suivante </span>›</a>
     </nav>
     <nav class="segments" aria-label="Affichage">
-      <a href="<?= e($lien(['semaine' => $semaine])) ?>"<?= !$liste ? ' aria-current="page"' : '' ?>><?= picto_bureau('tableau') ?>Semaine</a>
-      <a href="<?= e($lien(['semaine' => $semaine, 'vue' => 'liste'])) ?>"<?= $liste ? ' aria-current="page"' : '' ?>><?= picto_bureau('journal') ?>Liste</a>
+      <a href="<?= e($lien(['semaine' => $semaine])) ?>"<?= !$liste ? ' aria-current="page"' : '' ?>>Grille</a>
+      <a href="<?= e($lien(['semaine' => $semaine, 'vue' => 'liste'])) ?>"<?= $liste ? ' aria-current="page"' : '' ?>>Liste</a>
     </nav>
   </div>
 </header>
@@ -45,8 +44,8 @@ require __DIR__ . '/includes/haut.php';
 <?php if (!$liste): ?>
   <section class="panneau" aria-labelledby="titre-grille">
     <div class="panneau__tete">
-      <h2 id="titre-grille"><?= picto_bureau('planning') ?>Vue semaine</h2>
-      <p class="legende-b" aria-hidden="true"><?= pastille('a_traiter', 'À traiter') ?> <?= pastille('confirme', 'Confirmé') ?> <span class="note-b">annulés : en liste</span></p>
+      <h2 id="titre-grille">Créneaux du guichet</h2>
+      <p class="legende-b" aria-hidden="true"><?= pastille('a_traiter', 'À traiter') ?> <?= pastille('confirme', 'Confirmé') ?> <span class="note-b">Les annulés sont dans la vue Liste.</span></p>
     </div>
 <?php if (!$planning['horaires']): ?>
     <p class="vide">Horaires du guichet indisponibles (le site ne répond pas) et aucun rendez-vous cette semaine.</p>
@@ -73,7 +72,7 @@ require __DIR__ . '/includes/haut.php';
 <?php foreach ($planning['jours'] as $jour): ?>
             <td class="<?= $jour === $aujourdhui ? 'planning-b__auj' : ($jour < $aujourdhui ? 'planning-b__passe' : '') ?>">
 <?php if (empty($planning['grille'][$jour][$horaire])): ?>
-              <span class="planning-b__libre">libre</span>
+              <span class="visuellement-cache">Libre</span>
 <?php else: ?>
 <?php foreach ($planning['grille'][$jour][$horaire] as $i): ?>
               <a class="rdv-b rdv-b--<?= $i['statut'] ?>" href="inscrits.php?id=<?= (int) $i['id'] ?>">
@@ -98,11 +97,11 @@ require __DIR__ . '/includes/haut.php';
       $du_jour = array_filter($planning['liste'], fn ($i) => $i['jour'] === $jour); ?>
     <section class="panneau<?= $jour === $aujourdhui ? ' panneau--auj' : '' ?>" aria-labelledby="jour-<?= $jour ?>">
       <div class="panneau__tete">
-        <h2 id="jour-<?= $jour ?>"><?= e(ucfirst(jour_long($jour))) ?><?= $jour === $aujourdhui ? ' <span class="pastille pastille--neutre">aujourd\'hui</span>' : '' ?></h2>
+        <h2 id="jour-<?= $jour ?>"><?= e(ucfirst(jour_long($jour))) ?><?= $jour === $aujourdhui ? ' <span class="note-b">aujourd\'hui</span>' : '' ?></h2>
         <span class="note-b"><?= nombre_de(count($du_jour), 'rendez-vous', 'rendez-vous') ?></span>
       </div>
 <?php if (!$du_jour): ?>
-      <p class="vide">Aucun rendez-vous. Le guichet attend, sans impatience.</p>
+      <p class="vide">Aucun rendez-vous ce jour-là. Le guichet attend, sans impatience.</p>
 <?php else: ?>
       <ul class="lignes">
 <?php foreach ($du_jour as $i): ?>

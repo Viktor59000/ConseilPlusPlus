@@ -15,8 +15,16 @@ $passages = $genre === 'dossiers' ? PASSAGES_DOSSIERS : PASSAGES_INSCRIS;
 $nb_dossiers = (int) $bdd->query("SELECT COUNT(*) FROM dossiers WHERE statut <> 'classe'")->fetchColumn();
 $nb_inscris = (int) $bdd->query("SELECT COUNT(*) FROM inscris WHERE statut = 'a_traiter'")->fetchColumn();
 $aides = $genre === 'dossiers'
-    ? ['a_traiter' => 'Arrivés par le courrier', 'en_cours' => 'Classer : réponse requise', 'classe' => 'Réponse rendue']
+    ? ['a_traiter' => 'Arrivés par le courrier', 'en_cours' => 'Classer demande une réponse', 'classe' => 'Réponse rendue']
     : ['a_traiter' => 'Arrivés par la synchro', 'confirme' => 'À venir', 'annule' => 'À venir'];
+// Casier vide : ce qui le remplit (le premier casier se remplit par le relevé ou la synchro, les autres d'un coup de tampon)
+$vides = $genre === 'dossiers'
+    ? ['a_traiter' => 'Aucune réclamation en attente. Relevez le courrier pour faire entrer les nouvelles.',
+       'en_cours' => "Aucun dossier à l'examen. Tamponnez une fiche « À traiter » pour la prendre en charge.",
+       'classe' => "Rien de classé pour l'instant. Un dossier se classe une fois sa réponse rédigée."]
+    : ['a_traiter' => 'Aucun rendez-vous à traiter. Lancez une synchro pour faire entrer les nouveaux.',
+       'confirme' => 'Aucun rendez-vous confirmé à venir.',
+       'annule' => 'Aucune annulation à venir.'];
 
 $titre = 'Salle de tri';
 $page = 'salle-de-tri';
@@ -25,14 +33,13 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Salle de tri</span><span><?= $genre === 'dossiers' ? 'Réclamations' : 'Rendez-vous au guichet' ?></span></p>
     <h1>La Salle de tri</h1>
-    <p class="tete__sous">Faites avancer un élément d'un casier à l'autre : glissez-le, ou choisissez sa destination et tamponnez. Le site en est informé par l'API.</p>
+    <p class="tete__sous">Glissez une fiche dans un autre casier, ou choisissez sa destination et tamponnez. Le site en est informé par l'API.</p>
   </div>
   <div class="tete__actions">
     <nav class="segments" aria-label="Casiers">
-      <a href="salle-de-tri.php"<?= $genre === 'dossiers' ? ' aria-current="page"' : '' ?>><?= picto('chemise') ?>Réclamations <b><?= $nb_dossiers ?></b></a>
-      <a href="salle-de-tri.php?casier=inscriptions"<?= $genre === 'inscriptions' ? ' aria-current="page"' : '' ?>><?= picto_bureau('planning') ?>Rendez-vous <b><?= $nb_inscris ?></b></a>
+      <a href="salle-de-tri.php"<?= $genre === 'dossiers' ? ' aria-current="page"' : '' ?>>Réclamations <b><?= $nb_dossiers ?><span class="visuellement-cache"> ouvertes</span></b></a>
+      <a href="salle-de-tri.php?casier=inscriptions"<?= $genre === 'inscriptions' ? ' aria-current="page"' : '' ?>>Rendez-vous <b><?= $nb_inscris ?><span class="visuellement-cache"> à traiter</span></b></a>
     </nav>
 <?php if ($genre === 'dossiers'): ?>
     <form method="post" action="releve.php">
@@ -57,8 +64,7 @@ require __DIR__ . '/includes/haut.php';
       $casier = $casiers[$statut]; ?>
       <section class="casier<?= $casier['liste'] ? '' : ' casier--vide' ?>" data-casier="<?= $statut ?>" aria-labelledby="casier-<?= $statut ?>">
         <header class="casier__tete">
-          <span aria-hidden="true"><?= pastille($statut, $libelle) ?></span>
-          <h3 id="casier-<?= $statut ?>" class="visuellement-cache"><?= e($libelle) ?></h3>
+          <h3 id="casier-<?= $statut ?>" class="pastille pastille--<?= $statut ?>"><?= e($libelle) ?></h3>
           <span class="casier__compte"><?= $casier['total'] ?><span class="visuellement-cache"> élément(s)</span></span>
           <span class="casier__aide"><?= e($aides[$statut]) ?></span>
         </header>
@@ -92,21 +98,22 @@ require __DIR__ . '/includes/haut.php';
               $vers_js[$arrivee] = ['valeur' => $valeur, 'tampon' => $texte_tampon, 'couleur' => $couleur];
           } ?>
           <li class="fiche-tri" id="<?= $id_html ?>" data-fiche data-papier data-vers="<?= e(json_encode($vers_js, JSON_UNESCAPED_UNICODE)) ?>">
-            <p class="fiche-tri__haut"><span>N° <?= $numero ?></span>
+            <p class="fiche-tri__haut"><span class="mono">N° <?= $numero ?></span>
 <?php if ($genre === 'dossiers'): ?>
-              <span class="pousse"><?= date('d/m', strtotime($f['date_demande'])) ?></span>
+              <span><?= e($titre_fiche) ?></span>
+              <span class="pousse mono"><?= date('d/m', strtotime($f['date_demande'])) ?></span>
 <?php else: ?>
-              <span class="pousse"><?= e($f['telephone']) ?></span>
+              <span class="pousse mono"><?= e($f['telephone']) ?></span>
 <?php endif; ?>
             </p>
             <h4 class="fiche-tri__titre"><a href="<?= $fiche ?>" data-tiroir="<?= $id_html ?>-detail"><?= e($nom) ?></a></h4>
-            <p class="fiche-tri__extrait"><?= $genre === 'dossiers' ? e($titre_fiche . ' — ' . mb_substr($f['message'], 0, 140)) : e($titre_fiche) ?></p>
+            <p class="fiche-tri__extrait"><?= $genre === 'dossiers' ? e(mb_substr($f['message'], 0, 140)) : e($titre_fiche) ?></p>
             <p class="fiche-tri__bas">
 <?php if ($genre === 'dossiers'): ?>
 <?php if (en_retard($f)): ?>
               <?= pastille('retard', 'En retard') ?>
 <?php elseif ($f['echeance']): ?>
-              <span class="mono">Échéance <?= date_echeance($f['echeance']) ?></span>
+              <span>Échéance <span class="mono"><?= date_echeance($f['echeance']) ?></span></span>
 <?php endif; ?>
               <span><?= $f['responsable'] ? e($f['responsable']) : 'Sans responsable' ?></span>
 <?php else: ?>
@@ -122,7 +129,7 @@ require __DIR__ . '/includes/haut.php';
 <?php elseif ($statut === 'en_cours'): ?>
               <input type="hidden" name="reponse" value="<?= e((string) $f['reponse']) ?>">
 <?php endif; ?>
-              <label class="visuellement-cache" for="vers-<?= $id_html ?>">Déplacer n° <?= $numero ?> (<?= e($nom) ?>) vers</label>
+              <label for="vers-<?= $id_html ?>">Vers<span class="visuellement-cache"> (déplacer n° <?= $numero ?>, <?= e($nom) ?>)</span></label>
               <select class="saisie" id="vers-<?= $id_html ?>" name="<?= $champ ?>" aria-describedby="consigne-tri">
 <?php foreach ($vers as $arrivee => [$valeur]): ?>
                 <option value="<?= $valeur ?>"><?= e($statuts[$arrivee]) ?></option>
@@ -134,7 +141,7 @@ require __DIR__ . '/includes/haut.php';
             <p class="fiche-tri__deplacer"><a class="lien-b" href="<?= $fiche ?>#reponse">Rédiger la réponse pour classer</a></p>
 <?php endif; ?>
             <template id="<?= $id_html ?>-detail">
-              <p class="tete__ref"><span>N° <?= $numero ?></span><span><?= e($statuts[$statut]) ?></span></p>
+              <p class="tete__ref"><span class="mono">N° <?= $numero ?></span><?= pastille($statut, $statuts[$statut]) ?></p>
               <h2><?= e($nom) ?></h2>
               <dl class="fiche-b">
 <?php if ($genre === 'dossiers'): ?>
@@ -157,15 +164,15 @@ require __DIR__ . '/includes/haut.php';
               <pre class="lettre"><?= e($f['reponse']) ?></pre>
 <?php endif; ?>
 <?php endif; ?>
-              <p><?= bouton($genre === 'dossiers' ? 'Ouvrir la fiche complète' : 'Ouvrir la fiche de l\'inscrit', $fiche, ['variante' => 'secondaire', 'fleche' => true]) ?></p>
+              <p><?= bouton($genre === 'dossiers' ? 'Ouvrir la fiche complète' : 'Ouvrir la fiche de l\'inscrit', $fiche, ['variante' => 'secondaire', 'fleche' => false]) ?></p>
             </template>
           </li>
 <?php endforeach; ?>
         </ol>
 <?php if (!$casier['liste']): ?>
-        <p class="casier__plus">Casier vide. <?= $statut === array_key_first($statuts) ? ($genre === 'dossiers' ? 'Relevez le courrier.' : 'Lancez une synchro.') : 'Glissez-y une fiche.' ?></p>
+        <p class="casier__plus"><?= e($vides[$statut]) ?></p>
 <?php elseif ($casier['total'] > count($casier['liste'])): ?>
-        <p class="casier__plus"><a class="lien-b" href="<?= $genre === 'dossiers' ? 'dossiers.php?statut=' . $statut : 'inscrits.php?statut=' . $statut ?>"><?= $casier['total'] - count($casier['liste']) ?> autre(s) au registre</a></p>
+        <p class="casier__plus"><a class="lien-b" href="<?= $genre === 'dossiers' ? 'dossiers.php?statut=' . $statut : 'inscrits.php?statut=' . $statut ?>">Voir les <?= $casier['total'] - count($casier['liste']) ?> autres au registre</a></p>
 <?php endif; ?>
       </section>
 <?php endforeach; ?>
@@ -175,7 +182,7 @@ require __DIR__ . '/includes/haut.php';
 
 <dialog class="tiroir" id="tiroir" aria-labelledby="tiroir-titre">
   <div class="tiroir__tete">
-    <p class="tete__ref" id="tiroir-titre"><?= $genre === 'dossiers' ? 'Dossier' : 'Rendez-vous' ?></p>
+    <p class="tiroir__titre" id="tiroir-titre"><?= $genre === 'dossiers' ? 'Aperçu du dossier' : 'Aperçu du rendez-vous' ?></p>
     <form method="dialog"><button class="mini" type="submit">Fermer</button></form>
   </div>
   <div class="tiroir__corps" data-tiroir-corps></div>

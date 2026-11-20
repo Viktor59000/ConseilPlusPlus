@@ -13,9 +13,8 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Traçabilité</span><span>100 dernières opérations</span></p>
     <h1>Journal du Bureau</h1>
-    <p class="tete__sous">Chaque relevé interroge l'API du site (<code>GET /api/contacts.php?statut=nouveau</code>) puis marque les demandes comme importées (<code>PATCH</code>) ;
+    <p class="tete__sous">Les 100 dernières opérations. Chaque relevé interroge l'API du site (<code>GET /api/contacts.php?statut=nouveau</code>) puis marque les demandes comme importées (<code>PATCH</code>) ;
       chaque synchro fait de même pour les rendez-vous (<code>/api/inscriptions.php</code>) ; chaque purge supprime des demandes classées (<code>DELETE</code>).</p>
   </div>
 </header>

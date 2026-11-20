@@ -140,7 +140,7 @@ $numero = numero_dossier((int) $dossier['id_site']);
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><a href="salle-de-tri.php">Salle de tri</a><a href="dossiers.php">Registre</a><span>Dossier n° <?= $numero ?></span></p>
+    <p class="tete__ref"><a href="dossiers.php">Registre des dossiers</a><span class="mono">N° <?= $numero ?></span></p>
     <h1><?= e($dossier['type_demande']) ?> de <?= e($dossier['nom']) ?></h1>
     <p class="tete__sous"><?= pastille($dossier['statut'], STATUTS_BUREAU[$dossier['statut']]) ?>
       <?php if (en_retard($dossier)): ?><?= pastille('retard', 'En retard') ?><?php endif; ?>
@@ -158,13 +158,13 @@ $numero = numero_dossier((int) $dossier['id_site']);
   <div class="grille-b">
     <div class="s-8 pile-b">
       <section class="panneau" aria-labelledby="titre-demande">
-        <div class="panneau__tete"><h2 id="titre-demande"><?= picto('chemise') ?>La demande</h2>
+        <div class="panneau__tete"><h2 id="titre-demande">La demande</h2>
           <a class="lien-b lien-b--nu" href="mailto:<?= e($dossier['email']) ?>"><?= e($dossier['email']) ?></a></div>
         <div class="panneau__corps"><div class="feuille-b"><?= e($dossier['message']) ?></div></div>
       </section>
 
       <section class="panneau" aria-labelledby="titre-reponse" id="reponse-officielle">
-        <div class="panneau__tete"><h2 id="titre-reponse"><?= picto('plume') ?>Réponse officielle</h2>
+        <div class="panneau__tete"><h2 id="titre-reponse">Réponse officielle</h2>
 <?php if ($classe): ?>
           <span class="note-b"><?= $dossier['envoi'] === 'envoye' ? 'Envoyée par email' : 'Archivée (aucun email envoyé)' ?> le <?= date_courte($dossier['date_reponse']) ?></span>
 <?php else: ?>
@@ -219,9 +219,9 @@ $numero = numero_dossier((int) $dossier['id_site']);
       </section>
 
       <section class="panneau" id="notes" aria-labelledby="titre-notes">
-        <div class="panneau__tete"><h2 id="titre-notes"><?= picto_bureau('journal') ?>Notes internes</h2><span class="note-b">Visibles des seuls agents</span></div>
+        <div class="panneau__tete"><h2 id="titre-notes">Notes internes</h2><span class="note-b">Visibles des seuls agents</span></div>
 <?php if (!$notes): ?>
-        <p class="vide">Aucune note. Le dossier parle de lui-même, ou pas.</p>
+        <p class="vide">Aucune note. Une note reste entre agents : elle ne part jamais au demandeur.</p>
 <?php else: ?>
         <ol class="notes-b">
 <?php foreach ($notes as $n): ?>
@@ -242,7 +242,7 @@ $numero = numero_dossier((int) $dossier['id_site']);
       </section>
     </div>
 
-    <aside class="s-4 pile-b" aria-label="Propriétés du dossier">
+    <aside class="s-4 pile-b inspecteur" aria-label="Propriétés du dossier">
       <section class="panneau" aria-labelledby="titre-proprietes">
         <div class="panneau__tete"><h2 id="titre-proprietes">Propriétés</h2></div>
         <div class="panneau__corps">
@@ -265,7 +265,7 @@ $numero = numero_dossier((int) $dossier['id_site']);
       </section>
 
       <section class="panneau" aria-labelledby="titre-affectation">
-        <div class="panneau__tete"><h2 id="titre-affectation">Affectation</h2><span class="note-b">Échéance interne</span></div>
+        <div class="panneau__tete"><h2 id="titre-affectation">Affectation</h2></div>
         <div class="panneau__corps">
           <form method="post" class="formulaire-b">
             <?= csrf_champ() ?>
@@ -276,7 +276,7 @@ $numero = numero_dossier((int) $dossier['id_site']);
                 <option value="<?= $id_a ?>"<?= (int) $dossier['id_responsable'] === $id_a ? ' selected' : '' ?>><?= e($nom_a) ?></option>
 <?php endforeach; ?>
               </select></div>
-            <div class="champ-b"><label for="echeance">Échéance (pas le délai annoncé au client)</label>
+            <div class="champ-b"><label for="echeance">Échéance interne (le client ne la voit pas)</label>
               <input class="saisie" id="echeance" name="echeance" type="date" value="<?= e((string) $dossier['echeance']) ?>"></div>
             <div><button class="mini" name="action" value="affecter" type="submit">Affecter</button></div>
           </form>
@@ -284,7 +284,7 @@ $numero = numero_dossier((int) $dossier['id_site']);
       </section>
 
       <section class="panneau" aria-labelledby="titre-autres">
-        <div class="panneau__tete"><h2 id="titre-autres">Autres demandes</h2><span class="note-b">même adresse</span></div>
+        <div class="panneau__tete"><h2 id="titre-autres">Autres demandes de cette adresse</h2></div>
 <?php if (!$autres): ?>
         <p class="vide">Première demande à cette adresse. Le cabinet fait bonne impression, pour l'instant.</p>
 <?php else: ?>

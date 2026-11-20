@@ -58,13 +58,12 @@ require __DIR__ . '/includes/haut.php';
 <div class="connexion">
   <figure class="connexion__scene">
     <?= scene('salle-de-tri', 'La salle de tri du Bureau : des casiers jusqu\'au plafond, trois corbeilles sur la table, une lampe en laiton et un tampon qui attend. Rien n\'est dans l\'ordre, mais tout est étiqueté.', ['prioritaire' => true, 'classe' => 'scene--libre', 'tailles' => '(min-width: 1024px) 58vw, 100vw']) ?>
-    <figcaption class="connexion__legende"><span class="mono">Salle de tri</span> Tout dossier qui entre ici en ressort, un jour ou l'autre.</figcaption>
   </figure>
 
   <section class="connexion__poste" aria-labelledby="titre-connexion">
     <a class="connexion__marque" href="<?= e(url_publique()) ?>/"><?= ui_logo('logo-connexion') ?></a>
     <div class="connexion__feuille" data-papier>
-      <p class="connexion__ref"><span>Le Bureau</span><span><?= $installation ? 'Formulaire B-0' : 'Formulaire B-1' ?></span></p>
+      <p class="connexion__ref"><?= $installation ? 'Formulaire B-0' : 'Formulaire B-1' ?></p>
       <h1 id="titre-connexion"><?= $installation ? 'Créer le premier agent' : 'Prise de poste' ?></h1>
       <p class="connexion__chapeau"><?= $installation
           ? 'Aucun agent n\'est encore enregistré. Pour ouvrir le Bureau, présentez la clé d\'API du site (API_KEY, dans config.php ou dans les réglages de Render).'
@@ -82,9 +81,9 @@ require __DIR__ . '/includes/haut.php';
         <?= champ('mdp', 'Mot de passe', [], ['type' => 'password', 'requis' => true, 'autocomplete' => $installation ? 'new-password' : 'current-password',
             'aide' => $installation ? '10 caractères au moins. Le Bureau ne le relira jamais, il le compare.' : null,
             'attributs' => ['minlength' => $installation ? 10 : 1]]) ?>
-        <?= bouton($installation ? 'Créer le compte et entrer' : 'Entrer au Bureau', null, ['large' => true]) ?>
+        <?= bouton($installation ? 'Créer le compte et entrer' : 'Entrer au Bureau', null, ['large' => true, 'fleche' => false]) ?>
       </form>
-      <p class="connexion__pied"><span class="mono">Visa du service</span><span>Toute tentative est consignée, puis classée.</span></p>
+      <p class="connexion__pied">Toute tentative est consignée, puis classée.</p>
     </div>
     <p class="connexion__retour"><a href="<?= e(url_publique()) ?>/">Retour au site du cabinet</a></p>
   </section>

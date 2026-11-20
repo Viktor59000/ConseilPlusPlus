@@ -13,17 +13,16 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Registre</span><a href="salle-de-tri.php">Voir en casiers</a></p>
     <h1>Registre des dossiers</h1>
     <p class="tete__sous"><?= count($dossiers) ?> dossier(s) affiché(s), <?= $criteres['tri'] === 'echeance'
-        ? 'par échéance, la plus proche d\'abord (sans échéance à la fin)' : 'du plus récent au plus ancien' ?>.</p>
+        ? 'par échéance, la plus proche d\'abord (sans échéance à la fin)' : 'du plus récent au plus ancien' ?>. <a href="salle-de-tri.php">Voir en casiers</a></p>
   </div>
   <form class="tete__actions" method="post" action="export-dossiers.php">
     <?= csrf_champ() ?>
 <?php foreach ($criteres as $cle => $valeur): ?>
     <input type="hidden" name="<?= $cle ?>" value="<?= e($valeur) ?>">
 <?php endforeach; ?>
-    <?= bouton('Exporter en CSV', null, ['variante' => 'secondaire', 'icone_html' => picto_bureau('export')]) ?>
+    <?= bouton('Exporter en CSV', null, ['variante' => 'secondaire', 'fleche' => false, 'icone_html' => picto_bureau('export')]) ?>
   </form>
 </header>
 
@@ -66,7 +65,7 @@ require __DIR__ . '/includes/haut.php';
   <section class="panneau" aria-labelledby="titre-registre">
     <h2 id="titre-registre" class="visuellement-cache">Dossiers</h2>
 <?php if (!$dossiers): ?>
-    <p class="vide">Aucun dossier ne correspond. Le Bureau a cherché, moyennement, mais il a cherché.</p>
+    <p class="vide">Aucun dossier ne correspond. Le Bureau a cherché, moyennement, mais il a cherché. <a href="dossiers.php">Effacer les filtres</a></p>
 <?php else: ?>
     <div class="defile">
       <table class="table-b" id="table-dossiers">

@@ -48,14 +48,14 @@ envoyer_csp();
   </header>
   <nav class="laterale" id="laterale" aria-label="Le Bureau">
     <a class="laterale__marque" href="tableau.php"><?= logo_bureau('logo-laterale') ?>
-      <span class="laterale__nom"><strong>Le Bureau</strong><span>La Salle de tri</span></span></a>
-    <p class="laterale__groupe" id="nav-onglets">Onglets</p>
+      <span class="laterale__nom"><strong>Le Bureau</strong><span>Logiciel de gestion</span></span></a>
+    <p class="laterale__groupe visuellement-cache" id="nav-onglets">Onglets</p>
     <ul aria-labelledby="nav-onglets">
 <?php foreach (ONGLETS_BUREAU as $cle => [$adresse, $libelle, $picto]): ?>
       <li><a class="nav-b" href="<?= $adresse ?>"<?= $page === $cle ? ' aria-current="page"' : '' ?>><?= picto_bureau($picto) ?><span><?= e($libelle) ?></span><?php if (!empty($compteurs[$cle])): ?><span class="nav-b__compte" title="Rendez-vous à venir à traiter"><?= $compteurs[$cle] ?><span class="visuellement-cache"> à traiter</span></span><?php endif; ?></a></li>
 <?php endforeach; ?>
     </ul>
-    <p class="laterale__groupe" id="nav-reste">Le reste du Bureau</p>
+    <p class="laterale__groupe" id="nav-reste">Dossiers et outils</p>
     <ul aria-labelledby="nav-reste">
 <?php foreach (RESTE_BUREAU as $cle => [$adresse, $libelle, $picto]): ?>
       <li><a class="nav-b" href="<?= $adresse ?>"<?= $page === $cle ? ' aria-current="page"' : '' ?>><?= picto_bureau($picto) ?><span><?= e($libelle) ?></span><?php if (!empty($compteurs[$cle])): ?><span class="nav-b__compte" title="Dossiers à traiter"><?= $compteurs[$cle] ?><span class="visuellement-cache"> à traiter</span></span><?php endif; ?></a></li>

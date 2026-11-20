@@ -34,16 +34,15 @@ require __DIR__ . '/includes/haut.php';
 ?>
 <header class="tete">
   <div class="tete__texte">
-    <p class="tete__ref"><span>Export</span><span>CSV · UTF-8 · séparateur « ; »</span></p>
     <h1>Exporter les inscrits</h1>
-    <p class="tete__sous"><?= nombre_de($total, 'inscrit') ?> dans la base du Bureau. Le fichier s'ouvre directement dans Excel ; aucune cellule n'y est prise pour une formule.</p>
+    <p class="tete__sous"><?= ucfirst(nombre_de($total, 'inscrit')) ?> dans la base du Bureau. Fichier CSV en UTF-8, séparé par des points-virgules : il s'ouvre directement dans Excel, et aucune cellule n'y est prise pour une formule.</p>
   </div>
 </header>
 
 <div class="zone">
   <div class="grille-b">
     <section class="panneau s-7" aria-labelledby="titre-csv">
-      <div class="panneau__tete"><h2 id="titre-csv"><?= picto_bureau('export') ?>Inscrits au guichet</h2><span class="note-b">Table <code>inscris</code></span></div>
+      <div class="panneau__tete"><h2 id="titre-csv">Inscrits au guichet</h2><span class="note-b">Table <code>inscris</code></span></div>
       <div class="panneau__corps">
         <form class="formulaire-b" method="post" action="export-inscrits.php">
           <?= csrf_champ() ?>
@@ -58,8 +57,8 @@ require __DIR__ . '/includes/haut.php';
             <div class="champ-b"><label for="jour">Jour (facultatif)</label><input class="saisie" id="jour" name="jour" type="date"></div>
             <div class="champ-b champ-b--large"><label for="q">Nom, prénom, email ou téléphone</label><input class="saisie" id="q" name="q" type="search"></div>
           </div>
-          <div class="colonnes-csv" aria-label="Colonnes du fichier">
-            <span class="etiquette-b">Colonnes</span>
+          <p class="etiquette-b" id="colonnes-csv">Colonnes du fichier, dans l'ordre</p>
+          <div class="colonnes-csv" role="group" aria-labelledby="colonnes-csv">
 <?php foreach (['Id', 'remote_Id', 'Nom', 'prénom', 'email', 'Téléphone', 'jour', 'horaire', 'create_at', 'Statut'] as $colonne): ?>
             <code><?= e($colonne) ?></code>
 <?php endforeach; ?>
@@ -71,7 +70,7 @@ require __DIR__ . '/includes/haut.php';
     </section>
 
     <section class="panneau s-5" aria-labelledby="titre-autres">
-      <div class="panneau__tete"><h2 id="titre-autres">Autres exports</h2><span class="note-b">Second plan</span></div>
+      <div class="panneau__tete"><h2 id="titre-autres">Autres exports</h2></div>
       <ul class="lignes lignes--hautes">
         <li><span class="reste"><strong>Dossiers (réclamations)</strong><br><span class="note-b">Tous les dossiers, sans les notes internes. Pour une sélection : le registre.</span></span>
           <form class="pousse" method="post" action="export-dossiers.php"><?= csrf_champ() ?><button class="mini" type="submit">CSV</button></form></li>
