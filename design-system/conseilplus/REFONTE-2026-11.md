@@ -77,3 +77,22 @@ Sur une branche « refonte », page par page, le site en ligne restant la versio
 6. Le Personnel, Le Petit Moyen, Messmerde, Formules, Réclamations, légal.
 7. Service worker, appli Android, RGAA, CSP, puis Lighthouse à la toute fin.
 Budget estimé : environ 30 h pour une première version complète du parcours (lots 1 à 4), 80 à 110 h pour tout.
+
+## Exigences du professeur (tableau de la séance, photo fournie par l'auteur le 20/11/2026)
+Elles priment sur tout le reste du concept.
+- Deux applications dans `www/htdocs` : **Site vitrine** et **Gestion**, chacune avec SA base (« base de données vitrine »,
+  « BDD Gestion »), reliées uniquement par l'**API** (le site vitrine expose, la Gestion consomme).
+- Base **Gestion**, table **`inscris`** : `Id` (clé primaire), `remote_Id` (l'id de l'inscription sur le site vitrine,
+  unique), `Nom`, `prénom`, `email`, `Téléphone`, `jour`, `horaire`, `create_at`, `Statut`.
+- Le site vitrine recueille donc des **inscriptions à un rendez-vous** (nom, prénom, email, téléphone, jour, horaire).
+  Dans le concept : le visiteur (connecté) **prend rendez-vous au guichet** du cabinet, un jour et un créneau.
+- Logiciel de gestion : `index` → page de **connexion** ; `tableau` → **page d'arrivée** ; connexion / déconnexion
+  (la déconnexion fait quitter et ramène à la connexion) ; onglets **Planning, Inscrits, Synchro, Export, Déconnexion** ;
+  « affichage des inscrits ».
+- **Synchro** : la Gestion lit par l'API les inscriptions nouvelles du site, les range dans `inscris` (par `remote_Id`,
+  sans doublon) et repasse leur statut côté site (nouveau → importé) ; le Statut évolue ensuite dans la Gestion
+  (et la réponse/confirmation revient au site pour « Mon dossier »).
+- Connexion locale chez le prof : `localhost:8889` (MAMP), utilisateur `root`, mot de passe `root` → à rendre
+  configurable sans toucher au code (variables / config), documenté dans le README.
+- Le formulaire de contact actuel reste, pour les Réclamations ; les fonctions existantes du Bureau (dossiers, réponses,
+  relecture du mot, statistiques, clés) restent, en second plan derrière les onglets du tableau.
