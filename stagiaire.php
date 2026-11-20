@@ -40,7 +40,7 @@ include __DIR__ . '/includes/header.php';
     </div>
   </noscript>
 
-  <div class="plateau-jeu" data-jeu hidden>
+  <div class="plateau-jeu" data-jeu>
     <p class="plateau-num mono" data-num>Question n° 1 sur 10</p>
     <p class="plateau-question" data-question tabindex="-1"></p>
     <p class="plateau-buzz" data-buzz></p>
@@ -63,7 +63,7 @@ include __DIR__ . '/includes/header.php';
     <p class="visuellement-cache" aria-live="polite" data-annonce></p>
   </div>
 
-  <aside class="plateau-score" data-score hidden aria-labelledby="titre-score">
+  <aside class="plateau-score" data-score aria-labelledby="titre-score">
     <p class="mono" id="titre-score">Score</p>
     <dl>
       <div><dt>Le bon sens</dt><dd data-points="bon_sens">0</dd></div>

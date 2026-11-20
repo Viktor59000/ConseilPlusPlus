@@ -683,6 +683,8 @@ kbd { font-family: var(--mono); font-size: .85em; padding: 1px 7px; border: 1px 
 /* ---------- Questions pour un stagiaire ---------- */
 .plateau { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 28px; align-items: start; }
 .plateau-jeu { background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); padding: 32px 36px 36px; min-height: 340px; }
+/* Le plateau et le score ne s'affichent qu'avec JavaScript (classe posée dans <head>, donc sans décalage au chargement) */
+html:not(.avec-js) [data-jeu], html:not(.avec-js) [data-score] { display: none; }
 .plateau-jeu.nouvelle { animation: apparition 400ms var(--ressort); }
 .plateau-num { margin: 0 0 8px; color: var(--encre-2); }
 .plateau-question { margin: 0 0 16px; font-size: clamp(1.4rem, 3.6vw, 2rem); font-weight: 800; letter-spacing: -.015em; line-height: 1.25; max-width: 32ch; }

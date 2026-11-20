@@ -124,7 +124,5 @@
     else bilan();
   });
 
-  jeu.hidden = false;
-  tableau.hidden = false;
   demarrer(false);
 })();
