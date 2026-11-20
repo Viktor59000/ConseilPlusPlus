@@ -1,0 +1,188 @@
+/* ConseilPlus+ « Le Guichet » — 4. SITE : conteneur, en-tête, navigation, sections « un écran », héros split, grille,
+   pied de page, entrée du héros et phrase qui s'encre. Gabarit : includes/gabarit.php. */
+@layer site {
+
+  /* ---------- Conteneur et grille : un seul jeu de lignes pour toute la page ---------- */
+  .conteneur { width: min(100% - 2 * var(--gouttiere), var(--largeur)); margin-inline: auto; }
+  .grille { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--colonne-gap); }
+  .grille > * { grid-column: 1 / -1; }
+  .grille .c-3 { grid-column: span 3; } .grille .c-4 { grid-column: span 4; } .grille .c-5 { grid-column: span 5; }
+  .grille .c-6 { grid-column: span 6; } .grille .c-7 { grid-column: span 7; } .grille .c-8 { grid-column: span 8; }
+  /* d-N : commence à la colonne N et va jusqu'à la ligne de droite (à poser à la place de c-…) */
+  .grille .d-7 { grid-column: 7 / -1; } .grille .d-8 { grid-column: 8 / -1; } .grille .d-9 { grid-column: 9 / -1; }
+  @media (max-width: 1023px) {
+    .grille .c-3 { grid-column: span 6; } .grille .c-4 { grid-column: span 6; }
+    .grille .c-5, .grille .c-6, .grille .c-7, .grille .c-8, .grille .d-7, .grille .d-8 { grid-column: 1 / -1; }
+    .grille .d-9 { grid-column: span 6; }
+  }
+  @media (max-width: 639px) { .grille > * { grid-column: 1 / -1 !important; } }
+  /* Rangée de cartes de même hauteur : 2, 3 ou 4 par ligne, une seule colonne sur téléphone */
+  .rangee { display: grid; gap: var(--e-5); grid-template-columns: repeat(var(--par, 3), minmax(0, 1fr)); }
+  @media (max-width: 1023px) { .rangee { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 639px) { .rangee { grid-template-columns: 1fr; gap: var(--e-3); } }
+
+  /* ---------- En-tête : collé en haut, opaque, filet dessous, identique à toute profondeur ---------- */
+  .entete { position: sticky; top: 0; z-index: 20; background: var(--fond); border-bottom: 1px solid var(--filet); }
+  .entete__in { display: flex; align-items: center; gap: var(--e-5); min-height: var(--nav); }
+  .entete__logo { position: relative; display: block; height: 34px; flex: none; color: var(--encre); }
+  /* La barre rouge sous le logo, posée sur le filet de l'en-tête : l'accent unique, très présent */
+  .entete__logo::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc((34px - var(--nav)) / 2 - 2px); height: 3px; background: var(--accent); }
+  .entete__nav { flex: 1; display: flex; justify-content: center; }
+  .entete__nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--e-1); }
+  .entete__nav a {
+    position: relative; display: inline-flex; align-items: center; gap: var(--e-2); min-height: 44px; padding: 0 var(--e-3);
+    font-size: .9375rem; font-weight: var(--g-appui); white-space: nowrap; text-decoration: none; color: var(--encre-2);
+    transition: color var(--d-out) var(--courbe);
+  }
+  /* Souligné qui se trace (survol), barre de 2 px sous la page en cours */
+  .entete__nav a::after {
+    content: ""; position: absolute; left: var(--e-3); right: var(--e-3); bottom: 8px; height: 1px; background: currentColor;
+    transform: scaleX(0); transform-origin: right; transition: transform var(--d-out) var(--courbe);
+  }
+  .entete__nav a:hover { color: var(--encre); transition-duration: var(--d-in); }
+  .entete__nav a:hover::after { transform: scaleX(1); transform-origin: left; transition-duration: var(--d-in); }
+  .entete__nav a[aria-current] { color: var(--encre); }
+  .entete__nav a[aria-current]::after { height: 2px; transform: none; background: var(--accent); }
+  .entete__nav .picto { width: 18px; height: 18px; }
+  @media (min-width: 1024px) and (max-width: 1199px) { .entete__nav .picto { display: none; } }
+  .entete__outils { display: flex; align-items: center; gap: var(--e-2); flex: none; }
+  .entete__outils .bouton { min-height: 44px; }
+
+  /* Bouton rond des outils (thème, régime, menu) : 44 × 44 */
+  .outil, .theme-bouton {
+    display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; flex: none;
+    border: 1px solid var(--filet-fort); border-radius: var(--r-petit); background: transparent; color: var(--encre); cursor: pointer;
+    transition: background-color var(--d-out) var(--courbe);
+  }
+  .outil:hover, .theme-bouton:hover { background: color-mix(in srgb, var(--encre) 7%, transparent); transition-duration: var(--d-in); }
+  .outil svg, .theme-bouton svg { width: 20px; height: 20px; grid-area: 1 / 1; }
+  .theme-bouton svg { transition: opacity var(--d-in) var(--courbe), transform var(--d-in) var(--courbe); }
+  .theme-bouton .icone-lune { opacity: 0; transform: scale(.5); }
+  :root[data-theme-effectif="sombre"] .theme-bouton .icone-soleil { opacity: 0; transform: scale(.5); }
+  :root[data-theme-effectif="sombre"] .theme-bouton .icone-lune { opacity: 1; transform: none; }
+
+  /* Réglage du régime dans l'en-tête : un petit volet (details) qui contient le formulaire CERFA 0-A */
+  .regime-volet { position: relative; }
+  .regime-volet > summary { list-style: none; }
+  .regime-volet > summary::-webkit-details-marker { display: none; }
+  .regime-volet__panneau { position: absolute; right: 0; top: calc(100% + var(--e-2)); width: min(320px, 100vw - 2 * var(--gouttiere)); z-index: 25; }
+  .regime-volet__panneau .cerfa { box-shadow: var(--ombre-papier); }
+  .regime-volet[open] > summary { background: var(--encre); color: var(--sur-encre); border-color: var(--encre); }
+
+  /* Logo : l'encre en couleur du texte, la boucle au stylo rouge (tracée à la première visite de la session) */
+  .logo-svg { display: block; height: 100%; width: auto; overflow: visible; }
+  .logo-encre { fill: var(--encre); }
+  .logo-boucle { fill: var(--rouge); }
+  .logo-trace { stroke-dasharray: 1; stroke-dashoffset: 0; }
+  :root.premiere-visite:not([data-regime="allege"]) .entete .logo-trace { animation: logo-trace 1100ms var(--courbe) 200ms both; }
+  @keyframes logo-trace { from { stroke-dashoffset: 1; } }
+
+  /* Menu : le bouton n'existe qu'avec JavaScript et sous 1024 px ; sans JavaScript la navigation passe à la ligne */
+  .menu-bouton { display: none; }
+  @media (max-width: 1023px) {
+    .entete__in { flex-wrap: wrap; row-gap: 0; }
+    .entete__logo { margin-right: auto; }
+    .entete__nav { order: 3; flex-basis: 100%; justify-content: flex-start; overflow-x: auto; }
+    :root.avec-js .menu-bouton { display: inline-grid; }
+    :root.avec-js .entete__nav { display: none; }
+    :root.avec-js .entete--ouvert .entete__nav { display: block; padding: var(--e-2) 0 var(--e-5); }
+    :root.avec-js .entete--ouvert .entete__nav ul { flex-direction: column; gap: 0; }
+    :root.avec-js .entete--ouvert .entete__nav a { min-height: 56px; width: 100%; padding: 0; font-size: 1.25rem; color: var(--encre); border-bottom: 1px solid var(--filet); }
+    :root.avec-js .entete--ouvert .entete__nav a::after { left: 0; right: auto; width: 32px; bottom: -1px; }
+  }
+  @media (max-width: 639px) {
+    .entete__logo { height: 28px; }
+    .entete__dossier .bouton__libelle { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .entete__dossier { width: 44px; padding: 0; }
+  }
+
+  /* ---------- Sections « un écran » : chaque section tient un ou deux écrans (--h: 1 ou 2) ----------
+     Un écran = la fenêtre moins l'en-tête, borné entre 560 et 1000 px (un très grand écran ne fait pas un héros de 2 m). */
+  :root { --ecran: clamp(560px, 100svh - var(--nav), 1000px); }
+  .ecran {
+    min-height: calc(var(--h, 1) * var(--ecran));
+    padding: var(--e-9) 0 var(--e-8);
+    display: flex; flex-direction: column;
+  }
+  .ecran > .conteneur { flex: 1; }
+  .ecran--papier { background: var(--papier); }
+  .ecran--fond-2 { background: var(--fond-2); }
+  .ecran__tete { display: grid; gap: var(--e-4); margin-bottom: var(--e-7); max-width: 46rem; }
+  /* Un filet rouge au-dessus de chaque tête de section, comme dans un manuel de normes */
+  .ecran__tete::before { content: ""; width: 48px; height: 3px; background: var(--accent); margin-bottom: var(--e-2); }
+  .ecran__tete .reference { margin-bottom: var(--e-1); }
+  @media (max-width: 639px) {
+    .ecran { min-height: 0; padding: var(--e-8) 0 var(--e-7); }
+    .ecran__tete { margin-bottom: var(--e-6); }
+  }
+
+  /* ---------- Héros split : le texte sur les colonnes 1 à 5, l'image sur 7 à 12, alignés en haut ---------- */
+  .heros { min-height: var(--ecran); padding: var(--e-7) 0 var(--e-8); display: flex; }
+  .heros > .conteneur { align-content: start; }
+  .heros__texte { grid-column: 1 / span 5; display: grid; gap: var(--e-5); align-content: start; padding-top: var(--e-4); }
+  .heros__texte h1 { max-width: 12ch; }
+  .heros__chapeau { font-size: var(--t-lead); line-height: 1.5; color: var(--encre-2); max-width: 30em; }
+  .heros__visuel { grid-column: 7 / -1; position: relative; }
+  .heros__visuel .scene { aspect-ratio: 4 / 5; max-height: calc(var(--ecran) - var(--e-7) - var(--e-8)); width: 100%; }
+  .heros__pose { position: absolute; left: calc(-1 * var(--e-8)); bottom: var(--e-6); }
+  .heros__faits { display: flex; flex-wrap: wrap; gap: var(--e-5); margin-top: var(--e-3); padding-top: var(--e-4); border-top: 1px solid var(--filet); }
+  .heros__faits div { display: grid; gap: 2px; }
+  .heros__faits dt { font-size: var(--t-etiquette); color: var(--encre-2); }
+  .heros__faits dd { margin: 0; font: 500 1rem/1.3 var(--mono); }
+  @media (max-width: 1023px) {
+    .heros { min-height: 0; }
+    .heros__texte, .heros__visuel { grid-column: 1 / -1; }
+    .heros__texte h1 { max-width: 14ch; }
+    .heros__visuel { margin-top: var(--e-6); }
+    .heros__visuel .scene { aspect-ratio: 4 / 3; max-height: none; }
+    .heros__pose { left: var(--e-4); bottom: calc(-1 * var(--e-5)); }
+  }
+  @media (max-width: 639px) { .heros { padding: var(--e-6) 0 var(--e-7); } .heros__pose { position: relative; left: 0; bottom: 0; margin-top: calc(-1 * var(--e-8)); margin-left: var(--e-4); } }
+
+  /* ---------- Entrée du héros, une fois au chargement (data-enter) ----------
+     Seulement avec JavaScript (data-regime posé) et hors régime allégé : sinon le héros est là, tel qu'écrit.
+     Le titre monte ligne par ligne hors de ses masques (js/v2/guichet.js découpe les mots), puis le reste
+     apparaît de 12 px, l'image se pose de 1,04 à 1. Transform et opacité seulement, environ 1,1 s. */
+  :root[data-regime]:not([data-regime="allege"]) [data-enter] h1:not(.entre) { opacity: 0; animation: entree-secours 400ms ease 700ms forwards; }
+  @keyframes entree-secours { to { opacity: 1; } }
+  .entree-mot { display: inline-block; overflow: clip; overflow-clip-margin: .12em; vertical-align: top; padding-bottom: .06em; margin-bottom: -.06em; }
+  .entree-mot > span { display: inline-block; transform: translateY(105%); animation: entree-ligne var(--d-entree) var(--courbe-entree) calc(var(--ligne, 0) * 80ms) forwards; }
+  @keyframes entree-ligne { to { transform: none; } }
+  :root[data-regime]:not([data-regime="allege"]) [data-enter] :is(.heros__texte > :not(h1), .heros__pose, [data-enter-suite]) {
+    animation: entree-suite 520ms var(--courbe-entree) both; animation-delay: calc(380ms + var(--i, 0) * 60ms);
+  }
+  .heros__texte > :nth-child(3) { --i: 1; } .heros__texte > :nth-child(4) { --i: 2; } .heros__texte > :nth-child(5) { --i: 3; }
+  .heros__pose { --i: 4; }
+  @keyframes entree-suite { from { opacity: 0; transform: translateY(12px); } }
+  :root[data-regime]:not([data-regime="allege"]) [data-enter] .heros__visuel .scene img { animation: entree-image 1100ms var(--courbe-entree) both; }
+  @keyframes entree-image { from { transform: scale(1.04); } }
+
+  /* ---------- Phrase qui s'encre mot à mot (data-encre) : lisible d'emblée (encre pâle 6:1), puis encrée ---------- */
+  .phrase-encre { font-size: clamp(2rem, 1.2rem + 3.3vw, 4.25rem); font-weight: var(--g-titre); line-height: 1.08; letter-spacing: var(--approche-titre); max-width: 22ch; text-wrap: balance; }
+  .phrase-encre em { font-style: normal; color: var(--rouge); }
+  .encre-mot { color: var(--encre-pale); transition: color var(--d-encre) ease-out, text-shadow var(--d-encre) ease-out; transition-delay: calc(var(--i) * 70ms); }
+  .encre-mot.est-encre { color: var(--encre); }
+  .encre-mot--accent.est-encre { color: var(--rouge); }
+
+  /* ---------- Pied de page ---------- */
+  .pied { background: var(--fond-2); border-top: 1px solid var(--filet); padding: var(--e-8) 0 var(--e-6); font-size: var(--t-petit); }
+  .pied__grille { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--e-6) var(--colonne-gap); }
+  .pied__marque { grid-column: span 4; display: grid; gap: var(--e-5); align-content: start; justify-items: start; }
+  .pied__marque .logo-svg { height: 34px; }
+  .pied__devise { font-size: var(--t-lead); line-height: 1.35; max-width: 14em; }
+  .pied__colonne { grid-column: span 2; }
+  .pied__regime { width: min(100%, 340px); margin-top: var(--e-3); }
+  .pied__titre { font-size: var(--t-etiquette); font-weight: var(--g-appui); letter-spacing: 0; color: var(--encre-2); margin-bottom: var(--e-3); line-height: 1.3; }
+  .pied__colonne ul { list-style: none; padding: 0; display: grid; gap: 0; }
+  .pied__colonne a { display: inline-flex; align-items: center; min-height: 36px; text-decoration: none; position: relative; }
+  .pied__colonne a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 6px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform var(--d-out) var(--courbe); }
+  .pied__colonne a:hover::after { transform: scaleX(1); transform-origin: left; transition-duration: var(--d-in); }
+  .pied__sans-js { font-size: var(--t-etiquette); color: var(--encre-2); margin-top: var(--e-2); }
+  .pied__legal { margin-top: var(--e-8); padding-top: var(--e-5); border-top: 1px solid var(--filet); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--e-3) var(--e-6); color: var(--encre-2); font-size: var(--t-etiquette); }
+  .pied__legal p { max-width: 70ch; }
+  @media (max-width: 1023px) {
+    .pied__marque { grid-column: 1 / -1; }
+    .pied__colonne { grid-column: span 3; }
+  }
+  @media (max-width: 639px) { .pied__colonne { grid-column: span 6; } .pied__colonne a { min-height: 44px; } }
+}

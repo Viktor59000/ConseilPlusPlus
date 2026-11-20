@@ -3,7 +3,9 @@
 (() => {
   const racine = document.documentElement;
   const bouton = document.querySelector('[data-theme-bouton]');
-  const couleurs = { clair: '#F5F6FA', sombre: '#0E1220' };
+  // Couleur de la barre du navigateur : lue sur la balise meta (data-clair / data-sombre, nouveau gabarit), sinon l'ancienne charte
+  const meta = document.querySelector('meta[name="theme-color"]');
+  const couleurs = { clair: meta?.dataset.clair || '#F5F6FA', sombre: meta?.dataset.sombre || '#0E1220' };
   const systeme = matchMedia('(prefers-color-scheme: dark)');
 
   const appliquer = (theme, enFondu) => {
@@ -12,7 +14,7 @@
       setTimeout(() => racine.classList.remove('bascule-theme'), 400);
     }
     racine.dataset.themeEffectif = theme;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', couleurs[theme]);
+    meta?.setAttribute('content', couleurs[theme]);
     if (bouton) bouton.setAttribute('aria-label', theme === 'sombre' ? 'Passer en thème clair' : 'Passer en thème sombre');
   };
 

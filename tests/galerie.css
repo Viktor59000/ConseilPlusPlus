@@ -1,0 +1,25 @@
+/* Styles propres à la galerie de revue (tests/galerie.php), intégrés dans la couche « page ». */
+.galerie-pile { display: grid; gap: var(--e-5); align-content: start; }
+.galerie-pile--large { gap: var(--e-7); }
+.galerie-reglages { display: grid; gap: var(--e-3); margin-bottom: var(--e-7); }
+.galerie-reglages__ligne { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-3) var(--e-6); padding-bottom: var(--e-3); border-bottom: 1px solid var(--filet); }
+.galerie-reglages__nom { width: 6rem; font-weight: var(--g-appui); }
+.galerie-nuancier { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--e-4) var(--e-5); margin-bottom: var(--e-7); }
+.galerie-nuance { display: grid; gap: 2px; font-size: var(--t-petit); }
+.galerie-nuance__pastille { height: 56px; border-radius: var(--r-petit); border: 1px solid var(--filet); margin-bottom: var(--e-2); }
+.galerie-nuance .mono { font-size: var(--t-etiquette); }
+.galerie-echelle { display: grid; gap: var(--e-3); }
+.galerie-echelle__h1 { font-size: var(--t-h1); font-weight: var(--g-titre); letter-spacing: var(--approche-titre); line-height: 1; }
+.galerie-echelle__h2 { font-size: var(--t-h2); font-weight: var(--g-titre); letter-spacing: var(--approche-titre); line-height: 1.05; }
+.galerie-echelle__h3 { font-size: var(--t-h3); font-weight: var(--g-titre); letter-spacing: -.02em; }
+.galerie-statuts { display: flex; flex-wrap: wrap; gap: var(--e-2); }
+.galerie-tampons { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-7) var(--e-8); padding: var(--e-7); background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); min-height: 260px; }
+.galerie-tickets { display: flex; justify-content: flex-end; }
+.galerie-documents { align-items: start; }
+.galerie-sous-document { margin-top: var(--e-5); }
+@media (max-width: 1023px) { .galerie-nuancier { grid-template-columns: repeat(2, minmax(0, 1fr)); } .galerie-tickets { justify-content: flex-start; } }
+.galerie-pictos { display: flex; flex-wrap: wrap; gap: var(--e-4) var(--e-5); color: var(--encre); }
+.galerie-pictos span { display: inline-flex; align-items: center; gap: var(--e-2); }
+.galerie-pictos .picto { width: 28px; height: 28px; }
+.galerie-salle { margin-top: var(--e-7); }
+.galerie-salle .scene { aspect-ratio: 16 / 9; }

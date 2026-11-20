@@ -1,0 +1,330 @@
+/* ConseilPlus+ « Le Guichet » — 3. COMPOSANTS (HTML produit par includes/ui/*.php, mouvement par js/v2/guichet.js).
+   Une seule forme de bouton, une seule forme de carte, un seul style de lien. Les ombres sont réservées aux papiers
+   (attestation, ticket, feuille du dossier) ; tout le reste est à plat, séparé par des filets. */
+@layer composants {
+
+  /* ================= Boutons : bouton(), lien_fleche() ================= */
+  .bouton {
+    --b-fond: var(--encre); --b-texte: var(--sur-encre); --b-bord: var(--encre);
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--e-3);
+    min-height: 48px; padding: 0 var(--e-5);
+    border: 1.5px solid var(--b-bord); border-radius: var(--r-petit);
+    background: var(--b-fond); color: var(--b-texte);
+    font: var(--g-appui) 1rem/1.2 var(--police); letter-spacing: -.005em; text-decoration: none; text-align: center;
+    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+    transition: transform var(--d-out) var(--courbe), background-color var(--d-out) var(--courbe), border-color var(--d-out) var(--courbe);
+  }
+  .bouton--secondaire { --b-fond: transparent; --b-texte: var(--encre); --b-bord: var(--encre); }
+  .bouton--compact { min-height: 40px; padding: 0 var(--e-4); font-size: var(--t-petit); }
+  .bouton--large { width: 100%; }
+  .bouton__fleche { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--d-out) var(--courbe); }
+  .bouton__icone { width: 18px; height: 18px; flex: none; }
+  /* Pictogrammes maison (includes/ui/pictos.php) : trait fin, couleur du texte */
+  .picto { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  @media (hover: hover) and (pointer: fine) {
+    .bouton:hover { --b-fond: color-mix(in srgb, var(--encre) 86%, var(--fond)); transform: translateY(-1px); transition-duration: var(--d-in); }
+    .bouton--secondaire:hover { --b-fond: color-mix(in srgb, var(--encre) 7%, transparent); }
+    .bouton:hover .bouton__fleche { transform: translateX(3px); transition-duration: var(--d-in); }
+  }
+  .bouton:active { transform: translateY(1px) scale(.985); transition-duration: var(--d-press); }
+  .bouton[disabled], .bouton[aria-disabled="true"] { opacity: .5; cursor: not-allowed; transform: none; }
+  .boutons { display: flex; flex-wrap: wrap; gap: var(--e-3); align-items: center; }
+  @media (max-width: 639px) { .boutons > .bouton { flex: 1 1 100%; } }
+
+  /* Lien avec flèche (action tertiaire, dans le texte ou sous une carte) */
+  .lien-fleche { display: inline-flex; align-items: center; gap: var(--e-2); font-weight: var(--g-appui); text-decoration: none; }
+  .lien-fleche .bouton__fleche { transition: transform var(--d-out) var(--courbe); }
+  .lien-fleche:hover .bouton__fleche { transform: translateX(3px); transition-duration: var(--d-in); }
+
+  /* ================= Tampon : tampon() — le moment signature ================= */
+  .tampon {
+    --angle: -6deg; --c: var(--rouge);
+    position: relative; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: .3em;
+    padding: .5em .95em .55em; border: .15em solid var(--c); border-radius: var(--r-petit);
+    outline: .07em solid var(--c); outline-offset: -.38em;
+    color: var(--c); font: 500 1.375rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
+    transform: rotate(var(--angle)); opacity: .9; mix-blend-mode: var(--tampon-melange);
+    filter: url(#encre-tampon);
+    pointer-events: none;
+  }
+  /* L'encre qui a bavé autour du cadre (léger halo flou, toujours là ; plus fort à l'impact) */
+  .tampon::before {
+    content: ""; position: absolute; inset: -.2em; border: .2em solid var(--c); border-radius: calc(var(--r-petit) + 2px);
+    filter: blur(2px); opacity: .14;
+  }
+  .tampon__texte { padding: 0 .05em; }
+  .tampon__mention { font-size: .58em; letter-spacing: .08em; text-transform: none; }
+  .tampon--vert { --c: var(--vert); }
+  .tampon--encre { --c: var(--encre); }
+  .tampon--laiton { --c: var(--laiton-texte); }
+  .tampon--grand { font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.625rem); }
+  .tampon--petit { font-size: .9375rem; }
+  .tampon--geant { font-size: clamp(2.75rem, 1.5rem + 5.5vw, 6.5rem); border-width: .1em; outline-width: .05em; outline-offset: -.3em; } /* l'objet-héros */
+  /* Dans l'univers du cabinet, un tampon est en capitales : c'est la seule exception à la casse de phrase. */
+
+  /* Le tampon s'abat : il tombe de haut, frappe un peu écrasé, l'encre bave, le papier encaisse */
+  .tampon--abat { animation: tampon-abat var(--d-tampon) both; }
+  .tampon--abat::before { animation: tampon-bave var(--d-tampon) both; }
+  @keyframes tampon-abat {
+    0%   { opacity: 0; transform: rotate(calc(var(--angle) - 9deg)) scale(2.3); animation-timing-function: var(--courbe-chute); }
+    52%  { opacity: 1; transform: rotate(var(--angle)) scale(.95); animation-timing-function: var(--courbe-entree); }
+    100% { opacity: .9; transform: rotate(var(--angle)) scale(1); }
+  }
+  @keyframes tampon-bave {
+    0%, 50% { opacity: 0; filter: blur(0); }
+    62%     { opacity: .42; filter: blur(1px); }
+    100%    { opacity: .14; filter: blur(2px); }
+  }
+  /* Régime allégé ou mouvement réduit : un simple fondu */
+  .tampon--fondu { animation: tampon-fondu 260ms ease-out both; }
+  @keyframes tampon-fondu { from { opacity: 0; } to { opacity: .9; } }
+  /* Le papier qui reçoit le coup */
+  .papier--choc { animation: papier-choc 180ms var(--courbe) both; }
+  @keyframes papier-choc { 0% { transform: none; } 35% { transform: translateY(2px) scale(.997); } 100% { transform: none; } }
+  /* En attente d'être tamponné (déclenché par script) : invisible seulement si le script est là et le mouvement permis */
+  :root.avec-js:not([data-regime="allege"]) [data-tampon="en-attente"] { opacity: 0; }
+
+  /* ================= Statut : statut() ================= */
+  .statut {
+    --c: var(--encre-2);
+    display: inline-flex; align-items: center; gap: var(--e-2);
+    padding: 3px var(--e-3) 3px var(--e-2); border: 1px solid currentColor; border-radius: var(--r-petit);
+    color: var(--c); font: 500 var(--t-etiquette)/1.3 var(--mono); white-space: nowrap;
+  }
+  .statut::before { content: ""; width: 8px; height: 8px; background: currentColor; border-radius: 1px; }
+  .statut--nouveau { --c: var(--laiton-texte); }
+  .statut--importe { --c: var(--encre); }
+  .statut--repondu { --c: var(--vert); }
+  .statut--refuse { --c: var(--rouge); }
+
+  /* ================= Ticket : ticket() ================= */
+  /* L'ombre est portée par l'enveloppe : le papier, lui, est découpé (encoches de la perforation) */
+  .ticket { position: relative; width: min(100%, 280px); filter: drop-shadow(0 0 .5px rgba(24, 23, 21, .35)) drop-shadow(0 14px 18px rgba(24, 23, 21, .16)); }
+  .ticket__papier {
+    --encoche: 10px;
+    position: relative; display: grid; gap: var(--e-2);
+    padding: var(--e-5) var(--e-5) var(--e-4); background: var(--papier); color: var(--encre); border-radius: var(--r-papier);
+    -webkit-mask: radial-gradient(circle var(--encoche) at 0 70%, #0000 98%, #000) left / 51% 100% no-repeat,
+                  radial-gradient(circle var(--encoche) at 100% 70%, #0000 98%, #000) right / 51% 100% no-repeat;
+            mask: radial-gradient(circle var(--encoche) at 0 70%, #0000 98%, #000) left / 51% 100% no-repeat,
+                  radial-gradient(circle var(--encoche) at 100% 70%, #0000 98%, #000) right / 51% 100% no-repeat;
+  }
+  :root[data-theme-effectif="sombre"] .ticket { filter: drop-shadow(0 16px 16px rgba(0, 0, 0, .6)); }
+  .ticket__papier::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: var(--rouge); }
+  .ticket__entete { display: flex; justify-content: space-between; gap: var(--e-3); font: 500 var(--t-etiquette)/1.3 var(--mono); color: var(--encre-2); }
+  .ticket__libelle { font-size: var(--t-petit); color: var(--encre-2); }
+  .ticket__numero { font: 500 clamp(3.5rem, 2.8rem + 2.6vw, 5rem)/.9 var(--mono); letter-spacing: -.04em; color: var(--encre); font-variant-numeric: tabular-nums; }
+  .ticket__pied {
+    margin-top: var(--e-3); padding-top: var(--e-4); border-top: 1.5px dashed var(--filet-fort);
+    display: grid; gap: 2px; font: 500 var(--t-etiquette)/1.45 var(--mono); color: var(--encre-2);
+  }
+  .ticket .tampon { position: absolute; right: var(--e-4); top: 92px; }
+
+  /* ================= Dossier (chemise kraft) : dossier() ================= */
+  .dossier { position: relative; padding-top: 30px; }
+  .dossier__onglet {
+    position: absolute; top: 0; left: 0; z-index: 1; display: inline-flex; align-items: center; gap: var(--e-2);
+    height: 34px; padding: 0 var(--e-5) 4px var(--e-4); border-radius: var(--r-moyen) var(--r-moyen) 0 0;
+    background: var(--kraft-onglet); color: var(--encre-sur-kraft); font: 500 var(--t-etiquette)/1 var(--mono);
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+  }
+  .dossier__chemise {
+    position: relative; padding: var(--e-5); border-radius: 0 var(--r-moyen) var(--r-moyen) var(--r-moyen);
+    background: var(--kraft-onglet); color: var(--encre-sur-kraft);
+    box-shadow: inset 0 -3px 0 var(--kraft-ombre), var(--ombre-papier);
+  }
+  .dossier__entete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--e-3); margin-bottom: var(--e-4); }
+  .dossier__titre { font-size: var(--t-lead); letter-spacing: -.01em; line-height: 1.25; }
+  .dossier__entete .statut { background: var(--papier); border-color: transparent; }
+  .dossier__feuille {
+    position: relative; padding: var(--e-5); background: var(--papier); color: var(--encre);
+    border-radius: var(--r-papier); box-shadow: 0 1px 0 rgba(24, 23, 21, .12), 0 10px 18px -12px rgba(24, 23, 21, .45);
+    transform: rotate(-.4deg);
+  }
+  .dossier__feuille > * + * { margin-top: var(--e-3); }
+  .dossier__feuille .tampon { position: absolute; right: var(--e-5); bottom: var(--e-4); }
+  .dossier__meta { display: flex; flex-wrap: wrap; gap: var(--e-2) var(--e-5); margin-top: var(--e-4); font: 500 var(--t-etiquette)/1.4 var(--mono); }
+
+  /* ================= Attestation / verdict : attestation() ================= */
+  .attestation {
+    position: relative; max-width: 680px; padding: var(--e-7) var(--e-7) var(--e-6);
+    background: var(--papier); color: var(--encre); border-radius: var(--r-papier); box-shadow: var(--ombre-papier);
+  }
+  /* Cadre officiel : un filet laiton et un filet d'encre, en retrait du bord */
+  .attestation::before {
+    content: ""; position: absolute; inset: 12px; pointer-events: none;
+    border: 1px solid var(--filet-fort); outline: 3px solid color-mix(in srgb, var(--laiton) 55%, transparent); outline-offset: 3px;
+  }
+  .attestation__entete { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--e-4); padding-bottom: var(--e-5); border-bottom: 1px solid var(--filet); }
+  .attestation__emetteur span { min-width: 11em; }
+  .attestation__emetteur { display: flex; align-items: center; gap: var(--e-3); font-size: var(--t-petit); line-height: 1.3; }
+  .attestation__emetteur .logo-svg { height: 30px; width: auto; }
+  .attestation__ref { font: 500 var(--t-etiquette)/1.5 var(--mono); color: var(--encre-2); text-align: right; }
+  .attestation__titre { margin: var(--e-6) 0 var(--e-4); font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem); }
+  .attestation__corps { font-size: var(--t-lead); line-height: 1.55; }
+  .attestation__champs { display: grid; grid-template-columns: max-content 1fr; gap: 0 var(--e-5); margin-top: var(--e-5); }
+  .attestation__champs dt, .attestation__champs dd { margin: 0; padding: var(--e-2) 0; border-bottom: 1px dotted var(--filet-fort); }
+  .attestation__champs dt { font-size: var(--t-petit); color: var(--encre-2); }
+  .attestation__champs dd { font: 500 var(--t-petit)/1.6 var(--mono); }
+  .attestation__pied { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--e-5); margin-top: var(--e-6); min-height: 96px; }
+  .attestation__signature { display: grid; gap: 2px; font-size: var(--t-petit); color: var(--encre-2); }
+  .attestation__paraphe { font: italic 500 1.6rem/1 var(--police); letter-spacing: -.03em; color: var(--encre); transform: rotate(-3deg); transform-origin: left; margin-bottom: var(--e-2); }
+  .attestation__pied .tampon { margin-right: var(--e-4); }
+  .attestation--verdict .attestation__titre { color: var(--rouge); }
+  @media (max-width: 639px) {
+    .attestation { padding: var(--e-6) var(--e-5) var(--e-5); }
+    .attestation::before { inset: 8px; }
+    .attestation__ref { text-align: left; }
+    .attestation__champs { grid-template-columns: 1fr; }
+    .attestation__champs dt { border-bottom: 0; padding-bottom: 0; }
+  }
+
+  /* ================= Carte : carte() ================= */
+  .carte {
+    position: relative; display: flex; flex-direction: column; gap: var(--e-3);
+    padding: var(--e-5); background: var(--papier); border: 1px solid var(--filet); border-radius: var(--r-moyen);
+    transition: transform var(--d-out) var(--courbe), border-color var(--d-out) var(--courbe);
+  }
+  .carte__image { margin: calc(-1 * var(--e-5)) calc(-1 * var(--e-5)) var(--e-2); overflow: hidden; border-radius: var(--r-moyen) var(--r-moyen) 0 0; aspect-ratio: 4 / 3; background: var(--fond-2); }
+  .carte__image img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--d-image-out) var(--courbe); }
+  .carte__etiquette { font: 500 var(--t-etiquette)/1.3 var(--mono); color: var(--encre-2); }
+  .carte__titre { font-size: var(--t-lead); line-height: 1.25; letter-spacing: -.012em; }
+  .carte__titre a { text-decoration: none; }
+  .carte__titre a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+  .carte__texte { color: var(--encre-2); }
+  .carte__pied { margin-top: auto; padding-top: var(--e-3); display: flex; align-items: center; justify-content: space-between; gap: var(--e-3); }
+  .carte--lien:hover, .carte--lien:focus-within { border-color: var(--filet-fort); }
+  @media (hover: hover) and (pointer: fine) {
+    .carte--lien:hover { transform: translateY(-2px); transition-duration: var(--d-carte); }
+    .carte--lien:hover .carte__image img { transform: scale(1.02); transition-duration: var(--d-image); }
+    .carte--lien:hover .bouton__fleche { transform: translateX(3px); transition-duration: var(--d-in); }
+  }
+  .carte--lien:focus-within { outline: 2px solid var(--encre); outline-offset: 3px; }
+  /* Classeur : fiches juxtaposées bord à bord, séparées par des filets (pas de cartes flottantes) */
+  .rangee--classeur { gap: 0 !important; border-top: 1px solid var(--filet-fort); border-left: 1px solid var(--filet-fort); }
+  .rangee--classeur > .carte { border: 0; border-right: 1px solid var(--filet-fort); border-bottom: 1px solid var(--filet-fort); border-radius: 0; background: transparent; }
+  .rangee--classeur > .carte .carte__image { border-radius: 0; }
+  .rangee--classeur > .carte--lien:hover { background: var(--papier); }
+  .carte--lien a:focus-visible { outline: none; }
+
+  /* ================= Champs de formulaire : champ() ================= */
+  .champ { display: grid; gap: var(--e-2); }
+  .champ__libelle { font-weight: var(--g-appui); font-size: var(--t-petit); }
+  .champ__requis { font-weight: var(--g-texte); color: var(--encre-2); }
+  .champ__aide { font-size: var(--t-petit); color: var(--encre-2); }
+  .champ__saisie {
+    width: 100%; min-height: 48px; padding: var(--e-3) var(--e-4);
+    border: 1px solid var(--contour); border-radius: var(--r-petit); background: var(--papier); color: var(--encre);
+    font-size: 1rem; line-height: 1.4;
+    transition: border-color var(--d-in) var(--courbe), box-shadow var(--d-in) var(--courbe);
+  }
+  textarea.champ__saisie { min-height: 140px; resize: vertical; }
+  select.champ__saisie { appearance: none; padding-right: var(--e-7);
+    background: var(--papier) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%237D7A70' stroke-width='1.8'/%3E%3C/svg%3E") no-repeat right 14px center / 16px; }
+  .champ--officiel .champ__saisie { font-family: var(--mono); font-size: .95rem; letter-spacing: .01em; }
+  .champ__saisie:focus { outline: none; border-color: var(--encre); box-shadow: 0 0 0 3px color-mix(in srgb, var(--encre) 18%, transparent); }
+  .champ__saisie::placeholder { color: var(--encre-2); opacity: .8; }
+  .champ--erreur .champ__saisie { border-color: var(--rouge); border-width: 2px; }
+  .champ__erreur { display: flex; gap: var(--e-2); align-items: baseline; font-size: var(--t-petit); font-weight: var(--g-appui); color: var(--rouge); }
+  .champ__erreur::before { content: ""; flex: none; width: 10px; height: 10px; background: currentColor; transform: rotate(45deg) translateY(-1px); }
+  .champ--case { grid-template-columns: auto 1fr; align-items: start; column-gap: var(--e-3); }
+  .champ--case > :not(input) { grid-column: 2; }
+  .champ--case .champ__libelle { font-weight: var(--g-texte); font-size: 1rem; }
+  .champ--case .champ__saisie { width: 22px; min-height: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--encre); }
+
+  /* ================= Alerte : bloc_alerte() ================= */
+  .alerte {
+    --c: var(--encre); --f: var(--papier);
+    display: grid; gap: var(--e-1); padding: var(--e-4) var(--e-5); max-width: var(--mesure);
+    background: var(--f); border-left: 4px solid var(--c); border-radius: 0 var(--r-petit) var(--r-petit) 0;
+  }
+  .alerte__titre { display: flex; align-items: baseline; gap: var(--e-3); font-weight: var(--g-appui); }
+  .alerte__titre .mono { font-size: var(--t-etiquette); color: var(--c); }
+  .alerte--erreur { --c: var(--rouge); --f: var(--fond-erreur); }
+  .alerte--succes { --c: var(--vert); --f: var(--fond-ok); }
+  .alerte--attention { --c: var(--laiton-texte); --f: var(--fond-attention); }
+
+  /* ================= Scène (gravure) : scene() ================= */
+  .scene { position: relative; overflow: hidden; border-radius: var(--r-grand); background: #D4CECA; }
+  .scene img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--d-image-out) var(--courbe); }
+  .scene--libre { border-radius: 0; background: none; }
+  a.scene:hover img, .zoom:hover .scene img { transform: scale(1.02); transition-duration: var(--d-image); }
+  :root[data-theme-effectif="sombre"] .scene img { filter: brightness(.84) contrast(1.04); }
+
+  /* ================= Suivi du dossier (façon colis) : etapes_statut() ================= */
+  .suivi { --repere: 22px; list-style: none; padding: 0; display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); }
+  .suivi__etape { position: relative; display: grid; gap: var(--e-1); align-content: start; padding: calc(var(--repere) + var(--e-4)) var(--e-4) 0 0; }
+  /* Le trait entre deux repères : plein quand l'étape est franchie, pointillé sinon */
+  .suivi__etape::before {
+    content: ""; position: absolute; left: var(--repere); right: 0; top: calc(var(--repere) / 2 - 1px); height: 2px;
+    background: repeating-linear-gradient(90deg, var(--filet-fort) 0 6px, transparent 6px 11px);
+  }
+  .suivi__etape--fait::before { background: var(--vert); }
+  .suivi__etape:last-child::before { display: none; }
+  .suivi__repere {
+    position: absolute; left: 0; top: 0; width: var(--repere); height: var(--repere); display: grid; place-items: center;
+    border: 2px dashed var(--filet-fort); border-radius: var(--r-petit); background: var(--fond); color: var(--sur-encre);
+  }
+  .suivi__repere svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .suivi__etape--fait .suivi__repere { border: 0; background: var(--vert); }
+  :root[data-theme-effectif="sombre"] .suivi__etape--fait .suivi__repere { color: #141412; }
+  .suivi__etape--encours .suivi__repere { border: 2px solid var(--encre); background: var(--laiton); }
+  .suivi__nom { font-weight: var(--g-appui); font-size: 1rem; }
+  .suivi__etape--avenir .suivi__nom { color: var(--encre-2); }
+  .suivi__date { font: 500 var(--t-etiquette)/1.4 var(--mono); color: var(--encre-2); }
+  .suivi__desc { font-size: var(--t-petit); color: var(--encre-2); max-width: 24em; }
+  @media (max-width: 639px) {
+    .suivi { grid-template-columns: 1fr; }
+    .suivi__etape { padding: 0 0 var(--e-5) calc(var(--repere) + var(--e-4)); }
+    .suivi__etape::before { left: calc(var(--repere) / 2 - 1px); right: auto; top: var(--repere); bottom: 0; width: 2px; height: auto;
+      background: repeating-linear-gradient(180deg, var(--filet-fort) 0 6px, transparent 6px 11px); }
+    .suivi__etape--fait::before { background: var(--vert); }
+  }
+
+  /* ================= Graphiques SVG : graphique_barres(), graphique_anneau() ================= */
+  .graphique { display: grid; gap: var(--e-4); margin: 0; }
+  .graphique__titre { font-weight: var(--g-appui); font-size: 1rem; }
+  .graphique__titre .muet { font-weight: var(--g-texte); }
+  .graphique__zone { position: relative; }
+  .graphique svg { width: 100%; overflow: visible; }
+  .graphique__barres { height: var(--hauteur, 200px); }
+  .graphique__grille line { stroke: var(--filet); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .graphique__base { stroke: var(--encre); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .graphique__axe { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); margin-top: var(--e-2); text-align: center; }
+  .graphique__axe span { display: grid; font-size: var(--t-etiquette); color: var(--encre-2); line-height: 1.35; }
+  .graphique__axe b { font: 500 var(--t-etiquette)/1.35 var(--mono); color: var(--encre); }
+  .serie-1 { fill: var(--encre); color: var(--encre); }
+  .serie-2 { fill: var(--rouge); color: var(--rouge); }
+  .serie-3 { fill: var(--vert); color: var(--vert); }
+  .serie-4 { fill: var(--laiton-texte); color: var(--laiton-texte); }
+  .serie-5 { fill: var(--kraft-ombre); color: var(--kraft-ombre); }
+  .graphique__anneau { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-6); }
+  .graphique__anneau svg { width: 180px; height: 180px; flex: none; }
+  .graphique__anneau circle { fill: none; stroke-width: 16; }
+  .graphique__anneau .graphique__piste { stroke: var(--filet); }
+  .graphique__anneau .serie-1 { stroke: var(--encre); } .graphique__anneau .serie-2 { stroke: var(--rouge); }
+  .graphique__anneau .serie-3 { stroke: var(--vert); } .graphique__anneau .serie-4 { stroke: var(--laiton-texte); }
+  .graphique__anneau .serie-5 { stroke: var(--kraft-ombre); }
+  .graphique__total { font: 500 30px/1 var(--mono); fill: var(--encre); }
+  .graphique__total-libelle { font: 400 11px/1 var(--police); fill: var(--encre-2); }
+  .graphique__legende { list-style: none; padding: 0; display: grid; gap: var(--e-2); min-width: 12em; }
+  .graphique__legende li { display: flex; align-items: center; gap: var(--e-3); padding-bottom: var(--e-2); border-bottom: 1px solid var(--filet); font-size: var(--t-petit); }
+  .graphique__legende li::before { content: ""; width: 12px; height: 12px; border-radius: 2px; background: currentColor; flex: none; }
+  .graphique__legende span { color: var(--encre); }
+  .graphique__legende b { margin-left: auto; font: 500 var(--t-petit)/1 var(--mono); color: var(--encre); }
+
+  /* ================= Le Guichet adapté : regime_formulaire() — le formulaire CERFA 0-A ================= */
+  .cerfa { border: 1px solid var(--filet-fort); border-radius: var(--r-papier); padding: var(--e-4); background: var(--papier); }
+  .cerfa fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .cerfa legend { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--e-2) var(--e-3); padding: 0; margin-bottom: var(--e-2); font-weight: var(--g-appui); }
+  .cerfa__numero { font: 500 var(--t-etiquette)/1.2 var(--mono); padding: 2px 6px; border: 1px solid currentColor; }
+  .cerfa__notice { font-size: var(--t-etiquette); color: var(--encre-2); margin-bottom: var(--e-3); }
+  .cerfa__cases { display: grid; gap: 0; }
+  .cerfa__case { display: grid; grid-template-columns: 22px 1fr; gap: 0 var(--e-3); align-items: start; padding: var(--e-2) 0; border-top: 1px dotted var(--filet-fort); cursor: pointer; }
+  .cerfa__case input { appearance: none; width: 20px; height: 20px; margin: 1px 0 0; border: 1.5px solid var(--encre); border-radius: 0; background: var(--papier); display: grid; place-items: center; cursor: pointer; }
+  .cerfa__case input::after { content: ""; width: 12px; height: 12px; background: var(--encre); clip-path: polygon(14% 44%, 0 59%, 40% 100%, 100% 22%, 86% 8%, 39% 70%); transform: scale(0); transition: transform var(--d-in) var(--courbe); }
+  .cerfa__case input:checked::after { transform: scale(1); }
+  .cerfa__case input:focus-visible { outline: 2px solid var(--encre); outline-offset: 2px; }
+  .cerfa__nom { font-weight: var(--g-appui); font-size: var(--t-petit); line-height: 1.4; }
+  .cerfa__detail { grid-column: 2; font-size: var(--t-etiquette); color: var(--encre-2); line-height: 1.4; }
+}

@@ -1,0 +1,93 @@
+/* ConseilPlus+ « Le Guichet » — 2. SOCLE : polices, remise à zéro, typographie de base, liens, focus, utilitaires.
+   Les chemins « ../../assets/ » sont réécrits par page_debut() (includes/gabarit.php) au moment d'intégrer la feuille. */
+@layer socle {
+  /* Polices hébergées sur le site, sous-ensemble latin (licence SIL OFL : assets/fonts/OFL-*.txt) */
+  @font-face { font-family: "Schibsted Grotesk"; font-style: normal; font-weight: 400 900; font-display: swap; src: url("../../assets/fonts/schibsted-grotesk.woff2") format("woff2"); }
+  @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url("../../assets/fonts/jetbrains-mono-500.woff2") format("woff2"); }
+  /* Repli métrique : la police de secours prend la même place, la page ne bouge pas au chargement */
+  @font-face { font-family: "Schibsted repli"; src: local("Arial"); size-adjust: 101%; ascent-override: 96%; descent-override: 26%; }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html {
+    font-size: calc(100% * var(--echelle-texte));
+    -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--nav) + var(--e-4));
+  }
+  body {
+    margin: 0; min-height: 100svh; background: var(--fond); color: var(--encre);
+    font: var(--g-texte) var(--t-corps)/var(--interligne) var(--police);
+    -webkit-font-smoothing: antialiased; overflow-wrap: break-word;
+  }
+  /* Bascule de thème : fondu des couleurs, seulement pendant la bascule (classe posée par js/theme.js) */
+  .bascule-theme, .bascule-theme *, .bascule-theme *::before, .bascule-theme *::after {
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, fill 300ms ease !important;
+  }
+
+  h1, h2, h3, h4 {
+    margin: 0; font-weight: var(--g-titre); letter-spacing: var(--approche-titre);
+    line-height: 1.04; text-wrap: balance; hyphens: manual;
+  }
+  h1 { font-size: var(--t-h1); }
+  h2 { font-size: var(--t-h2); line-height: 1.08; }
+  h3 { font-size: var(--t-h3); line-height: 1.15; letter-spacing: -.02em; }
+  h4 { font-size: var(--t-lead); line-height: 1.3; letter-spacing: -.01em; }
+  p, ul, ol, dl, figure, blockquote { margin: 0; }
+  p { text-wrap: pretty; }
+  img, svg, picture { display: block; max-width: 100%; }
+  img { height: auto; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  strong, b { font-weight: var(--g-appui); }
+  ::selection { background: var(--surligneur); color: var(--encre); }
+
+  /* Liens du texte courant : un filet discret au repos, un trait d'encre qui se trace au survol */
+  a { color: inherit; }
+  .texte a, a.lien {
+    text-decoration: none;
+    background:
+      linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1.5px,
+      linear-gradient(var(--filet-fort), var(--filet-fort)) no-repeat 0 100% / 100% 1px;
+    transition: background-size var(--d-out) var(--courbe);
+    padding-bottom: 1px;
+  }
+  .texte a:hover, a.lien:hover, .texte a:focus-visible, a.lien:focus-visible {
+    background-size: 100% 1.5px, 100% 1px; transition-duration: var(--d-in);
+  }
+  :root[data-regime="prioritaire"] :is(.texte a, a.lien, .lien-fleche span) { text-decoration: underline; text-underline-offset: .2em; background: none; }
+
+  /* Focus : anneau de 2 px, décalé, jamais animé */
+  :focus-visible { outline: 2px solid var(--encre); outline-offset: 3px; }
+  :root[data-regime="prioritaire"] :focus-visible { outline-width: 3px; }
+
+  /* Lien d'évitement : hors champ jusqu'à la première tabulation, puis par-dessus le logo */
+  .evitement {
+    position: absolute; z-index: 30; left: var(--e-4); top: var(--e-3);
+    padding: var(--e-3) var(--e-4); border-radius: var(--r-petit);
+    background: var(--encre); color: var(--sur-encre); font-weight: var(--g-appui); text-decoration: none;
+    transform: translateY(-200%);
+  }
+  .evitement:focus { transform: none; }
+
+  /* Utilitaires */
+  .visuellement-cache {
+    position: absolute !important; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
+  .mono { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+  .muet { color: var(--encre-2); }
+  .mesure { max-width: var(--mesure); }
+  .chapeau { font-size: var(--t-lead); line-height: 1.5; max-width: 34em; }
+  /* Référence administrative au-dessus d'un titre (« Guichet n° 3 bis ») : la petite ligne d'un formulaire */
+  .reference { display: flex; gap: var(--e-2) var(--e-4); align-items: baseline; flex-wrap: wrap; color: var(--encre-2); }
+  /* Libellés « machine » : mono, capitales, entre crochets (planche de références : « [ Mon dossier ] »).
+     Numéros, tickets, références, onglets, titres du pied : ce que le guichet imprime. Crochets non lus (texte alternatif vide). */
+  .machine, .reference > *, .carte__etiquette, .dossier__onglet, .pied__titre, .ticket__entete > *, .entete__dossier .bouton__libelle {
+    font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em;
+  }
+  .machine::before, .reference > *::before, .carte__etiquette::before, .dossier__onglet::before, .pied__titre::before, .entete__dossier .bouton__libelle::before { content: "[\00a0" / ""; }
+  .machine::after, .reference > *::after, .carte__etiquette::after, .dossier__onglet::after, .pied__titre::after, .entete__dossier .bouton__libelle::after { content: "\00a0]" / ""; }
+  .surligne { background: linear-gradient(var(--surligneur), var(--surligneur)) no-repeat 0 62% / 100% .5em; padding: 0 .08em; }
+  .texte > * + * { margin-top: 1em; }
+  .texte { max-width: var(--mesure); }
+  .texte ul, .texte ol { padding-left: 1.2em; }
+}

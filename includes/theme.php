@@ -1,15 +1,22 @@
 <?php
 /**
- * Thème clair / sombre, partagé par le site et Le Bureau.
- * - theme_script() : à placer dans <head>, avant tout affichage (pas de flash de la mauvaise couleur).
- *   Choix enregistré dans le navigateur (localStorage) ; sans choix, le réglage du système s'applique.
+ * Thème clair / sombre et régime du « Guichet adapté », partagés par le site et Le Bureau.
+ * - theme_script() : à placer dans <head>, avant tout affichage (pas de flash de la mauvaise couleur ni du mauvais régime).
+ *   Thème : choix enregistré (localStorage « conseilplus-theme ») ; sans choix, le réglage du système s'applique.
+ *   Régime (data-regime : ordinaire | allege | prioritaire) : choix enregistré (« conseilplus-regime ») ; sans choix,
+ *   prefers-contrast: more → prioritaire, prefers-reduced-motion: reduce → allege, sinon ordinaire.
+ *   Un data-theme ou data-regime déjà écrit sur <html> par le serveur l'emporte (galerie de revue : tests/galerie.php).
+ *   Son empreinte CSP est recalculée automatiquement par envoyer_csp() : rien à mettre à jour à la main.
  * - theme_bouton() : le bouton soleil / lune (comportement dans js/theme.js).
  */
 function theme_script(): string
 {
-    return "<script>(function(){var d=document.documentElement,t=null;try{t=localStorage.getItem('conseilplus-theme')}catch(e){}"
-        . "if(t==='clair'||t==='sombre')d.dataset.theme=t;"
-        . "d.dataset.themeEffectif=t||(matchMedia('(prefers-color-scheme: dark)').matches?'sombre':'clair');"
+    return "<script>(function(){var d=document.documentElement,t=d.dataset.theme||null,r=d.dataset.regime||null,m=function(q){return matchMedia(q).matches};"
+        . "try{t=t||localStorage.getItem('conseilplus-theme');r=r||localStorage.getItem('conseilplus-regime')}catch(e){}"
+        . "if(t==='clair'||t==='sombre')d.dataset.theme=t;else t=null;"
+        . "d.dataset.themeEffectif=t||(m('(prefers-color-scheme: dark)')?'sombre':'clair');"
+        . "if(r!=='ordinaire'&&r!=='allege'&&r!=='prioritaire')r=m('(prefers-contrast: more)')?'prioritaire':m('(prefers-reduced-motion: reduce)')?'allege':'ordinaire';"
+        . "d.dataset.regime=r;"
         . "try{if(!sessionStorage.getItem('conseilplus-logo')){d.classList.add('premiere-visite');sessionStorage.setItem('conseilplus-logo','1')}}catch(e){}"
         . "d.classList.add('avec-js')})()</script>";
 }

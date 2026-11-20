@@ -1,0 +1,16 @@
+/* ConseilPlus+ « Le Guichet » — 5. BUREAU : « La Salle de tri » (logiciel de gestion, bureau/).
+   Réservé au lot Bureau : barre latérale, casiers par statut (nouveau, importé, répondu), tiroir du dossier.
+   Il réutilise les jetons, le socle et les composants (tampon, dossier, statut, graphiques SVG) sans les redéfinir.
+   Intégré seulement quand page_debut() reçoit 'bureau' => true. */
+@layer bureau {
+  /* « Archives » : l'espace Bureau (page_debut(['bureau' => true, 'html_attributs' => ['data-espace' => 'bureau']]))
+     prend le laiton comme seul accent ; en sombre, des archives plus profondes.
+     Contrastes : encre #EDEDE6 sur #0E0E0C 16,9:1 ; encre-2 #ABA89D sur papier #1B1B17 7,3:1 ; laiton #D9CB3A sur #0E0E0C 11,9:1. */
+  :root[data-espace="bureau"] { --accent: var(--laiton-texte); }
+  :root[data-espace="bureau"][data-theme-effectif="sombre"] {
+    --fond: #0E0E0C; --fond-2: #151512; --papier: #1B1B17; --filet: rgba(237, 237, 230, .10); --accent: var(--laiton);
+  }
+  /* Casiers : une colonne par statut (le lot Bureau précisera la mise en page) */
+  .casiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--e-5); }
+  @media (max-width: 1023px) { .casiers { grid-template-columns: 1fr; } }
+}
