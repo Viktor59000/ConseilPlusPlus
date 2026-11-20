@@ -7,12 +7,15 @@
  */
 $base = rtrim($argv[1] ?? 'http://localhost/Site', '/');
 $pages = [
-    'index.php' => 200, 'cabinet.php' => 200, 'petit-moyen.php' => 200, 'produit.php' => 200, 'guichet.php' => 301, 'messmerde.php' => 200, 'standard.php' => 200, 'diagnostic.php' => 200, 'attestation.php' => 200, 'stagiaire.php' => 200,
+    'index.php' => 200, 'cabinet.php' => 200, 'petit-moyen.php' => 200, 'produit.php' => 200, 'guichet.php' => 200, 'messmerde.php' => 200, 'standard.php' => 200, 'diagnostic.php' => 200, 'attestation.php' => 200, 'stagiaire.php' => 200,
+    'feuilleton.php' => 200, 'feuilleton.php?episode=1' => 200,
     'contact.php' => 200, 'login.php' => 200, 'application.php' => 200, 'plan-du-site.php' => 200,
     'accessibilite.php' => 200, 'mentions-legales.php' => 200, 'confidentialite.php' => 200,
     'mot-de-passe-oublie.php' => 200, 'developpeurs.php' => 200, 'reinitialiser.php' => 200, 'erreur-404.php' => 404,
     // pages réservées : redirection vers la connexion
-    'conseil.php' => 302, 'carnet.php' => 302, 'compte.php' => 302, 'duel.php' => 302, 'bureau/statistiques.php' => 302,
+    'compte.php' => 302, 'consultation.php' => 302, 'duel.php' => 302, 'bureau/statistiques.php' => 302,
+    // pages fusionnées dans Mon dossier (compte.php) : redirection permanente
+    'conseil.php' => 301, 'carnet.php' => 301,
     // API publique et API protégée
     'api/conseils.php' => 200, 'api/widget.php' => 200, 'api/export.php' => 401, 'api/contacts.php' => 401, 'api/statistiques.php' => 401,
     'bureau/connexion.php' => 200,

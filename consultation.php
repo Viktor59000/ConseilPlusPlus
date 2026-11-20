@@ -1,9 +1,10 @@
 <?php
 /**
- * consultation.php — Consultation approfondie : un questionnaire qui ne sert à rien,
- * dont les réponses sont envoyées à une IA (includes/ia.php) qui rend un conseil tordu.
- * Les questions changent à chaque visite : 4 sont tirées dans data/questions.php.
- * Réservé aux clients connectés.
+ * consultation.php — Guichet n° 2 : la consultation approfondie. Un questionnaire qui ne sert à rien, dont les
+ * réponses sont envoyées à une IA (includes/ia.php) qui rend un conseil tordu. Les questions changent à chaque visite :
+ * 4 sont tirées dans data/questions.php (gardées en session). Réservé aux clients connectés.
+ * Se conclut par le verdict tamponné (à garder au carnet : js/carnet.js) et le lien vers l'attestation de conseil non suivi.
+ * Styles : css/v2/pages/epreuves.css.
  */
 require_once __DIR__ . '/includes/init.php';
 exiger_connexion();
@@ -11,9 +12,11 @@ exiger_connexion();
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/ia.php';
 require_once __DIR__ . '/includes/consultation.php';
-require_once __DIR__ . '/includes/formulaire.php';
+require_once __DIR__ . '/includes/gabarit.php';
+require_once __DIR__ . '/includes/guichets.php';
 
 $banque = require __DIR__ . '/data/questions.php';
+$g = guichet('consultation');
 $erreurs = [];
 $resultat = null;
 $valeurs = ['probleme' => ''];
@@ -41,98 +44,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tirees = tirer_questions($banque);
 }
 
-$titre = 'Consultation approfondie';
-$description = 'Répondez à un questionnaire sans rapport avec votre situation et recevez un verdict officiel de notre intelligence artificielle moyenne.';
-$page = 'espace';
-$onglet = 'consultation';
-include __DIR__ . '/includes/header.php';
-include __DIR__ . '/includes/espace-nav.php';
+page_debut([
+    'titre' => 'Consultation approfondie',
+    'description' => 'Guichet n° 2 : répondez à un questionnaire sans rapport avec votre situation et recevez le verdict tamponné de notre intelligence artificielle moyenne.',
+    'page' => 'guichet',
+    'robots' => 'noindex',
+    'css' => ['css/v2/pages/epreuves.css'],
+    'scripts' => ['js/carnet.js'],
+]);
+echo bandeau_guichets('consultation');
 ?>
-
-<section class="conteneur entete-page">
-  <p class="etiquette">Formulaire CP+ <?= random_int(1000, 9999) ?>-<?= chr(random_int(65, 90)) ?></p>
-  <h1>Consultation approfondie</h1>
-  <p class="chapo">Répondez à ce questionnaire sans aucun rapport avec votre situation. Les questions changent à chaque visite, pour garantir une inutilité toujours renouvelée.</p>
-</section>
-
+<section class="heros epreuve" data-enter aria-labelledby="heros-titre">
+  <div class="conteneur grille">
+    <div class="heros__texte">
+      <p class="reference"><span>Guichet n° <?= e($g['numero']) ?></span><span>Formulaire CP+ <?= random_int(1000, 9999) ?>-<?= chr(random_int(65, 90)) ?></span></p>
+      <h1 id="heros-titre">Consultation approfondie</h1>
+      <p class="heros__chapeau">Répondez à ce questionnaire sans aucun rapport avec votre situation. Les questions changent à chaque visite, pour garantir une inutilité toujours renouvelée.</p>
+      <ol class="liste-reglement">
+        <li>Vos réponses sont transmises à l'intelligence artificielle du cabinet.</li>
+        <li>Elle les mélange sans les comprendre, comme un vrai consultant.</li>
+        <li>Vous recevez un verdict officiel, tamponné et parfaitement inutile.</li>
+      </ol>
+      <p class="epreuve__note mono">Questions en circulation : <?= count($banque) ?>. Délai d'utilité : jamais.</p>
+      <div class="epreuve__plaque"><?= plaque_guichet($g['numero'], 'Consultation') ?></div>
+    </div>
+    <div class="epreuve__poste">
 <?php if ($resultat): ?>
-<section class="conteneur">
-  <article class="fiche fiche-grande" id="verdict" aria-labelledby="verdict-titre">
-    <header class="fiche-entete">
-      <h2 id="verdict-titre">Verdict de l'expertise</h2>
-      <span class="mono">Dossier n° <span data-dossier><?= $dossier ?></span></span>
-    </header>
-    <p class="fiche-conseil"><?= nl2br(htmlspecialchars($resultat['conseil'])) ?></p>
-    <span class="tampon tampon-anime" aria-hidden="true">Validé</span>
-    <p class="fiche-pied mono"><?= $resultat['source'] === 'ia'
-        ? 'Rédigé par : l\'intelligence artificielle moyenne'
-        : 'IA indisponible. Rédigé par : le stagiaire' ?></p>
-  </article>
-  <div class="actions">
-    <a class="btn btn-tampon" href="consultation.php">Nouvelle consultation</a>
-    <button class="btn btn-clair" type="button" data-classer="#verdict" data-source="<?= $resultat['source'] ?>" hidden>Classer au dossier</button>
-  </div>
-</section>
-<script src="<?= fichier_versionne('js/carnet.js') ?>" defer></script>
+      <div class="epreuve__verdict" id="verdict-zone">
+        <?= attestation([
+            'id' => 'verdict', 'type' => 'verdict', 'titre' => 'Verdict de l\'expertise', 'niveau' => 2,
+            'reference_html' => 'dossier n° <span data-dossier>' . e($dossier) . '</span>',
+            'service' => 'La consultation, guichet n° 2',
+            'corps_html' => '<p class="fiche-conseil">' . nl2br(e($resultat['conseil'])) . '</p>',
+            'signataire' => $resultat['source'] === 'ia' ? 'L\'intelligence artificielle moyenne' : 'Le stagiaire',
+            'fonction' => $resultat['source'] === 'ia' ? 'experte, à peu près' : 'l\'IA étant indisponible', 'paraphe' => $resultat['source'] === 'ia' ? 'I. A. M.' : 'Le stag.',
+            'tampon' => ['texte' => 'Validé', 'mouvement' => 'au-chargement', 'angle' => -8],
+            'apres_html' => '<div class="boutons verdict__actions">'
+                . bouton('Obtenir l\'attestation de conseil non suivi', 'attestation.php?document=' . $g['document'])
+                . bouton('Garder au carnet', null, ['type' => 'button', 'variante' => 'secondaire', 'attributs' => ['hidden' => true, 'data-classer' => '#verdict', 'data-source' => $resultat['source']]])
+                . lien_fleche('Nouvelle consultation', 'consultation.php')
+                . '</div>',
+        ]) ?>
+      </div>
 <?php else: ?>
-<section class="conteneur guichets">
-  <form class="formulaire" action="consultation.php" method="POST" novalidate aria-labelledby="titre-questionnaire">
-    <?= csrf_champ() ?>
-    <h2 id="titre-questionnaire">Questionnaire</h2>
+      <form class="feuille" action="consultation.php" method="POST" novalidate aria-labelledby="questionnaire-titre">
+        <?= csrf_champ() ?>
+        <div class="feuille__entete">
+          <h2 id="questionnaire-titre">Questionnaire</h2>
+          <p class="mono">Toutes les questions sont obligatoires. Le problème, non : il ne sera pas lu.</p>
+        </div>
 <?php if (isset($erreurs['session'])): ?>
-    <?= alerte($erreurs['session']) ?>
+        <?= bloc_alerte($erreurs['session'], 'erreur', ['titre' => 'Questionnaire renouvelé']) ?>
 <?php elseif ($erreurs): ?>
-    <?= alerte('Le questionnaire contient ' . count($erreurs) . ' erreur(s). Même pour un formulaire inutile, nous avons des exigences.') ?>
+        <?= bloc_alerte('Le questionnaire contient ' . count($erreurs) . ' erreur(s). Même pour un formulaire inutile, le cabinet a des exigences.', 'erreur', ['titre' => 'Questionnaire incomplet']) ?>
 <?php endif; ?>
-
 <?php foreach ($tirees as $cle):
     $q = $banque[$cle];
-    $id = 'q-' . $cle;
-    $valeur = $valeurs[$cle] ?? '';
+    $o = ['requis' => true, 'valeur' => $valeurs[$cle] ?? '', 'id' => 'q-' . $cle];
+    if ($q['type'] === 'choix') {
+        $o += ['type' => 'select', 'options' => ['' => 'Choisir…'] + array_combine($q['options'], $q['options'])];
+    } elseif ($q['type'] === 'nombre') {
+        $o += ['type' => 'number', 'inputmode' => 'numeric', 'officiel' => true, 'attributs' => ['min' => $q['min'], 'max' => $q['max']]];
+    } else {
+        $o += ['maxlength' => $q['max']];
+    }
 ?>
-    <div class="<?= classe_champ($erreurs, $cle) ?>">
-      <label for="<?= $id ?>"><?= htmlspecialchars($q['libelle']) ?></label>
-<?php if ($q['type'] === 'choix'): ?>
-      <select id="<?= $id ?>" name="<?= $cle ?>" required<?= aria_erreur($erreurs, $cle) ?>>
-        <option value="">Choisir…</option>
-<?php foreach ($q['options'] as $option): ?>
-        <option<?= $valeur === $option ? ' selected' : '' ?>><?= htmlspecialchars($option) ?></option>
+        <?= champ($cle, $q['libelle'], $erreurs, $o) ?>
 <?php endforeach; ?>
-      </select>
-<?php elseif ($q['type'] === 'nombre'): ?>
-      <input id="<?= $id ?>" type="number" name="<?= $cle ?>" min="<?= $q['min'] ?>" max="<?= $q['max'] ?>" inputmode="numeric" required value="<?= htmlspecialchars($valeur) ?>"<?= aria_erreur($erreurs, $cle) ?>>
-<?php else: ?>
-      <input id="<?= $id ?>" type="text" name="<?= $cle ?>" maxlength="<?= $q['max'] ?>" required value="<?= htmlspecialchars($valeur) ?>"<?= aria_erreur($erreurs, $cle) ?>>
+        <?= champ('probleme', 'Votre problème', $erreurs, ['type' => 'textarea', 'rows' => 3, 'maxlength' => 300, 'valeur' => $valeurs['probleme'], 'id' => 'q-probleme', 'aide' => 'Facultatif. Nous ne le lirons pas.']) ?>
+        <?= champ('accord', 'J\'accepte que ce conseil ne serve à rien.', $erreurs, ['type' => 'case', 'requis' => true, 'valeur' => !empty($_POST['accord']), 'id' => 'q-accord']) ?>
+        <div class="boutons"><?= bouton('Lancer l\'expertise', null, ['type' => 'submit']) ?></div>
+      </form>
 <?php endif; ?>
-      <?= erreur_champ($erreurs, $cle) ?>
     </div>
-<?php endforeach; ?>
-
-    <div class="<?= classe_champ($erreurs, 'probleme') ?>">
-      <label for="q-probleme">Votre problème <span class="facultatif">(facultatif, nous ne le lirons pas)</span></label>
-      <textarea id="q-probleme" name="probleme" rows="3" maxlength="300"<?= aria_erreur($erreurs, 'probleme') ?>><?= htmlspecialchars($valeurs['probleme']) ?></textarea>
-      <?= erreur_champ($erreurs, 'probleme') ?>
-    </div>
-
-    <div class="<?= classe_champ($erreurs, 'accord', 'champ champ-case') ?>">
-      <input id="q-accord" type="checkbox" name="accord" value="1" required<?= !empty($_POST['accord']) ? ' checked' : '' ?><?= aria_erreur($erreurs, 'accord') ?>>
-      <label for="q-accord">J'accepte que ce conseil ne serve à rien.</label>
-      <?= erreur_champ($erreurs, 'accord') ?>
-    </div>
-
-    <button class="btn btn-tampon" type="submit">Lancer l'expertise</button>
-  </form>
-
-  <aside class="formulaire formulaire-info" aria-label="Informations">
-    <h2>Comment ça marche</h2>
-    <ol class="liste-info">
-      <li>Vos réponses sont transmises à notre intelligence artificielle.</li>
-      <li>Elle les mélange sans les comprendre, comme un vrai consultant.</li>
-      <li>Vous recevez un conseil officiel, tamponné et parfaitement inutile.</li>
-    </ol>
-    <p class="mono">Questions en circulation : <?= count($banque) ?>. Délai d'utilité : jamais.</p>
-  </aside>
+  </div>
 </section>
-<?php endif; ?>
-
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php page_fin(); ?>

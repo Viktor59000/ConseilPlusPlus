@@ -1,13 +1,16 @@
 <?php
 /**
- * diagnostic.php — « Quel client êtes-vous ? », le diagnostic du conseiller moyen.
+ * diagnostic.php — Guichet n° 1 : « Quel client êtes-vous ? », le diagnostic du conseiller moyen.
  * Formulaire GET (aucune donnée enregistrée), résultat calculé ici : fonctionne sans JavaScript.
- * Contenus : data/diagnostic.php.
+ * Se conclut par le verdict tamponné et le lien vers le certificat de client moyen (attestation.php?document=client-moyen).
+ * Contenus : data/diagnostic.php. Styles : css/v2/pages/epreuves.css (commun aux épreuves du Guichet).
  */
 require_once __DIR__ . '/includes/init.php';
-require_once __DIR__ . '/includes/formulaire.php';
+require_once __DIR__ . '/includes/gabarit.php';
+require_once __DIR__ . '/includes/guichets.php';
 
 $d = require __DIR__ . '/data/diagnostic.php';
+$g = guichet('diagnostic');
 
 // Réponses reçues : q0 … q6, chacune a, b, c ou d
 $reponses = [];
@@ -29,57 +32,63 @@ if ($complet) {
     $moyennete = 50; // toujours exactement la moyenne
 }
 
-$titre = 'Quel client êtes-vous ?';
-$description = 'Le diagnostic du conseiller moyen : sept questions pour savoir quel client moyen vous êtes. Résultat garanti moyen.';
-$page = 'autre';
-include __DIR__ . '/includes/header.php';
+page_debut([
+    'titre' => 'Quel client êtes-vous ?',
+    'description' => 'Le diagnostic du conseiller moyen, guichet n° 1 : sept questions pour savoir quel client moyen vous êtes. Résultat garanti moyen, verdict tamponné.',
+    'page' => 'guichet',
+    'css' => ['css/v2/pages/epreuves.css'],
+    'scripts' => ['js/partage.js'],
+]);
+echo bandeau_guichets('diagnostic');
 ?>
-
-<section class="conteneur entete-page">
-  <p class="etiquette">Le diagnostic du conseiller</p>
-  <h1>Quel client êtes-vous ?</h1>
-  <p class="chapo">Sept questions, établies par le conseiller moyen à partir de son expérience, qui est longue. Le résultat est garanti : vous êtes moyen. Reste à savoir lequel.</p>
-</section>
-
+<section class="heros epreuve" data-enter aria-labelledby="heros-titre">
+  <div class="conteneur grille">
+    <div class="heros__texte">
+      <p class="reference"><span>Guichet n° <?= e($g['numero']) ?></span><span>Le diagnostic du conseiller</span></p>
+      <h1 id="heros-titre">Quel client êtes-vous ?</h1>
+      <p class="heros__chapeau">Sept questions, établies par le conseiller moyen à partir de son expérience, qui est longue. Le résultat est garanti : vous êtes moyen. Reste à savoir lequel.</p>
+      <p class="epreuve__note">Aucune réponse n'est enregistrée. Le conseiller retient tout de mémoire, puis oublie.</p>
+      <div class="epreuve__plaque"><?= plaque_guichet($g['numero'], 'Diagnostic') ?></div>
+    </div>
+    <div class="epreuve__poste">
 <?php if ($profil): ?>
-<section class="conteneur" aria-labelledby="titre-resultat" id="resultat">
-  <div class="diagnostic-resultat">
-    <p class="mono diagnostic-label">Résultat du diagnostic</p>
-    <h2 id="titre-resultat"><?= htmlspecialchars($profil[0]) ?></h2>
-    <p class="diagnostic-texte"><?= htmlspecialchars($profil[1]) ?></p>
-    <p class="mono diagnostic-taux">Taux de moyenneté : <?= $moyennete ?> % (exactement la moyenne)</p>
-    <p class="diagnostic-tampon" aria-hidden="true">Diagnostiqué</p>
-    <div class="actions">
-      <button type="button" class="btn btn-tampon" hidden data-partager="texte" data-nom="diagnostic"
-        data-titre="<?= htmlspecialchars($profil[0]) ?>" data-texte="<?= htmlspecialchars($profil[1]) ?>"
-        data-detail="Taux de moyenneté : <?= $moyennete ?> %." data-etiquette="Diagnostic officiel du conseiller moyen"
-        data-url="diagnostic.php">Partager mon résultat</button>
-      <a class="btn btn-clair" href="attestation.php?document=client-moyen">Obtenir mon certificat de client moyen</a>
-      <a class="btn btn-clair" href="diagnostic.php">Refaire le diagnostic</a>
+      <div class="epreuve__verdict" id="resultat">
+        <?= attestation([
+            'type' => 'verdict', 'titre' => $profil[0], 'niveau' => 2, 'reference' => 'DIAG-' . date('Y') . '-' . sprintf('%04d', crc32(implode('', $reponses)) % 10000),
+            'service' => 'Le diagnostic du conseiller, guichet n° 1',
+            'corps_html' => '<p>' . e($profil[1]) . '</p><p class="verdict__mesure">Taux de moyenneté : ' . $moyennete . ' % (exactement la moyenne).</p>',
+            'signataire' => 'Le conseiller moyen', 'fonction' => 'fondateur', 'paraphe' => 'C. M.',
+            'tampon' => ['texte' => 'Diagnostiqué', 'mouvement' => 'au-chargement', 'angle' => -7],
+            'apres_html' => '<div class="boutons verdict__actions">'
+                . bouton('Obtenir mon certificat de client moyen', 'attestation.php?document=' . $g['document'])
+                . bouton('Partager mon résultat', null, ['type' => 'button', 'variante' => 'secondaire', 'attributs' => ['hidden' => true,
+                    'data-partager' => 'texte', 'data-nom' => 'diagnostic', 'data-titre' => $profil[0], 'data-texte' => $profil[1],
+                    'data-detail' => 'Taux de moyenneté : ' . $moyennete . ' %.', 'data-etiquette' => 'Diagnostic officiel du conseiller moyen', 'data-url' => 'diagnostic.php']])
+                . lien_fleche('Refaire le diagnostic', 'diagnostic.php')
+                . '</div>',
+        ]) ?>
+      </div>
+<?php else: ?>
+      <form class="feuille" method="get" action="diagnostic.php#resultat" aria-labelledby="questions-titre">
+        <div class="feuille__entete">
+          <h2 id="questions-titre">Questionnaire de diagnostic</h2>
+          <p class="mono">Formulaire CP+ 7-Q · Une réponse par question, toutes obligatoires.</p>
+        </div>
+<?php if ($incomplet): ?>
+        <?= bloc_alerte('Le conseiller a besoin de toutes vos réponses pour vous trouver moyen. ' . (count($d['questions']) - count($reponses)) . ' question(s) restent sans réponse.', 'erreur', ['titre' => 'Diagnostic incomplet']) ?>
+<?php endif; ?>
+<?php foreach ($d['questions'] as $i => [$question, $choix]): ?>
+        <fieldset class="question">
+          <legend><span class="mono"><?= $i + 1 ?>.</span><?= e($question) ?></legend>
+<?php foreach ($choix as $cle => $libelle): ?>
+          <label class="question__choix"><input type="radio" name="q<?= $i ?>" value="<?= e($cle) ?>" required<?= ($reponses[$i] ?? '') === $cle ? ' checked' : '' ?>><span><?= e($libelle) ?></span></label>
+<?php endforeach; ?>
+        </fieldset>
+<?php endforeach; ?>
+        <div class="boutons"><?= bouton('Obtenir mon diagnostic', null, ['type' => 'submit']) ?></div>
+      </form>
+<?php endif; ?>
     </div>
   </div>
 </section>
-<?php else: ?>
-<section class="conteneur" aria-labelledby="titre-questions">
-  <h2 id="titre-questions" class="visuellement-cache">Les questions</h2>
-<?php if ($incomplet): ?>
-  <?= alerte('Le conseiller a besoin de toutes vos réponses pour vous trouver moyen.') ?>
-<?php endif; ?>
-  <form class="diagnostic" method="get" action="diagnostic.php#resultat">
-<?php foreach ($d['questions'] as $i => [$question, $choix]): ?>
-    <fieldset class="diagnostic-question">
-      <legend><span class="mono"><?= $i + 1 ?>.</span> <?= htmlspecialchars($question) ?></legend>
-<?php foreach ($choix as $cle => $libelle): ?>
-      <label class="diagnostic-choix"><input type="radio" name="q<?= $i ?>" value="<?= $cle ?>" required<?= ($reponses[$i] ?? '') === $cle ? ' checked' : '' ?>> <?= htmlspecialchars($libelle) ?></label>
-<?php endforeach; ?>
-    </fieldset>
-<?php endforeach; ?>
-    <div class="actions">
-      <button class="btn btn-tampon" type="submit">Obtenir mon diagnostic</button>
-    </div>
-  </form>
-</section>
-<?php endif; ?>
-
-<script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php page_fin(); ?>

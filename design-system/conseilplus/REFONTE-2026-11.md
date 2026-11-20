@@ -196,3 +196,15 @@ mention unique de la fiction), scripts.
   casse de phrase. Pictogrammes maison au trait dans la navigation et la barre latérale du Bureau.
 - Un seul bouton principal par vue. Pas de 3D, pas de dégradés, pas de fondu au défilement, pas de chiffres décoratifs.
 - Thème et régime posés avant affichage par `theme_script()` ; l'empreinte CSP est recalculée seule par `envoyer_csp()`.
+
+### Ajouts du lot 3a (Hall, Guichet, Mon dossier, épreuves)
+- `includes/guichets.php` : `GUICHETS` (les cinq guichets numérotés, seule liste), `bandeau_guichets($actif)` (rangée des
+  guichets sous l'en-tête des épreuves), `plaque_guichet($numero, $mention)` (plaque de laiton, objet-héros d'une épreuve),
+  `ETAPES_RENDEZ_VOUS` / `ETAPES_RENDEZ_VOUS_ANNULE` (suivi d'un rendez-vous), `file_du_guichet()` (ticket du Hall),
+  `fiche_conseil()` (le conseil du jour en attestation, avec les crochets de js/conseil.js, js/carnet.js, js/partage.js).
+- Options nouvelles (compatibles) : `attestation()` `reference_html`, `apres_html`, `attributs` ; `dossier()` `statut_libelle` ;
+  `etapes_statut()` `etapes` (autre parcours), `arret` (dernière étape en rouge) ; `champ()` : `attributs` remplace les
+  attributs par défaut (`['name' => null]` : champ jamais envoyé). Statuts `confirme` (vert) et `annule` (rouge).
+- Grille : `.d-5`, `.d-6`. `.logo-svg` (taille de base) passe dans socle.css (un composant peut la régler).
+- Pages : `css/v2/pages/{hall,guichet,dossier,epreuves}.css` ; `js/v2/rendez-vous.js` ; `js/attestation.js` dessine aussi
+  tout `[data-document='{…}']` (attestation de dépôt). conseil.php et carnet.php → 301 vers compte.php.

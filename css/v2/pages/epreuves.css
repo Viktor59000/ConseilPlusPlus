@@ -1,0 +1,109 @@
+/* Les épreuves du Guichet (diagnostic.php, consultation.php, stagiaire.php, duel.php, attestation.php) : même gabarit.
+   Héros : à gauche la référence « Guichet n° X », le titre, le chapeau et la plaque de laiton ; à droite le poste
+   (le formulaire, le plateau, puis le verdict tamponné). Couche « page ». */
+
+.epreuve > .conteneur { align-items: start; }
+.epreuve .heros__texte { grid-column: 1 / span 5; }
+.epreuve__poste { grid-column: 7 / -1; display: grid; gap: var(--e-5); align-content: start; }
+.epreuve__plaque { margin-top: var(--e-4); }
+.epreuve__note { font-size: var(--t-petit); color: var(--encre-2); max-width: 30em; }
+@media (max-width: 1023px) {
+  .epreuve .heros__texte, .epreuve__poste { grid-column: 1 / -1; }
+  .epreuve__poste { margin-top: var(--e-6); }
+  .epreuve__plaque { display: none; }
+}
+
+/* Le poste : une feuille posée sur le comptoir */
+.feuille {
+  display: grid; gap: var(--e-5); padding: var(--e-6); background: var(--papier); color: var(--encre);
+  border: 1px solid var(--filet-fort); border-radius: var(--r-papier); box-shadow: var(--ombre-papier);
+}
+.feuille__entete { display: grid; gap: var(--e-1); padding-bottom: var(--e-4); border-bottom: 1px solid var(--filet); }
+.feuille__entete h2, .feuille__entete h3 { font-size: var(--t-lead); letter-spacing: -.01em; line-height: 1.3; }
+.feuille__entete .mono { font-size: var(--t-etiquette); color: var(--encre-2); }
+.feuille .alerte { max-width: none; }
+@media (max-width: 639px) { .feuille { padding: var(--e-5); } }
+
+/* Questions à choix (diagnostic) : une question par fieldset, les choix en cases d'un formulaire */
+.question { border: 0; margin: 0; padding: 0 0 var(--e-5); min-width: 0; border-bottom: 1px dotted var(--filet-fort); display: grid; gap: var(--e-2); }
+.question:last-of-type { border-bottom: 0; }
+.question legend { padding: 0; margin-bottom: var(--e-2); font-weight: var(--g-appui); line-height: 1.4; }
+.question legend .mono { color: var(--rouge); margin-right: var(--e-2); }
+.question__choix { display: grid; grid-template-columns: 22px 1fr; gap: var(--e-3); align-items: start; min-height: 44px; padding: var(--e-2) 0; cursor: pointer; }
+.question__choix input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--encre); }
+
+/* Le verdict tamponné, et ses actions */
+.epreuve__verdict .attestation { max-width: none; }
+.verdict__actions { margin-top: var(--e-5); padding-top: var(--e-5); border-top: 1px solid var(--filet); }
+.verdict__mesure { font: 500 var(--t-petit)/1.5 var(--mono); color: var(--encre-2); }
+
+/* Score (Duel, stagiaire) : chiffres machine sous filets */
+.score { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); border-top: 1px solid var(--filet-fort); border-bottom: 1px solid var(--filet-fort); }
+.score > div { display: grid; gap: 2px; padding: var(--e-3) var(--e-4) var(--e-3) 0; }
+.score > div + div { padding-left: var(--e-4); border-left: 1px solid var(--filet); }
+.score dt, .score .score__nom { font-size: var(--t-etiquette); color: var(--encre-2); }
+.score dd, .score strong { margin: 0; font: 500 var(--t-chiffre)/1 var(--mono); font-variant-numeric: tabular-nums; }
+.score dd.marque { animation: score-marque 420ms var(--courbe); }
+@keyframes score-marque { 30% { color: var(--rouge); transform: translateY(-2px); } }
+
+/* Seconde section : règlement, tableau d'honneur */
+.epreuve-annexe { align-items: start; }
+.liste-reglement { padding-left: 1.4em; display: grid; gap: var(--e-3); }
+.liste-reglement li::marker { font: 500 var(--t-petit) var(--mono); color: var(--rouge); }
+.honneur { list-style: none; padding: 0; border-top: 1px solid var(--filet-fort); }
+.honneur li { display: grid; grid-template-columns: 40px 1fr auto auto; gap: var(--e-4); align-items: baseline; padding: var(--e-3) 0; border-bottom: 1px solid var(--filet); }
+.honneur__rang { font: 500 var(--t-lead)/1 var(--mono); color: var(--encre-2); }
+.honneur li:first-child .honneur__rang { color: var(--rouge); }
+.honneur .mono { font-size: var(--t-petit); color: var(--encre-2); }
+@media (max-width: 639px) { .honneur li { grid-template-columns: 32px 1fr; } .honneur li > :nth-child(n+3) { grid-column: 2; } }
+.lien-bouton { min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--encre); font: var(--g-appui) var(--t-petit)/1 var(--police); text-decoration: underline; text-underline-offset: .2em; }
+.lien-bouton:hover { color: var(--rouge); }
+
+/* ---------- Questions pour un stagiaire : le plateau ---------- */
+.plateau { display: grid; gap: var(--e-4); }
+.plateau__num { font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); }
+.plateau__question { font-size: var(--t-h3); line-height: 1.25; letter-spacing: -.015em; font-weight: var(--g-titre); }
+.plateau__question:focus { outline: none; }
+.plateau__buzz { min-height: 1.6em; font: 500 var(--t-petit)/1.5 var(--mono); color: var(--rouge); }
+.plateau__buzz.buzz-anime { animation: buzz 360ms var(--courbe); }
+@keyframes buzz { 0% { transform: translateX(0); } 25% { transform: translateX(-3px); } 50% { transform: translateX(3px); } 100% { transform: none; } }
+.plateau__reponse { display: grid; gap: var(--e-2); padding: var(--e-4) var(--e-5); background: var(--fond); border-left: 3px solid var(--laiton); }
+.plateau__reponse .mono { font-size: var(--t-etiquette); color: var(--encre-2); }
+.plateau__argument { font-style: italic; color: var(--encre-2); }
+.plateau__verdict { min-height: 1.6em; font-weight: var(--g-appui); }
+.plateau.nouvelle .plateau__question { animation: fiche-renouvele 360ms var(--courbe) both; }
+.plateau__bilan { display: grid; justify-items: start; }
+.plateau__bilan:empty { display: none; }
+
+/* ---------- Le Duel ---------- */
+.duel-mot { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--e-3); }
+.duel-mot strong { font: 500 var(--t-lead)/1.2 var(--mono); padding: 2px var(--e-2); background: var(--surligneur); color: var(--encre); }
+.duel-deroule { display: grid; gap: var(--e-4); }
+.duel-deroule div { display: grid; gap: var(--e-1); }
+.duel-deroule dt { font: 500 var(--t-etiquette)/1.3 var(--mono); color: var(--encre-2); }
+.duel-deroule dd { margin: 0; }
+kbd { font: 500 .85em/1 var(--mono); padding: 2px 5px; border: 1px solid var(--filet-fort); border-radius: var(--r-papier); }
+
+/* ---------- Service des documents officiels : le formulaire du jour ---------- */
+.formulaire-jour { border: 1.5px dashed var(--filet-fort); border-radius: var(--r-papier); padding: var(--e-5); margin: 0; display: grid; gap: var(--e-4); min-width: 0; }
+.formulaire-jour > legend { padding: 0 var(--e-2); font-weight: var(--g-appui); }
+.formulaire-jour > legend .mono { display: block; color: var(--rouge); font-size: var(--t-etiquette); }
+.case { margin: 0; padding: 0; border: 0; display: grid; gap: var(--e-2); min-width: 0; }
+.case > legend, .case > label { padding: 0; font-weight: var(--g-appui); font-size: var(--t-petit); }
+.case-n { color: var(--rouge); margin-right: var(--e-1); font: 500 var(--t-etiquette) var(--mono); white-space: nowrap; }
+.case-choix { display: flex; align-items: center; gap: var(--e-3); min-height: 44px; cursor: pointer; }
+.case-choix input { width: 20px; height: 20px; margin: 0; flex: none; accent-color: var(--encre); }
+.case-reserve p { padding: var(--e-3); border: 1px solid var(--filet); color: var(--encre-2); font-size: var(--t-petit); background: repeating-linear-gradient(-45deg, transparent 0 8px, color-mix(in srgb, var(--encre) 5%, transparent) 8px 9px); }
+.case input:not([type="checkbox"]) {
+  width: 100%; min-height: 48px; padding: var(--e-3) var(--e-4); border: 1px solid var(--contour); border-radius: var(--r-petit);
+  background: var(--papier); font: 500 .95rem/1.4 var(--mono);
+}
+.case input:focus { outline: none; border-color: var(--encre); box-shadow: 0 0 0 3px color-mix(in srgb, var(--encre) 18%, transparent); }
+.apercu { display: grid; gap: var(--e-4); }
+.apercu__image { position: relative; }
+.apercu__image img { width: 100%; height: auto; border-radius: var(--r-papier); box-shadow: var(--ombre-papier-haute); background: #F7F7F3; }
+.apercu__image .tampon { position: absolute; right: 6%; bottom: 12%; font-size: clamp(1.25rem, .9rem + 1.4vw, 2.25rem); }
+.apercu__verdict { padding-left: var(--e-4); border-left: 3px solid var(--rouge); font-weight: var(--g-appui); }
+.duel-tampon { display: flex; justify-content: flex-end; }
+.ecran__sous-titre { font-size: var(--t-h3); margin-bottom: var(--e-5); }
+.epreuve-annexe .liste-reglement { margin-bottom: var(--e-5); }

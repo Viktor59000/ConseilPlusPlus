@@ -1,0 +1,68 @@
+/* Le Guichet (guichet.php) : dépôt (attestation), formulaire de rendez-vous, porte close, tableau des guichets. Couche « page ». */
+
+/* ---------- Dépôt réussi : l'attestation posée à droite, le tampon « Reçu » s'y abat ---------- */
+.guichet-depot .heros__visuel { display: grid; justify-items: center; align-content: start; }
+.guichet-depot .attestation { width: 100%; }
+.guichet-depot__note { font-size: var(--t-petit); max-width: 30em; }
+
+/* ---------- Prendre rendez-vous ---------- */
+.guichet-rdv { align-items: start; }
+.guichet-rdv .ecran__tete { margin-bottom: 0; }
+.guichet-rdv__regles { list-style: none; padding: 0; display: grid; margin-top: var(--e-3); border-top: 1px solid var(--filet); }
+.guichet-rdv__regles li { padding: var(--e-3) 0 var(--e-3) var(--e-5); border-bottom: 1px solid var(--filet); position: relative; font-size: var(--t-petit); }
+.guichet-rdv__regles li::before { content: ""; position: absolute; left: 0; top: 1.15em; width: 10px; height: 2px; background: var(--accent); }
+.guichet-rdv__suite { margin-top: var(--e-5); }
+@media (max-width: 1023px) { .guichet-rdv > .c-4 { grid-column: 1 / -1; } .guichet-rdv__feuille { margin-top: var(--e-6); } }
+
+/* Le formulaire officiel : une feuille posée sur le comptoir */
+.guichet-formulaire, .guichet-porte {
+  display: grid; gap: var(--e-5); padding: var(--e-6); background: var(--fond); border: 1px solid var(--filet-fort);
+  border-radius: var(--r-papier); box-shadow: var(--ombre-papier);
+}
+.ecran--papier .guichet-formulaire, .ecran--papier .guichet-porte { background: var(--papier); }
+.guichet-formulaire__entete { display: grid; gap: var(--e-1); padding-bottom: var(--e-4); border-bottom: 1px solid var(--filet); }
+.guichet-formulaire__entete h3 { font-size: var(--t-lead); letter-spacing: -.01em; }
+.guichet-formulaire__entete .mono { font-size: var(--t-etiquette); }
+.guichet-formulaire__grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-5) var(--e-5); align-items: start; }
+.guichet-formulaire .alerte { max-width: none; }
+@media (max-width: 639px) {
+  .guichet-formulaire, .guichet-porte { padding: var(--e-5); }
+  .guichet-formulaire__grille { grid-template-columns: 1fr; }
+}
+
+/* Hors connexion : la porte du guichet, et un aperçu des créneaux libres */
+.guichet-porte__titre { font-size: var(--t-h3); }
+.guichet-porte__libres { margin-top: var(--e-2); }
+.guichet-porte__jours { list-style: none; padding: 0; display: grid; border-top: 1px solid var(--filet); }
+.guichet-porte__jours li { display: flex; justify-content: space-between; gap: var(--e-4); padding: var(--e-2) 0; border-bottom: 1px dotted var(--filet-fort); font-size: var(--t-petit); }
+
+/* ---------- Le tableau d'affichage des guichets : une ligne par guichet, toute la ligne est un lien ---------- */
+.guichets-tableau { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--filet-fort); }
+.guichets-tableau li { border-bottom: 1px solid var(--filet-fort); }
+.guichets-tableau__ligne {
+  display: grid; grid-template-columns: 72px minmax(0, 4fr) minmax(0, 6fr) 11.5rem; gap: var(--e-5); align-items: center;
+  padding: var(--e-5) 0; text-decoration: none; color: var(--encre);
+  transition: background-color var(--d-out) var(--courbe);
+}
+.guichets-tableau__numero {
+  display: grid; place-items: center; width: 56px; height: 56px; border-radius: var(--r-petit);
+  background: var(--laiton); color: #181715; font: 500 1.75rem/1 var(--mono);
+  box-shadow: inset 0 0 0 2px rgba(24, 23, 21, .5), inset 0 0 0 5px var(--laiton), inset 0 0 0 6px rgba(24, 23, 21, .25);
+}
+.guichets-tableau__nom { font-size: var(--t-h3); font-weight: var(--g-titre); letter-spacing: -.02em; line-height: 1.15; }
+.guichets-tableau__detail { color: var(--encre-2); max-width: 38em; }
+.guichets-tableau__acces { display: inline-flex; align-items: center; justify-content: space-between; gap: var(--e-3); color: var(--encre-2); white-space: nowrap; }
+.guichets-tableau__acces .bouton__fleche { width: 20px; height: 20px; fill: none; stroke: var(--encre); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--d-out) var(--courbe); }
+.guichets-tableau__ligne:hover { background: color-mix(in srgb, var(--encre) 4%, transparent); transition-duration: var(--d-in); }
+.guichets-tableau__ligne:hover .bouton__fleche { transform: translateX(3px); transition-duration: var(--d-in); }
+.guichets-tableau__ligne:focus-visible { outline-offset: -2px; }
+@media (max-width: 1023px) {
+  .guichets-tableau__ligne { grid-template-columns: 64px minmax(0, 1fr) auto; row-gap: var(--e-2); }
+  .guichets-tableau__detail { grid-column: 2 / -1; grid-row: 2; }
+}
+@media (max-width: 639px) {
+  .guichets-tableau__ligne { grid-template-columns: 56px minmax(0, 1fr); }
+  .guichets-tableau__numero { width: 48px; height: 48px; font-size: 1.5rem; }
+  .guichets-tableau__detail, .guichets-tableau__acces { grid-column: 2; }
+  .guichets-tableau__acces { grid-row: 3; }
+}

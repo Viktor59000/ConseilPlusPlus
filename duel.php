@@ -1,18 +1,21 @@
 <?php
 /**
- * duel.php — Mode Duel : partie en 100 points contre le cabinet.
- * Le joueur joue un coup « Je… et je… » ; le code le note selon un barème réel (forme, longueur,
- * mot imposé, absence de logique, verbe inédit, humeur de l'arbitre) ; l'arbitre IA annonce le verdict
- * et le cabinet joue son coup. Le premier à 100 points gagne. Partie gardée en session.
- * Réservé aux clients connectés. Hommage non officiel au Kamoulox de Kad Merad et Olivier Baroux.
+ * duel.php — Guichet n° 4 : le Duel, partie en 100 points contre le cabinet.
+ * Le joueur joue un coup « Je… et je… » ; le code le note selon un barème réel (forme, longueur, mot imposé, absence
+ * de logique, verbe inédit, humeur de l'arbitre) ; l'arbitre IA annonce le verdict et le cabinet joue son coup.
+ * Le premier à 100 points gagne. Partie gardée en session. Réservé aux clients connectés.
+ * Se conclut par le verdict tamponné de la partie et le lien vers l'attestation (avis favorable, ou présence).
+ * Hommage non officiel au Kamoulox de Kad Merad et Olivier Baroux. Styles : css/v2/pages/epreuves.css.
  */
 require_once __DIR__ . '/includes/init.php';
 $utilisateur = exiger_connexion();
 
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/duel.php';
-require_once __DIR__ . '/includes/formulaire.php';
+require_once __DIR__ . '/includes/gabarit.php';
+require_once __DIR__ . '/includes/guichets.php';
 
+$g = guichet('duel');
 // Ancien format de session (avant les parties en 100 points) : on repart de zéro
 if (!isset($_SESSION['duel']['mot'])) {
     $_SESSION['duel'] = nouvelle_partie();
@@ -70,122 +73,124 @@ $suggestion = au_hasard(duel_donnees()['suggestions']);
 $honneur = $bdd->query('SELECT prenom, joueur, manches, date_partie FROM duels WHERE victoire = 1
                         ORDER BY manches, joueur DESC, date_partie LIMIT 5')->fetchAll(PDO::FETCH_ASSOC);
 $bilan = $bdd->query('SELECT COUNT(*) AS parties, COALESCE(SUM(victoire = 0), 0) AS cabinet FROM duels')->fetch(PDO::FETCH_ASSOC);
-$titre = 'Le Duel';
-$description = 'Affrontez le cabinet ConseilPlus+ en 100 points, à coups de phrases absurdes. Règlement disponible sur demande, puis égaré.';
-$page = 'espace';
-$onglet = 'duel';
-include __DIR__ . '/includes/header.php';
-include __DIR__ . '/includes/espace-nav.php';
+$victoire = $partie['gagnant'] === 'joueur';
+
+page_debut([
+    'titre' => 'Le Duel',
+    'description' => 'Guichet n° 4 : affrontez le cabinet ConseilPlus+ en 100 points, à coups de phrases absurdes. Règlement disponible sur demande, puis égaré.',
+    'page' => 'guichet',
+    'robots' => 'noindex',
+    'css' => ['css/v2/pages/epreuves.css'],
+    'scripts' => ['js/duel.js'],
+]);
+echo bandeau_guichets('duel');
 ?>
-
-<section class="conteneur entete-page">
-  <h1>Le Duel</h1>
-  <p class="chapo">Affrontez le cabinet en 100 points. Jouez un coup absurde : l'arbitre rend son verdict selon un règlement que personne n'a lu.</p>
-  <div class="tableau-score" aria-label="Score">
-    <div><span class="mono">Vous</span><strong><?= $partie['joueur'] ?></strong></div>
-    <div><span class="mono">Le cabinet</span><strong><?= $partie['cabinet'] ?></strong></div>
-    <div><span class="mono">Manches</span><strong><?= $partie['manches'] ?></strong></div>
-  </div>
-</section>
-
-<?php if ($partie['gagnant'] !== null): ?>
-<section class="conteneur">
-  <div class="fin-partie <?= $partie['gagnant'] === 'joueur' ? 'fin-victoire' : 'fin-defaite' ?>" role="status">
-    <span class="tampon" aria-hidden="true"><?= $partie['gagnant'] === 'joueur' ? 'Victoire' : 'Défaite' ?></span>
-    <h2><?= $partie['gagnant'] === 'joueur'
-        ? 'Victoire officielle. Le cabinet reconnaît sa défaite, sous réserve d\'appel.'
-        : 'Le cabinet remporte la partie. Une réclamation peut être déposée, puis égarée.' ?></h2>
-    <form action="duel.php" method="POST">
-      <?= csrf_champ() ?>
-      <button class="btn btn-tampon" type="submit" name="nouvelle_partie" value="1">Nouvelle partie</button>
-    </form>
-  </div>
-</section>
-<?php endif; ?>
-
-<?php if ($manche): ?>
-<section class="conteneur">
-  <article class="fiche fiche-grande duel" aria-labelledby="manche-titre">
-    <header class="fiche-entete">
-      <h2 id="manche-titre">Manche n° <?= $partie['manches'] ?></h2>
-      <span class="mono">Vous : <?= sprintf('%+d', $note['total']) ?><?= $points_cabinet ? ' · Cabinet : +' . $points_cabinet : '' ?></span>
-    </header>
-    <dl class="duel-deroule">
-      <div>
-        <dt class="mono">Votre coup</dt>
-        <dd><?= htmlspecialchars($coup) ?></dd>
-      </div>
-      <div>
-        <dt class="mono">Verdict de l'arbitre</dt>
-        <dd class="duel-verdict"><?= htmlspecialchars($manche['verdict']) ?></dd>
-      </div>
-<?php if ($points_cabinet): ?>
-      <div>
-        <dt class="mono">Coup du cabinet (+<?= $points_cabinet ?>)</dt>
-        <dd class="fiche-conseil"><?= htmlspecialchars($manche['coup']) ?> <strong>Kamoulox !</strong></dd>
-      </div>
-<?php endif; ?>
-    </dl>
-    <span class="tampon tampon-anime" aria-hidden="true"><?= $note['total'] >= 25 ? 'Homologué' : ($note['total'] >= 0 ? 'Passable' : 'Pénalité') ?></span>
-    <p class="fiche-pied mono"><?= $manche['source'] === 'ia' ? 'Arbitrage : intelligence artificielle moyenne' : 'Arbitre indisponible. Arbitrage : le stagiaire' ?></p>
-  </article>
-</section>
-<?php endif; ?>
-
-<section class="conteneur guichets">
-<?php if ($partie['gagnant'] === null): ?>
-  <form class="formulaire" action="duel.php" method="POST" aria-labelledby="titre-coup">
-    <?= csrf_champ() ?>
-    <h2 id="titre-coup"><?= $manche ? 'Manche suivante' : 'Votre coup' ?></h2>
-    <p class="mot-impose">Mot imposé : <strong><?= htmlspecialchars($partie['mot']) ?></strong></p>
-<?php if ($erreur): ?>
-    <?= alerte($erreur) ?>
-<?php endif; ?>
-    <div class="champ">
-      <label for="d-coup">Votre coup <span class="facultatif">(« Je… et je… »)</span></label>
-      <textarea id="d-coup" name="coup" rows="3" maxlength="200" required placeholder="<?= htmlspecialchars($suggestion) ?>" aria-describedby="d-aide"><?= $manche ? '' : htmlspecialchars($coup) ?></textarea>
-      <p class="aide" id="d-aide">Champ vide : appuyez sur <kbd>Tab</kbd> pour reprendre la suggestion, puis modifiez-la.</p>
+<section class="heros epreuve" data-enter aria-labelledby="heros-titre">
+  <div class="conteneur grille">
+    <div class="heros__texte">
+      <p class="reference"><span>Guichet n° <?= e($g['numero']) ?></span><span>Partie en <?= SCORE_VICTOIRE ?> points</span></p>
+      <h1 id="heros-titre">Le Duel</h1>
+      <p class="heros__chapeau">Affrontez le cabinet. Jouez un coup absurde : l'arbitre rend son verdict selon un règlement que personne n'a lu, pas même lui.</p>
+      <dl class="score" aria-label="Score">
+        <div><dt>Vous</dt><dd><?= (int) $partie['joueur'] ?></dd></div>
+        <div><dt>Le cabinet</dt><dd><?= (int) $partie['cabinet'] ?></dd></div>
+        <div><dt>Manches</dt><dd><?= (int) $partie['manches'] ?></dd></div>
+      </dl>
+      <div class="epreuve__plaque"><?= plaque_guichet($g['numero'], 'Duel') ?></div>
     </div>
-    <button class="btn btn-tampon" type="submit">Jouer le coup</button>
-  </form>
+    <div class="epreuve__poste">
+<?php if ($partie['gagnant'] !== null): ?>
+      <div class="epreuve__verdict" role="status">
+        <?= attestation([
+            'type' => 'verdict', 'titre' => $victoire ? 'Victoire officielle' : 'Le cabinet l\'emporte', 'niveau' => 2,
+            'reference' => 'DUEL-' . date('Y') . '-' . sprintf('%03d', $partie['manches']), 'service' => 'Le Duel, guichet n° 4',
+            'corps' => $victoire ? 'Le cabinet reconnaît sa défaite, sous réserve d\'appel, et d\'un second appel s\'il perd le premier.'
+                : 'Le cabinet remporte la partie. Une réclamation peut être déposée, puis égarée selon la procédure habituelle.',
+            'champs' => ['Vous' => $partie['joueur'] . ' points', 'Le cabinet' => $partie['cabinet'] . ' points', 'Manches' => $partie['manches']],
+            'signataire' => 'L\'arbitre', 'fonction' => 'impartial, à peu près', 'paraphe' => 'L\'arb.',
+            'tampon' => ['texte' => $victoire ? 'Victoire' : 'Défaite', 'couleur' => $victoire ? 'vert' : 'rouge', 'mouvement' => 'au-chargement', 'angle' => -8],
+            'apres_html' => '<div class="boutons verdict__actions">'
+                . bouton($victoire ? 'Obtenir mon avis favorable' : 'Obtenir mon attestation de présence', 'attestation.php?document=' . ($victoire ? $g['document'] : 'presence'))
+                . '<form action="duel.php" method="POST">' . csrf_champ() . bouton('Nouvelle partie', null, ['variante' => 'secondaire', 'nom' => 'nouvelle_partie', 'valeur' => '1']) . '</form>'
+                . '</div>',
+        ]) ?>
+      </div>
 <?php endif; ?>
-
-  <aside class="formulaire formulaire-info" aria-label="Règlement">
-    <h2>Règlement (extrait)</h2>
-    <ol class="liste-info">
-      <li>Le coup se joue à la première personne.</li>
-      <li>Les points sont attribués selon un barème confidentiel, y compris pour l'arbitre.</li>
-      <li>Le mot imposé est imposé.</li>
-      <li>Toute réclamation est examinée, puis égarée.</li>
-    </ol>
-    <form action="duel.php" method="POST">
-      <?= csrf_champ() ?>
-      <button class="lien-action" type="submit" name="nouvelle_partie" value="1">Recommencer la partie</button>
-    </form>
-  </aside>
+<?php if ($manche): ?>
+      <article class="feuille" data-papier aria-labelledby="manche-titre">
+        <div class="feuille__entete">
+          <h2 id="manche-titre">Manche n° <?= (int) $partie['manches'] ?></h2>
+          <p class="mono">Vous : <?= sprintf('%+d', $note['total']) ?><?= $points_cabinet ? ' · Cabinet : +' . $points_cabinet : '' ?> · <?= $manche['source'] === 'ia' ? 'Arbitrage : intelligence artificielle moyenne' : 'Arbitre indisponible. Arbitrage : le stagiaire' ?></p>
+        </div>
+        <dl class="duel-deroule">
+          <div><dt>Votre coup</dt><dd><?= e($coup) ?></dd></div>
+          <div><dt>Verdict de l'arbitre</dt><dd><strong><?= e($manche['verdict']) ?></strong></dd></div>
+<?php if ($points_cabinet): ?>
+          <div><dt>Coup du cabinet (+<?= $points_cabinet ?>)</dt><dd><?= e($manche['coup']) ?> <strong>Kamoulox !</strong></dd></div>
+<?php endif; ?>
+        </dl>
+        <div class="duel-tampon"><?= tampon($note['total'] >= 25 ? 'Homologué' : ($note['total'] >= 0 ? 'Passable' : 'Pénalité'), ['mouvement' => 'au-chargement', 'couleur' => $note['total'] >= 25 ? 'vert' : 'rouge', 'angle' => -6, 'decoratif' => true]) ?></div>
+      </article>
+<?php endif; ?>
+<?php if ($partie['gagnant'] === null): ?>
+      <form class="feuille" action="duel.php" method="POST" aria-labelledby="coup-titre">
+        <?= csrf_champ() ?>
+        <div class="feuille__entete">
+          <h2 id="coup-titre"><?= $manche ? 'Manche suivante' : 'Votre coup' ?></h2>
+          <p class="duel-mot"><span class="mono">Mot imposé</span><strong><?= e($partie['mot']) ?></strong></p>
+        </div>
+<?php if ($erreur): ?>
+        <?= bloc_alerte($erreur, 'erreur', ['titre' => 'Coup refusé']) ?>
+<?php endif; ?>
+        <?= champ('coup', 'Votre coup (« Je… et je… »)', $erreur ? ['coup' => $erreur] : [], ['type' => 'textarea', 'rows' => 3, 'maxlength' => 200, 'requis' => true, 'id' => 'd-coup',
+            'placeholder' => $suggestion, 'valeur' => $manche ? '' : $coup, 'aide' => 'Champ vide : la touche Tab reprend la suggestion, que vous modifiez ensuite.']) ?>
+        <div class="boutons"><?= bouton('Jouer le coup', null, ['type' => 'submit']) ?></div>
+      </form>
+<?php endif; ?>
+    </div>
+  </div>
 </section>
 
-<section class="conteneur" aria-labelledby="titre-honneur">
-  <h2 id="titre-honneur">Les victoires les plus rapides</h2>
+<section class="ecran ecran--papier" id="reglement" aria-labelledby="reglement-titre">
+  <div class="conteneur grille epreuve-annexe">
+    <div class="c-5">
+      <div class="ecran__tete">
+        <p class="reference"><span>Règlement</span><span>Extrait</span></p>
+        <h2 id="reglement-titre">Le règlement du Duel</h2>
+      </div>
+      <ol class="liste-reglement">
+        <li>Le coup se joue à la première personne.</li>
+        <li>Les points sont attribués selon un barème confidentiel, y compris pour l'arbitre.</li>
+        <li>Le mot imposé est imposé.</li>
+        <li>Toute réclamation est examinée, puis égarée.</li>
+      </ol>
+<?php if ($partie['gagnant'] === null): ?>
+      <form action="duel.php" method="POST">
+        <?= csrf_champ() ?>
+        <button class="lien-bouton" type="submit" name="nouvelle_partie" value="1">Recommencer la partie</button>
+      </form>
+<?php endif; ?>
+    </div>
+    <div class="d-7">
+      <h3 class="ecran__sous-titre">Les victoires les plus rapides</h3>
 <?php if (!$honneur): ?>
-  <p class="aide">Personne n'a encore battu le cabinet. Le cabinet n'en tire aucune fierté particulière, mais il le note.</p>
+      <p class="muet">Personne n'a encore battu le cabinet. Le cabinet n'en tire aucune fierté particulière, mais il le note.</p>
 <?php else: ?>
-  <ol class="honneur">
+      <ol class="honneur">
 <?php foreach ($honneur as $i => $h): ?>
-    <li>
-      <span class="honneur-rang<?= $i === 0 ? ' entoure' : '' ?>" aria-hidden="true"><?= $i + 1 ?><?= $i === 0 ? boucle_stylo() : '' ?></span>
-      <strong><?= htmlspecialchars($h['prenom']) ?></strong>
-      <span><?= (int) $h['manches'] ?> manche<?= $h['manches'] > 1 ? 's' : '' ?> · <?= (int) $h['joueur'] ?> points</span>
-      <span class="mono"><?= (new DateTime($h['date_partie']))->format('d/m/Y') ?></span>
-    </li>
+        <li>
+          <span class="honneur__rang" aria-hidden="true"><?= $i + 1 ?></span>
+          <strong><?= e($h['prenom']) ?></strong>
+          <span><?= (int) $h['manches'] ?> manche<?= $h['manches'] > 1 ? 's' : '' ?> · <?= (int) $h['joueur'] ?> points</span>
+          <span class="mono"><?= (new DateTime($h['date_partie']))->format('d/m/Y') ?></span>
+        </li>
 <?php endforeach; ?>
-  </ol>
+      </ol>
 <?php endif; ?>
 <?php if ($bilan['parties']): ?>
-  <p class="aide">Bilan officiel : <?= (int) $bilan['parties'] ?> partie<?= $bilan['parties'] > 1 ? 's' : '' ?> terminée<?= $bilan['parties'] > 1 ? 's' : '' ?>, dont <?= (int) $bilan['cabinet'] ?> gagnée<?= $bilan['cabinet'] > 1 ? 's' : '' ?> par le cabinet, qui estime ce chiffre « moyennement représentatif ».</p>
+      <p class="muet epreuve__note">Bilan officiel : <?= (int) $bilan['parties'] ?> partie<?= $bilan['parties'] > 1 ? 's' : '' ?> terminée<?= $bilan['parties'] > 1 ? 's' : '' ?>, dont <?= (int) $bilan['cabinet'] ?> gagnée<?= $bilan['cabinet'] > 1 ? 's' : '' ?> par le cabinet, qui estime ce chiffre « moyennement représentatif ».</p>
 <?php endif; ?>
+    </div>
+  </div>
 </section>
-
-<script src="<?= fichier_versionne('js/duel.js') ?>" defer></script>
-
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php page_fin(); ?>

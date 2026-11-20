@@ -20,7 +20,7 @@
  *   requis        bool (required + « (obligatoire) » dans le libellé)
  *   officiel      bool : saisie en police machine (formulaires du guichet)
  *   id            défaut : $nom ; autocomplete, inputmode, placeholder, maxlength, rows
- *   attributs     autres attributs du champ ; classe : classes du bloc
+ *   attributs     autres attributs du champ (ils remplacent ceux par défaut : ['name' => null] = jamais envoyé) ; classe : classes du bloc
  */
 function champ(string $nom, string $libelle, array $erreurs = [], array $o = []): string
 {
@@ -28,14 +28,15 @@ function champ(string $nom, string $libelle, array $erreurs = [], array $o = [])
     $id = $o['id'] ?? $nom;
     $erreur = $erreurs[$nom] ?? null;
     $decrit = array_filter([isset($o['aide']) ? 'aide-' . $id : null, $erreur !== null ? 'err-' . $id : null]);
-    $attributs = [
+    // Les attributs passés remplacent ceux par défaut (ex. 'name' => null : champ jamais envoyé)
+    $attributs = array_merge([
         'class' => 'champ__saisie', 'id' => $id, 'name' => $nom,
         'required' => !empty($o['requis']),
         'aria-invalid' => $erreur !== null ? 'true' : null,
         'aria-describedby' => $decrit ? implode(' ', $decrit) : null,
         'autocomplete' => $o['autocomplete'] ?? null, 'inputmode' => $o['inputmode'] ?? null,
         'placeholder' => $o['placeholder'] ?? null, 'maxlength' => $o['maxlength'] ?? null,
-    ] + ($o['attributs'] ?? []);
+    ], $o['attributs'] ?? []);
 
     if ($type === 'textarea') {
         $saisie = '<textarea' . ui_attributs($attributs + ['rows' => $o['rows'] ?? 5]) . '>' . e((string) ($o['valeur'] ?? '')) . '</textarea>';

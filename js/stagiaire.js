@@ -17,9 +17,12 @@
   const diplome = $('[data-diplome]');
   const annonce = $('[data-annonce]');
   const tableau = document.querySelector('[data-score]');
+  const elBilan = $('[data-bilan]'); // le tampon du jury, à la fin de la partie (nouveau gabarit)
+  jeu.hidden = false;
   const NB = 10;
-  const lent = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const dort = (ms) => new Promise((r) => setTimeout(r, lent ? ms : 0));
+  // Régime allégé ou mouvement réduit : pas d'attente théâtrale (js/v2/guichet.js)
+  const lent = () => (window.Guichet ? window.Guichet.mouvementPermis() : !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const dort = (ms) => new Promise((r) => setTimeout(r, lent() ? ms : 0));
   const auHasard = (liste) => liste[Math.floor(Math.random() * liste.length)];
   const melanger = (liste) => liste.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(([, v]) => v);
 
@@ -99,6 +102,13 @@
     suivante.textContent = 'Nouvelle partie';
     if (diplome) diplome.hidden = false;
     suivante.hidden = false;
+    if (elBilan) {
+      elBilan.hidden = false;
+      const tampon = elBilan.querySelector('.tampon');
+      const texte = { stagiaire: 'Stagiaire', bon_sens: 'Bon sens', egalite: 'Ex aequo' }[cle];
+      tampon.querySelector('.tampon__texte').textContent = texte;
+      window.Guichet?.tamponner(tampon);
+    }
     elQuestion.focus({ preventScroll: true });
     annonce.textContent = `Fin de la partie. ${elQuestion.textContent} ${elVerdict.textContent}`;
     n = NB;
@@ -109,6 +119,7 @@
     n = 0;
     points = { bon_sens: 0, stagiaire: 0 };
     if (diplome) diplome.hidden = true;
+    if (elBilan) elBilan.hidden = true;
     afficherScore();
     poser(avecFocus);
   }

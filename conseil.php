@@ -1,52 +1,8 @@
 <?php
 /**
- * conseil.php — Espace client : générateur de conseils (réservé aux connectés).
+ * conseil.php — Ancienne page « Mon conseil », fusionnée dans Mon dossier (compte.php, section « Le conseil du jour »).
+ * Redirection permanente. auth/connexion.php (code du cours, non modifiable) envoie ici après la connexion :
+ * compte.php prend ensuite le relais (y compris le retour au Guichet retenu avant la connexion).
  */
-require_once __DIR__ . '/includes/init.php';
-exiger_connexion();
-
-require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/includes/tirage.php';
-
-$titre = 'Mon conseil';
-$description = 'Votre recommandation officielle du jour, tamponnée par le conseiller moyen.';
-$page = 'espace';
-$onglet = 'conseil';
-$conseil = tirer_conseil($bdd);
-include __DIR__ . '/includes/header.php';
-include __DIR__ . '/includes/espace-nav.php';
-?>
-
-<section class="conteneur entete-page">
-  <p class="etiquette">Formule Conseil Illimité</p>
-  <h1>Bonjour <?= htmlspecialchars($_SESSION['prenom']) ?>.</h1>
-  <p class="chapo">Votre dossier a été traité avec le plus grand sérieux. Voici notre recommandation.</p>
-</section>
-
-<section class="conteneur">
-  <article class="fiche fiche-grande" id="recommandation" aria-labelledby="fiche-titre" data-tampons="<?= htmlspecialchars(json_encode(textes()['tampons'], JSON_UNESCAPED_UNICODE)) ?>">
-    <header class="fiche-entete">
-      <h2 id="fiche-titre">Recommandation officielle</h2>
-      <span class="mono">Dossier n° <span data-conseil="dossier" data-dossier><?= $conseil['dossier'] ?></span></span>
-    </header>
-    <p class="fiche-conseil" aria-live="polite">
-      <span data-conseil="situation"><?= htmlspecialchars($conseil['situation']) ?></span>
-      <mark data-conseil="action"><?= htmlspecialchars($conseil['action']) ?></mark>
-      <span data-conseil="resultat"><?= htmlspecialchars($conseil['resultat']) ?></span>
-    </p>
-    <span class="tampon tampon-anime" aria-hidden="true"><?= htmlspecialchars(texte_hasard('tampons')) ?></span>
-    <p class="fiche-pied mono">Traité par : le conseiller moyen</p>
-  </article>
-
-  <div class="actions">
-    <a class="btn btn-tampon" data-autre-conseil="#recommandation" href="conseil.php#recommandation">Demander un autre conseil</a>
-    <button class="btn btn-clair" type="button" data-classer="#recommandation" data-source="generateur" hidden>Classer au dossier</button>
-    <button class="btn btn-clair" type="button" data-partager="conseil" data-source="#recommandation" hidden>Partager</button>
-  </div>
-</section>
-
-<script src="<?= fichier_versionne('js/conseil.js') ?>" defer></script>
-<script src="<?= fichier_versionne('js/carnet.js') ?>" defer></script>
-<script src="<?= fichier_versionne('js/partage.js') ?>" defer></script>
-
-<?php include __DIR__ . '/includes/footer.php'; ?>
+header('Location: compte.php', true, 301);
+exit;

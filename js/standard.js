@@ -80,7 +80,7 @@
       elChoix.replaceChildren(...choix.map(([libelle, cible]) => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'btn btn-clair btn-petit standard-bouton';
+        b.className = 'bouton bouton--secondaire standard-bouton';
         b.textContent = libelle;
         b.addEventListener('click', () => {
           if (!enLigne) return;

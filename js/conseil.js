@@ -25,12 +25,18 @@
         // Rejoue les animations : le texte se réécrit, le tampon retombe
         const tampon = fiche.querySelector('.tampon');
         const mots = JSON.parse(fiche.dataset.tampons || '[]');
-        if (mots.length) tampon.textContent = mots[Math.floor(Math.random() * mots.length)];
+        // Nouveau gabarit : le texte du tampon est dans .tampon__texte (includes/ui/papiers.php)
+        if (mots.length) (tampon.querySelector('.tampon__texte') || tampon).textContent = mots[Math.floor(Math.random() * mots.length)];
         fiche.classList.remove('renouvele');
-        tampon.classList.remove('tampon-anime');
-        void tampon.offsetWidth;
+        void fiche.offsetWidth;
         fiche.classList.add('renouvele');
-        tampon.classList.add('tampon-anime');
+        if (window.Guichet) {
+          window.Guichet.tamponner(tampon); // le tampon s'abat (js/v2/guichet.js)
+        } else {
+          tampon.classList.remove('tampon-anime');
+          void tampon.offsetWidth;
+          tampon.classList.add('tampon-anime');
+        }
 
         // Prévient les autres scripts (ex. bouton « Classer au dossier ») qu'un nouveau conseil est affiché
         fiche.dispatchEvent(new Event('conseil:nouveau'));

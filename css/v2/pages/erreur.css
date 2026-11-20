@@ -3,5 +3,3 @@
 .erreur-visuel .attestation { transform: rotate(1deg); }
 .erreur-visuel mark { background: linear-gradient(var(--surligneur), var(--surligneur)) no-repeat 0 62% / 100% .5em; color: inherit; }
 @media (max-width: 1023px) { .erreur-visuel .attestation { transform: none; } }
-/* Le logo de l'émetteur garde sa taille (la règle .logo-svg du site, couche plus haute, l'agrandirait sinon) */
-.attestation__emetteur .logo-svg { height: 30px; }

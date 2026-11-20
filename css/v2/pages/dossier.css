@@ -1,0 +1,63 @@
+/* Mon dossier (compte.php) : la chemise du client, ses rendez-vous, réclamations, conseil, carnet, compte. Couche « page ». */
+
+/* ---------- Héros : le sommaire à gauche, la chemise kraft en objet-héros à droite ---------- */
+.dossier-heros .heros__visuel { padding-top: var(--e-6); }
+.dossier-heros .dossier { max-width: 600px; margin-left: auto; transform: rotate(1.2deg); }
+.dossier-heros .dossier__chemise { padding: var(--e-6); }
+.dossier-heros .dossier__titre { font-size: var(--t-h3); }
+.dossier-resume { display: grid; gap: 0; }
+.dossier-resume div { display: grid; gap: 2px; padding: var(--e-3) 0; border-bottom: 1px dotted var(--filet-fort); }
+.dossier-resume div:last-child { border-bottom: 0; padding-bottom: var(--e-8); }
+.dossier-resume dt { font-size: var(--t-etiquette); color: var(--encre-2); }
+.dossier-resume dd { margin: 0; font: 500 var(--t-petit)/1.5 var(--mono); }
+.dossier-sommaire ol { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--filet); }
+.dossier-sommaire a {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--e-4); min-height: 44px;
+  border-bottom: 1px solid var(--filet); text-decoration: none; font-weight: var(--g-appui);
+  transition: padding-left var(--d-out) var(--courbe);
+}
+.dossier-sommaire a:hover { padding-left: var(--e-2); transition-duration: var(--d-in); }
+.dossier-sommaire .mono { font-size: var(--t-petit); color: var(--encre-2); }
+@media (max-width: 1023px) { .dossier-heros .dossier { margin: 0 auto; transform: none; } }
+
+/* ---------- Les pièces du dossier : une chemise par rendez-vous ou réclamation ---------- */
+.dossier-pile { display: grid; gap: var(--e-7); max-width: 980px; }
+.ecran__tete + .alerte, .ecran__tete + .dossier-pile, .alerte + .dossier-pile { margin-top: 0; }
+.ecran__tete + .alerte { margin-bottom: var(--e-6); }
+.dossier__feuille .suivi { margin: var(--e-2) 0 var(--e-5); }
+.dossier-feuille__quand { font-size: var(--t-lead); }
+.dossier-feuille__quand .mono { display: block; font-size: var(--t-etiquette); color: var(--encre-2); }
+.dossier-feuille__texte, .dossier-feuille__reponse { display: grid; gap: var(--e-1); }
+.dossier-feuille__texte .mono, .dossier-feuille__reponse .mono { font-size: var(--t-etiquette); }
+.dossier-feuille__reponse { padding: var(--e-4) var(--e-5); border-left: 3px solid var(--vert); background: var(--fond-ok); }
+.dossier-feuille__reponse .mono { color: var(--vert); }
+.dossier-feuille__action { padding-top: var(--e-4); border-top: 1px solid var(--filet); }
+.dossier__feuille { padding-bottom: var(--e-6); }
+.dossier-vide { display: grid; gap: var(--e-4); justify-items: start; max-width: 40em; padding: var(--e-6); border: 1.5px dashed var(--filet-fort); border-radius: var(--r-papier); }
+
+/* ---------- Le conseil du jour ---------- */
+.dossier-conseil { align-items: start; }
+.dossier-conseil .ecran__tete { margin-bottom: 0; }
+
+/* ---------- Le carnet : des fiches bord à bord ---------- */
+.dossier-carnet { list-style: none; padding: 0; margin: 0; }
+.dossier-carnet__texte { font-size: 1.0625rem; line-height: 1.55; }
+.dossier-carnet__source { font-size: var(--t-etiquette); color: var(--encre-2); }
+.dossier-carnet__retirer {
+  min-height: 44px; padding: 0 var(--e-2); border: 0; background: none; cursor: pointer; color: var(--encre);
+  font: var(--g-appui) var(--t-petit)/1 var(--police); text-decoration: underline; text-underline-offset: .2em;
+}
+.dossier-carnet__retirer:hover { color: var(--rouge); }
+
+/* ---------- Mon compte : fiche signalétique, suppression ---------- */
+.dossier-compte { align-items: start; }
+.dossier-fiche { display: grid; border-top: 1px solid var(--filet); }
+.dossier-fiche div { display: grid; grid-template-columns: 10em 1fr; gap: var(--e-4); padding: var(--e-3) 0; border-bottom: 1px solid var(--filet); }
+.dossier-fiche dt { font-size: var(--t-petit); color: var(--encre-2); }
+.dossier-fiche dd { margin: 0; font: 500 var(--t-petit)/1.5 var(--mono); overflow-wrap: anywhere; }
+.dossier-compte__aide { margin-top: var(--e-5); font-size: var(--t-petit); color: var(--encre-2); }
+.dossier-suppression { display: grid; gap: var(--e-5); align-content: start; padding: var(--e-6); border: 1.5px solid var(--rouge); border-radius: var(--r-papier); }
+.dossier-suppression h3 { font-size: var(--t-h3); color: var(--rouge); }
+.bouton--danger { --b-texte: var(--rouge); --b-bord: var(--rouge); }
+@media (max-width: 1023px) { .dossier-suppression { margin-top: var(--e-7); } }
+@media (max-width: 639px) { .dossier-fiche div { grid-template-columns: 1fr; gap: 2px; } .dossier-suppression { padding: var(--e-5); } }

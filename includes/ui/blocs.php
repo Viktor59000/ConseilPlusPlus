@@ -59,28 +59,35 @@ function bloc_alerte(string $texte, string $type = 'info', array $o = []): strin
  * Suivi du dossier, façon colis : Déposé → En instruction → Répondu (statuts de l'API : nouveau, importe, repondu).
  *   etapes_statut('importe', ['dates' => ['nouveau' => '20/11 · 10:42', 'importe' => '20/11 · 14:05']])
  * Les étapes avant $statut sont « franchies », $statut est « en cours » (aria-current="step"), les suivantes « à venir ».
- * Un dossier répondu a toutes ses étapes franchies.
+ * Un dossier arrivé à la dernière étape (répondu) a toutes ses étapes franchies.
  * Options :
+ *   etapes       autre parcours, même format que STATUTS_DOSSIER : statut => ['libelle' => …, 'phrase' => …]
+ *                (rendez-vous du guichet : includes/guichets.php, ETAPES_RENDEZ_VOUS)
+ *   arret        bool : la dernière étape est un arrêt (annulé, classé sans suite) : son repère passe au rouge
  *   dates        statut => date affichée (texte libre)
- *   descriptions statut => phrase (défaut : STATUTS_DOSSIER)
+ *   descriptions statut => phrase (défaut : la phrase de l'étape)
  *   libelle      nom de la liste pour les lecteurs d'écran (défaut « Suivi du dossier »)
  *   classe
  */
 function etapes_statut(string $statut, array $o = []): string
 {
-    $cles = array_keys(STATUTS_DOSSIER);
+    $etapes = $o['etapes'] ?? STATUTS_DOSSIER;
+    $cles = array_keys($etapes);
     $rang = array_search($statut, $cles, true);
     $rang = $rang === false ? 0 : $rang;
+    $termine = $rang === count($cles) - 1; // dernière étape atteinte : tout est franchi
     $coche = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8.5l3.2 3.2L13 5"/></svg>';
-    $html = '<ol class="' . ui_classes('suivi', $o['classe'] ?? '') . '" style="--n: ' . count($cles) . '" aria-label="' . e($o['libelle'] ?? 'Suivi du dossier') . '">';
+    $croix = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>';
+    $html = '<ol class="' . ui_classes('suivi', !empty($o['arret']) ? 'suivi--arret' : '', $o['classe'] ?? '') . '" style="--n: ' . count($cles) . '" aria-label="' . e($o['libelle'] ?? 'Suivi du dossier') . '">';
     foreach ($cles as $i => $cle) {
-        $etat = ($i < $rang || ($statut === 'repondu' && $i === $rang)) ? 'fait' : ($i === $rang ? 'encours' : 'avenir');
+        $etat = ($i < $rang || ($termine && $i === $rang)) ? 'fait' : ($i === $rang ? 'encours' : 'avenir');
         $dit = ['fait' => 'étape franchie', 'encours' => 'étape en cours', 'avenir' => 'à venir'][$etat];
-        $html .= '<li class="suivi__etape suivi__etape--' . $etat . '"' . ($etat === 'encours' || ($statut === 'repondu' && $i === $rang) ? ' aria-current="step"' : '') . '>'
-            . '<span class="suivi__repere">' . ($etat === 'fait' ? $coche : '') . '</span>'
-            . '<span class="suivi__nom">' . e(STATUTS_DOSSIER[$cle]['libelle']) . ' <span class="visuellement-cache">(' . $dit . ')</span></span>'
+        $marque = $etat === 'fait' ? (!empty($o['arret']) && $i === count($cles) - 1 ? $croix : $coche) : '';
+        $html .= '<li class="suivi__etape suivi__etape--' . $etat . '"' . ($i === $rang ? ' aria-current="step"' : '') . '>'
+            . '<span class="suivi__repere">' . $marque . '</span>'
+            . '<span class="suivi__nom">' . e($etapes[$cle]['libelle']) . ' <span class="visuellement-cache">(' . $dit . ')</span></span>'
             . (isset($o['dates'][$cle]) ? '<span class="suivi__date">' . e($o['dates'][$cle]) . '</span>' : '')
-            . '<span class="suivi__desc">' . e($o['descriptions'][$cle] ?? STATUTS_DOSSIER[$cle]['phrase']) . '</span>'
+            . '<span class="suivi__desc">' . e($o['descriptions'][$cle] ?? $etapes[$cle]['phrase']) . '</span>'
             . '</li>';
     }
     return $html . '</ol>';

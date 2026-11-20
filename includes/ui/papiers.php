@@ -95,6 +95,7 @@ function ticket(int|string $numero, array $o = []): string
  *   niveau     niveau du titre, 2 à 4 (défaut 3)
  *   meta       tableau libellé => valeur, affiché sous la feuille en mono (« Déposé le » => « 20/11/2026 »)
  *   tampon_html  un tampon() posé sur la feuille
+ *   statut_libelle  libellé de l'étiquette de statut (défaut : statut_libelle()), pour un autre parcours (rendez-vous)
  *   id, classe
  */
 function dossier(string $numero, string $statut, string $contenu_html, array $o = []): string
@@ -109,7 +110,7 @@ function dossier(string $numero, string $statut, string $contenu_html, array $o 
         . '<p class="dossier__onglet">Dossier n° ' . e($numero) . '</p>'
         . '<div class="dossier__chemise">'
         . '<div class="dossier__entete"><h' . $niveau . ' class="dossier__titre" id="' . e($id) . '-titre">' . e($o['titre'] ?? 'Dossier n° ' . $numero) . '</h' . $niveau . '>'
-        . statut($statut) . '</div>'
+        . statut($statut, isset($o['statut_libelle']) ? ['libelle' => $o['statut_libelle']] : []) . '</div>'
         . '<div class="dossier__feuille">' . $contenu_html . ($o['tampon_html'] ?? '') . '</div>'
         . ($meta !== '' ? '<p class="dossier__meta">' . $meta . '</p>' : '')
         . '</div></article>';
@@ -129,12 +130,14 @@ function dossier(string $numero, string $statut, string $contenu_html, array $o 
  *   type        'attestation' (défaut) | 'verdict' (titre au stylo rouge)
  *   titre       obligatoire en pratique (défaut « Attestation »)
  *   niveau      niveau du titre, 1 à 3 (défaut 2)
- *   reference   n° imprimé en haut à droite ; service (défaut « Service des attestations »)
+ *   reference   n° imprimé en haut à droite ; ou reference_html (déjà construit : un n° que la page fait changer)
+ *   service     défaut « Service des attestations »
  *   corps       texte (échappé) ; ou corps_html (déjà construit)
  *   champs      tableau libellé => valeur (échappés), présentés comme un formulaire rempli
  *   signataire, fonction, paraphe (défaut : le signataire)
  *   tampon      options de tampon() avec la clé 'texte' (null : pas de tampon)
- *   id, classe
+ *   apres_html  contenu ajouté sous le pied, dans la feuille (boutons d'une fiche, mention)
+ *   id, classe, attributs (autres attributs de l'<article>, voir ui_attributs())
  */
 function attestation(array $o): string
 {
@@ -156,13 +159,16 @@ function attestation(array $o): string
         $signature = '<div class="attestation__signature"><span class="attestation__paraphe" aria-hidden="true">' . e($o['paraphe'] ?? $o['signataire']) . '</span>'
             . '<span>' . e($o['signataire']) . (isset($o['fonction']) ? ', ' . e($o['fonction']) : '') . '</span></div>';
     }
-    return '<article class="' . ui_classes('attestation', 'attestation--' . $type, $o['classe'] ?? '') . '" id="' . e($id) . '" aria-labelledby="' . e($id) . '-titre">'
+    $reference = $o['reference_html'] ?? (isset($o['reference']) ? e($o['reference']) : null);
+    return '<article class="' . ui_classes('attestation', 'attestation--' . $type, $o['classe'] ?? '') . '" id="' . e($id) . '" aria-labelledby="' . e($id) . '-titre"'
+        . ui_attributs($o['attributs'] ?? []) . '>'
         . '<header class="attestation__entete"><div class="attestation__emetteur">' . ui_logo($id . '-logo', true)
         . '<span>Cabinet ConseilPlus+<br>' . e($o['service'] ?? 'Service des attestations') . '</span></div>'
-        . (isset($o['reference']) ? '<p class="attestation__ref">Réf. ' . e($o['reference']) . '</p>' : '') . '</header>'
+        . ($reference !== null ? '<p class="attestation__ref">Réf. ' . $reference . '</p>' : '') . '</header>'
         . '<h' . $niveau . ' class="attestation__titre" id="' . e($id) . '-titre">' . e($o['titre'] ?? 'Attestation') . '</h' . $niveau . '>'
         . ($corps !== '' ? '<div class="attestation__corps">' . $corps . '</div>' : '')
         . ($champs !== '' ? '<dl class="attestation__champs">' . $champs . '</dl>' : '')
         . '<footer class="attestation__pied">' . $signature . $tampon . '</footer>'
+        . ($o['apres_html'] ?? '')
         . '</article>';
 }

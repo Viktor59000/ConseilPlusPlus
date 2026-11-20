@@ -9,10 +9,11 @@
   .grille .c-3 { grid-column: span 3; } .grille .c-4 { grid-column: span 4; } .grille .c-5 { grid-column: span 5; }
   .grille .c-6 { grid-column: span 6; } .grille .c-7 { grid-column: span 7; } .grille .c-8 { grid-column: span 8; }
   /* d-N : commence à la colonne N et va jusqu'à la ligne de droite (à poser à la place de c-…) */
+  .grille .d-5 { grid-column: 5 / -1; } .grille .d-6 { grid-column: 6 / -1; }
   .grille .d-7 { grid-column: 7 / -1; } .grille .d-8 { grid-column: 8 / -1; } .grille .d-9 { grid-column: 9 / -1; }
   @media (max-width: 1023px) {
     .grille .c-3 { grid-column: span 6; } .grille .c-4 { grid-column: span 6; }
-    .grille .c-5, .grille .c-6, .grille .c-7, .grille .c-8, .grille .d-7, .grille .d-8 { grid-column: 1 / -1; }
+    .grille .c-5, .grille .c-6, .grille .c-7, .grille .c-8, .grille .d-5, .grille .d-6, .grille .d-7, .grille .d-8 { grid-column: 1 / -1; }
     .grille .d-9 { grid-column: span 6; }
   }
   @media (max-width: 639px) { .grille > * { grid-column: 1 / -1 !important; } }
@@ -70,7 +71,7 @@
   .regime-volet[open] > summary { background: var(--encre); color: var(--sur-encre); border-color: var(--encre); }
 
   /* Logo : l'encre en couleur du texte, la boucle au stylo rouge (tracée à la première visite de la session) */
-  .logo-svg { display: block; height: 100%; width: auto; overflow: visible; }
+  /* .logo-svg (taille de base) : css/v2/socle.css, pour que les composants (attestation) puissent la régler */
   .logo-encre { fill: var(--encre); }
   .logo-boucle { fill: var(--rouge); }
   .logo-trace { stroke-dasharray: 1; stroke-dashoffset: 0; }

@@ -35,6 +35,8 @@
   p, ul, ol, dl, figure, blockquote { margin: 0; }
   p { text-wrap: pretty; }
   img, svg, picture { display: block; max-width: 100%; }
+  /* Logo « La note » (ui_logo()) : prend la hauteur de son conteneur ; un composant ou l en-tête la règle */
+  .logo-svg { display: block; height: 100%; width: auto; overflow: visible; }
   img { height: auto; }
   button, input, select, textarea { font: inherit; color: inherit; }
   strong, b { font-weight: var(--g-appui); }
