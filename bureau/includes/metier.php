@@ -6,7 +6,8 @@ require_once __DIR__ . '/api.php';
 require_once __DIR__ . '/../../includes/courriel.php'; // gabarit et envoi des courriels, partagés avec le site
 require_once __DIR__ . '/../../includes/textes.php';   // delai_estime(), partagé avec l'accusé de réception du site
 
-const STATUTS_DOSSIER = [
+// Statuts d'un dossier du Bureau (nommés STATUTS_BUREAU : STATUTS_DOSSIER est le circuit du site, includes/ui/papiers.php)
+const STATUTS_BUREAU = [
     'a_traiter' => 'À traiter',
     'en_cours' => 'En cours d\'examen',
     'classe' => 'Classé',
@@ -174,7 +175,7 @@ function criteres_dossiers(array $source): array
 {
     $lire = fn (string $cle) => trim((string) ($source[$cle] ?? ''));
     return [
-        'statut' => array_key_exists($lire('statut'), STATUTS_DOSSIER) ? $lire('statut') : '',
+        'statut' => array_key_exists($lire('statut'), STATUTS_BUREAU) ? $lire('statut') : '',
         'type' => $lire('type'),
         'q' => mb_substr($lire('q'), 0, 100),
         'vue' => array_key_exists($lire('vue'), VUES_DOSSIERS) ? $lire('vue') : '',

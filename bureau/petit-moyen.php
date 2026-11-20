@@ -94,89 +94,102 @@ $titre = 'Le Petit Moyen';
 $page = 'petit-moyen';
 require __DIR__ . '/includes/haut.php';
 ?>
-<div class="entete-page">
-  <div>
-    <p class="etiquette mono">Modération du dictionnaire</p>
+<header class="tete">
+  <div class="tete__texte">
+    <p class="tete__ref"><span>Modération du dictionnaire</span><span>Publication le <?= date_echeance($demain) ?> à minuit</span></p>
     <h1>Le mot de demain</h1>
-    <p class="aide">Publication le <?= date_echeance($demain) ?> à minuit. Le Bureau le relit par l'API (<code>GET /api/mot-du-jour.php?date=<?= $demain ?></code>), le corrige (<code>PATCH</code>) ou le rejette (<code>DELETE</code>). Une fois publié, un mot ne se réécrit plus.</p>
+    <p class="tete__sous">Le Bureau le relit par l'API (<code>GET /api/mot-du-jour.php?date=<?= $demain ?></code>), le corrige (<code>PATCH</code>) ou le rejette (<code>DELETE</code>). Une fois publié, un mot ne se réécrit plus.</p>
   </div>
 <?php if (!$mot && !$indisponible): ?>
-  <form method="post">
+  <form class="tete__actions" method="post">
     <?= csrf_champ() ?>
     <input type="hidden" name="jour" value="<?= $demain ?>">
-    <button class="btn btn-clair" name="action" value="preparer" type="submit">Faire préparer par l'IA</button>
+    <?= bouton('Faire préparer par l\'IA', null, ['nom' => 'action', 'valeur' => 'preparer', 'fleche' => false, 'icone_html' => picto('plume')]) ?>
   </form>
 <?php endif; ?>
-</div>
+</header>
 
+<div class="zone">
 <?php if ($indisponible): ?>
-<p class="annonce annonce-erreur">Mot de demain indisponible : <?= htmlspecialchars(lcfirst(message_erreur_api($r))) ?>.</p>
+  <?= bloc_alerte('Mot de demain indisponible : ' . lcfirst(message_erreur_api($r)) . '.', 'erreur') ?>
 <?php elseif (!$mot): ?>
-<section class="carte">
-  <h2>Aucun mot préparé pour demain</h2>
-  <p class="aide">Le jour venu, la banque du site choisira une définition ou un sketch déjà relus. Pour un sketch inédit, demandez sa préparation à l'IA (bouton ci-dessus), puis relisez-le ici.</p>
-</section>
+  <section class="panneau" aria-labelledby="titre-aucun">
+    <div class="panneau__tete"><h2 id="titre-aucun"><?= picto('plume') ?>Aucun mot préparé pour demain</h2></div>
+    <p class="vide">Le jour venu, la banque du site choisira une définition ou un sketch déjà relus. Pour un sketch inédit, demandez sa préparation à l'IA (bouton ci-dessus, jusqu'à 90 secondes de réflexion), puis relisez-le ici.</p>
+  </section>
 <?php else:
     $format = $mot['format']; ?>
-<div class="colonnes">
-  <section class="carte" aria-labelledby="titre-correction">
-    <h2 id="titre-correction">Corriger</h2>
+  <div class="grille-b">
+    <section class="panneau s-7" aria-labelledby="titre-correction">
+      <div class="panneau__tete"><h2 id="titre-correction"><?= picto('plume') ?>Corriger</h2><span class="note-b"><?= $format === 'sketch' ? 'Sketch' : 'Définition' ?></span></div>
+      <div class="panneau__corps">
 <?php if (isset($erreurs['corps'])): ?>
-    <p class="alerte"><?= htmlspecialchars($erreurs['corps']) ?></p>
+        <?= bloc_alerte($erreurs['corps'], 'erreur') ?>
 <?php endif; ?>
-    <form method="post" class="formulaire">
-      <?= csrf_champ() ?>
-      <input type="hidden" name="jour" value="<?= $demain ?>">
-      <input type="hidden" name="format" value="<?= htmlspecialchars($format) ?>">
+        <form method="post" class="formulaire-b">
+          <?= csrf_champ() ?>
+          <input type="hidden" name="jour" value="<?= $demain ?>">
+          <input type="hidden" name="format" value="<?= e($format) ?>">
 <?php foreach ($champs_communs + $champs_format[$format] + ['etymologie' => 'Fausse étymologie (facultative)'] as $champ => $libelle):
-      $id_champ = 'pm-' . $champ;
-      $aide = isset($erreurs[$champ]) ? ' aria-describedby="' . $id_champ . '-erreur" aria-invalid="true"' : ''; ?>
-      <label for="<?= $id_champ ?>"><?= htmlspecialchars($libelle) ?></label>
+          $id_champ = 'pm-' . $champ;
+          $aide = isset($erreurs[$champ]) ? ' aria-describedby="' . $id_champ . '-erreur" aria-invalid="true"' : ''; ?>
+          <div class="champ-b">
+            <label for="<?= $id_champ ?>"><?= e($libelle) ?></label>
 <?php if (in_array($champ, $longs, true)): ?>
-      <textarea id="<?= $id_champ ?>" name="<?= $champ ?>" rows="3"<?= $aide ?>><?= htmlspecialchars((string) ($valeurs[$champ] ?? '')) ?></textarea>
+            <textarea class="saisie" id="<?= $id_champ ?>" name="<?= $champ ?>" rows="3"<?= $aide ?>><?= e((string) ($valeurs[$champ] ?? '')) ?></textarea>
 <?php else: ?>
-      <input id="<?= $id_champ ?>" name="<?= $champ ?>" value="<?= htmlspecialchars((string) ($valeurs[$champ] ?? '')) ?>"<?= $aide ?>>
+            <input class="saisie" id="<?= $id_champ ?>" name="<?= $champ ?>" value="<?= e((string) ($valeurs[$champ] ?? '')) ?>"<?= $aide ?>>
 <?php endif; ?>
 <?php if (isset($erreurs[$champ])): ?>
-      <p class="alerte" id="<?= $id_champ ?>-erreur"><?= htmlspecialchars($erreurs[$champ]) ?></p>
+            <p class="note-b note-b--alerte" id="<?= $id_champ ?>-erreur"><?= e($erreurs[$champ]) ?></p>
 <?php endif; ?>
+          </div>
 <?php endforeach; ?>
-      <div><button class="btn btn-tampon" name="action" value="corriger" type="submit">Enregistrer les corrections</button></div>
-    </form>
-  </section>
+          <div><?= bouton('Enregistrer les corrections', null, ['nom' => 'action', 'valeur' => 'corriger', 'fleche' => false]) ?></div>
+        </form>
+      </div>
+    </section>
 
-  <section class="carte" aria-labelledby="titre-apercu">
-    <h2 id="titre-apercu">Tel qu'il sera publié</h2>
-    <dl class="fiche">
-      <dt>Mot</dt><dd><strong><?= htmlspecialchars($mot['mot']) ?></strong>, <em><?= htmlspecialchars($mot['nature']) ?></em></dd>
-      <dt>Format</dt><dd><?= $format === 'sketch' ? 'Sketch du conseiller et du stagiaire' : 'Définition' ?></dd>
-      <dt>Origine</dt><dd><?= $mot['source'] === 'ia' ? 'Préparé par l\'IA' : 'Banque du site' ?> · certitude <?= (int) $mot['certitude'] ?> %</dd>
-    </dl>
+    <div class="s-5 pile-b">
+      <section class="panneau" aria-labelledby="titre-apercu">
+        <div class="panneau__tete"><h2 id="titre-apercu">Tel qu'il sera publié</h2>
+          <span class="note-b"><?= $mot['source'] === 'ia' ? 'Préparé par l\'IA' : 'Banque du site' ?> · certitude <?= (int) $mot['certitude'] ?> %</span></div>
+        <div class="panneau__corps">
+          <div class="entree-b">
+            <p class="entree-b__mot"><strong><?= e($mot['mot']) ?></strong>, <em><?= e($mot['nature']) ?></em></p>
 <?php if ($format === 'sketch'): ?>
-    <p class="aide"><?= htmlspecialchars($mot['sketch']['scene']) ?></p>
+            <p class="note-b"><?= e($mot['sketch']['scene']) ?></p>
 <?php foreach ($mot['sketch']['repliques'] as $rep): ?>
-    <p><strong><?= $rep['qui'] === 'conseiller' ? 'Le conseiller' : 'Le stagiaire' ?> :</strong> <?= htmlspecialchars($rep['texte']) ?></p>
+            <p><strong><?= $rep['qui'] === 'conseiller' ? 'Le conseiller' : 'Le stagiaire' ?> :</strong> <?= e($rep['texte']) ?></p>
 <?php endforeach; ?>
 <?php if (!empty($mot['sketch']['relance'])): ?>
-    <p><strong>Le stagiaire :</strong> <?= htmlspecialchars($mot['sketch']['relance']) ?></p>
+            <p><strong>Le stagiaire :</strong> <?= e($mot['sketch']['relance']) ?></p>
 <?php endif; ?>
 <?php else: ?>
-    <blockquote class="message"><?= htmlspecialchars($mot['definition']) ?></blockquote>
-    <p class="aide">Ex. : <?= htmlspecialchars($mot['exemple']) ?> · Syn. : <?= htmlspecialchars($mot['synonyme']) ?></p>
+            <p><?= e($mot['definition']) ?></p>
+            <p class="note-b">Ex. : <?= e($mot['exemple']) ?> · Syn. : <?= e($mot['synonyme']) ?></p>
 <?php endif; ?>
 <?php if ($mot['etymologie']): ?>
-    <p class="aide">Étym. : <?= htmlspecialchars($mot['etymologie']) ?></p>
+            <p class="note-b">Étym. : <?= e($mot['etymologie']) ?></p>
 <?php endif; ?>
+          </div>
+        </div>
+      </section>
 
-    <form method="post" class="purge">
-      <?= csrf_champ() ?>
-      <input type="hidden" name="jour" value="<?= $demain ?>">
-      <h3>Rejeter ce mot</h3>
-      <p class="aide">Supprime l'entrée préparée (<code>DELETE</code>). Le jour venu, la banque choisira ; une nouvelle préparation reste possible d'ici là.</p>
-      <label class="confirmer"><input type="checkbox" name="confirmer" value="1" required> Je confirme le rejet</label>
-      <div><button class="btn" name="action" value="rejeter" type="submit">Rejeter le mot de demain</button></div>
-    </form>
-  </section>
-</div>
+      <section class="panneau panneau--danger" aria-labelledby="titre-rejet">
+        <div class="panneau__tete"><h2 id="titre-rejet">Rejeter ce mot</h2></div>
+        <div class="panneau__corps">
+          <p class="note-b">Supprime l'entrée préparée (<code>DELETE</code>). Le jour venu, la banque choisira ; une nouvelle préparation reste possible d'ici là.</p>
+          <form method="post" class="formulaire-b">
+            <?= csrf_champ() ?>
+            <input type="hidden" name="jour" value="<?= $demain ?>">
+            <label class="confirmer-b"><input type="checkbox" name="confirmer" value="1" required> Je confirme le rejet</label>
+            <div><button class="mini mini--danger" name="action" value="rejeter" type="submit">Rejeter le mot de demain</button></div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
 <?php endif; ?>
+</div>
 <?php require __DIR__ . '/includes/bas.php'; ?>

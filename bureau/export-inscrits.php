@@ -32,42 +32,56 @@ $titre = 'Export';
 $page = 'export';
 require __DIR__ . '/includes/haut.php';
 ?>
-<div class="entete-page">
-  <div>
-    <p class="etiquette mono">Export</p>
+<header class="tete">
+  <div class="tete__texte">
+    <p class="tete__ref"><span>Export</span><span>CSV · UTF-8 · séparateur « ; »</span></p>
     <h1>Exporter les inscrits</h1>
-    <p class="aide"><?= $total ?> inscrit(s) dans la base du Bureau. Fichier CSV lisible directement par Excel
-      (UTF-8 avec BOM, séparateur « ; »), colonnes de la table <code>inscris</code>.</p>
+    <p class="tete__sous"><?= nombre_de($total, 'inscrit') ?> dans la base du Bureau. Le fichier s'ouvre directement dans Excel ; aucune cellule n'y est prise pour une formule.</p>
+  </div>
+</header>
+
+<div class="zone">
+  <div class="grille-b">
+    <section class="panneau s-7" aria-labelledby="titre-csv">
+      <div class="panneau__tete"><h2 id="titre-csv"><?= picto_bureau('export') ?>Inscrits au guichet</h2><span class="note-b">Table <code>inscris</code></span></div>
+      <div class="panneau__corps">
+        <form class="formulaire-b" method="post" action="export-inscrits.php">
+          <?= csrf_champ() ?>
+          <div class="filtres-b">
+            <div class="champ-b"><label for="statut">Statut</label>
+              <select class="saisie" id="statut" name="statut">
+                <option value="">Tous</option>
+<?php foreach (STATUTS_INSCRIS as $cle => $libelle): ?>
+                <option value="<?= $cle ?>"><?= $libelle ?></option>
+<?php endforeach; ?>
+              </select></div>
+            <div class="champ-b"><label for="jour">Jour (facultatif)</label><input class="saisie" id="jour" name="jour" type="date"></div>
+            <div class="champ-b champ-b--large"><label for="q">Nom, prénom, email ou téléphone</label><input class="saisie" id="q" name="q" type="search"></div>
+          </div>
+          <div class="colonnes-csv" aria-label="Colonnes du fichier">
+            <span class="etiquette-b">Colonnes</span>
+<?php foreach (['Id', 'remote_Id', 'Nom', 'prénom', 'email', 'Téléphone', 'jour', 'horaire', 'create_at', 'Statut'] as $colonne): ?>
+            <code><?= e($colonne) ?></code>
+<?php endforeach; ?>
+          </div>
+          <div class="boutons"><?= bouton('Télécharger le CSV', null, ['fleche' => false, 'icone_html' => picto_bureau('export')]) ?>
+            <span class="note-b">inscrits-<?= date('Y-m-d') ?>-…csv</span></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="panneau s-5" aria-labelledby="titre-autres">
+      <div class="panneau__tete"><h2 id="titre-autres">Autres exports</h2><span class="note-b">Second plan</span></div>
+      <ul class="lignes lignes--hautes">
+        <li><span class="reste"><strong>Dossiers (réclamations)</strong><br><span class="note-b">Tous les dossiers, sans les notes internes. Pour une sélection : le registre.</span></span>
+          <form class="pousse" method="post" action="export-dossiers.php"><?= csrf_champ() ?><button class="mini" type="submit">CSV</button></form></li>
+        <li><span class="reste"><strong>Base du site</strong><br><span class="note-b">Sauvegarde .sql, demandée à l'API (<code>api/export.php</code>).</span></span>
+          <form class="pousse" method="post" action="export.php"><?= csrf_champ() ?><button class="mini" name="base" value="site" type="submit">.sql</button></form></li>
+        <li><span class="reste"><strong>Base du Bureau</strong><br><span class="note-b">Sauvegarde .sql de la base « gestion ».</span></span>
+          <form class="pousse" method="post" action="export.php"><?= csrf_champ() ?><button class="mini" name="base" value="gestion" type="submit">.sql</button></form></li>
+      </ul>
+      <p class="vide">Les sauvegardes contiennent les adresses email et les mots de passe chiffrés : à garder en lieu sûr.</p>
+    </section>
   </div>
 </div>
-
-<form class="filtres carte" method="post" action="export-inscrits.php">
-  <?= csrf_champ() ?>
-  <div>
-    <label for="statut">Statut</label>
-    <select id="statut" name="statut">
-      <option value="">Tous</option>
-<?php foreach (STATUTS_INSCRIS as $cle => $libelle): ?>
-      <option value="<?= $cle ?>"><?= $libelle ?></option>
-<?php endforeach; ?>
-    </select>
-  </div>
-  <div>
-    <label for="jour">Jour (facultatif)</label>
-    <input id="jour" name="jour" type="date">
-  </div>
-  <div class="filtres-recherche">
-    <label for="q">Nom, prénom, email ou téléphone (facultatif)</label>
-    <input id="q" name="q" type="search">
-  </div>
-  <button class="btn btn-tampon" type="submit">Télécharger le CSV</button>
-</form>
-
-<section class="carte" aria-labelledby="titre-autres">
-  <h2 id="titre-autres">Autres exports</h2>
-  <ul class="historique">
-    <li><a class="lien-fort" href="dossiers.php">Dossiers (demandes de contact)</a> <span class="aide">bouton « Exporter en CSV » de la liste</span></li>
-    <li><a class="lien-fort" href="tableau.php#titre-sauvegarde">Sauvegardes complètes des bases</a> <span class="aide">fichiers .sql, depuis le tableau de bord</span></li>
-  </ul>
-</section>
 <?php require __DIR__ . '/includes/bas.php'; ?>

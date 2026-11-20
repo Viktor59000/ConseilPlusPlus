@@ -1,59 +1,83 @@
 <?php
-// En-tête des pages du Bureau. Attend $titre et, si un agent est connecté, $agent et $page (planning | inscrits | synchro | export | tableau | dossiers | petit-moyen | journal | statistiques | cles).
+/**
+ * En-tête des pages du Bureau : application à barre latérale fine (« La Salle de tri »).
+ * Attend $titre ; si un agent est connecté : $agent, $bdd et $page (clé de ONGLETS_BUREAU ou RESTE_BUREAU).
+ * Facultatif : $scripts (scripts de bureau/js/ en plus de bureau.js), $classe_corps.
+ * Sans agent (connexion), la page n'a pas de barre latérale : elle remplit seule le <main>.
+ * Thème : « archives » sombre par défaut ; le choix clair est gardé dans le cookie bureau_theme (bureau/js/bureau.js),
+ * lu ici pour poser data-theme avant tout affichage (le script de thème du site le respecte).
+ * Application séparée possible (docker/bureau) : les ressources du site sont lues sous ../js et ../assets (alias /js et
+ * /assets en ligne), le CSS est intégré depuis les fichiers du disque (css_v2(), css_integre()).
+ */
 $agent ??= null;
 $page ??= '';
-require_once __DIR__ . '/../../includes/theme.php';
+$scripts ??= [];
+require_once __DIR__ . '/vues.php';
+ui_racine('../');
+$theme = ($_COOKIE['bureau_theme'] ?? '') === 'clair' ? 'clair' : 'sombre';
+$css = css_v2(['css/v2/jetons.css', 'css/v2/socle.css', 'css/v2/composants.css', 'css/v2/bureau.css'], '../')
+    . '@layer page{' . str_replace('../../assets/', '../assets/', css_integre(__DIR__ . '/../css/bureau.css')) . '}';
+$compteurs = $agent && isset($bdd) ? compteurs_laterale($bdd) : [];
 envoyer_csp();
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-espace="bureau" data-theme="<?= $theme ?>">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
-  <title><?= htmlspecialchars($titre) ?> — Le Bureau</title>
-  <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
-  <meta name="theme-color" content="#F5F6FA">
-  <?= theme_script() ?>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title><?= e($titre) ?> — Le Bureau</title>
+<link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="<?= $theme === 'clair' ? '#E8E8E3' : '#0E0E0C' ?>" data-clair="#E8E8E3" data-sombre="#0E0E0C">
+<?= theme_script() ?>
 
-  <link rel="preload" href="../assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin>
-  <!-- Socle commun avec le site + composants du Bureau, intégrés à la page -->
-  <style><?= css_integre(__DIR__ . '/../../css/base.css', __DIR__ . '/../css/bureau.css') ?></style>
+<link rel="preload" href="../assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/jetbrains-mono-500.woff2" as="font" type="font/woff2" crossorigin>
+<style><?= $css ?></style>
 </head>
-<body>
-<header class="entete">
-  <div class="entete-in">
-    <a class="marque" href="tableau.php">
-      <?php $logo_id = 'logo-bureau'; include __DIR__ . '/../../includes/logo.php'; ?>
-      <span class="marque-nom">Le Bureau</span>
-    </a>
-    <?= theme_bouton() ?>
+<body class="<?= e(trim('bureau ' . ($classe_corps ?? ''))) ?>">
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<?= filtre_encre() ?>
 <?php if ($agent): ?>
-    <!-- Onglets du tableau de la séance (Planning, Inscrits, Synchro, Export, Déconnexion), puis les autres services -->
-    <nav class="nav" aria-label="Onglets du Bureau">
-<?php foreach (['planning' => 'Planning', 'inscrits' => 'Inscrits', 'synchro' => 'Synchro', 'export' => 'Export'] as $onglet => $libelle): ?>
-      <a href="<?= $onglet === 'export' ? 'export-inscrits' : $onglet ?>.php"<?= $page === $onglet ? ' aria-current="page"' : '' ?>><?= $libelle ?></a>
+<div class="appli" data-appli>
+  <header class="barre-haut">
+    <a class="barre-haut__marque" href="tableau.php"><?= logo_bureau('logo-haut') ?><span>Le Bureau</span></a>
+    <button class="barre-haut__menu" type="button" aria-expanded="false" aria-controls="laterale" data-menu-bureau hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span>Menu</span>
+    </button>
+  </header>
+  <nav class="laterale" id="laterale" aria-label="Le Bureau">
+    <a class="laterale__marque" href="tableau.php"><?= logo_bureau('logo-laterale') ?>
+      <span class="laterale__nom"><strong>Le Bureau</strong><span>La Salle de tri</span></span></a>
+    <p class="laterale__groupe" id="nav-onglets">Onglets</p>
+    <ul aria-labelledby="nav-onglets">
+<?php foreach (ONGLETS_BUREAU as $cle => [$adresse, $libelle, $picto]): ?>
+      <li><a class="nav-b" href="<?= $adresse ?>"<?= $page === $cle ? ' aria-current="page"' : '' ?>><?= picto_bureau($picto) ?><span><?= e($libelle) ?></span><?php if (!empty($compteurs[$cle])): ?><span class="nav-b__compte" title="Rendez-vous à venir à traiter"><?= $compteurs[$cle] ?><span class="visuellement-cache"> à traiter</span></span><?php endif; ?></a></li>
 <?php endforeach; ?>
-    </nav>
-    <form class="agent" method="post" action="deconnexion.php">
-      <?= csrf_champ() ?>
-      <span class="mono">Agent : <?= htmlspecialchars($agent['nom']) ?></span>
-      <button class="lien" type="submit">Déconnexion</button>
-    </form>
-<?php endif; ?>
-  </div>
-<?php if ($agent): ?>
-  <nav class="nav nav-second" aria-label="Autres services du Bureau">
-    <a href="tableau.php"<?= $page === 'tableau' ? ' aria-current="page"' : '' ?>>Tableau de bord</a>
-    <a href="dossiers.php"<?= $page === 'dossiers' ? ' aria-current="page"' : '' ?>>Dossiers</a>
-    <a href="petit-moyen.php"<?= $page === 'petit-moyen' ? ' aria-current="page"' : '' ?>>Petit Moyen</a>
-    <a href="journal.php"<?= $page === 'journal' ? ' aria-current="page"' : '' ?>>Journal</a>
-    <a href="statistiques.php"<?= $page === 'statistiques' ? ' aria-current="page"' : '' ?>>Statistiques</a>
-    <a href="cles.php"<?= $page === 'cles' ? ' aria-current="page"' : '' ?>>Clés</a>
+    </ul>
+    <p class="laterale__groupe" id="nav-reste">Le reste du Bureau</p>
+    <ul aria-labelledby="nav-reste">
+<?php foreach (RESTE_BUREAU as $cle => [$adresse, $libelle, $picto]): ?>
+      <li><a class="nav-b" href="<?= $adresse ?>"<?= $page === $cle ? ' aria-current="page"' : '' ?>><?= picto_bureau($picto) ?><span><?= e($libelle) ?></span><?php if (!empty($compteurs[$cle])): ?><span class="nav-b__compte" title="Dossiers à traiter"><?= $compteurs[$cle] ?><span class="visuellement-cache"> à traiter</span></span><?php endif; ?></a></li>
+<?php endforeach; ?>
+    </ul>
+    <div class="laterale__pied">
+      <a class="nav-b" href="<?= e(url_publique()) ?>/"><?= picto_bureau('site') ?><span>Voir le site</span></a>
+      <div class="laterale__agent">
+        <span class="avatar" aria-hidden="true"><?= e(initiales($agent['nom'])) ?></span>
+        <span class="laterale__qui"><strong><?= e($agent['nom']) ?></strong><span>Agent connecté</span></span>
+        <?= theme_bouton() ?>
+      </div>
+      <form method="post" action="deconnexion.php">
+        <?= csrf_champ() ?>
+        <button class="nav-b" type="submit"><?= picto_bureau('deconnexion') ?><span>Déconnexion</span></button>
+      </form>
+    </div>
   </nav>
+  <main id="contenu" class="travail" tabindex="-1">
+<?php else: ?>
+<main id="contenu" class="accueil-agent">
 <?php endif; ?>
-</header>
-<main class="page">
 <?php if ($a = annonce()): ?>
-  <p class="annonce annonce-<?= $a[1] === 'erreur' ? 'erreur' : 'ok' ?>" role="status"><?= htmlspecialchars($a[0]) ?></p>
+    <div class="annonces" data-annonce><?= bloc_alerte($a[0], $a[1] === 'erreur' ? 'erreur' : 'succes') ?></div>
 <?php endif; ?>

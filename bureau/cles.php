@@ -34,66 +34,74 @@ $titre = 'Clés d\'API';
 $page = 'cles';
 require __DIR__ . '/includes/haut.php';
 ?>
-<div class="entete-page">
-  <div>
-    <p class="etiquette mono">Accès à l'API</p>
+<header class="tete">
+  <div class="tete__texte">
+    <p class="tete__ref"><span>Accès à l'API</span><span>En-tête <code>X-API-Key</code></span></p>
     <h1>Clés d'API</h1>
-    <p class="aide">Chaque application qui consomme l'API du site reçoit sa propre clé, avec ses droits : <strong>lecture</strong> (lister les demandes, statistiques) et/ou <strong>écriture</strong> (changer un statut, supprimer). Le Bureau garde la clé maîtresse.</p>
+    <p class="tete__sous">Chaque application qui consomme l'API du site reçoit sa propre clé, avec ses droits : lecture (lister, statistiques) et/ou écriture (changer un statut, supprimer). Le Bureau garde la clé maîtresse.</p>
   </div>
-</div>
+</header>
 
+<div class="zone">
 <?php if ($cle_neuve): ?>
-<section class="carte cle-neuve" aria-labelledby="titre-cle-neuve">
-  <h2 id="titre-cle-neuve">Clé de « <?= htmlspecialchars($cle_neuve[0]) ?> »</h2>
-  <p class="aide">Copiez-la maintenant et transmettez-la à l'application (en-tête <code>X-API-Key</code>). Le site n'en garde que l'empreinte : elle ne sera plus jamais affichée.</p>
-  <p><code class="cle-valeur"><?= htmlspecialchars($cle_neuve[1]) ?></code></p>
-</section>
+  <section class="panneau cle-neuve" aria-labelledby="titre-cle-neuve">
+    <div class="panneau__tete"><h2 id="titre-cle-neuve"><?= picto_bureau('cles') ?>Clé de « <?= e($cle_neuve[0]) ?> »</h2><span class="note-b">Affichée une seule fois</span></div>
+    <div class="panneau__corps">
+      <p class="note-b">Copiez-la maintenant et transmettez-la à l'application. Le site n'en garde que l'empreinte : elle ne sera plus jamais affichée.</p>
+      <p><code class="cle-valeur"><?= e($cle_neuve[1]) ?></code></p>
+    </div>
+  </section>
 <?php endif; ?>
 
-<div class="colonnes">
-  <section class="carte" aria-labelledby="titre-liste">
-    <h2 id="titre-liste">Clés délivrées</h2>
+  <div class="grille-b">
+    <section class="panneau s-8" aria-labelledby="titre-liste">
+      <div class="panneau__tete"><h2 id="titre-liste"><?= picto_bureau('cles') ?>Clés délivrées</h2></div>
 <?php if ($cles === null): ?>
-    <p class="alerte"><?= htmlspecialchars(message_erreur_api($r)) ?>.</p>
+      <p class="vide note-b--alerte"><?= e(message_erreur_api($r)) ?>.</p>
 <?php elseif (!$cles): ?>
-    <p class="aide">Aucune clé délivrée pour l'instant. Le Bureau travaille seul, ce qui lui convient.</p>
+      <p class="vide">Aucune clé délivrée pour l'instant. Le Bureau travaille seul, ce qui lui convient.</p>
 <?php else: ?>
-    <table class="tableau">
-      <thead><tr><th>Application</th><th>Clé</th><th>Droits</th><th>Dernier appel</th><th><span class="visuellement-cache">Action</span></th></tr></thead>
-      <tbody>
+      <div class="defile">
+        <table class="table-b">
+          <thead><tr><th scope="col">Application</th><th scope="col">Clé</th><th scope="col">Droits</th><th scope="col">Dernier appel</th><th scope="col"><span class="visuellement-cache">Action</span></th></tr></thead>
+          <tbody>
 <?php foreach ($cles as $c): ?>
-        <tr<?= $c['revoquee'] ? ' class="cle-revoquee"' : '' ?>>
-          <td><?= htmlspecialchars($c['nom']) ?><?= $c['revoquee'] ? ' <span class="pastille pastille-classe">révoquée</span>' : '' ?></td>
-          <td class="mono"><?= htmlspecialchars($c['apercu']) ?>…</td>
-          <td><?= htmlspecialchars(implode(', ', $c['droits'])) ?></td>
-          <td class="mono"><?= $c['derniere_utilisation'] ? date_courte($c['derniere_utilisation']) : 'jamais' ?></td>
-          <td>
-            <form method="post">
-              <?= csrf_champ() ?>
-              <input type="hidden" name="id" value="<?= (int) $c['id'] ?>">
-              <button class="lien" type="submit" name="action" value="<?= $c['revoquee'] ? 'effacer' : 'revoquer' ?>"><?= $c['revoquee'] ? 'Effacer' : 'Révoquer' ?></button>
-            </form>
-          </td>
-        </tr>
+            <tr<?= $c['revoquee'] ? ' class="ligne-passee"' : '' ?>>
+              <td><?= e($c['nom']) ?> <?= $c['revoquee'] ? pastille('annule', 'Révoquée') : '' ?></td>
+              <td class="mono"><?= e($c['apercu']) ?>…</td>
+              <td><?= e(implode(', ', $c['droits'])) ?></td>
+              <td class="mono muet"><?= $c['derniere_utilisation'] ? date_courte($c['derniere_utilisation']) : 'jamais' ?></td>
+              <td>
+                <form class="actions-ligne" method="post">
+                  <?= csrf_champ() ?>
+                  <input type="hidden" name="id" value="<?= (int) $c['id'] ?>">
+                  <button class="mini mini--danger" type="submit" name="action" value="<?= $c['revoquee'] ? 'effacer' : 'revoquer' ?>"><?= $c['revoquee'] ? 'Effacer' : 'Révoquer' ?></button>
+                </form>
+              </td>
+            </tr>
 <?php endforeach; ?>
-      </tbody>
-    </table>
+          </tbody>
+        </table>
+      </div>
 <?php endif; ?>
-  </section>
+    </section>
 
-  <section class="carte" aria-labelledby="titre-nouvelle">
-    <h2 id="titre-nouvelle">Délivrer une clé</h2>
-    <form class="formulaire" method="post">
-      <?= csrf_champ() ?>
-      <label for="cle-nom">Nom de l'application</label>
-      <input id="cle-nom" name="nom" required minlength="2" maxlength="40" placeholder="Appli mobile, tableau Excel…">
-      <fieldset class="cases">
-        <legend>Droits</legend>
-        <label><input type="checkbox" name="droits[]" value="lecture" checked> Lecture</label>
-        <label><input type="checkbox" name="droits[]" value="ecriture"> Écriture</label>
-      </fieldset>
-      <button class="btn btn-tampon" type="submit" name="action" value="creer">Délivrer la clé</button>
-    </form>
-  </section>
+    <section class="panneau s-4" aria-labelledby="titre-nouvelle">
+      <div class="panneau__tete"><h2 id="titre-nouvelle">Délivrer une clé</h2></div>
+      <div class="panneau__corps">
+        <form class="formulaire-b" method="post">
+          <?= csrf_champ() ?>
+          <div class="champ-b"><label for="cle-nom">Nom de l'application</label>
+            <input class="saisie" id="cle-nom" name="nom" required minlength="2" maxlength="40" placeholder="Appli mobile, tableau Excel…"></div>
+          <fieldset class="cases-b">
+            <legend class="etiquette-b">Droits</legend>
+            <label class="confirmer-b"><input type="checkbox" name="droits[]" value="lecture" checked> Lecture</label>
+            <label class="confirmer-b"><input type="checkbox" name="droits[]" value="ecriture"> Écriture</label>
+          </fieldset>
+          <div><?= bouton('Délivrer la clé', null, ['nom' => 'action', 'valeur' => 'creer', 'fleche' => false]) ?></div>
+        </form>
+      </div>
+    </section>
+  </div>
 </div>
 <?php require __DIR__ . '/includes/bas.php'; ?>

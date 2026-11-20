@@ -20,7 +20,7 @@ fputcsv($sortie, ['N°', 'Demandeur', 'Email', 'Type', 'Message', 'Reçu le', 'S
 foreach ($dossiers as $d) {
     fputcsv($sortie, array_map('cellule_csv', [
         numero_dossier((int) $d['id_site']), $d['nom'], $d['email'], $d['type_demande'], $d['message'],
-        date_courte($d['date_demande']), STATUTS_DOSSIER[$d['statut']], $d['responsable'] ?? '',
+        date_courte($d['date_demande']), STATUTS_BUREAU[$d['statut']], $d['responsable'] ?? '',
         $d['echeance'] ? date_echeance($d['echeance']) : '', $d['intervenant'] ?? '',
         $d['date_reponse'] ? date_courte($d['date_reponse']) : '', $d['envoi'] ?? '',
         $d['date_purge'] ? date_courte($d['date_purge']) : '',

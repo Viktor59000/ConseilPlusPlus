@@ -11,55 +11,50 @@ $titre = 'Statistiques de l\'API';
 $page = 'statistiques';
 require __DIR__ . '/includes/haut.php';
 ?>
-<div class="entete-page">
-  <div>
-    <p class="etiquette mono">Tableau de bord technique</p>
+<header class="tete">
+  <div class="tete__texte">
+    <p class="tete__ref"><span>Tableau technique</span><span><code>api_logs</code></span></p>
     <h1>Statistiques de l'API</h1>
-    <p class="aide">Chaque échange avec l'API du site est journalisé (<code>api_logs</code>). Ces chiffres sont lus par l'API elle-même : <code>GET /api/statistiques.php?jours=<?= $jours ?></code>.</p>
+    <p class="tete__sous">Chaque échange avec l'API du site est journalisé. Ces chiffres sont lus par l'API elle-même : <code>GET /api/statistiques.php?jours=<?= $jours ?></code>.</p>
   </div>
-  <nav class="periode" aria-label="Période">
+  <nav class="segments tete__actions" aria-label="Période">
 <?php foreach ([7, 14, 30] as $j): ?>
     <a href="?jours=<?= $j ?>"<?= $j === $jours ? ' aria-current="page"' : '' ?>><?= $j ?> jours</a>
 <?php endforeach; ?>
   </nav>
-</div>
+</header>
 
+<div class="zone">
 <?php if (!$stats): ?>
-<p class="annonce annonce-erreur">Statistiques indisponibles : <?= htmlspecialchars(lcfirst(message_erreur_api($r))) ?>.</p>
+  <?= bloc_alerte('Statistiques indisponibles : ' . lcfirst(message_erreur_api($r)) . '.', 'erreur') ?>
 <?php else:
-    $max = max(array_column($stats['par_jour'], 'appels') ?: [1]) ?: 1; ?>
-<section class="chiffres" aria-label="Résumé">
-  <div class="chiffre"><span class="chiffre-valeur"><?= $stats['total'] ?></span><span class="chiffre-libelle">appels sur <?= $jours ?> jours</span></div>
-  <div class="chiffre"><span class="chiffre-valeur"><?= round($stats['total'] / $jours, 1) ?></span><span class="chiffre-libelle">appels par jour en moyenne</span></div>
-  <div class="chiffre"><span class="chiffre-valeur"><?= $stats['erreurs'] ?></span><span class="chiffre-libelle">réponses en erreur (codes 4xx et 5xx)</span></div>
-  <div class="chiffre"><span class="chiffre-valeur"><?= $stats['total'] ? round(100 * ($stats['total'] - $stats['erreurs']) / $stats['total']) : 100 ?> %</span><span class="chiffre-libelle">de réponses réussies</span></div>
-</section>
-
-<section class="carte">
-  <h2>Appels par jour</h2>
-  <ol class="histogramme" data-jours="<?= $jours ?>" aria-label="Appels par jour">
-<?php foreach ($stats['par_jour'] as $j):
-      $date = new DateTime($j['jour']); ?>
-    <li style="--h: <?= round(100 * $j['appels'] / $max) ?>%">
-      <span class="histogramme-valeur mono"><?= $j['appels'] ?: '' ?></span>
-      <span class="histogramme-barre" aria-hidden="true"></span>
-      <span class="histogramme-jour mono"><?= $date->format('d/m') ?><span class="visuellement-cache"> : <?= $j['appels'] ?> appel<?= $j['appels'] > 1 ? 's' : '' ?></span></span>
-    </li>
-<?php endforeach; ?>
-  </ol>
-</section>
-
-<div class="colonnes">
-  <section class="carte">
-    <h2>Ressources les plus appelées</h2>
-    <?= $stats['par_ressource'] ? barres($stats['par_ressource'], 'ressource') : '<p class="aide">Aucun appel sur la période.</p>' ?>
+    $lignes = array_map(fn ($j) => ['libelle' => (new DateTime($j['jour']))->format($jours > 14 ? 'd' : 'd/m'), 'valeur' => (int) $j['appels']], $stats['par_jour']); ?>
+  <section class="tuiles" aria-label="Résumé">
+    <div class="tuile tuile--accent"><span class="tuile__libelle"><?= picto_bureau('statistiques') ?>Appels</span><span class="tuile__valeur"><?= (int) $stats['total'] ?></span><span class="tuile__detail">sur <?= $jours ?> jours</span></div>
+    <div class="tuile"><span class="tuile__libelle">Par jour</span><span class="tuile__valeur"><?= e(graphique_nombre(round($stats['total'] / $jours, 1))) ?></span><span class="tuile__detail">en moyenne</span></div>
+    <div class="tuile<?= $stats['erreurs'] ? ' tuile--alerte' : '' ?>"><span class="tuile__libelle">Erreurs</span><span class="tuile__valeur"><?= (int) $stats['erreurs'] ?></span><span class="tuile__detail">réponses 4xx et 5xx</span></div>
+    <div class="tuile"><span class="tuile__libelle">Réussite</span><span class="tuile__valeur"><?= $stats['total'] ? round(100 * ($stats['total'] - $stats['erreurs']) / $stats['total']) : 100 ?> %</span><span class="tuile__detail">des réponses</span></div>
   </section>
-  <section class="carte">
-    <h2>Codes de réponse</h2>
-    <?= $stats['par_code'] ? barres($stats['par_code'], 'code') : '<p class="aide">Aucun appel sur la période.</p>' ?>
-    <h2>Applications appelantes</h2>
-    <?= $stats['par_application'] ? barres($stats['par_application'], 'application') : '<p class="aide">Aucun appel sur la période.</p>' ?>
+
+  <section class="panneau" aria-labelledby="titre-par-jour">
+    <div class="panneau__tete"><h2 id="titre-par-jour"><?= picto_bureau('statistiques') ?>Appels par jour</h2><span class="note-b">Aujourd'hui en laiton</span></div>
+    <div class="panneau__corps">
+      <?= graphique_barres($lignes, ['titre' => $jours . ' derniers jours', 'unite' => 'appels', 'entete' => 'Jour', 'accent' => count($lignes) - 1, 'hauteur' => 180]) ?>
+    </div>
   </section>
-</div>
+
+  <div class="grille-b">
+    <section class="panneau s-6" aria-labelledby="titre-ressources">
+      <div class="panneau__tete"><h2 id="titre-ressources">Ressources les plus appelées</h2></div>
+      <div class="panneau__corps"><?= $stats['par_ressource'] ? barres($stats['par_ressource'], 'ressource') : '<p class="note-b">Aucun appel sur la période.</p>' ?></div>
+    </section>
+    <section class="panneau s-6" aria-labelledby="titre-codes">
+      <div class="panneau__tete"><h2 id="titre-codes">Codes de réponse</h2></div>
+      <div class="panneau__corps"><?= $stats['par_code'] ? barres($stats['par_code'], 'code') : '<p class="note-b">Aucun appel sur la période.</p>' ?></div>
+      <div class="panneau__tete panneau__tete--suite"><h2>Applications appelantes</h2></div>
+      <div class="panneau__corps"><?= $stats['par_application'] ? barres($stats['par_application'], 'application') : '<p class="note-b">Aucun appel sur la période.</p>' ?></div>
+    </section>
+  </div>
 <?php endif; ?>
+</div>
 <?php require __DIR__ . '/includes/bas.php'; ?>

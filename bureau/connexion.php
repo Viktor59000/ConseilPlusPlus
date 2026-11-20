@@ -1,8 +1,9 @@
 <?php
 /**
- * bureau/connexion.php — Connexion des agents.
+ * bureau/connexion.php — Connexion des agents (bureau/index.php y mène tant qu'aucun agent n'est connecté).
  * Tant qu'aucun agent n'existe, la page propose la création du premier compte, protégée par la clé d'API
  * du site (connue seulement de l'administrateur) : personne d'autre ne peut s'approprier le Bureau en ligne.
+ * Présentation : la gravure de la salle de tri à gauche, le formulaire sur une feuille de papier à droite.
  */
 require_once __DIR__ . '/includes/bdd.php';
 require_once __DIR__ . '/includes/session.php';
@@ -45,35 +46,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['agent'] = ['id' => (int) $agent['id'], 'nom' => $agent['nom']];
             rediriger('tableau.php');
         }
+        $agent = null;
         $erreur = 'Identifiants incorrects. Le Bureau ne vous reconnaît pas, ce qui ne veut rien dire.';
     }
 }
 
 $titre = $installation ? 'Installation' : 'Connexion';
+$classe_corps = 'bureau--connexion';
 require __DIR__ . '/includes/haut.php';
 ?>
-<section class="carte carte-etroite">
-  <p class="etiquette mono"><?= $installation ? 'Première ouverture du Bureau' : 'Accès réservé aux agents' ?></p>
-  <h1><?= $installation ? 'Créer le premier agent' : 'Prise de poste' ?></h1>
-<?php if ($installation): ?>
-  <p class="aide">Aucun agent n'est encore enregistré. Pour créer le premier compte, saisissez la clé d'API du site (<code>API_KEY</code>, dans <code>config.php</code> ou dans les variables de Render).</p>
-<?php endif; ?>
+<div class="connexion">
+  <figure class="connexion__scene">
+    <?= scene('salle-de-tri', 'La salle de tri du Bureau : des casiers jusqu\'au plafond, trois corbeilles sur la table, une lampe en laiton et un tampon qui attend. Rien n\'est dans l\'ordre, mais tout est étiqueté.', ['prioritaire' => true, 'classe' => 'scene--libre', 'tailles' => '(min-width: 1024px) 58vw, 100vw']) ?>
+    <figcaption class="connexion__legende"><span class="mono">Salle de tri</span> Tout dossier qui entre ici en ressort, un jour ou l'autre.</figcaption>
+  </figure>
+
+  <section class="connexion__poste" aria-labelledby="titre-connexion">
+    <a class="connexion__marque" href="<?= e(url_publique()) ?>/"><?= ui_logo('logo-connexion') ?></a>
+    <div class="connexion__feuille" data-papier>
+      <p class="connexion__ref"><span>Le Bureau</span><span><?= $installation ? 'Formulaire B-0' : 'Formulaire B-1' ?></span></p>
+      <h1 id="titre-connexion"><?= $installation ? 'Créer le premier agent' : 'Prise de poste' ?></h1>
+      <p class="connexion__chapeau"><?= $installation
+          ? 'Aucun agent n\'est encore enregistré. Pour ouvrir le Bureau, présentez la clé d\'API du site (API_KEY, dans config.php ou dans les réglages de Render).'
+          : 'Accès réservé aux agents du cabinet. Ici, on trie, on tamponne et on répond ; la base du site ne se lit que par son API.' ?></p>
 <?php if ($erreur): ?>
-  <p class="annonce annonce-erreur" role="alert"><?= htmlspecialchars($erreur) ?></p>
+      <?= bloc_alerte($erreur, 'erreur') ?>
 <?php endif; ?>
-  <form method="post" class="formulaire">
-    <?= csrf_champ() ?>
+      <form method="post" class="connexion__formulaire">
+        <?= csrf_champ() ?>
 <?php if ($installation): ?>
-    <label for="cle">Clé d'installation</label>
-    <input id="cle" name="cle" type="password" required autocomplete="off">
-    <label for="nom">Nom de l'agent</label>
-    <input id="nom" name="nom" type="text" required maxlength="100" autocomplete="name">
+        <?= champ('cle', 'Clé d\'installation', [], ['type' => 'password', 'requis' => true, 'officiel' => true, 'autocomplete' => 'off']) ?>
+        <?= champ('nom', 'Nom de l\'agent', [], ['requis' => true, 'maxlength' => 100, 'autocomplete' => 'name']) ?>
 <?php endif; ?>
-    <label for="email">Adresse email</label>
-    <input id="email" name="email" type="email" required maxlength="191" autocomplete="username" value="<?= htmlspecialchars($email) ?>">
-    <label for="mdp">Mot de passe<?= $installation ? ' (10 caractères minimum)' : '' ?></label>
-    <input id="mdp" name="mdp" type="password" required minlength="<?= $installation ? 10 : 1 ?>" autocomplete="<?= $installation ? 'new-password' : 'current-password' ?>">
-    <button class="btn btn-tampon" type="submit"><?= $installation ? 'Créer le compte et entrer' : 'Entrer au Bureau' ?></button>
-  </form>
-</section>
+        <?= champ('email', 'Adresse email', [], ['type' => 'email', 'requis' => true, 'maxlength' => 191, 'autocomplete' => 'username', 'valeur' => $email, 'officiel' => true]) ?>
+        <?= champ('mdp', 'Mot de passe', [], ['type' => 'password', 'requis' => true, 'autocomplete' => $installation ? 'new-password' : 'current-password',
+            'aide' => $installation ? '10 caractères au moins. Le Bureau ne le relira jamais, il le compare.' : null,
+            'attributs' => ['minlength' => $installation ? 10 : 1]]) ?>
+        <?= bouton($installation ? 'Créer le compte et entrer' : 'Entrer au Bureau', null, ['large' => true]) ?>
+      </form>
+      <p class="connexion__pied"><span class="mono">Visa du service</span><span>Toute tentative est consignée, puis classée.</span></p>
+    </div>
+    <p class="connexion__retour"><a href="<?= e(url_publique()) ?>/">Retour au site du cabinet</a></p>
+  </section>
+</div>
 <?php require __DIR__ . '/includes/bas.php'; ?>

@@ -5,39 +5,46 @@ require_once __DIR__ . '/includes/amorce.php';
 
 $releves = $bdd->query('SELECT r.*, a.nom AS agent FROM releves r LEFT JOIN agents a ON a.id = r.id_agent
                         ORDER BY r.date_releve DESC LIMIT 100')->fetchAll();
+$operations = ['releve' => ['Relevé du courrier', 'courrier'], 'synchro' => ['Synchro des inscriptions', 'synchro'], 'purge' => ['Purge du site', 'export']];
 
-$titre = 'Journal des relevés';
+$titre = 'Journal';
 $page = 'journal';
 require __DIR__ . '/includes/haut.php';
 ?>
-<div class="entete-page">
-  <div>
-    <p class="etiquette mono">Traçabilité</p>
-    <h1>Journal des relevés</h1>
-    <p class="aide">Chaque relevé interroge l'API du site (<code>GET /api/contacts.php?statut=nouveau</code>), enregistre les nouvelles demandes, puis les marque comme importées (<code>PATCH</code>).
-      Chaque synchro fait de même pour les inscriptions aux rendez-vous (<code>/api/inscriptions.php</code>).
-      Chaque purge supprime des demandes classées sur le site (<code>DELETE</code>).</p>
+<header class="tete">
+  <div class="tete__texte">
+    <p class="tete__ref"><span>Traçabilité</span><span>100 dernières opérations</span></p>
+    <h1>Journal du Bureau</h1>
+    <p class="tete__sous">Chaque relevé interroge l'API du site (<code>GET /api/contacts.php?statut=nouveau</code>) puis marque les demandes comme importées (<code>PATCH</code>) ;
+      chaque synchro fait de même pour les rendez-vous (<code>/api/inscriptions.php</code>) ; chaque purge supprime des demandes classées (<code>DELETE</code>).</p>
   </div>
-</div>
-<section class="carte">
+</header>
+
+<div class="zone">
+  <section class="panneau" aria-labelledby="titre-journal">
+    <h2 id="titre-journal" class="visuellement-cache">Opérations</h2>
 <?php if (!$releves): ?>
-  <p class="aide">Aucun relevé pour l'instant.</p>
+    <p class="vide">Aucune opération pour l'instant. Le registre est prêt ; il attend qu'il se passe quelque chose.</p>
 <?php else: ?>
-  <table class="tableau">
-    <thead><tr><th>Date</th><th>Opération</th><th>Agent</th><th>Nouveaux dossiers ou inscrits</th><th>Erreurs</th><th>Détail</th></tr></thead>
-    <tbody>
-<?php foreach ($releves as $r): ?>
-      <tr>
-        <td class="mono"><?= date_courte($r['date_releve']) ?></td>
-        <td><?= ['purge' => 'Purge du site', 'synchro' => 'Synchro des inscriptions'][$r['nature']] ?? 'Relevé' ?></td>
-        <td><?= $r['agent'] ? htmlspecialchars($r['agent']) : '—' ?></td>
-        <td class="mono"><?= $r['nature'] === 'purge' ? '—' : (int) $r['importes'] ?></td>
-        <td class="mono<?= $r['erreurs'] ? ' alerte' : '' ?>"><?= (int) $r['erreurs'] ?></td>
-        <td><?= htmlspecialchars($r['detail']) ?></td>
-      </tr>
+    <div class="defile">
+      <table class="table-b">
+        <thead><tr><th scope="col">Date</th><th scope="col">Opération</th><th scope="col">Agent</th><th scope="col" class="num">Nouveaux</th><th scope="col" class="num">Erreurs</th><th scope="col">Détail</th></tr></thead>
+        <tbody>
+<?php foreach ($releves as $r):
+          [$libelle, $icone] = $operations[$r['nature']] ?? $operations['releve']; ?>
+          <tr>
+            <td class="mono"><?= date_courte($r['date_releve']) ?></td>
+            <td><span class="operation-b"><?= picto_bureau($icone) ?><?= $libelle ?></span></td>
+            <td><?= $r['agent'] ? e($r['agent']) : '—' ?></td>
+            <td class="mono num"><?= $r['nature'] === 'purge' ? '—' : (int) $r['importes'] ?></td>
+            <td class="mono num<?= $r['erreurs'] ? ' alerte-cellule' : '' ?>"><?= (int) $r['erreurs'] ?></td>
+            <td class="muet"><?= e($r['detail']) ?></td>
+          </tr>
 <?php endforeach; ?>
-    </tbody>
-  </table>
+        </tbody>
+      </table>
+    </div>
 <?php endif; ?>
-</section>
+  </section>
+</div>
 <?php require __DIR__ . '/includes/bas.php'; ?>
