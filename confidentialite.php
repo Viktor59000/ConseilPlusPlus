@@ -54,6 +54,10 @@ page_debut([
           et pouvez la supprimer depuis « Mon compte ». La demande reste sur le site jusqu'à sa suppression par vous (depuis « Mon compte »
           ou avec le compte) ou par le cabinet. Pour les demandes classées depuis plus de 6 mois, Le Bureau propose une purge
           à ses agents : la suppression du site a lieu quand un agent la déclenche, elle n'est pas automatique.</li>
+        <li><strong>Rendez-vous au guichet</strong> (compte obligatoire) : nom, prénom, adresse email, téléphone, jour et horaire
+          choisis, et le problème que vous déposez. Sert à organiser le rendez-vous et à vous répondre ; vous en suivez l'état
+          dans « Mon compte ». Annuler un rendez-vous le marque « annulé » et libère le créneau, sans effacer la demande ;
+          elle est effacée du site avec le compte.</li>
         <li><strong>Votes « Moyen / Pas moyen »</strong> : une empreinte calculée à partir de votre adresse IP et du mot voté, qui empêche
           de voter deux fois. L'adresse IP elle-même n'est pas enregistrée avec le vote.</li>
         <li><strong>Notifications du mot du jour</strong> (si vous les activez) : l'adresse technique d'envoi fournie par votre
@@ -66,7 +70,8 @@ page_debut([
       <h2 id="le-bureau-logiciel-de-gestion-interne">Le Bureau, logiciel de gestion interne</h2>
       <p>Les demandes de contact sont relevées par Le Bureau, le logiciel de gestion interne du cabinet. Il en garde une copie
         dans sa propre base de données : nom, adresse email, type de demande, message, réponse du cabinet, ainsi que les notes internes
-        des agents qui traitent le dossier.</p>
+        des agents qui traitent le dossier. Il relève de la même façon les rendez-vous (« synchro ») et en garde une copie dans sa
+        table des inscrits : nom, prénom, adresse email, téléphone, jour, horaire, date de dépôt et statut.</p>
       <ul>
         <li><strong>Durée de conservation</strong> : aujourd'hui, aucune suppression automatique n'est prévue dans Le Bureau.
           Sa copie est conservée tant qu'elle n'est pas effacée à la main.</li>
