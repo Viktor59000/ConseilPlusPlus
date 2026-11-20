@@ -14,13 +14,12 @@
 .guichets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--colonne-gap); align-items: start; }
 .guichet-feuille { position: relative; padding: var(--e-7); background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); }
 .guichet-feuille--seule { max-width: 640px; }
-.guichet-feuille .ecran__tete::before { display: none; }
-.guichet-feuille h2 { font-size: var(--t-h3); }
 @media (max-width: 1023px) { .guichets { grid-template-columns: 1fr; } }
 @media (max-width: 639px) { .guichet-feuille { padding: var(--e-6) var(--e-5); } }
 
 /* Connexion : la chemise vide sous l'ouverture de dossier */
-.login-scene { margin-top: var(--e-5); }
-.login-scene .scene { aspect-ratio: 4 / 3; }
+.login-inscription { align-items: start; }
+.login-scene { margin: 0; }
+.login-scene .scene { aspect-ratio: 3 / 4; }
 @media (max-width: 1023px) { .login-scene { display: none; } .guichet-feuille.d-7 { margin-top: var(--e-2); } }
 .feuille-tampon { position: absolute; right: var(--e-6); top: var(--e-6); }

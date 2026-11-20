@@ -45,7 +45,7 @@ function scene(string $nom, string $alt, array $o = []): string
     $prioritaire = !empty($o['prioritaire']);
     $img = ['src' => $chemin . '-800.jpg', 'width' => $f['l'], 'height' => $f['h'], 'alt' => $alt,
         'loading' => $prioritaire ? 'eager' : ($o['chargement'] ?? 'lazy'), 'decoding' => 'async',
-        'fetchpriority' => $prioritaire ? 'high' : null, 'data-scene' => true];
+        'fetchpriority' => $prioritaire ? 'high' : null];
     return '<picture class="' . ui_classes('scene', $o['classe'] ?? '') . '">'
         . ($srcset !== '' ? '<source type="image/webp" srcset="' . e($srcset) . '" sizes="' . e($tailles) . '">' : '')
         . '<img' . ui_attributs($img) . '></picture>';

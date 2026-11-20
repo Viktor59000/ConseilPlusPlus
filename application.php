@@ -25,7 +25,6 @@ page_debut([
 ?>
 <section class="doc-entete" data-enter aria-labelledby="doc-titre">
   <div class="conteneur">
-    <p class="reference"><span>Guichet mobile</span><span>Android · iPhone</span></p>
     <h1 id="doc-titre">Le cabinet, dans votre poche</h1>
     <p class="chapeau">Le conseil, le mot (presque) du jour, un widget sur votre écran d'accueil et une notification chaque matin. Le cabinet se met à jour tout seul, à son rythme.</p>
     <div class="boutons"><?= bouton('Télécharger l\'application Android', 'https://github.com/Viktor59000/ConseilPlusPlus/releases/download/android/conseilplus.apk', ['attributs' => ['download' => true]]) ?></div>

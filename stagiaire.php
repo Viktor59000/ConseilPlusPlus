@@ -26,7 +26,6 @@ echo bandeau_guichets('stagiaire');
 <section class="heros epreuve" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Guichet n° <?= e($g['numero']) ?></span><span>Jeu interne du cabinet</span></p>
       <h1 id="heros-titre">Questions pour un stagiaire</h1>
       <p class="heros__chapeau">Présenté par le conseiller moyen. Dix questions simples, un candidat unique : le stagiaire, qui buzze toujours le premier et répond toujours avec aplomb. Vous êtes le jury.</p>
       <dl class="score" style="--n: 2" data-score aria-label="Score">

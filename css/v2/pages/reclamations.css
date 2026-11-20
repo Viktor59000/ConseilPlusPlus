@@ -9,7 +9,7 @@
 
 /* ---------- Coordonnées ---------- */
 .coordonnees { align-self: start; padding-top: var(--e-5); border-top: 2px solid var(--encre); }
-.coordonnees__titre { font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); margin-bottom: var(--e-3); }
+.coordonnees__titre { font-size: var(--t-h3); margin-bottom: var(--e-4); }
 .coordonnees dl { display: grid; }
 .coordonnees div { display: grid; gap: var(--e-1); padding: var(--e-4) 0; border-bottom: 1px solid var(--filet); }
 .coordonnees dt { font-size: var(--t-etiquette); color: var(--encre-2); }
@@ -33,7 +33,7 @@
 .standard-option { display: inline-flex; align-items: center; gap: var(--e-2); min-height: 44px; font-size: var(--t-petit); font-weight: var(--g-appui); cursor: pointer; }
 .standard-option input { width: 20px; height: 20px; accent-color: var(--encre); }
 .standard-journal { display: grid; gap: var(--e-3); align-content: start; padding-top: var(--e-5); border-top: 2px solid var(--encre); }
-.standard-journal__titre { font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); }
+.standard-journal__titre { font-size: var(--t-h3); }
 .standard-journal ol { list-style: none; padding: 0; display: grid; gap: 0; }
 .standard-journal li { padding: var(--e-3) 0 var(--e-3) var(--e-4); border-left: 2px solid var(--filet-fort); border-bottom: 1px dotted var(--filet); }
 .standard-journal li.journal-vous { border-left-color: var(--rouge); font-weight: var(--g-appui); }

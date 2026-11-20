@@ -23,18 +23,12 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span><a href="contact.php">Réclamations</a></span><span>Service téléphonique</span></p>
       <h1 id="heros-titre">Le standard</h1>
       <p class="heros__chapeau">Tenu par Mireille, standardiste et responsable des délais. Votre appel est important pour nous : il sera donc traité avec importance, et avec délai.</p>
       <div class="boutons">
         <?= bouton('Appeler le cabinet', '#telephone', ['icone_html' => picto('telephone')]) ?>
         <?= bouton('Écrire plutôt', 'contact.php#formulaire', ['variante' => 'secondaire']) ?>
       </div>
-      <dl class="heros__faits">
-        <div><dt>Lignes ouvertes</dt><dd>1</dd></div>
-        <div><dt>Temps d'attente</dt><dd>variable</dd></div>
-        <div><dt>Issue de l'appel</dt><dd>la machine à café</dd></div>
-      </dl>
     </div>
     <div class="heros__visuel">
       <?= scene('standard', 'Le standard du cabinet : un tableau de fiches rouges branchées au hasard, un combiné qui attend sur le comptoir, une horloge dont l\'aiguille pointe dans les deux sens.', ['prioritaire' => true, 'tailles' => '(min-width: 1024px) 46vw, 100vw']) ?>

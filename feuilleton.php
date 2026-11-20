@@ -41,23 +41,16 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span><a href="petit-moyen.php">Le Petit Moyen</a></span><span>Feuilleton</span><span>Saison <?= (int) $banque['saison'] ?></span></p>
       <h1 id="heros-titre"><?= e($banque['titre']) ?></h1>
-      <p class="heros__chapeau">Chaque semaine, l'équipe du cabinet enfile des costumes en carton et joue un épisode de cape et d'épée au Château des Moyennes. Trois scènes, un Héraut, une fin en suspens.</p>
+      <p class="heros__chapeau">Chaque semaine, l'équipe du cabinet enfile des costumes en carton et joue un épisode de cape et d'épée au Château des Moyennes. Trois scènes, un Héraut, une fin en suspens, environ <?= $minutes ?> minutes de lecture.</p>
       <div class="boutons">
         <?= bouton('Voir l\'épisode', '#episode') ?>
         <?= bouton('Tous les épisodes', '#episodes', ['variante' => 'secondaire']) ?>
       </div>
-      <dl class="heros__faits">
-        <div><dt>Épisode</dt><dd><?= (int) $episode['numero'] ?> sur <?= count($banque['episodes']) ?></dd></div>
-        <div><dt>Durée</dt><dd>≈ <?= $minutes ?> min</dd></div>
-        <div><dt>Diffusion</dt><dd>un par semaine</dd></div>
-      </dl>
     </div>
     <div class="heros__visuel">
       <div class="affiche" data-papier>
         <p class="affiche__haut"><span>Le cabinet présente</span><span><?= $episode['numero'] === $semaine ? 'Cette semaine' : 'En reprise' ?></span></p>
-        <p class="affiche__numero" aria-hidden="true"><?= sprintf('%02d', $episode['numero']) ?></p>
         <p class="affiche__titre">« <?= e($episode['titre']) ?> »</p>
         <p class="affiche__distribution">Avec <?= e(implode(', ', array_map(fn ($c) => $noms[$c], array_keys(array_diff_key($presents, ['heraut' => 1, 'cour' => 1]))))) ?>.</p>
         <?= tampon('Épisode ' . $episode['numero'], ['taille' => 'grand', 'angle' => -8, 'mouvement' => 'au-chargement', 'decoratif' => true]) ?>
@@ -70,7 +63,6 @@ page_debut([
   <div class="conteneur grille">
     <aside class="c-5 episode-cote">
       <div class="ecran__tete">
-        <p class="reference"><span>Épisode <?= (int) $episode['numero'] ?></span><span>≈ <?= $minutes ?> min</span></p>
         <h2 id="episode-titre"><?= e($episode['titre']) ?></h2>
       </div>
 <?php if (!empty($episode['precedemment'])): ?>
@@ -123,9 +115,8 @@ page_debut([
 <section class="ecran" id="episodes" aria-labelledby="episodes-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Saison <?= (int) $banque['saison'] ?></span><span><?= count($banque['episodes']) ?> épisodes</span></p>
       <h2 id="episodes-titre">Tous les épisodes</h2>
-      <p class="chapeau muet">Un épisode par semaine, le même pour tout le monde. Quand la saison est finie, elle recommence : le cabinet appelle cela une rediffusion, et le public une habitude.</p>
+      <p class="chapeau">Un épisode par semaine, le même pour tout le monde. Quand la saison est finie, elle recommence : le cabinet appelle cela une rediffusion, et le public une habitude.</p>
     </div>
     <ol class="liste-episodes" role="list">
 <?php foreach (liste_episodes() as $e): ?>

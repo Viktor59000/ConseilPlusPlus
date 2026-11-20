@@ -9,9 +9,9 @@
  *   carte(['titre' => 'Le Petit Moyen', 'texte' => 'Un mot par jour, à peu près défini.', 'href' => 'petit-moyen.php'])
  * Options :
  *   titre (obligatoire), texte (échappé) ou texte_html, href
- *   etiquette   petite référence mono au-dessus du titre (« Service 4 »)
+ *   etiquette   petit libellé en casse de phrase au-dessus du titre, seulement s'il informe (« Étape 2 » d'une suite)
  *   scene       ['nom' => 'methode-1', 'alt' => '…'] : gravure en haut de la carte (voir scene())
- *   pied_html   contenu du bas de carte (statut, lien fléché…) ; avec href et sans pied, une flèche est ajoutée
+ *   pied_html   contenu du bas de carte (statut, lien…)
  *   niveau      niveau du titre, 2 à 4 (défaut 3)
  *   classe, attributs
  */
@@ -25,7 +25,7 @@ function carte(array $o): string
         $image = '<div class="carte__image">' . scene($o['scene']['nom'], $o['scene']['alt'] ?? '', ['classe' => 'scene--libre', 'tailles' => '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw']) . '</div>';
     }
     $texte = $o['texte_html'] ?? (isset($o['texte']) ? e($o['texte']) : '');
-    $pied = $o['pied_html'] ?? ($lien ? ui_fleche() : '');
+    $pied = $o['pied_html'] ?? '';
     return '<article class="' . ui_classes('carte', $lien ? 'carte--lien' : '', $o['classe'] ?? '') . '"' . ui_attributs($o['attributs'] ?? []) . '>'
         . $image
         . (isset($o['etiquette']) ? '<p class="carte__etiquette">' . e($o['etiquette']) . '</p>' : '')
@@ -40,7 +40,7 @@ function carte(array $o): string
  * les autres poliment (role="status").
  *   bloc_alerte('Votre demande est bien partie.', 'succes', ['titre' => 'Demande reçue'])
  * $type : 'info' (défaut) | 'succes' | 'attention' | 'erreur'.
- * Options : titre, reference (petit n° mono avant le titre, défaut selon le type : « Avis », « Erreur »…),
+ * Options : titre, reference (petite mention avant le titre, défaut selon le type : « Avis », « Erreur »…),
  *           texte_html (remplace $texte, déjà échappé), id, classe.
  * (Ne pas confondre avec alerte() de includes/formulaire.php, utilisée par les anciennes pages.)
  */

@@ -8,7 +8,7 @@
   /* ---------- Clair : « le guichet » (papier journal, chemise kraft, laiton, encre, rouge tampon) ----------
      Contrastes WCAG mesurés (texte normal : 4,5:1 ; graphismes et grands textes : 3:1) :
      encre #181715 : 14,6:1 sur fond, 16,7:1 sur papier, 7,9:1 sur kraft
-     encre-2 #57544C : 6,2:1 sur fond, 7,0:1 sur papier (étiquettes, dates, méta ; jamais sur kraft : 3,4:1)
+     encre-2 #4A4741 : 7,5:1 sur fond, 8,6:1 sur papier, 6,8:1 sur fond-2 (étiquettes, dates, méta ; jamais sur kraft : 4,1:1)
      rouge #C8102E : 4,8:1 sur fond, 5,5:1 sur papier (tampons, erreurs, logo ; jamais de texte sur kraft)
      vert #2F5D50 : 6,1:1 sur fond, 7,0:1 sur papier
      laiton-texte #6E6608 : 4,8:1 sur fond, 5,5:1 sur papier (le laiton #BFB21A ne porte jamais de texte : 1,8:1)
@@ -28,8 +28,8 @@
     --surligneur: #E6DE7A;
     --accent: var(--rouge);     /* l'accent unique, très présent : rouge tampon (Le Bureau prend le laiton) */
     --encre: #181715;
-    --encre-2: #57544C;
-    --encre-pale: #57544C;      /* phrase pas encore encrée : déjà lisible (6,2:1) */
+    --encre-2: #4A4741;
+    --encre-pale: #57544C;      /* phrase pas encore encrée : déjà lisible (6,2:1, grand texte) */
     --rouge: #C8102E;
     --vert: #2F5D50;
     --contour: #7D7A70;
@@ -53,12 +53,12 @@
     --echelle-texte: 1;                                   /* 1,125 en régime prioritaire */
     --t-h1: clamp(2.375rem, 1.55rem + 3.4vw, 4.5rem);     /* 38 → 72 */
     --t-h2: clamp(1.875rem, 1.4rem + 1.95vw, 3rem);       /* 30 → 48 */
-    --t-h3: clamp(1.375rem, 1.25rem + .55vw, 1.75rem);    /* 22 → 28 */
+    --t-h3: clamp(1.25rem, 1.18rem + .3vw, 1.5rem);        /* 20 → 24 : cartes, fiches, documents (h2 ÷ 2) */
     --t-lead: clamp(1.125rem, 1.07rem + .25vw, 1.25rem);  /* 18 → 20 */
     --t-corps: 1.0625rem;                                 /* 17 */
     --t-petit: .9375rem;                                  /* 15 */
     --t-etiquette: .8125rem;                              /* 13 : le plus petit texte du site */
-    --t-chiffre: clamp(1.75rem, 1.5rem + 1vw, 2.375rem);  /* 28 → 38 */
+    --t-chiffre: clamp(1.75rem, 1.5rem + 1vw, 2.375rem);  /* 28 → 38 : jamais plus grand qu'un h2 */
     --g-titre: 500;                                       /* graisse des titres : la taille et l'approche les portent */
     --g-texte: 400;
     --g-appui: 500;                                       /* libellés, boutons, gras */
@@ -103,16 +103,16 @@
   }
 
   /* ---------- Sombre : « la salle des archives » ----------
-     encre #EDEDE6 : 15,7:1 sur fond, 13,4:1 sur papier ; encre-2 #ABA89D : 7,8:1 / 6,6:1
+     encre #EDEDE6 : 15,7:1 sur fond, 13,4:1 sur papier ; encre-2 #B9B6AB : 9,1:1 / 7,8:1
      rouge #FF5F6D : 6,2:1 / 5,3:1 ; vert #6FB3A0 : 7,6:1 / 6,5:1 ; laiton #D9CB3A : 11:1 / 9,4:1 (peut porter du texte)
-     kraft #8C7444 : décor seulement ; le texte sur kraft passe sur kraft-onglet #9A8150 en encre sombre (4,9:1)
+     kraft #8C7444 : décor seulement ; le texte sur kraft passe sur kraft-onglet #BFA06C en encre sombre (7,4:1)
      contour #85827A : 4,8:1 sur fond, 4,1:1 sur papier */
   :root[data-theme="sombre"] {
     color-scheme: dark;
     --fond: #141412; --fond-2: #1C1C19; --papier: #232320;
-    --kraft: #8C7444; --kraft-onglet: #9A8150; --kraft-ombre: #6B5733; --encre-sur-kraft: #141412;
+    --kraft: #8C7444; --kraft-onglet: #BFA06C; --kraft-ombre: #6B5733; --encre-sur-kraft: #141412;
     --laiton: #D9CB3A; --laiton-texte: #D9CB3A; --surligneur: #5B5517;
-    --encre: #EDEDE6; --encre-2: #ABA89D; --encre-pale: #ABA89D;
+    --encre: #EDEDE6; --encre-2: #B9B6AB; --encre-pale: #ABA89D;
     --rouge: #FF5F6D; --vert: #6FB3A0; --contour: #85827A;
     --filet: rgba(237, 237, 230, .14); --filet-fort: rgba(237, 237, 230, .4);
     --fond-erreur: #3A1A1D; --fond-ok: #18302A; --fond-attention: #34311A;
@@ -124,9 +124,9 @@
     :root:not([data-theme="clair"]) {
       color-scheme: dark;
       --fond: #141412; --fond-2: #1C1C19; --papier: #232320;
-      --kraft: #8C7444; --kraft-onglet: #9A8150; --kraft-ombre: #6B5733; --encre-sur-kraft: #141412;
+      --kraft: #8C7444; --kraft-onglet: #BFA06C; --kraft-ombre: #6B5733; --encre-sur-kraft: #141412;
       --laiton: #D9CB3A; --laiton-texte: #D9CB3A; --surligneur: #5B5517;
-      --encre: #EDEDE6; --encre-2: #ABA89D; --encre-pale: #ABA89D;
+      --encre: #EDEDE6; --encre-2: #B9B6AB; --encre-pale: #ABA89D;
       --rouge: #FF5F6D; --vert: #6FB3A0; --contour: #85827A;
       --filet: rgba(237, 237, 230, .14); --filet-fort: rgba(237, 237, 230, .4);
       --fond-erreur: #3A1A1D; --fond-ok: #18302A; --fond-attention: #34311A;

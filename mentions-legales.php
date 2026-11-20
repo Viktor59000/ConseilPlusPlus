@@ -16,7 +16,6 @@ page_debut([
 ?>
 <section class="doc-entete" data-enter aria-labelledby="doc-titre">
   <div class="conteneur">
-    <p class="reference"><span>Formulaire administratif</span><span>Légal</span></p>
     <h1 id="doc-titre">Mentions légales</h1>
     <p class="chapeau">La seule page du site qui doit être prise au sérieux.</p>
   </div>

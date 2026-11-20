@@ -2,7 +2,7 @@
 
 /* ---------- Héros : le sommaire à gauche, la chemise kraft en objet-héros à droite ---------- */
 .dossier-heros .heros__visuel { padding-top: var(--e-6); }
-.dossier-heros .dossier { max-width: 600px; margin-left: auto; transform: rotate(1.2deg); }
+.dossier-heros .dossier { max-width: 600px; margin-left: auto; }
 .dossier-heros .dossier__chemise { padding: var(--e-6); }
 .dossier-heros .dossier__titre { font-size: var(--t-h3); }
 .dossier-resume { display: grid; gap: 0; }

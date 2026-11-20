@@ -27,21 +27,15 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Tarifs du guichet</span><span>Affichage obligatoire</span></p>
       <h1 id="heros-titre">Nos formules</h1>
       <p class="heros__chapeau">Trois formules, un seul niveau de qualité : <span class="surligne">moyen</span>. Toutes se règlent au guichet, sur rendez-vous, et aucune ne se règle vraiment.</p>
       <div class="boutons">
         <?= bouton('Prendre rendez-vous', $rendez_vous) ?>
         <?= bouton('Voir les tarifs', '#tarifs', ['variante' => 'secondaire']) ?>
       </div>
-      <dl class="heros__faits">
-        <div><dt>Formules</dt><dd>3</dd></div>
-        <div><dt>Niveaux de qualité</dt><dd>1</dd></div>
-        <div><dt>Remboursement</dt><dd>intégral (0 €)</dd></div>
-      </dl>
     </div>
     <div class="heros__visuel">
-      <?= scene('guichet', 'Le guichet du cabinet : une vitre, un hygiaphone, une sonnette que personne n\'ose actionner, et la grille des tarifs scotchée de travers.', ['prioritaire' => true, 'tailles' => '(min-width: 1024px) 46vw, 100vw']) ?>
+      <?= scene('methode-1', 'Le règlement d\'une formule : une enveloppe tombe dans la corbeille en laiton, entre deux piles de formulaires et une sonnette que personne n\'ose actionner.',['prioritaire' => true, 'tailles' => '(min-width: 1024px) 46vw, 100vw']) ?>
       <div class="heros__pose"><?= ticket('0 €', ['guichet' => '1', 'libelle' => 'Prix de la formule la plus choisie', 'attente' => 'Valable jusqu\'à nouvel ordre']) ?></div>
     </div>
   </div>
@@ -50,9 +44,8 @@ page_debut([
 <section class="ecran ecran--papier" id="tarifs" aria-labelledby="tarifs-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Grille tarifaire</span><span>En vigueur depuis un mardi</span></p>
       <h2 id="tarifs-titre">Les tarifs du guichet</h2>
-      <p class="chapeau muet">Choisissez une formule, puis prenez rendez-vous au guichet : un agent l'enregistrera, la tamponnera et vous la rendra telle quelle.</p>
+      <p class="chapeau">Choisissez une formule, puis prenez rendez-vous au guichet : un agent l'enregistrera, la tamponnera et vous la rendra telle quelle.</p>
     </div>
     <div class="tarifs">
 <?php foreach ($tarifs as $t): ?>
@@ -92,15 +85,14 @@ page_debut([
 </section>
 
 <section class="ecran" id="comparatif" aria-labelledby="comparatif-titre">
-  <div class="conteneur grille">
-    <div class="c-5">
+  <div class="conteneur">
+    <div>
       <div class="ecran__tete">
-        <p class="reference"><span>Tableau comparatif</span></p>
-        <h2 id="comparatif-titre">Comparatif</h2>
-        <p class="chapeau muet">Le cabinet a comparé ses trois formules avec la plus grande rigueur. Elles sont toutes excellentes, à peu près.</p>
+        <h2 id="comparatif-titre">Les trois formules comparées</h2>
+        <p class="chapeau">Le cabinet a comparé ses trois formules avec la plus grande rigueur. Elles sont toutes excellentes, à peu près.</p>
       </div>
     </div>
-    <div class="d-7 tableau-defile">
+    <div class="tableau-defile">
       <table class="comparatif">
         <caption class="visuellement-cache">Prestations comprises dans chaque formule</caption>
         <thead>
@@ -122,7 +114,6 @@ page_debut([
   <div class="conteneur grille">
     <div class="c-5">
       <div class="ecran__tete">
-        <p class="reference"><span>Avis et questions</span></p>
         <h2 id="questions-titre">Questions fréquentes</h2>
       </div>
       <div class="avis"><?= bloc_temoignages(2) ?></div>

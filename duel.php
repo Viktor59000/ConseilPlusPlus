@@ -88,7 +88,6 @@ echo bandeau_guichets('duel');
 <section class="heros epreuve" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Guichet n° <?= e($g['numero']) ?></span><span>Partie en <?= SCORE_VICTOIRE ?> points</span></p>
       <h1 id="heros-titre">Le Duel</h1>
       <p class="heros__chapeau">Affrontez le cabinet. Jouez un coup absurde : l'arbitre rend son verdict selon un règlement que personne n'a lu, pas même lui.</p>
       <dl class="score" aria-label="Score">
@@ -155,7 +154,6 @@ echo bandeau_guichets('duel');
   <div class="conteneur grille epreuve-annexe">
     <div class="c-5">
       <div class="ecran__tete">
-        <p class="reference"><span>Règlement</span><span>Extrait</span></p>
         <h2 id="reglement-titre">Le règlement du Duel</h2>
       </div>
       <ol class="liste-reglement">

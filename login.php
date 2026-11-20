@@ -29,21 +29,15 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Guichet n° 3</span><span>Mon dossier</span></p>
       <h1 id="heros-titre">Mon dossier</h1>
-      <p class="heros__chapeau">Pour déposer une demande au guichet et suivre son instruction, le cabinet exige un compte. Ce n'est pas lui qui l'a voulu : c'est la procédure, et la procédure l'a voulu avant lui.</p>
-      <dl class="heros__faits">
-        <div><dt>Ouverture</dt><dd>gratuite</dd></div>
-        <div><dt>Pièces à fournir</dt><dd>aucune</dd></div>
-        <div><dt>Délai d'ouverture</dt><dd>immédiat</dd></div>
-      </dl>
+      <p class="heros__chapeau">Pour déposer une demande au guichet et suivre son instruction, le cabinet exige un compte. Ce n'est pas lui qui l'a voulu : c'est la procédure, et la procédure l'a voulu avant lui. L'ouverture est gratuite, immédiate, et sans pièce à fournir.</p>
       <p class="formulaire__aide">Pas encore de compte ? <a class="lien" href="#inscription">Ouvrir un dossier</a>.</p>
     </div>
     <div class="heros__visuel">
       <form class="guichet-feuille formulaire" action="auth/connexion.php" method="POST" aria-labelledby="titre-connexion">
         <?= csrf_champ() ?>
         <div class="ecran__tete">
-          <p class="reference"><span>Formulaire C-1</span></p>
+          <p class="reference reference--coin"><span>Formulaire C-1</span></p>
           <h2 id="titre-connexion">Connexion</h2>
           <p class="muet">Tous les champs sont obligatoires.</p>
         </div>
@@ -72,17 +66,14 @@ page_debut([
 </section>
 
 <section class="ecran ecran--papier" id="inscription" aria-labelledby="titre-inscription">
-  <div class="conteneur grille">
-    <div class="c-5">
-      <div class="ecran__tete">
-        <p class="reference"><span>Formulaire O-1</span><span>Ouverture de dossier</span></p>
-        <h2 id="titre-inscription">Ouvrir un dossier</h2>
-        <p class="chapeau muet">Un prénom, un nom, une adresse et un mot de passe. Le cabinet ne vous demandera rien d'autre, sauf de patienter.</p>
-      </div>
-      <div class="login-scene"><?= scene('dossier', 'Une chemise cartonnée kraft, encore vide, qui attend son premier problème.', ['tailles' => '(min-width: 1024px) 34vw, 100vw']) ?></div>
+  <div class="conteneur grille login-inscription">
+    <div class="ecran__tete">
+      <h2 id="titre-inscription">Ouvrir un dossier</h2>
+      <p class="chapeau">Un prénom, un nom, une adresse et un mot de passe. Le cabinet ne vous demandera rien d'autre, sauf de patienter.</p>
     </div>
-    <form class="d-7 guichet-feuille formulaire" action="auth/inscription.php" method="POST" aria-labelledby="titre-inscription">
+    <form class="c-7 guichet-feuille formulaire" action="auth/inscription.php" method="POST" aria-labelledby="titre-inscription">
       <?= csrf_champ() ?>
+      <p class="reference reference--coin"><span>Formulaire O-1</span></p>
       <p class="muet">Tous les champs sont obligatoires.</p>
 <?php if ($erreur === 'mail'): ?>
       <?= bloc_alerte('Cet email possède déjà un dossier. Connectez-vous avec, ou utilisez une autre adresse.', 'erreur', ['titre' => 'Dossier existant']) ?>
@@ -96,6 +87,7 @@ page_debut([
           'aide' => MDP_LONGUEUR_MIN . ' caractères minimum. Le cabinet ne le lira pas : il ne garde qu\'une empreinte.', 'attributs' => ['minlength' => MDP_LONGUEUR_MIN]]) ?>
       <div class="boutons"><?= bouton('Ouvrir mon dossier', null, ['type' => 'submit', 'variante' => 'secondaire']) ?></div>
     </form>
+    <div class="d-9 login-scene"><?= scene('dossier', 'Une chemise cartonnée kraft, encore vide, qui attend son premier problème.', ['tailles' => '(min-width: 1024px) 25vw, 100vw']) ?></div>
   </div>
 </section>
 <?php page_fin(); ?>

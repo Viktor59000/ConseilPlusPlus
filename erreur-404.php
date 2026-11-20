@@ -25,7 +25,6 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Erreur 404</span><span>Classé sans suite</span></p>
       <h1 id="heros-titre">Dossier introuvable</h1>
       <p class="heros__chapeau">Cette page n'existe pas, ou plus. Elle a sans doute été classée sans suite par un conseiller moyen, dans un tiroir que personne n'ouvre.</p>
       <div class="boutons">

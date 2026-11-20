@@ -22,7 +22,6 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Service de divination</span><span>Bureau 6</span></p>
       <h1 id="heros-titre">Les expériences de Messmerde</h1>
       <p class="heros__chapeau">Messmerde, mentaliste du cabinet, lit dans les pensées depuis qu'il a appris à lire. Chaque séance : sept expériences tirées au sort, dont un interrogatoire, menées avec une précision moyenne et une assurance totale.</p>
       <div class="boutons">
@@ -82,9 +81,8 @@ page_debut([
   <div class="conteneur grille">
     <div class="c-5">
       <div class="ecran__tete">
-        <p class="reference"><span>Registre des prédictions</span></p>
         <h2 id="titre-retroactives">Les prédictions rétroactives</h2>
-        <p class="chapeau muet">Messmerde prédit ce qui vient d'arriver, puis fait certifier sa prédiction. Taux de réussite : cent pour cent, constaté après coup.</p>
+        <p class="chapeau">Messmerde prédit ce qui vient d'arriver, puis fait certifier sa prédiction. Taux de réussite : cent pour cent, constaté après coup.</p>
       </div>
       <div class="boutons">
         <button type="button" class="bouton bouton--secondaire" data-retro-autre hidden>Une autre prédiction</button>
@@ -114,7 +112,6 @@ page_debut([
   <div class="conteneur">
     <div class="encart">
       <div class="encart__tete">
-        <p class="reference"><span>Encart</span><span><?= e(date('d/m/Y')) ?></span></p>
         <h2 id="titre-horoscope">L'horoscope de Messmerde</h2>
         <p class="muet">Chaque matin, Messmerde consulte les astres, puis le calendrier. Ses prédictions se réalisent toutes : il n'en fait que de sûres.</p>
       </div>

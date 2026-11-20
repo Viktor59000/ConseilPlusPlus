@@ -1,8 +1,9 @@
 <?php
 /**
- * Actions : boutons et liens fléchés. Une seule paire de boutons sur tout le site (principal / secondaire) ;
- * un seul bouton principal par vue (l'action du moment : déposer, se connecter, tamponner).
- * Survol : le bouton monte de 1 px et sa flèche avance de 3 px ; clic : il s'enfonce (css/v2/composants.css).
+ * Actions : boutons et liens d'action. Une seule paire de boutons sur tout le site (principal plein / secondaire
+ * au trait, même hauteur, même libellé) ; un seul bouton principal par vue (l'action du moment : déposer, se connecter).
+ * Un bouton = un verbe et un objet, sans flèche. La flèche reste une option, pour le rare lien qui mène vraiment à une
+ * suite (« Épisode suivant »). Survol : le bouton monte de 1 px ; clic : il s'enfonce (css/v2/composants.css).
  */
 
 /**
@@ -12,8 +13,8 @@
  *   bouton('Annuler', 'compte.php', ['variante' => 'secondaire'])
  * Options :
  *   variante   'principal' (défaut, plein, encre) | 'secondaire' (contour)
- *   fleche     bool, flèche après le libellé (défaut : true pour principal, false pour secondaire)
- *   taille     'normale' (48 px, défaut) | 'compacte' (40 px, barres d'outils)
+ *   fleche     bool, flèche après le libellé (défaut : false ; seulement pour un lien qui mène à une suite)
+ *   taille     'normale' (défaut) | 'compacte' (même hauteur de 48 px, marges plus étroites : barres d'outils)
  *   large      bool, toute la largeur
  *   type       'submit' | 'button' (défaut 'submit' pour un <button>)
  *   nom, valeur  name / value d'un <button>
@@ -24,7 +25,7 @@
 function bouton(string $libelle, ?string $href = null, array $o = []): string
 {
     $variante = ($o['variante'] ?? 'principal') === 'secondaire' ? 'secondaire' : 'principal';
-    $fleche = $o['fleche'] ?? ($variante === 'principal');
+    $fleche = !empty($o['fleche']);
     $classes = ui_classes('bouton', 'bouton--' . $variante, ($o['taille'] ?? '') === 'compacte' ? 'bouton--compact' : '',
         !empty($o['large']) ? 'bouton--large' : '', $o['classe'] ?? '');
     $interieur = ($o['icone_html'] ?? '') . '<span class="bouton__libelle">' . e($libelle) . '</span>' . ($fleche ? ui_fleche() : '');
@@ -37,11 +38,12 @@ function bouton(string $libelle, ?string $href = null, array $o = []): string
 }
 
 /**
- * Lien fléché (action tertiaire : « Voir le dossier → »), sans cadre.
- * Options : classe, attributs.
+ * Lien d'action tertiaire (« Voir le dossier »), sans cadre, souligné d'un trait qui se trace au survol.
+ * Le nom est historique : la flèche n'est plus mise que sur demande.
+ * Options : fleche (bool, défaut false : un lien qui mène vraiment à une suite), classe, attributs.
  */
 function lien_fleche(string $libelle, string $href, array $o = []): string
 {
     return '<a class="' . ui_classes('lien-fleche', $o['classe'] ?? '') . '" href="' . e($href) . '"' . ui_attributs($o['attributs'] ?? []) . '>'
-        . '<span>' . e($libelle) . '</span>' . ui_fleche() . '</a>';
+        . '<span>' . e($libelle) . '</span>' . (!empty($o['fleche']) ? ui_fleche() : '') . '</a>';
 }

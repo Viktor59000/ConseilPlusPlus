@@ -15,7 +15,8 @@
     transition: transform var(--d-out) var(--courbe), background-color var(--d-out) var(--courbe), border-color var(--d-out) var(--courbe);
   }
   .bouton--secondaire { --b-fond: transparent; --b-texte: var(--encre); --b-bord: var(--encre); }
-  .bouton--compact { min-height: 40px; padding: 0 var(--e-4); font-size: var(--t-petit); }
+  /* Compact : seulement plus étroit. Une seule hauteur (48 px) et une seule taille de libellé pour tous les boutons. */
+  .bouton--compact { padding: 0 var(--e-4); }
   .bouton--large { width: 100%; }
   .bouton__fleche { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--d-out) var(--courbe); }
   .bouton__icone { width: 18px; height: 18px; flex: none; }
@@ -31,8 +32,11 @@
   .boutons { display: flex; flex-wrap: wrap; gap: var(--e-3); align-items: center; }
   @media (max-width: 639px) { .boutons > .bouton { flex: 1 1 100%; } }
 
-  /* Lien avec flèche (action tertiaire, dans le texte ou sous une carte) */
-  .lien-fleche { display: inline-flex; align-items: center; gap: var(--e-2); font-weight: var(--g-appui); text-decoration: none; }
+  /* Lien d'action tertiaire (sous une carte, au bout d'un bloc) : le trait qui se trace de socle.css ;
+     la flèche seulement sur demande (lien qui mène vraiment à une suite) */
+  .lien-fleche { position: relative; display: inline-flex; align-items: center; gap: var(--e-2); font-weight: var(--g-appui); }
+  /* Zone de toucher de 44 px sans déplacer le trait : un calque transparent déborde du lien */
+  .lien-fleche::before { content: ""; position: absolute; inset: -10px -4px; }
   .lien-fleche .bouton__fleche { transition: transform var(--d-out) var(--courbe); }
   .lien-fleche:hover .bouton__fleche { transform: translateX(3px); transition-duration: var(--d-in); }
 
@@ -88,10 +92,9 @@
   .statut {
     --c: var(--encre-2);
     display: inline-flex; align-items: center; gap: var(--e-2);
-    padding: 3px var(--e-3) 3px var(--e-2); border: 1px solid currentColor; border-radius: var(--r-petit);
+    padding: 3px var(--e-3); border: 1px solid currentColor; border-radius: var(--r-petit);
     color: var(--c); font: 500 var(--t-etiquette)/1.3 var(--mono); white-space: nowrap;
   }
-  .statut::before { content: ""; width: 8px; height: 8px; background: currentColor; border-radius: 1px; }
   .statut--nouveau { --c: var(--laiton-texte); }
   .statut--importe { --c: var(--encre); }
   .statut--repondu { --c: var(--vert); }
@@ -114,7 +117,7 @@
   .ticket__papier::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: var(--rouge); }
   .ticket__entete { display: flex; justify-content: space-between; gap: var(--e-3); font: 500 var(--t-etiquette)/1.3 var(--mono); color: var(--encre-2); }
   .ticket__libelle { font-size: var(--t-petit); color: var(--encre-2); }
-  .ticket__numero { font: 500 clamp(3.5rem, 2.8rem + 2.6vw, 5rem)/.9 var(--mono); letter-spacing: -.04em; color: var(--encre); font-variant-numeric: tabular-nums; }
+  .ticket__numero { font: 500 clamp(1.75rem, 1.2rem + 2vw, 2.75rem)/.9 var(--mono); letter-spacing: -.04em; color: var(--encre); font-variant-numeric: tabular-nums; }
   .ticket__pied {
     margin-top: var(--e-3); padding-top: var(--e-4); border-top: 1.5px dashed var(--filet-fort);
     display: grid; gap: 2px; font: 500 var(--t-etiquette)/1.45 var(--mono); color: var(--encre-2);
@@ -135,12 +138,11 @@
     box-shadow: inset 0 -3px 0 var(--kraft-ombre), var(--ombre-papier);
   }
   .dossier__entete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--e-3); margin-bottom: var(--e-4); }
-  .dossier__titre { font-size: var(--t-lead); letter-spacing: -.01em; line-height: 1.25; }
+  .dossier__titre { font-size: var(--t-h3); line-height: 1.2; }
   .dossier__entete .statut { background: var(--papier); border-color: transparent; }
   .dossier__feuille {
     position: relative; padding: var(--e-5); background: var(--papier); color: var(--encre);
     border-radius: var(--r-papier); box-shadow: 0 1px 0 rgba(24, 23, 21, .12), 0 10px 18px -12px rgba(24, 23, 21, .45);
-    transform: rotate(-.4deg);
   }
   .dossier__feuille > * + * { margin-top: var(--e-3); }
   .dossier__feuille .tampon { position: absolute; right: var(--e-5); bottom: var(--e-4); }
@@ -161,7 +163,9 @@
   .attestation__emetteur { flex: 1 1 18em; min-width: 0; display: flex; align-items: center; gap: var(--e-3); font-size: var(--t-petit); line-height: 1.3; }
   .attestation__emetteur .logo-svg { height: 30px; width: auto; }
   .attestation__ref { flex: 0 0 auto; margin-left: auto; font: 500 var(--t-etiquette)/1.5 var(--mono); color: var(--encre-2); text-align: right; }
-  .attestation__titre { margin: var(--e-6) 0 var(--e-4); font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem); }
+  /* Le titre du document garde la taille de son niveau (une seule échelle de titres sur le site) */
+  .attestation__titre { margin: var(--e-6) 0 var(--e-4); }
+  h3.attestation__titre { font-size: var(--t-h3); }
   .attestation__corps { font-size: var(--t-lead); line-height: 1.55; }
   .attestation__champs { display: grid; grid-template-columns: max-content 1fr; gap: 0 var(--e-5); margin-top: var(--e-5); }
   .attestation__champs dt, .attestation__champs dd { margin: 0; padding: var(--e-2) 0; border-bottom: 1px dotted var(--filet-fort); }
@@ -169,20 +173,21 @@
   .attestation__champs dd { font: 500 var(--t-petit)/1.6 var(--mono); }
   .attestation__pied { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--e-5); margin-top: var(--e-6); min-height: 96px; }
   .attestation__signature { display: grid; gap: 2px; font-size: var(--t-petit); color: var(--encre-2); }
-  .attestation__paraphe { font: italic 500 1.6rem/1 var(--police); letter-spacing: -.03em; color: var(--encre); transform: rotate(-3deg); transform-origin: left; margin-bottom: var(--e-2); }
+  .attestation__paraphe { font: italic 500 1.6rem/1 var(--police); letter-spacing: -.03em; color: var(--encre); margin-bottom: var(--e-2); }
   .attestation__pied .tampon { margin-right: var(--e-4); }
   .attestation--verdict .attestation__titre { color: var(--rouge); }
   @media (max-width: 639px) {
     .attestation { padding: var(--e-6) var(--e-5) var(--e-5); }
     .attestation::before { inset: 8px; }
     .attestation__ref { text-align: left; }
+    .attestation__emetteur span { min-width: 0; }
     .attestation__champs { grid-template-columns: 1fr; }
     .attestation__champs dt { border-bottom: 0; padding-bottom: 0; }
   }
 
   /* Fiche du conseil du jour (fiche_conseil(), includes/guichets.php) : une attestation qui porte le générateur */
   .fiche-du-jour { max-width: none; }
-  .fiche-conseil { font-size: clamp(1.25rem, 1.05rem + .8vw, 1.625rem); line-height: 1.45; letter-spacing: -.01em; }
+  .fiche-conseil { font-size: var(--t-lead); line-height: 1.5; letter-spacing: -.01em; }
   .fiche-conseil mark { background: linear-gradient(var(--surligneur), var(--surligneur)) no-repeat 0 70% / 100% .55em; color: inherit; padding: 0 .06em; }
   .fiche-du-jour__actions { margin-top: var(--e-5); padding-top: var(--e-5); border-top: 1px solid var(--filet); }
   .fiche-du-jour.renouvele .fiche-conseil { animation: fiche-renouvele 360ms var(--courbe) both; }
@@ -197,25 +202,26 @@
   .carte__image { margin: calc(-1 * var(--e-5)) calc(-1 * var(--e-5)) var(--e-2); overflow: hidden; border-radius: var(--r-moyen) var(--r-moyen) 0 0; aspect-ratio: 4 / 3; background: var(--fond-2); }
   .carte__image > .scene { height: 100%; }
   .carte__image img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--d-image-out) var(--courbe); }
-  .carte__etiquette { font: 500 var(--t-etiquette)/1.3 var(--mono); color: var(--encre-2); }
-  .carte__titre { font-size: var(--t-lead); line-height: 1.25; letter-spacing: -.012em; }
+  .carte__etiquette { font: var(--g-appui) var(--t-etiquette)/1.3 var(--police); color: var(--encre-2); }
+  .carte__titre { font-size: var(--t-h3); line-height: 1.2; }
   .carte__titre a { text-decoration: none; }
   .carte__titre a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
-  .carte__texte { color: var(--encre-2); }
+  .carte__texte { color: var(--encre); }
   .carte__pied { margin-top: auto; padding-top: var(--e-3); display: flex; align-items: center; justify-content: space-between; gap: var(--e-3); }
-  .carte--lien:hover, .carte--lien:focus-within { border-color: var(--filet-fort); }
+  .carte--lien:hover { border-color: var(--filet-fort); }
   @media (hover: hover) and (pointer: fine) {
     .carte--lien:hover { transform: translateY(-2px); transition-duration: var(--d-carte); }
     .carte--lien:hover .carte__image img { transform: scale(1.02); transition-duration: var(--d-image); }
     .carte--lien:hover .bouton__fleche { transform: translateX(3px); transition-duration: var(--d-in); }
   }
-  .carte--lien:focus-within { outline: 2px solid var(--encre); outline-offset: 3px; }
+  /* Focus au clavier : l'anneau entoure toute la carte (le lien du titre la couvre) ; celui du titre devient transparent */
+  .carte--lien:has(a:focus-visible) { outline: 2px solid var(--encre); outline-offset: 3px; }
+  .carte--lien a:focus-visible { outline-color: transparent; }
   /* Classeur : fiches juxtaposées bord à bord, séparées par des filets (pas de cartes flottantes) */
   .rangee--classeur { gap: 0 !important; border-top: 1px solid var(--filet-fort); border-left: 1px solid var(--filet-fort); }
   .rangee--classeur > .carte { border: 0; border-right: 1px solid var(--filet-fort); border-bottom: 1px solid var(--filet-fort); border-radius: 0; background: transparent; }
   .rangee--classeur > .carte .carte__image { border-radius: 0; }
   .rangee--classeur > .carte--lien:hover { background: var(--papier); }
-  .carte--lien a:focus-visible { outline: none; }
 
   /* ================= Champs de formulaire : champ() ================= */
   .champ { display: grid; gap: var(--e-2); }
@@ -355,7 +361,7 @@
     box-shadow: inset 0 0 0 2px rgba(24, 23, 21, .55), inset 0 0 0 6px var(--laiton), inset 0 0 0 7px rgba(24, 23, 21, .3), var(--ombre-papier);
   }
   .plaque__mot { font: 500 var(--t-etiquette)/1 var(--mono); letter-spacing: .32em; text-transform: uppercase; margin-right: -.32em; }
-  .plaque__numero { font: 500 clamp(4.5rem, 3rem + 6vw, 8.5rem)/.9 var(--mono); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .plaque__numero { font: 500 clamp(2.75rem, 1.8rem + 3.2vw, 4.25rem)/.9 var(--mono); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
   .plaque__mention { font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; }
 
   /* ================= Le Guichet adapté : regime_formulaire() — le formulaire CERFA 0-A ================= */

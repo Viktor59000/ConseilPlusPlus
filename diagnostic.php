@@ -44,7 +44,6 @@ echo bandeau_guichets('diagnostic');
 <section class="heros epreuve" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Guichet n° <?= e($g['numero']) ?></span><span>Le diagnostic du conseiller</span></p>
       <h1 id="heros-titre">Quel client êtes-vous ?</h1>
       <p class="heros__chapeau">Sept questions, établies par le conseiller moyen à partir de son expérience, qui est longue. Le résultat est garanti : vous êtes moyen. Reste à savoir lequel.</p>
       <p class="epreuve__note">Aucune réponse n'est enregistrée. Le conseiller retient tout de mémoire, puis oublie.</p>

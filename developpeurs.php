@@ -28,7 +28,6 @@ page_debut([
 ?>
 <section class="doc-entete" data-enter aria-labelledby="doc-titre">
   <div class="conteneur">
-    <p class="reference"><span>Développeurs</span><span>OpenAPI 3.1</span></p>
     <h1 id="doc-titre">L'API du cabinet</h1>
     <p class="chapeau">Des conseils absurdes, maintenant au format JSON. Le site, l'appli Android, le widget et le logiciel de gestion « Le Bureau » passent tous par elle.</p>
   </div>

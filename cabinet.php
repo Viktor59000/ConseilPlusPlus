@@ -23,18 +23,12 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Annuaire interne</span><span>Édition <?= date('Y') ?></span></p>
       <h1 id="heros-titre">Le Personnel</h1>
-      <p class="heros__chapeau">Fondé un mardi, faute de mieux. Depuis, sept agents instruisent chaque dossier avec un sérieux exemplaire et un résultat moyen, conformément au règlement.</p>
+      <p class="heros__chapeau">Fondé un mardi, faute de mieux. Depuis, sept agents instruisent chaque dossier avec un sérieux exemplaire et un résultat moyen. Le stagiaire est en poste depuis 2009 ; le huitième bureau attend son titulaire depuis la fondation.</p>
       <div class="boutons">
         <?= bouton('Voir l\'annuaire', '#annuaire') ?>
         <?= bouton('Le circuit d\'un dossier', '#circuit', ['variante' => 'secondaire']) ?>
       </div>
-      <dl class="heros__faits">
-        <div><dt>Effectif</dt><dd><?= count($personnel['membres']) ?> agents</dd></div>
-        <div><dt>Dont stagiaire</dt><dd>1, depuis 2009</dd></div>
-        <div><dt>Postes vacants</dt><dd>1, depuis toujours</dd></div>
-      </dl>
     </div>
     <div class="heros__visuel">
       <figure class="portrait portrait--heros">
@@ -53,16 +47,15 @@ page_debut([
 <section class="ecran ecran--papier" id="annuaire" style="--h: 2" aria-labelledby="annuaire-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Section 1</span><span>Annuaire</span></p>
       <h2 id="annuaire-titre">Sept agents, une étape chacun</h2>
-      <p class="chapeau muet">Chaque agent tient une étape de votre dossier, et le service qui va avec. Ils ne se parlent pas : c'est ce qui garantit leur indépendance.</p>
+      <p class="chapeau">Chaque agent tient une étape de votre dossier, et le service qui va avec. Ils ne se parlent pas : c'est ce qui garantit leur indépendance.</p>
     </div>
     <ul class="collection" role="list">
 <?php foreach ($personnel['membres'] as $m):
     $etape = $personnel['circuit'][$m['etape']] ?? null; ?>
       <li class="fiche-agent" id="agent-<?= e($m['cle']) ?>">
         <div class="portrait"><?= portrait_membre($m) ?></div>
-        <p class="carte__etiquette">Poste <?= e($m['poste']) ?><?= $etape ? ' · ' . e($etape['titre']) : '' ?></p>
+        <p class="libelle">Poste <?= e($m['poste']) ?><?= $etape ? ', étape « ' . e($etape['titre']) . ' »' : '' ?></p>
         <h3 class="fiche-agent__nom"><?= e($m['nom']) ?></h3>
         <p class="fiche-agent__role"><?= e($m['role']) ?></p>
         <p class="fiche-agent__bio"><?= e($m['bio']) ?></p>
@@ -82,7 +75,7 @@ page_debut([
 <?php endforeach; ?>
       <li class="fiche-agent fiche-agent--vacant">
         <div class="portrait portrait--vacant"><span aria-hidden="true">?</span></div>
-        <p class="carte__etiquette">Poste 08 · Vacant</p>
+        <p class="libelle">Poste 08, vacant</p>
         <h3 class="fiche-agent__nom">Poste à pourvoir</h3>
         <p class="fiche-agent__bio">Ouvert depuis la fondation. Le jury se réunit dès qu'il aura un président, lequel sera choisi parmi les candidats retenus.</p>
         <ul class="fiche-agent__liens" aria-label="Candidater">
@@ -96,9 +89,8 @@ page_debut([
 <section class="ecran" id="circuit" aria-labelledby="circuit-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Section 2</span><span>Procédure</span></p>
       <h2 id="circuit-titre">Le circuit d'un dossier</h2>
-      <p class="chapeau muet">Cinq étapes, cinq guichets intérieurs. Un dossier les franchit toutes, dans l'ordre, sauf quand il les franchit dans un autre.</p>
+      <p class="chapeau">Cinq étapes, cinq guichets intérieurs. Un dossier les franchit toutes, dans l'ordre, sauf quand il les franchit dans un autre.</p>
     </div>
     <ol class="circuit">
 <?php $n = 0; foreach ($personnel['circuit'] as $cle => $etape): $n++; ?>
@@ -117,14 +109,12 @@ page_debut([
 <section class="ecran ecran--fond-2" id="valeurs" aria-labelledby="valeurs-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Section 3</span><span>Affiché en salle de pause</span></p>
       <h2 id="valeurs-titre" class="visuellement-cache">Nos valeurs</h2>
     </div>
     <p class="phrase-encre" data-encre>Le cabinet a quatre valeurs. Il les applique <em>toutes à la fois</em>, ce qui explique les résultats.</p>
     <ol class="valeurs">
 <?php foreach ($t['valeurs'] as $i => [$valeur, $explication]): ?>
       <li class="valeurs__item">
-        <p class="machine">Valeur <?= $i + 1 ?></p>
         <h3 class="valeurs__nom"><?= e($valeur) ?></h3>
         <p class="valeurs__texte"><?= e($explication) ?></p>
       </li>
@@ -137,15 +127,14 @@ page_debut([
   <div class="conteneur grille">
     <div class="c-5">
       <div class="ecran__tete">
-        <p class="reference"><span>Section 4</span><span>Relevé annuel</span></p>
-        <h2 id="releve-titre">Le cabinet, en quelques relevés</h2>
+        <h2 id="releve-titre">Le relevé annuel</h2>
       </div>
-      <dl class="releve">
-        <div><dt>Conseils suivis, à notre connaissance</dt><dd>0</dd></div>
-        <div><dt>Stagiaire, depuis 2009</dt><dd>1</dd></div>
-        <div><dt>Délai moyen de traitement</dt><dd><?= e($t['delais'][0]) ?></dd></div>
-        <div><dt>Dossiers sans numéro</dt><dd>aucun</dd></div>
-      </dl>
+      <ul class="releve">
+        <li>À la connaissance du cabinet, aucun de ses conseils n'a jamais été suivi.</li>
+        <li>Le stagiaire est le même depuis 2009. Il n'a pas été titularisé, par prudence.</li>
+        <li>Délai moyen de traitement : <?= e(lcfirst($t['delais'][0])) ?>.</li>
+        <li>Tous les dossiers portent un numéro, y compris ceux qui n'existent pas.</li>
+      </ul>
       <div class="boutons releve__appel">
         <?= bouton('Une réclamation sur le personnel', 'contact.php', ['variante' => 'secondaire']) ?>
       </div>

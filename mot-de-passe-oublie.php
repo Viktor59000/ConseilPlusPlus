@@ -57,7 +57,6 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Guichet n° 3 bis</span><span>Objets perdus</span></p>
       <h1 id="heros-titre">Mot de passe oublié</h1>
       <p class="heros__chapeau">Cela arrive aux meilleurs. Et à nous aussi, souvent. Indiquez l'adresse de votre compte : le cabinet vous envoie un lien, valable une heure, pour en choisir un nouveau.</p>
       <p class="formulaire__aide"><?= lien_fleche('Retour à la connexion', 'login.php') ?></p>
@@ -66,7 +65,7 @@ page_debut([
       <form class="guichet-feuille formulaire" action="mot-de-passe-oublie.php" method="POST" novalidate aria-labelledby="titre-oubli">
         <?= csrf_champ() ?>
         <div class="ecran__tete">
-          <p class="reference"><span>Formulaire P-0</span></p>
+          <p class="reference reference--coin"><span>Formulaire P-0</span></p>
           <h2 id="titre-oubli">Recevoir un lien</h2>
         </div>
 <?php if ($envoye): ?>

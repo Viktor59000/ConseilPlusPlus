@@ -1,5 +1,5 @@
 /* Dossier introuvable (erreur-404.php) : le conseil de consolation, posé de travers. Couche « page ». */
 .erreur-visuel { display: grid; align-content: start; }
-.erreur-visuel .attestation { transform: rotate(1deg); }
+
 .erreur-visuel mark { background: linear-gradient(var(--surligneur), var(--surligneur)) no-repeat 0 62% / 100% .5em; color: inherit; }
 @media (max-width: 1023px) { .erreur-visuel .attestation { transform: none; } }

@@ -109,7 +109,6 @@ page_debut([
 <section class="heros dossier-heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Dossier client</span><span><?= e($numero_client) ?></span></p>
       <h1 id="heros-titre">Le dossier de <?= e($client['prenom']) ?></h1>
       <p class="heros__chapeau">Tout ce que le cabinet a ouvert à votre nom : vos rendez-vous, vos réclamations, vos conseils gardés. Rien n'est perdu, tout est rangé, presque au même endroit.</p>
       <div class="boutons">
@@ -147,9 +146,8 @@ echo dossier($numero_client, $prochain['statut'] ?? 'nouveau', $resume, [
 <section class="ecran ecran--papier" id="rendez-vous" aria-labelledby="rendez-vous-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Pièce 1</span><span>Rendez-vous au guichet</span></p>
       <h2 id="rendez-vous-titre">Mes rendez-vous</h2>
-      <p class="chapeau muet">Chaque demande suit le même circuit : déposée au guichet, relevée par Le Bureau, puis confirmée par le cabinet. Vous la suivez ici, comme un colis, mais sans livreur.</p>
+      <p class="chapeau">Chaque demande suit le même circuit : déposée au guichet, relevée par Le Bureau, puis confirmée par le cabinet. Vous la suivez ici, comme un colis, mais sans livreur.</p>
     </div>
 <?php if (isset($avis['rendez-vous'])): ?>
     <?= bloc_alerte($avis['rendez-vous'][0], $avis['rendez-vous'][1], ['titre' => $avis['rendez-vous'][2]]) ?>
@@ -197,9 +195,8 @@ echo dossier($numero_client, $prochain['statut'] ?? 'nouveau', $resume, [
 <section class="ecran" id="demandes" aria-labelledby="demandes-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Pièce 2</span><span>Réclamations</span></p>
       <h2 id="demandes-titre">Mes réclamations</h2>
-      <p class="chapeau muet">Les demandes envoyées au <a class="lien" href="contact.php">service des réclamations</a> pendant que vous étiez connecté, et la réponse officielle du cabinet quand elle arrive. Une demande supprimée ici est effacée du site ; si Le Bureau l'a déjà relevée, son dossier suit la <a class="lien" href="confidentialite.php">politique de confidentialité</a>.</p>
+      <p class="chapeau">Les demandes envoyées au <a class="lien" href="contact.php">service des réclamations</a> pendant que vous étiez connecté, et la réponse officielle du cabinet quand elle arrive. Une demande supprimée ici est effacée du site ; si Le Bureau l'a déjà relevée, son dossier suit la <a class="lien" href="confidentialite.php">politique de confidentialité</a>.</p>
     </div>
 <?php if (isset($avis['demandes'])): ?>
     <?= bloc_alerte($avis['demandes'][0], $avis['demandes'][1], ['titre' => $avis['demandes'][2]]) ?>
@@ -237,9 +234,8 @@ echo dossier($numero_client, $prochain['statut'] ?? 'nouveau', $resume, [
 <section class="ecran ecran--fond-2" id="conseil" aria-labelledby="conseil-titre">
   <div class="conteneur grille dossier-conseil">
     <div class="c-5 ecran__tete">
-      <p class="reference"><span>Pièce 3</span><span>Formule Conseil Illimité</span></p>
       <h2 id="conseil-titre">Le conseil du jour</h2>
-      <p class="chapeau muet">Votre dossier a été traité avec le plus grand sérieux. Voici la recommandation du cabinet. Si elle vous plaît, gardez-la au carnet : elle y restera, inappliquée, aussi longtemps que vous voudrez.</p>
+      <p class="chapeau">Votre dossier a été traité avec le plus grand sérieux. Voici la recommandation du cabinet. Si elle vous plaît, gardez-la au carnet : elle y restera, inappliquée, aussi longtemps que vous voudrez.</p>
     </div>
     <div class="d-7">
       <?= fiche_conseil($conseil, [
@@ -257,9 +253,8 @@ echo dossier($numero_client, $prochain['statut'] ?? 'nouveau', $resume, [
 <section class="ecran" id="carnet" aria-labelledby="carnet-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Pièce 4</span><span>Le carnet</span></p>
       <h2 id="carnet-titre">Mes conseils gardés</h2>
-      <p class="chapeau muet"><?= $carnet ? e($pluriel(count($carnet), 'conseil') . ' classé' . (count($carnet) > 1 ? 's' : '') . ' au dossier. Aucun n\'a été appliqué, et c\'est très bien ainsi.')
+      <p class="chapeau"><?= $carnet ? e($pluriel(count($carnet), 'conseil') . ' classé' . (count($carnet) > 1 ? 's' : '') . ' au dossier. Aucun n\'a été appliqué, et c\'est très bien ainsi.')
           : 'Votre carnet est vide. Gardez le conseil du jour, ou un verdict de la consultation, pour le retrouver ici.' ?></p>
     </div>
 <?php if (isset($avis['carnet'])): ?>
@@ -291,9 +286,8 @@ echo dossier($numero_client, $prochain['statut'] ?? 'nouveau', $resume, [
   <div class="conteneur grille dossier-compte">
     <div class="c-5">
       <div class="ecran__tete">
-        <p class="reference"><span>Pièce 5</span><span>Fiche signalétique</span></p>
         <h2 id="compte-titre">Mon compte</h2>
-        <p class="chapeau muet">Ce que le cabinet sait de vous. C'est-à-dire pas grand-chose, et c'est très bien comme ça.</p>
+        <p class="chapeau">Ce que le cabinet sait de vous. C'est-à-dire pas grand-chose, et c'est très bien comme ça.</p>
       </div>
       <dl class="dossier-fiche">
         <div><dt>Nom</dt><dd><?= e($client['prenom'] . ' ' . $client['nom']) ?></dd></div>

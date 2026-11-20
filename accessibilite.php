@@ -23,7 +23,6 @@ page_debut([
 ?>
 <section class="doc-entete" data-enter aria-labelledby="doc-titre">
   <div class="conteneur">
-    <p class="reference"><span>RGAA 4.1</span><span>Légal</span></p>
     <h1 id="doc-titre">Déclaration d'accessibilité</h1>
     <p class="chapeau">Nos conseils sont moyens. L'accès à nos conseils, lui, doit être le même pour tout le monde.</p>
   </div>

@@ -5,20 +5,20 @@
 .pm-vedette {
   position: relative; display: grid; gap: var(--e-3); align-content: start; min-height: min(560px, calc(var(--ecran) - var(--e-7) - var(--e-8)));
   padding: var(--e-8) var(--e-7) var(--e-7); background: var(--papier); color: var(--encre); text-decoration: none;
-  border-radius: var(--r-papier); box-shadow: var(--ombre-papier); transform: rotate(.6deg);
+  border-radius: var(--r-papier); box-shadow: var(--ombre-papier);
   transition: transform var(--d-out) var(--courbe), box-shadow var(--d-out) var(--courbe);
 }
 /* La marge rouge du cahier, et les filets d'une page de dictionnaire */
 .pm-vedette::before { content: ""; position: absolute; top: 0; bottom: 0; left: var(--e-6); width: 1px; background: var(--rouge); opacity: .55; }
-.pm-vedette__date { font-size: var(--t-etiquette); color: var(--encre-2); text-transform: uppercase; letter-spacing: .06em; }
-.pm-vedette__mot { font-size: clamp(3rem, 1.6rem + 4.6vw, 6.5rem); font-weight: var(--g-titre); letter-spacing: -.045em; line-height: .95; overflow-wrap: anywhere; }
+.pm-vedette__date { font-size: var(--t-etiquette); color: var(--encre-2); }
+.pm-vedette__mot { font-size: clamp(2.5rem, 1.6rem + 3vw, 4.25rem); font-weight: var(--g-titre); letter-spacing: -.045em; line-height: .95; overflow-wrap: anywhere; }
 .pm-vedette__nature { font-style: italic; color: var(--encre-2); font-size: var(--t-lead); }
 .pm-vedette__texte { font-size: var(--t-lead); line-height: 1.5; max-width: 30em; padding-top: var(--e-4); border-top: 1px solid var(--filet); }
 .pm-vedette__suite { display: inline-flex; align-items: center; gap: var(--e-2); margin-top: auto; padding-top: var(--e-5); font-weight: var(--g-appui); }
 .pm-vedette__suite .bouton__fleche { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--d-out) var(--courbe); }
 .pm-vedette .tampon { position: absolute; right: var(--e-6); bottom: var(--e-6); }
 @media (hover: hover) and (pointer: fine) {
-  .pm-vedette:hover { transform: rotate(.6deg) translateY(-2px); box-shadow: var(--ombre-papier-haute); transition-duration: var(--d-carte); }
+  .pm-vedette:hover { transform: translateY(-2px); box-shadow: var(--ombre-papier-haute); transition-duration: var(--d-carte); }
   .pm-vedette:hover .bouton__fleche { transform: translateX(3px); transition-duration: var(--d-in); }
 }
 @media (max-width: 639px) { .pm-vedette { padding: var(--e-7) var(--e-5) var(--e-5) var(--e-7); min-height: 0; } .pm-vedette::before { left: var(--e-5); } .pm-vedette .tampon { bottom: var(--e-4); right: var(--e-4); font-size: 1rem; } }
@@ -28,7 +28,7 @@
 .entree-mot { position: relative; padding: var(--e-7); background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); }
 .ecran--papier .entree-mot { background: var(--fond); }
 .entree-date { font: 500 var(--t-etiquette)/1.3 var(--mono); color: var(--encre-2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: var(--e-3); }
-.entree-titre { font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem); letter-spacing: -.04em; margin-bottom: var(--e-3); }
+.entree-titre { font-size: var(--t-h3); font-weight: 600; letter-spacing: -.01em; margin-bottom: var(--e-3); } /* le mot-vedette en gras, comme dans un dictionnaire */
 .entree-nature { font: italic 400 var(--t-lead) var(--police); letter-spacing: 0; color: var(--encre-2); margin-left: var(--e-2); }
 .entree-etymologie { margin-bottom: var(--e-4); color: var(--encre-2); font-size: var(--t-petit); max-width: var(--mesure); }
 .entree-etymologie::before { content: "[ "; } .entree-etymologie::after { content: " ]"; }
@@ -115,7 +115,6 @@
 .sigle-jour__developpement { font-size: var(--t-h3); font-weight: var(--g-titre); letter-spacing: -.02em; line-height: 1.2; }
 .sigle-jour__definition { font-size: var(--t-lead); }
 .sigle-jour__exemple { color: var(--encre-2); font-style: italic; }
-.sigle-jour__exemple .machine { font-style: normal; margin-right: var(--e-2); }
 @media (max-width: 767px) { .sigle-jour { grid-template-columns: 1fr; } .sigle-jour__lettres { justify-self: start; } }
 
 /* ---------- Feuilleter : index des lettres ---------- */
@@ -129,15 +128,14 @@
 .lettrines a:hover, .lettrines a:focus-visible { background: var(--encre); color: var(--sur-encre); }
 
 /* ---------- Le feuilleton : bande kraft, la chemise du cabinet ---------- */
-.ecran--kraft { background: var(--kraft-onglet); color: var(--encre-sur-kraft); }
+.ecran--kraft { background: var(--kraft-onglet); color: var(--encre-sur-kraft); --filet-fort: rgba(20, 20, 18, .45); --filet: rgba(20, 20, 18, .2); }
 .ecran--kraft :is(.reference, .chapeau, .muet) { color: var(--encre-sur-kraft); }
-.ecran--kraft .ecran__tete::before { background: var(--encre-sur-kraft); }
-.ecran--kraft .bouton--principal { --b-fond: var(--encre-sur-kraft); --b-bord: var(--encre-sur-kraft); --b-texte: var(--kraft-onglet); }
 .ecran--kraft :focus-visible { outline-color: var(--encre-sur-kraft); }
-.pm-episode { display: grid; gap: var(--e-4); align-self: center; padding: var(--e-7); background: var(--papier); color: var(--encre); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); transform: rotate(-.5deg); }
-.pm-episode__heraut { margin: 0; font-size: var(--t-lead); line-height: 1.6; }
-@media (max-width: 1023px) { .pm-episode { margin-top: var(--e-6); } }
-@media (max-width: 639px) { .pm-episode { padding: var(--e-5); } }
+/* Le Héraut ouvre l'épisode : sa tirade en grand, sur toute la largeur, entre deux filets d'encre */
+.pm-aujourdhui { row-gap: 0; }
+.pm-episode { display: grid; gap: var(--e-4); margin: 0 0 var(--e-7); padding: var(--e-6) 0; border-top: 2px solid var(--encre-sur-kraft); border-bottom: 1px solid var(--encre-sur-kraft); }
+.pm-episode__heraut { margin: 0; max-width: 40em; font-size: clamp(1.25rem, 1.05rem + .8vw, 1.75rem); line-height: 1.45; letter-spacing: -.01em; }
+.pm-episode figcaption { font-size: var(--t-petit); font-weight: var(--g-appui); }
 
 /* ---------- Palmarès et archives : la collection des jours ---------- */
 .palmares { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--colonne-gap); padding: var(--e-5) 0; margin-bottom: var(--e-6); border-top: 2px solid var(--encre); }
@@ -154,7 +152,7 @@
 }
 .archive > summary::-webkit-details-marker { display: none; }
 .archive > summary:hover .archive__mot { text-decoration: underline; text-underline-offset: .2em; }
-.archive__date { color: var(--encre-2); font-size: var(--t-etiquette); text-transform: uppercase; }
+.archive__date { color: var(--encre-2); font-size: var(--t-etiquette); }
 .archive__mot { font-weight: var(--g-appui); font-size: var(--t-lead); }
 .archive__extrait { color: var(--encre-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .archive[open] .archive__extrait { visibility: hidden; }

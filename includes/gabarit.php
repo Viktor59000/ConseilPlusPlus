@@ -161,7 +161,7 @@ function page_fin(): void
         echo '</ul></nav>';
     }
     echo '</div><div class="pied__legal"><p>ConseilPlus+ est une administration fictive : aucun conseil délivré ici ne doit être suivi. '
-        . 'Hommage non officiel à l\'humour absurde.</p><p>© ', date('Y'), ' ConseilPlus+, le conseiller moyen · Polices Schibsted Grotesk et JetBrains Mono (licence OFL)</p></div>';
+        . 'Hommage non officiel à l\'humour absurde.</p><p>© ', date('Y'), ' ConseilPlus+, le conseiller moyen. Polices Schibsted Grotesk et JetBrains Mono, sous licence OFL.</p></div>';
     echo "</div></footer>\n";
     echo '<script type="application/json" id="textes-site">', json_encode(['onglet' => textes()['onglet_absent']], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG), "</script>\n";
     $scripts = array_merge(['js/theme.js', 'js/v2/guichet.js'], $racine === '' ? ['js/pwa.js'] : [], $meta['scripts'] ?? []);

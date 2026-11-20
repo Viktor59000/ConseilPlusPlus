@@ -1,16 +1,15 @@
 /* Le feuilleton « La Plume et le Tampon » (feuilleton.php) : l'affiche, l'épisode (lecteur : petit-moyen.css), la liste.
    Couche « page ». */
 
-/* ---------- L'affiche de l'épisode : un papier imprimé, le numéro en très grand ---------- */
+/* ---------- L'affiche de l'épisode : un papier imprimé, le titre en grand ---------- */
 .affiche {
   position: relative; display: grid; gap: var(--e-4); align-content: start;
   min-height: min(600px, calc(var(--ecran) - var(--e-7) - var(--e-8))); padding: var(--e-7);
-  background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); transform: rotate(-.6deg);
+  background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier);
 }
 .affiche::before { content: ""; position: absolute; inset: 12px; border: 1px solid var(--filet-fort); outline: 3px solid color-mix(in srgb, var(--laiton) 55%, transparent); outline-offset: 3px; pointer-events: none; }
-.affiche__haut { display: flex; justify-content: space-between; gap: var(--e-4); font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); }
-.affiche__numero { font: 500 clamp(7rem, 4rem + 9vw, 13rem)/.85 var(--mono); letter-spacing: -.06em; color: var(--encre); margin-top: var(--e-4); }
-.affiche__titre { font-size: var(--t-h2); font-weight: var(--g-titre); letter-spacing: var(--approche-titre); line-height: 1.08; text-wrap: balance; }
+.affiche__haut { display: flex; justify-content: space-between; gap: var(--e-4); font-size: var(--t-petit); font-weight: var(--g-appui); color: var(--encre-2); padding-bottom: var(--e-4); border-bottom: 1px solid var(--filet); }
+.affiche__titre { margin-top: var(--e-6); font-size: var(--t-h2); font-weight: var(--g-titre); letter-spacing: var(--approche-titre); line-height: 1.08; text-wrap: balance; }
 .affiche__distribution { margin-top: auto; padding-top: var(--e-4); border-top: 1px solid var(--filet); color: var(--encre-2); font-size: var(--t-petit); max-width: 34em; }
 .affiche .tampon { position: absolute; right: var(--e-7); bottom: var(--e-10); }
 @media (max-width: 639px) { .affiche { padding: var(--e-6) var(--e-5); min-height: 0; } .affiche .tampon { position: relative; right: auto; bottom: auto; justify-self: end; font-size: 1.4rem; } }
@@ -21,7 +20,7 @@
 @media (min-width: 1024px) { .episode-cote { position: sticky; top: calc(var(--nav) + var(--e-5)); align-self: start; } }
 .precedemment { display: grid; gap: var(--e-3); padding: var(--e-5); background: var(--fond); border-left: 3px solid var(--rouge); }
 .precedemment--premier { color: var(--encre-2); font-style: italic; }
-.precedemment__titre { font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); }
+.precedemment__titre { font-size: var(--t-h3); }
 .distribution { display: grid; gap: var(--e-3); }
 .distribution dl { display: grid; border-top: 1px solid var(--filet-fort); }
 .distribution div { padding: var(--e-2) 0; border-bottom: 1px dotted var(--filet-fort); }

@@ -57,7 +57,6 @@ echo bandeau_guichets('consultation');
 <section class="heros epreuve" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Guichet n° <?= e($g['numero']) ?></span><span>Formulaire CP+ <?= random_int(1000, 9999) ?>-<?= chr(random_int(65, 90)) ?></span></p>
       <h1 id="heros-titre">Consultation approfondie</h1>
       <p class="heros__chapeau">Répondez à ce questionnaire sans aucun rapport avec votre situation. Les questions changent à chaque visite, pour garantir une inutilité toujours renouvelée.</p>
       <ol class="liste-reglement">

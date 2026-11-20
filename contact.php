@@ -67,24 +67,19 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Service des réclamations</span><span>Guichet n° 1</span></p>
       <h1 id="heros-titre">Réclamations</h1>
-      <p class="heros__chapeau">Une question, une réclamation, un besoin de conseil ? Mireille enregistre votre demande, lui attribue un délai et la transmet au cabinet. Elle sera lue. Un jour.</p>
+      <p class="heros__chapeau">Une question, une réclamation, un besoin de conseil ? Mireille enregistre votre demande, lui attribue un délai et la transmet au cabinet. Elle sera lue. Délai annoncé ce jour : <?= e(lcfirst($delai)) ?>.</p>
       <div class="boutons">
         <?= bouton('Écrire au cabinet', '#formulaire') ?>
         <?= bouton('Joindre le standard', 'standard.php', ['variante' => 'secondaire', 'icone_html' => picto('telephone')]) ?>
       </div>
-      <dl class="heros__faits">
-        <div><dt>Délai de réponse</dt><dd><?= e($delai) ?></dd></div>
-        <div><dt>Réclamations perdues</dt><dd>0 (en attente)</dd></div>
-      </dl>
     </div>
     <div class="heros__visuel">
       <?= scene('standard', 'Le standard de Mireille : des fiches rouges branchées au hasard, un combiné décroché, une pile de formulaires, une sonnette et un café qui refroidit depuis 2009.', ['prioritaire' => true, 'tailles' => '(min-width: 1024px) 46vw, 100vw']) ?>
       <div class="heros__pose accueil-mireille" data-papier>
         <img src="assets/equipe/delais.webp" alt="" width="640" height="640" decoding="async">
         <div>
-          <p class="machine">Accueil</p>
+          <p class="libelle">Accueil</p>
           <p class="accueil-mireille__nom">Mireille</p>
           <p class="accueil-mireille__role">Standardiste, responsable des délais</p>
         </div>
@@ -103,7 +98,7 @@ page_debut([
         <input id="ct-site" type="text" name="site_web" tabindex="-1" autocomplete="off">
       </div>
       <div class="ecran__tete">
-        <p class="reference"><span>Formulaire R-1</span><span>Demande au cabinet</span></p>
+        <p class="reference reference--coin"><span>Formulaire R-1</span></p>
         <h2 id="titre-contact">Formulaire de demande</h2>
         <p class="muet">Tous les champs sont obligatoires.<?= isset($_SESSION['user_id']) ? ' Vous êtes connecté : la réponse arrivera aussi dans Mon dossier.' : '' ?></p>
       </div>
@@ -130,7 +125,7 @@ page_debut([
     </form>
 
     <aside class="d-9 coordonnees" aria-labelledby="titre-coordonnees">
-      <h2 id="titre-coordonnees" class="coordonnees__titre">Coordonnées</h2>
+      <h3 id="titre-coordonnees" class="coordonnees__titre">Coordonnées</h3>
       <dl>
         <div><dt>Courrier</dt><dd>12 bis, impasse du Consensus Mou<br>Bâtiment C, escalier D, au fond à gauche</dd></div>
         <div><dt>Horaires</dt><dd>Du lundi au vendredi, de 14h12 à 14h47.<br>Fermé les jours de vent.</dd></div>

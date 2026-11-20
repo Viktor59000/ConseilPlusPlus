@@ -35,7 +35,6 @@ echo bandeau_guichets('documents');
 <section class="heros epreuve" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Guichet n° <?= e($g['numero']) ?></span><span>Service des documents officiels</span></p>
       <h1 id="heros-titre">Les attestations</h1>
       <p class="heros__chapeau">Délivrées par le tampon, doyen du cabinet, qui valide tout ce qu'on lui présente, après remise du formulaire du jour à Bertrand, gardien du règlement intérieur. Aucune valeur légale, une valeur moyenne.</p>
       <ul class="liste-reglement">

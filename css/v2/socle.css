@@ -44,7 +44,7 @@
 
   /* Liens du texte courant : un filet discret au repos, un trait d'encre qui se trace au survol */
   a { color: inherit; }
-  .texte a, a.lien {
+  .texte a, a.lien, a.lien-fleche {
     text-decoration: none;
     background:
       linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1.5px,
@@ -52,10 +52,10 @@
     transition: background-size var(--d-out) var(--courbe);
     padding-bottom: 1px;
   }
-  .texte a:hover, a.lien:hover, .texte a:focus-visible, a.lien:focus-visible {
+  .texte a:hover, a.lien:hover, a.lien-fleche:hover, .texte a:focus-visible, a.lien:focus-visible, a.lien-fleche:focus-visible {
     background-size: 100% 1.5px, 100% 1px; transition-duration: var(--d-in);
   }
-  :root[data-regime="prioritaire"] :is(.texte a, a.lien, .lien-fleche span) { text-decoration: underline; text-underline-offset: .2em; background: none; }
+  :root[data-regime="prioritaire"] :is(.texte a, a.lien, a.lien-fleche) { text-decoration: underline; text-underline-offset: .2em; background: none; }
 
   /* Focus : anneau de 2 px, décalé, jamais animé */
   :focus-visible { outline: 2px solid var(--encre); outline-offset: 3px; }
@@ -78,16 +78,23 @@
   .mono { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: 0; }
   .muet { color: var(--encre-2); }
   .mesure { max-width: var(--mesure); }
-  .chapeau { font-size: var(--t-lead); line-height: 1.5; max-width: 34em; }
-  /* Référence administrative au-dessus d'un titre (« Guichet n° 3 bis ») : la petite ligne d'un formulaire */
+  .chapeau { font-size: var(--t-lead); line-height: 1.5; max-width: 34em; color: var(--encre); }
+  /* Référence imprimée À L'INTÉRIEUR d'un document (« Formulaire C-1 » en tête d'un formulaire officiel) */
   .reference { display: flex; gap: var(--e-2) var(--e-4); align-items: baseline; flex-wrap: wrap; color: var(--encre-2); }
-  /* Libellés « machine » : mono, capitales, entre crochets (planche de références : « [ Mon dossier ] »).
-     Numéros, tickets, références, onglets, titres du pied : ce que le guichet imprime. Crochets non lus (texte alternatif vide). */
-  .machine, .reference > *, .carte__etiquette, .dossier__onglet, .pied__titre, .ticket__entete > *, .entete__dossier .bouton__libelle {
+  /* Code du formulaire imprimé dans le coin haut droit de la feuille, comme sur un Cerfa (jamais au-dessus du titre) */
+  :has(> .reference--coin) { position: relative; }
+  .reference--coin { position: absolute; top: .4em; right: 0; }
+  form > .reference--coin { top: var(--e-5); right: var(--e-5); }
+  /* Libellés « machine » : mono, capitales, entre crochets. Réservés à ce qu'une machine imprime vraiment dans
+     l'univers du cabinet : numéros de ticket et de dossier, références de formulaire dans un document, horodatages.
+     Jamais au-dessus d'un titre de section, jamais dans la navigation ni le pied. Crochets non lus (texte alternatif vide). */
+  .machine, .reference > *, .dossier__onglet, .ticket__entete > * {
     font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em;
   }
-  .machine::before, .reference > *::before, .carte__etiquette::before, .dossier__onglet::before, .pied__titre::before, .entete__dossier .bouton__libelle::before { content: "[\00a0" / ""; }
-  .machine::after, .reference > *::after, .carte__etiquette::after, .dossier__onglet::after, .pied__titre::after, .entete__dossier .bouton__libelle::after { content: "\00a0]" / ""; }
+  .machine::before, .reference > *::before, .dossier__onglet::before { content: "[\00a0" / ""; }
+  .machine::after, .reference > *::after, .dossier__onglet::after { content: "\00a0]" / ""; }
+  /* Petit libellé d'interface (casse de phrase, police du texte) : « Étape 2 », « Poste 04 » */
+  .libelle { font-size: var(--t-etiquette); font-weight: var(--g-appui); line-height: 1.3; color: var(--encre-2); }
   .surligne { background: linear-gradient(var(--surligneur), var(--surligneur)) no-repeat 0 62% / 100% .5em; padding: 0 .08em; }
   .texte > * + * { margin-top: 1em; }
   .texte { max-width: var(--mesure); }

@@ -24,7 +24,6 @@ page_debut([
 ?>
 <section class="doc-entete" data-enter aria-labelledby="doc-titre">
   <div class="conteneur">
-    <p class="reference"><span>Données personnelles</span><span>Légal</span></p>
     <h1 id="doc-titre">Confidentialité</h1>
     <p class="chapeau">Ce que le site et Le Bureau conservent, pour quoi faire, combien de temps, et comment le faire effacer.</p>
   </div>

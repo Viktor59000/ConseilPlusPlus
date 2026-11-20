@@ -79,7 +79,6 @@ if ($utilisateur !== null) {
     }
 }
 $libres = creneaux_libres($bdd);
-$file = file_du_guichet($bdd);
 $jours = ['' => 'Choisir un jour…'];
 foreach ($libres as $jour => $horaires) {
     $n = count($horaires);
@@ -118,7 +117,6 @@ if ($depot):
 <section class="heros guichet-depot" id="depot" data-enter aria-labelledby="depot-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Accusé de dépôt</span><span>Ticket n° <?= sprintf('%03d', $depot['id']) ?></span></p>
       <h1 id="depot-titre">Votre demande est reçue</h1>
       <p class="heros__chapeau">Le tampon a parlé. Votre rendez-vous du <?= e($rendez_vous) ?> est enregistré sous le n° <?= e($numero) ?>. Suivez son instruction dans Mon dossier : déposé, en instruction, puis confirmé.</p>
       <div class="boutons" data-document="<?= e(json_encode($document, JSON_UNESCAPED_UNICODE)) ?>">
@@ -144,22 +142,16 @@ if ($depot):
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Le Guichet</span><span>Guichets n° 1 à 5</span></p>
       <h1 id="heros-titre">Prenez rendez-vous au guichet</h1>
-      <p class="heros__chapeau">Un jour, un horaire à la minute près, et votre problème en une phrase. Le cabinet vous remet une attestation de dépôt tamponnée, puis instruit votre demande avec une lenteur réglementaire.</p>
+      <p class="heros__chapeau">Un jour du lundi au vendredi, un horaire à la minute près, et votre problème en une phrase. Le cabinet vous remet une attestation de dépôt tamponnée, puis instruit votre demande avec une lenteur réglementaire.</p>
       <div class="boutons">
         <?= bouton('Prendre rendez-vous', '#rendez-vous') ?>
         <?= bouton('Voir les épreuves', '#epreuves', ['variante' => 'secondaire']) ?>
       </div>
-      <dl class="heros__faits">
-        <div><dt>Prochain numéro</dt><dd><?= sprintf('%03d', $file['numero']) ?></dd></div>
-        <div><dt>Jours ouverts</dt><dd>du lundi au vendredi</dd></div>
-        <div><dt>Délai de réponse</dt><dd>variable, mais tamponné</dd></div>
-      </dl>
     </div>
     <div class="heros__visuel">
       <?= scene('guichet', 'Le guichet n° 1 : une grille en laiton, une lampe allumée, un tampon suspendu au-dessus d\'une feuille vierge, et un cordon rouge pour contenir une foule qui n\'est pas venue.', ['prioritaire' => true, 'tailles' => '(min-width: 1024px) 46vw, 100vw']) ?>
-      <div class="heros__pose"><?= ticket($file['numero'], ['guichet' => '1', 'libelle' => 'Votre numéro', 'date' => date('d/m/Y'), 'attente' => 'Attente estimée : moyenne']) ?></div>
+      <div class="heros__pose"><?= plaque_guichet('1', 'Rendez-vous') ?></div>
     </div>
   </div>
 </section>
@@ -168,30 +160,28 @@ if ($depot):
 <?php if (!$depot): ?>
 <section class="ecran ecran--papier" id="rendez-vous" aria-labelledby="rendez-vous-titre">
   <div class="conteneur grille guichet-rdv">
-    <div class="c-4 ecran__tete">
-      <p class="reference"><span>Guichet n° 1</span><span>Rendez-vous</span></p>
+    <div class="ecran__tete">
       <h2 id="rendez-vous-titre">Prendre rendez-vous</h2>
-      <p class="chapeau muet">Le cabinet reçoit du lundi au vendredi, sur les <?= JOURS_PROPOSES ?> jours ouvrés à venir, à six horaires choisis pour ne jamais tomber juste.</p>
-      <ul class="guichet-rdv__regles">
+      <p class="chapeau">Le cabinet reçoit du lundi au vendredi, sur les <?= JOURS_PROPOSES ?> jours ouvrés à venir, à six horaires choisis pour ne jamais tomber juste.</p>
+    </div>
+    <ul class="d-10 guichet-rdv__regles" aria-label="Conditions du guichet">
         <li>Un compte est exigé : votre dossier vous suit, pas l'inverse.</li>
         <li><?= INSCRIPTIONS_ACTIVES_MAX ?> rendez-vous à venir au plus par personne.</li>
         <li>Annulation libre dans Mon dossier, jusqu'au jour même.</li>
-      </ul>
-    </div>
-    <div class="d-6 guichet-rdv__feuille">
+    </ul>
+    <div class="c-8 guichet-rdv__feuille">
 <?php if ($utilisateur === null): ?>
       <div class="guichet-porte">
-        <p class="guichet-porte__ref"><?= machine('Accès réservé') ?></p>
         <h3 class="guichet-porte__titre">Le guichet ne reçoit que les dossiers ouverts</h3>
         <p>Connectez-vous à votre espace, ou ouvrez un dossier en une minute. Vous revenez ensuite ici, au même guichet, sans reprendre de ticket.</p>
         <div class="boutons">
           <?= bouton('Me connecter', 'guichet.php?connexion=connexion') ?>
           <?= bouton('Ouvrir un dossier', 'guichet.php?connexion=inscription', ['variante' => 'secondaire']) ?>
         </div>
-        <p class="guichet-porte__libres"><?= machine('Créneaux libres cette semaine') ?></p>
+        <h4 class="guichet-porte__libres">Créneaux libres cette semaine</h4>
         <ul class="guichet-porte__jours">
 <?php foreach (array_slice($libres, 0, 5, true) as $jour => $h): ?>
-          <li><span><?= e(ucfirst(libelle_jour_court($jour))) ?></span><span class="mono"><?= count($h) ?> / <?= count(HORAIRES_GUICHET) ?></span></li>
+          <li><span><?= e(ucfirst(libelle_jour_court($jour))) ?></span><span><?= count($h) ?> sur <?= count(HORAIRES_GUICHET) ?></span></li>
 <?php endforeach; ?>
         </ul>
       </div>
@@ -203,7 +193,8 @@ if ($depot):
         <?= csrf_champ() ?>
         <div class="guichet-formulaire__entete">
           <h3 id="formulaire-titre">Formulaire de rendez-vous</h3>
-          <p class="mono muet">Cerfa n° 1-RDV · Tous les champs sont obligatoires, sauf le problème.</p>
+          <p class="reference reference--coin"><span>Cerfa n° 1-RDV</span></p>
+          <p class="muet">Tous les champs sont obligatoires, sauf le problème.</p>
         </div>
 <?php if ($avis): ?>
         <?= bloc_alerte($avis[0], $avis[1], ['titre' => $avis[2]]) ?>
@@ -229,9 +220,8 @@ if ($depot):
 <section class="ecran" id="epreuves" aria-labelledby="epreuves-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Tableau d'affichage</span><span>Les guichets voisins</span></p>
       <h2 id="epreuves-titre">Les épreuves du guichet</h2>
-      <p class="chapeau muet">Chaque guichet rend son verdict, tamponné, et vous délivre le document qui va avec. Aucun n'est obligatoire, tous sont officiels.</p>
+      <p class="chapeau">Chaque guichet rend son verdict, tamponné, et vous délivre le document qui va avec. Aucun n'est obligatoire, tous sont officiels.</p>
     </div>
     <ol class="guichets-tableau">
 <?php foreach (GUICHETS as $cle => $g): ?>
@@ -240,7 +230,7 @@ if ($depot):
           <span class="guichets-tableau__numero" aria-hidden="true"><?= e($g['numero']) ?></span>
           <span class="guichets-tableau__nom"><span class="visuellement-cache">Guichet n° <?= e($g['numero']) ?> : </span><?= e($g['nom']) ?></span>
           <span class="guichets-tableau__detail"><?= e($g['detail']) ?></span>
-          <span class="guichets-tableau__acces"><?= $g['connexion'] ? machine('Compte exigé') : machine('Accès libre') ?><?= ui_fleche() ?></span>
+          <span class="guichets-tableau__acces"><?= $g['connexion'] ? 'Compte exigé' : 'Accès libre' ?></span>
         </a>
       </li>
 <?php endforeach; ?>

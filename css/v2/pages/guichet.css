@@ -5,14 +5,16 @@
 .guichet-depot .attestation { width: 100%; }
 .guichet-depot__note { font-size: var(--t-petit); max-width: 30em; }
 
-/* ---------- Prendre rendez-vous ---------- */
+/* ---------- Prendre rendez-vous : le formulaire en grand, les conditions du guichet en marge ---------- */
 .guichet-rdv { align-items: start; }
-.guichet-rdv .ecran__tete { margin-bottom: 0; }
-.guichet-rdv__regles { list-style: none; padding: 0; display: grid; margin-top: var(--e-3); border-top: 1px solid var(--filet); }
-.guichet-rdv__regles li { padding: var(--e-3) 0 var(--e-3) var(--e-5); border-bottom: 1px solid var(--filet); position: relative; font-size: var(--t-petit); }
-.guichet-rdv__regles li::before { content: ""; position: absolute; left: 0; top: 1.15em; width: 10px; height: 2px; background: var(--accent); }
+.guichet-rdv .ecran__tete { margin-bottom: var(--e-3); }
+.guichet-rdv__feuille { grid-row: 2; grid-column: 1 / span 8; }
+.guichet-rdv__regles { grid-row: 2; list-style: none; padding: 0; display: grid; border-top: 2px solid var(--encre); }
+.guichet-rdv__regles li { padding: var(--e-4) 0; border-bottom: 1px solid var(--filet); }
 .guichet-rdv__suite { margin-top: var(--e-5); }
-@media (max-width: 1023px) { .guichet-rdv > .c-4 { grid-column: 1 / -1; } .guichet-rdv__feuille { margin-top: var(--e-6); } }
+@media (max-width: 1023px) {
+  .guichet-rdv__feuille, .guichet-rdv__regles { grid-row: auto; grid-column: 1 / -1; }
+}
 
 /* Le formulaire officiel : une feuille posée sur le comptoir */
 .guichet-formulaire, .guichet-porte {
@@ -32,7 +34,7 @@
 
 /* Hors connexion : la porte du guichet, et un aperçu des créneaux libres */
 .guichet-porte__titre { font-size: var(--t-h3); }
-.guichet-porte__libres { margin-top: var(--e-2); }
+.guichet-porte__libres { margin-top: var(--e-2); font-size: 1rem; font-weight: var(--g-appui); letter-spacing: 0; }
 .guichet-porte__jours { list-style: none; padding: 0; display: grid; border-top: 1px solid var(--filet); }
 .guichet-porte__jours li { display: flex; justify-content: space-between; gap: var(--e-4); padding: var(--e-2) 0; border-bottom: 1px dotted var(--filet-fort); font-size: var(--t-petit); }
 
@@ -50,11 +52,10 @@
   box-shadow: inset 0 0 0 2px rgba(24, 23, 21, .5), inset 0 0 0 5px var(--laiton), inset 0 0 0 6px rgba(24, 23, 21, .25);
 }
 .guichets-tableau__nom { font-size: var(--t-h3); font-weight: var(--g-titre); letter-spacing: -.02em; line-height: 1.15; }
-.guichets-tableau__detail { color: var(--encre-2); max-width: 38em; }
-.guichets-tableau__acces { display: inline-flex; align-items: center; justify-content: space-between; gap: var(--e-3); color: var(--encre-2); white-space: nowrap; }
-.guichets-tableau__acces .bouton__fleche { width: 20px; height: 20px; fill: none; stroke: var(--encre); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--d-out) var(--courbe); }
+.guichets-tableau__detail { max-width: 38em; }
+.guichets-tableau__acces { font-size: var(--t-petit); color: var(--encre-2); white-space: nowrap; text-align: right; }
 .guichets-tableau__ligne:hover { background: color-mix(in srgb, var(--encre) 4%, transparent); transition-duration: var(--d-in); }
-.guichets-tableau__ligne:hover .bouton__fleche { transform: translateX(3px); transition-duration: var(--d-in); }
+@media (hover: hover) and (pointer: fine) { .guichets-tableau__ligne:hover .guichets-tableau__nom { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: .18em; } }
 .guichets-tableau__ligne:focus-visible { outline-offset: -2px; }
 @media (max-width: 1023px) {
   .guichets-tableau__ligne { grid-template-columns: 64px minmax(0, 1fr) auto; row-gap: var(--e-2); }
@@ -64,5 +65,5 @@
   .guichets-tableau__ligne { grid-template-columns: 56px minmax(0, 1fr); }
   .guichets-tableau__numero { width: 48px; height: 48px; font-size: 1.5rem; }
   .guichets-tableau__detail, .guichets-tableau__acces { grid-column: 2; }
-  .guichets-tableau__acces { grid-row: 3; }
+  .guichets-tableau__acces { grid-row: 3; text-align: left; }
 }

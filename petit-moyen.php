@@ -23,7 +23,6 @@ $numero = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, ['options' => ['m
 $feuillet = $pages[$numero - 1];
 $autre = ($numero + random_int(1, $total - 1) - 1) % $total + 1; // une autre page, jamais la même
 $lettres = lettres_dictionnaire();
-$etymologies = count(array_filter($pages, fn($p) => !empty($p['etymologie'])));
 
 // Le sigle du jour (abréviationnisme), tiré selon la date comme le mot
 $sigle = sigle_du_jour();
@@ -50,18 +49,12 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Dictionnaire officieux</span><span>Édition permanente</span></p>
       <h1 id="heros-titre">Le Petit Moyen</h1>
-      <p class="heros__chapeau">Le dictionnaire du cabinet. Un mot par jour, parfois un jeu de mots, parfois pas, toujours défini avec une précision moyenne. Certains jours, le conseiller et son stagiaire tentent même une démonstration.</p>
+      <p class="heros__chapeau">Le dictionnaire du cabinet. Un mot par jour, parfois un jeu de mots, parfois pas, toujours défini avec une précision moyenne : <?= $total ?> entrées à ce jour. Certains jours, le conseiller et son stagiaire tentent même une démonstration.</p>
       <div class="boutons">
         <?= bouton('Lire le mot du jour', '#aujourdhui') ?>
         <?= bouton('Le feuilleton', 'feuilleton.php', ['variante' => 'secondaire']) ?>
       </div>
-      <dl class="heros__faits">
-        <div><dt>Pages</dt><dd><?= $total ?></dd></div>
-        <div><dt>Étymologies établies</dt><dd><?= $etymologies ?></dd></div>
-        <div><dt>Sigles redéfinis</dt><dd><?= count($sigles['sigles']) ?></dd></div>
-      </dl>
     </div>
 <?php if ($mot_jour): ?>
     <div class="heros__visuel">
@@ -70,7 +63,7 @@ page_debut([
         <span class="pm-vedette__mot"><?= e($mot_jour['mot']) ?></span>
         <span class="pm-vedette__nature"><?= e($mot_jour['nature']) ?></span>
         <span class="pm-vedette__texte"><?= e($vedette) ?></span>
-        <span class="pm-vedette__suite"><span>Lire l'entrée complète</span><?= ui_fleche() ?></span>
+        <span class="pm-vedette__suite">Lire l'entrée complète</span>
         <?= tampon('Mot du jour', ['angle' => 7, 'mouvement' => 'au-chargement', 'decoratif' => true]) ?>
       </a>
     </div>
@@ -80,17 +73,16 @@ page_debut([
 
 <?php if ($mot_jour): ?>
 <section class="ecran ecran--papier" id="aujourdhui" aria-labelledby="aujourdhui-titre">
-  <div class="conteneur grille">
+  <div class="conteneur grille pm-aujourdhui">
     <div class="c-5">
       <div class="ecran__tete">
-        <p class="reference"><span>Entrée du jour</span></p>
-        <h2 id="aujourdhui-titre">Aujourd'hui</h2>
-        <p class="chapeau muet"><?= $mot_jour['format'] === 'sketch'
+        <h2 id="aujourdhui-titre">L'entrée du jour</h2>
+        <p class="chapeau"><?= $mot_jour['format'] === 'sketch'
             ? 'Le stagiaire lit le mot de travers, le conseiller le reprend, la scène tranche. Jouez-la, avec ou sans les voix.'
             : 'Une définition établie par le cabinet, un exemple d\'usage et un synonyme qu\'il n\'a pas essayé.' ?></p>
       </div>
     </div>
-    <div class="d-7 pm-entree">
+    <div class="c-8 pm-entree">
 <?php $mot = $mot_jour; $titre_niveau = 'h3'; include __DIR__ . '/includes/carte-mot.php'; ?>
     </div>
   </div>
@@ -100,7 +92,6 @@ page_debut([
 <section class="ecran" id="sigle" aria-labelledby="sigle-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Abréviationnisme</span><span>Mouvement interne du cabinet</span></p>
       <h2 id="sigle-titre">Le sigle du jour</h2>
     </div>
     <article class="sigle-jour">
@@ -108,7 +99,7 @@ page_debut([
       <div class="sigle-jour__corps">
         <p class="sigle-jour__developpement"><?= e($sigle['developpement']) ?></p>
         <p class="sigle-jour__definition"><?= e($sigle['definition']) ?></p>
-        <p class="sigle-jour__exemple"><?= machine('En réunion') ?> « <?= e($sigle['exemple']) ?> »</p>
+        <p class="sigle-jour__exemple">En réunion : « <?= e($sigle['exemple']) ?> »</p>
       </div>
     </article>
     <details class="volet">
@@ -127,9 +118,8 @@ page_debut([
   <div class="conteneur grille">
     <div class="c-5 pm-feuilleter">
       <div class="ecran__tete">
-        <p class="reference"><span>Page <?= $numero ?> sur <?= $total ?></span></p>
         <h2 id="feuilleter-titre">Feuilleter le dictionnaire</h2>
-        <p class="chapeau muet">Vous ne pouvez pas attendre demain ? Le cabinet comprend. Ouvrez le Petit Moyen à n'importe quelle page.</p>
+        <p class="chapeau">Vous ne pouvez pas attendre demain ? Le cabinet comprend. Ouvrez le Petit Moyen à n'importe quelle page.</p>
       </div>
       <div class="boutons"><?= bouton('Ouvrir à une autre page', 'petit-moyen.php?page=' . $autre . '#feuilleter', ['variante' => 'secondaire']) ?></div>
       <nav class="lettrines" aria-label="Ouvrir le dictionnaire à la lettre">
@@ -165,19 +155,16 @@ page_debut([
 </section>
 
 <section class="ecran ecran--kraft" id="feuilleton" aria-labelledby="feuilleton-titre">
-  <div class="conteneur grille">
-    <div class="c-6">
-      <div class="ecran__tete">
-        <p class="reference"><span>Feuilleton</span><span>Saison <?= (int) feuilleton()['saison'] ?></span><span>Épisode <?= (int) $episode['numero'] ?></span></p>
-        <h2 id="feuilleton-titre"><?= e(feuilleton()['titre']) ?></h2>
-        <p class="chapeau">Chaque semaine, l'équipe du cabinet joue un épisode de cape et d'épée en costume de carton. Cette semaine : <strong>« <?= e($episode['titre']) ?> »</strong>.</p>
-      </div>
-      <div class="boutons"><?= bouton('Voir l\'épisode', 'feuilleton.php') ?></div>
+  <div class="conteneur pm-feuilleton">
+    <div class="ecran__tete">
+      <h2 id="feuilleton-titre"><?= e(feuilleton()['titre']) ?></h2>
+      <p class="chapeau">Chaque semaine, l'équipe du cabinet joue un épisode de cape et d'épée en costume de carton. Cette semaine, l'épisode <?= (int) $episode['numero'] ?> : <strong>« <?= e($episode['titre']) ?> »</strong>.</p>
     </div>
-    <div class="d-8 pm-episode">
-      <p class="machine">Le Héraut</p>
+    <figure class="pm-episode">
       <blockquote class="pm-episode__heraut"><p><?= e($episode['heraut']) ?></p></blockquote>
-    </div>
+      <figcaption>Le Héraut, en ouverture de l'épisode</figcaption>
+    </figure>
+    <p class="pm-feuilleton__suite"><?= lien_fleche('Voir l\'épisode en entier', 'feuilleton.php') ?></p>
   </div>
 </section>
 
@@ -185,16 +172,15 @@ page_debut([
 <section class="ecran" id="archives" aria-labelledby="archives-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Archives</span><span><?= count($archives) ?> jours</span></p>
       <h2 id="archives-titre">Les jours précédents</h2>
-      <p class="chapeau muet">Chaque mot du jour, rangé à sa date. Le cabinet ne publie jamais ceux de demain, par prudence.</p>
+      <p class="chapeau">Chaque mot du jour, rangé à sa date. Le cabinet ne publie jamais ceux de demain, par prudence.</p>
     </div>
 <?php if ($palmares): ?>
     <div class="palmares">
       <h3 class="palmares__titre">Les mots préférés du public</h3>
       <ol class="palmares__liste">
 <?php foreach ($palmares as $i => $p): ?>
-        <li><span class="palmares__rang mono" aria-hidden="true"><?= sprintf('%02d', $i + 1) ?></span><strong><?= e($p['mot']) ?></strong><span class="mono muet">Moyen <?= (int) $p['moyen'] ?> · Pas moyen <?= (int) $p['pas_moyen'] ?></span></li>
+        <li><span class="palmares__rang mono" aria-hidden="true"><?= sprintf('%02d', $i + 1) ?></span><strong><?= e($p['mot']) ?></strong><span class="muet"><?= (int) $p['moyen'] ?> « moyen », <?= (int) $p['pas_moyen'] ?> « pas moyen »</span></li>
 <?php endforeach; ?>
       </ol>
     </div>

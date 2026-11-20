@@ -52,7 +52,6 @@ page_debut([
 ?>
 <section class="doc-entete" data-enter aria-labelledby="doc-titre">
   <div class="conteneur">
-    <p class="reference"><span>Classement général</span><span>Arborescence</span></p>
     <h1 id="doc-titre">Plan du site</h1>
     <p class="chapeau">Toutes les pages du cabinet, sur une seule page. Pratique, pour une fois.</p>
   </div>

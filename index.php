@@ -34,57 +34,48 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Hall d'accueil</span><span>Guichet ouvert</span></p>
       <h1 id="heros-titre">Votre problème mérite un dossier</h1>
       <p class="heros__chapeau">Prenez rendez-vous au guichet du cabinet. Votre demande est reçue, tamponnée, instruite, puis tranchée, et vous suivez chaque étape dans Mon dossier, comme un colis, en plus lent.</p>
       <div class="boutons">
         <?= bouton('Prendre rendez-vous', 'guichet.php#rendez-vous') ?>
         <?= bouton('Suivre mon dossier', $dossier, ['variante' => 'secondaire']) ?>
       </div>
-      <dl class="heros__faits">
-        <div><dt>Prochain numéro</dt><dd><?= sprintf('%03d', $file['numero']) ?></dd></div>
-        <div><dt>Demandes en attente</dt><dd><?= $file['attente'] ?></dd></div>
-        <div><dt>Créneaux par jour</dt><dd><?= count(HORAIRES_GUICHET) ?>, à la minute près</dd></div>
-      </dl>
     </div>
     <div class="heros__visuel">
       <?= scene('cabinet', 'Le bureau du cabinet : quatre-vingt-quatre tiroirs, une horloge sans chiffres, une lampe allumée sur une pile de dossiers en attente.', ['prioritaire' => true, 'tailles' => '(min-width: 1024px) 46vw, 100vw']) ?>
       <div class="heros__pose"><?= ticket($file['numero'], ['guichet' => '1', 'libelle' => 'Prochain numéro',
-          'date' => 'Hall · ' . $aujourdhui->format('d/m/Y'), 'attente' => 'Personnes avant vous : ' . $file['attente']]) ?></div>
+          'date' => 'Délivré le ' . $aujourdhui->format('d/m/Y'), 'attente' => 'Personnes avant vous : ' . $file['attente']]) ?></div>
     </div>
   </div>
 </section>
 
 <section class="ecran ecran--papier" id="conseil" aria-labelledby="conseil-titre">
   <div class="conteneur grille hall-conseil">
-    <div class="c-5 ecran__tete">
-      <p class="reference"><span>Service 1</span><span>Le conseiller moyen</span></p>
-      <h2 id="conseil-titre">Le conseil du jour</h2>
-      <p class="chapeau muet">Trois idées tirées au sort, qui ne se connaissaient pas, présentées les unes aux autres. Le conseil ne concerne pas votre problème, mais il est disponible tout de suite.</p>
-      <p class="hall-conseil__note"><?= e(texte_hasard('mentions')) ?></p>
-    </div>
-    <div class="d-7">
+    <h2 id="conseil-titre">Le conseil du jour</h2>
+    <div class="c-8 hall-conseil__fiche">
       <?= fiche_conseil($conseil, [
           'titre' => 'Conseil du jour',
-          'actions_html' => bouton('Un autre conseil', 'index.php#conseil', ['taille' => 'compacte', 'fleche' => false, 'attributs' => ['data-autre-conseil' => '#conseil-du-jour']])
+          'actions_html' => bouton('Un autre conseil', 'index.php#conseil', ['taille' => 'compacte', 'attributs' => ['data-autre-conseil' => '#conseil-du-jour']])
               . bouton('Partager le conseil', null, ['type' => 'button', 'variante' => 'secondaire', 'taille' => 'compacte',
                   'attributs' => ['data-partager' => 'conseil', 'data-source' => '#conseil-du-jour', 'hidden' => true]]),
       ]) ?>
+    </div>
+    <div class="d-10 hall-conseil__marge">
+      <p class="chapeau">Trois idées tirées au sort, qui ne se connaissaient pas, présentées les unes aux autres.</p>
+      <p>Le conseil ne concerne pas votre problème, mais il est disponible tout de suite, et un autre attend derrière.</p>
+      <p class="hall-conseil__mention"><?= e(texte_hasard('mentions')) ?></p>
     </div>
   </div>
 </section>
 
 <section class="ecran" id="reglement" aria-labelledby="reglement-titre">
   <div class="conteneur hall-reglement">
-    <div class="ecran__tete">
-      <p class="reference"><span>Article premier</span><span>Règlement intérieur</span></p>
-      <h2 id="reglement-titre" class="visuellement-cache">Le règlement intérieur</h2>
-    </div>
+    <h2 id="reglement-titre" class="visuellement-cache">Le règlement intérieur</h2>
     <p class="phrase-encre" data-encre>Ici, chaque problème est reçu, numéroté, tamponné, et traité <em>avec le plus grand sérieux</em>, ce qui ne veut pas dire correctement.</p>
     <div class="hall-article">
-      <p class="hall-article__numero"><?= machine('Article ' . $article['numero'] . ' · affiché ce jour') ?></p>
+      <p class="hall-article__numero">Article <?= (int) $article['numero'] ?></p>
       <p class="hall-article__texte"><?= e($article['texte']) ?></p>
-      <p class="hall-article__garde">Affiché chaque matin par Bertrand, gardien du règlement, qui en connaît chaque article et n'en applique aucun à lui-même.</p>
+      <p class="hall-article__garde">Affiché ce matin par Bertrand, gardien du règlement, qui en connaît chaque article et n'en applique aucun à lui-même.</p>
     </div>
   </div>
 </section>
@@ -92,21 +83,20 @@ page_debut([
 <section class="ecran ecran--fond-2" id="parcours" aria-labelledby="parcours-titre">
   <div class="conteneur">
     <div class="ecran__tete">
-      <p class="reference"><span>Circulaire n° 4</span><span>Le parcours d'un dossier</span></p>
       <h2 id="parcours-titre">Un dossier en quatre étapes</h2>
-      <p class="chapeau muet">Le circuit est le même pour tout le monde. Seule la durée change, et personne au cabinet ne sait de quoi elle dépend.</p>
+      <p class="chapeau">Le circuit est le même pour tout le monde. Seule la durée change, et personne au cabinet ne sait de quoi elle dépend.</p>
     </div>
     <div class="rangee rangee--classeur hall-parcours" style="--par: 4">
       <?= carte(['etiquette' => 'Étape 1', 'titre' => 'Prendre rendez-vous', 'niveau' => 3,
           'texte' => 'Choisissez un jour et un horaire au guichet, puis déposez votre problème en une phrase. Le cabinet préfère les phrases courtes.',
           'scene' => ['nom' => 'guichet', 'alt' => 'Le guichet du cabinet : une grille en laiton, un tampon suspendu au-dessus d\'une feuille vierge, un cordon rouge pour contenir une foule qui n\'est pas venue.']]) ?>
-      <?= carte(['etiquette' => 'Étape 2', 'titre' => 'Le reçu', 'niveau' => 3,
+      <?= carte(['etiquette' => 'Étape 2', 'titre' => 'Recevoir le reçu', 'niveau' => 3,
           'texte' => 'Le tampon « Reçu » s\'abat sur votre attestation de dépôt. Elle ne prouve rien, mais elle le prouve officiellement.',
           'scene' => ['nom' => 'methode-1', 'alt' => 'Une enveloppe tombe dans une corbeille en laiton, entre deux piles de formulaires et une sonnette que personne n\'ose actionner.']]) ?>
-      <?= carte(['etiquette' => 'Étape 3', 'titre' => 'En instruction', 'niveau' => 3,
+      <?= carte(['etiquette' => 'Étape 3', 'titre' => 'Attendre l\'instruction', 'niveau' => 3,
           'texte' => 'Bertrand relève votre demande au Bureau et la range dans le bon casier, puis dans un autre, par prudence.',
           'scene' => ['nom' => 'salle-de-tri', 'alt' => 'La salle de tri du Bureau : des casiers jusqu\'au plafond, chacun étiqueté, aucun dans l\'ordre.']]) ?>
-      <?= carte(['etiquette' => 'Étape 4', 'titre' => 'Le verdict', 'niveau' => 3,
+      <?= carte(['etiquette' => 'Étape 4', 'titre' => 'Lire le verdict', 'niveau' => 3,
           'texte' => 'Le cabinet confirme votre rendez-vous et vous répond dans Mon dossier. La réponse est tamponnée, donc définitive.',
           'scene' => ['nom' => 'dossier', 'alt' => 'Une chemise kraft sanglée de rouge, un tampon encreur et un stylo plume : tout ce qu\'il faut pour décider sans lire.']]) ?>
     </div>
@@ -115,51 +105,50 @@ page_debut([
 </section>
 
 <section class="ecran" id="publications" aria-labelledby="publications-titre">
-  <div class="conteneur">
-    <div class="ecran__tete">
-      <p class="reference"><span>Service 2</span><span>Les publications du cabinet</span></p>
+  <div class="conteneur grille hall-publications">
+    <div class="c-5 hall-publications__tete">
       <h2 id="publications-titre">À lire en attendant votre tour</h2>
-      <p class="chapeau muet">Le mot du jour, défini avec une précision moyenne, et le feuilleton de la semaine, joué par l'équipe du cabinet en costume.</p>
+      <p class="chapeau">Les deux publications du cabinet : un dictionnaire tenu au jour le jour, et un feuilleton joué par l'équipe en costume de carton.</p>
     </div>
-    <div class="grille hall-publications">
+    <div class="d-7 hall-publications__liste">
 <?php if ($mot): ?>
-      <article class="c-6 hall-publication" aria-labelledby="mot-titre">
-        <p class="hall-publication__ref"><?= machine('Le Petit Moyen · ' . $aujourdhui->format('d/m/Y')) ?></p>
-        <h3 class="hall-mot" id="mot-titre"><?= e($mot['mot']) ?> <span class="hall-mot__nature"><?= e($mot['nature']) ?></span></h3>
+      <article class="hall-entree" aria-labelledby="mot-titre">
+        <h3 id="mot-titre">Le mot du jour</h3>
+        <p class="hall-entree__article"><b class="hall-entree__mot"><?= e($mot['mot']) ?></b>, <i><?= e($mot['nature']) ?></i>
 <?php if ($mot['format'] === 'sketch'): ?>
-        <p class="hall-publication__texte">Le mot du jour est joué en sketch par le conseiller et le stagiaire. Il se conclut ainsi : « <?= e((string) chute_sketch($mot)) ?> »</p>
+          Mot joué en sketch par le conseiller et le stagiaire, qui conclut : « <?= e((string) chute_sketch($mot)) ?> »</p>
 <?php else: ?>
-        <p class="hall-publication__texte"><?= e($mot['definition']) ?></p>
+          <?= e($mot['definition']) ?></p>
 <?php endif; ?>
-        <p class="hall-publication__lien"><?= lien_fleche('Lire Le Petit Moyen', 'petit-moyen.php') ?></p>
+        <p><?= lien_fleche('Lire Le Petit Moyen', 'petit-moyen.php') ?></p>
       </article>
 <?php endif; ?>
-      <article class="<?= $mot ? 'd-7' : 'c-6' ?> hall-publication hall-publication--feuilleton" aria-labelledby="feuilleton-titre">
-        <p class="hall-publication__ref"><?= machine('La Plume et le Tampon · épisode ' . $episode['numero']) ?></p>
-        <h3 class="hall-feuilleton" id="feuilleton-titre"><?= e($episode['titre']) ?></h3>
-        <p class="hall-publication__texte"><?= e($episode['heraut']) ?></p>
-        <p class="hall-publication__lien"><?= lien_fleche('Voir l\'épisode de la semaine', 'petit-moyen.php#feuilleton') ?></p>
+      <article class="hall-entree" aria-labelledby="feuilleton-titre">
+        <h3 id="feuilleton-titre">Le feuilleton de la semaine</h3>
+        <p class="hall-entree__article"><b>La Plume et le Tampon</b>, épisode <?= (int) $episode['numero'] ?>, « <?= e($episode['titre']) ?> ». <?= e($episode['heraut']) ?></p>
+        <p><?= lien_fleche('Voir l\'épisode', 'petit-moyen.php#feuilleton') ?></p>
       </article>
     </div>
   </div>
 </section>
 
 <section class="ecran ecran--papier hall-fermeture" id="ouvert" aria-labelledby="ouvert-titre">
-  <div class="conteneur grille">
-    <div class="c-6 ecran__tete">
-      <p class="reference"><span>Horaires</span><span>Du lundi au vendredi</span></p>
-      <h2 id="ouvert-titre">Le guichet vous reçoit à la minute près</h2>
-      <p class="chapeau muet">Six créneaux par jour, jamais à l'heure ronde : le cabinet tient à sa réputation de sérieux. Il suffit d'un compte, d'un jour libre et d'un problème, même petit.</p>
-      <ul class="hall-horaires" aria-label="Horaires du guichet">
+  <div class="conteneur">
+    <div class="hall-fermeture__tete">
+      <div class="ecran__tete">
+        <h2 id="ouvert-titre">Les horaires du guichet</h2>
+        <p class="chapeau">Du lundi au vendredi, six créneaux par jour, jamais à l'heure ronde : le cabinet tient à sa réputation de sérieux. Il suffit d'un compte, d'un jour libre et d'un problème, même petit.</p>
+      </div>
+      <?= tampon('Ouvert', ['taille' => 'grand', 'angle' => -8, 'mention' => 'Guichet n° 1', 'decoratif' => true, 'classe' => 'hall-fermeture__tampon']) ?>
+    </div>
+    <div class="hall-tableau">
+      <ul class="hall-tableau__horaires" aria-label="Les six horaires du guichet">
 <?php foreach (HORAIRES_GUICHET as $horaire): ?>
         <li><?= e(libelle_horaire($horaire)) ?></li>
 <?php endforeach; ?>
       </ul>
-      <div class="boutons"><?= bouton('Prendre rendez-vous', 'guichet.php#rendez-vous') ?></div>
     </div>
-    <div class="d-8 hall-fermeture__objet" data-papier>
-      <?= tampon('Ouvert', ['taille' => 'geant', 'angle' => -8, 'mention' => 'Guichet n° 1', 'decoratif' => true]) ?>
-    </div>
+    <div class="boutons hall-fermeture__action"><?= bouton('Prendre rendez-vous', 'guichet.php#rendez-vous') ?></div>
   </div>
 </section>
 <?php page_fin(); ?>

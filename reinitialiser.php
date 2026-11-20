@@ -47,7 +47,6 @@ page_debut([
 <section class="heros" data-enter aria-labelledby="heros-titre">
   <div class="conteneur grille">
     <div class="heros__texte">
-      <p class="reference"><span>Guichet n° 3 bis</span><span>Objets perdus</span></p>
       <h1 id="heros-titre">Nouveau mot de passe</h1>
 <?php if ($demande): ?>
       <p class="heros__chapeau">Bonjour <?= e($demande['prenom']) ?>. Choisissez un mot de passe que vous oublierez moins vite.</p>
@@ -61,7 +60,7 @@ page_debut([
         <?= csrf_champ() ?>
         <input type="hidden" name="jeton" value="<?= e($jeton) ?>">
         <div class="ecran__tete">
-          <p class="reference"><span>Formulaire P-1</span></p>
+          <p class="reference reference--coin"><span>Formulaire P-1</span></p>
           <h2 id="titre-nouveau">Votre nouveau mot de passe</h2>
           <p class="muet">Tous les champs sont obligatoires.</p>
         </div>
