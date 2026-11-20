@@ -3,6 +3,11 @@
 // Chaque séance tire 7 expériences au sort dans le répertoire (toujours un interrogatoire, toujours « Le départ » à la fin).
 // Plus bas : les prédictions rétroactives (une autre prédiction, certificat horodaté après coup).
 (() => {
+  // Le tampon « PRÉVU » s'abat (window.Guichet, js/v2/guichet.js) ; « conteneur » porte le tampon (.tampon) ou en est un
+  const frapper = (conteneur) => {
+    const t = conteneur.matches('.tampon') ? conteneur : conteneur.querySelector('.tampon');
+    if (t && window.Guichet) window.Guichet.tamponner(t);
+  };
   const zone = document.querySelector('[data-experience]');
   if (zone) {
     const $ = (s) => zone.querySelector(s);
@@ -29,7 +34,7 @@
     let nettoyer = () => {}; // retire les écouteurs et minuteries propres à une expérience
 
     /** Un bouton d'action dans la scène. */
-    function bouton(texte, classe = 'btn btn-tampon') {
+    function bouton(texte, classe = 'bouton bouton--principal') {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = classe;
@@ -64,9 +69,7 @@
       }
       elRevelation.textContent = texte;
       elTampon.hidden = false;
-      elTampon.classList.remove('tampon-anime');
-      void elTampon.offsetWidth;
-      elTampon.classList.add('tampon-anime');
+      frapper(elTampon);
       await dort(600);
       elAvis.hidden = false;
     }
@@ -116,8 +119,8 @@
         const question = document.createElement('p');
         question.className = 'experience-question';
         elScene.append(question);
-        const oui = bouton('Oui', 'btn btn-clair');
-        const non = bouton('Non', 'btn btn-clair');
+        const oui = bouton('Oui', 'bouton bouton--secondaire');
+        const non = bouton('Non', 'bouton bouton--secondaire');
         const poser = () => {
           question.textContent = `${reponses.length + 1}. ${tirage[reponses.length][0]}`;
         };
@@ -334,8 +337,8 @@
         titre: 'Le choix',
         consigne: 'Gauche ou droite ? Choisissez librement. Votre libre arbitre est entre vos mains.',
         jouer() {
-          const g = bouton('Gauche', 'btn btn-clair');
-          const d = bouton('Droite', 'btn btn-clair');
+          const g = bouton('Gauche', 'bouton bouton--secondaire');
+          const d = bouton('Droite', 'bouton bouton--secondaire');
           g.addEventListener('click', () => reveler('Vous avez choisi gauche. Votre libre arbitre ne m\'a rien caché.'));
           d.addEventListener('click', () => reveler('Vous avez choisi droite. Votre libre arbitre ne m\'a rien caché.'));
         },
@@ -364,7 +367,7 @@
         const minuterie = setTimeout(() => {
           if (parti) return;
           elRevelation.textContent = 'Je sens une résistance. Elle aussi était prévue.';
-          bouton('Je refuse de partir', 'btn btn-clair').addEventListener('click', () => {
+          bouton('Je refuse de partir', 'bouton bouton--secondaire').addEventListener('click', () => {
             document.removeEventListener('visibilitychange', onVisibilite);
             reveler("Vous êtes resté. C'était le plan B. Prévu.", { concentration: false });
           });
@@ -423,7 +426,7 @@
       elRevelation.textContent = `Je savais que vous iriez jusqu'au bout. Crédibilité finale : ${score} %.`;
       elTampon.hidden = false;
       elAvis.hidden = true;
-      bouton('Une nouvelle séance', 'btn btn-clair').addEventListener('click', () => demarrer(true));
+      bouton('Une nouvelle séance', 'bouton bouton--secondaire').addEventListener('click', () => demarrer(true));
       focaliser();
     }
 
@@ -506,9 +509,7 @@
       champ('evenement').textContent = jour(evenement);
       champ('depot').textContent = `${jour(depot)} min ${deux(depot.getSeconds())} s`;
       champ('ecart').textContent = duree(secondes + 3);
-      tampon.classList.remove('tampon-anime');
-      void tampon.offsetWidth;
-      tampon.classList.add('tampon-anime');
+      frapper(tampon);
       statut.textContent = `${texte} Certificat « Prévu » déposé le ${champ('depot').textContent}.`;
     });
     autre.hidden = false;

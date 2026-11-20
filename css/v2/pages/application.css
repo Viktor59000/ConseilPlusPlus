@@ -1,0 +1,14 @@
+/* L'application (application.php) : étapes d'installation en fiches, formules KWGT. Complète document.css. Couche « page ». */
+.doc-entete .boutons { margin-top: var(--e-2); }
+.etapes-install { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--filet-fort); border-left: 1px solid var(--filet-fort); }
+.etapes-install article { padding: var(--e-5); border-right: 1px solid var(--filet-fort); border-bottom: 1px solid var(--filet-fort); }
+.etapes-install h3 { margin: 0 0 var(--e-3); font-size: var(--t-lead); }
+.etapes-install ol { padding-left: 1.2em; font-size: var(--t-petit); }
+.etapes-install li + li { margin-top: .5em; }
+@media (max-width: 767px) { .etapes-install { grid-template-columns: 1fr; } }
+.kwgt { list-style: none; padding: 0 !important; display: grid; border-top: 1px solid var(--filet-fort); }
+.kwgt li { display: grid; grid-template-columns: minmax(0, 14em) minmax(0, 1fr) auto; gap: var(--e-3) var(--e-4); align-items: center; padding: var(--e-3) 0; border-bottom: 1px solid var(--filet); margin: 0 !important; }
+.kwgt__libelle { font-weight: var(--g-appui); font-size: var(--t-petit); }
+.kwgt code { overflow-x: auto; white-space: nowrap; padding: var(--e-2) var(--e-3); background: var(--papier); border: 1px solid var(--filet); border-radius: var(--r-petit); font-size: var(--t-etiquette); }
+@media (max-width: 767px) { .kwgt li { grid-template-columns: minmax(0, 1fr); } .kwgt .bouton { justify-self: start; } }
+.document__texte section > * + * { margin-top: 1em; }

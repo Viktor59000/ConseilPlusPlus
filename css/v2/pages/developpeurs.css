@@ -1,0 +1,27 @@
+/* L'API du cabinet (developpeurs.php, js/api-doc.js) : fiche des principes, points d'accès, essais en direct.
+   Complète document.css. Couche « page ». */
+.api-fiche { display: grid; border-top: 1px solid var(--filet-fort); }
+.api-fiche div { display: grid; grid-template-columns: minmax(0, 12em) minmax(0, 1fr); gap: var(--e-4); padding: var(--e-3) 0; border-bottom: 1px solid var(--filet); font-size: var(--t-petit); }
+.api-fiche dt { color: var(--encre-2); }
+.api-fiche dd { margin: 0; }
+@media (max-width: 639px) { .api-fiche div { grid-template-columns: 1fr; gap: var(--e-1); } }
+
+.endpoint { display: grid; gap: var(--e-3); padding: var(--e-5) 0; border-bottom: 1px solid var(--filet-fort); }
+.endpoint__entete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--e-3); }
+.endpoint__entete h3 { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-3); margin: 0; font-size: 1.0625rem; letter-spacing: 0; }
+.endpoint__entete code { font: 500 1rem var(--mono); overflow-wrap: anywhere; }
+.methode { display: inline-block; min-width: 4.5em; padding: 2px var(--e-2); border: 1px solid currentColor; border-radius: var(--r-petit); font: 500 var(--t-etiquette)/1.4 var(--mono); text-align: center; }
+.methode--get { color: var(--vert); }
+.methode--post, .methode--put, .methode--patch { color: var(--laiton-texte); }
+.methode--delete { color: var(--rouge); }
+.acces { padding: 2px var(--e-2); background: var(--fond-2); border-radius: var(--r-petit); font: 500 var(--t-etiquette)/1.4 var(--mono); text-transform: uppercase; letter-spacing: .04em; }
+.endpoint__liste { display: grid; font-size: var(--t-petit); }
+.endpoint__liste div { display: grid; grid-template-columns: minmax(0, 10em) minmax(0, 1fr); gap: var(--e-4); padding: var(--e-2) 0; border-top: 1px dotted var(--filet-fort); }
+.endpoint__liste dd { margin: 0; color: var(--encre-2); }
+.code-http { font: 500 var(--t-etiquette)/1.4 var(--mono); }
+.code-http--2xx { color: var(--vert); }
+.code-http--4xx, .code-http--5xx { color: var(--rouge); }
+.essai { display: grid; gap: var(--e-3); justify-items: start; margin-top: var(--e-2); }
+.essai__curl { display: block; max-width: 100%; overflow-x: auto; padding: var(--e-3) var(--e-4); background: var(--papier); border: 1px solid var(--filet); border-radius: var(--r-petit); font: 500 var(--t-etiquette)/1.5 var(--mono); white-space: nowrap; }
+.essai__resultat { width: 100%; max-height: 360px; overflow: auto; margin: 0; padding: var(--e-4); background: #1C1C19; color: #EDEDE6; border-radius: var(--r-petit); font: 500 var(--t-etiquette)/1.55 var(--mono); }
+@media (max-width: 639px) { .endpoint__liste div { grid-template-columns: 1fr; gap: 0; } }

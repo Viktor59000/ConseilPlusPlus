@@ -1,0 +1,48 @@
+/* Le feuilleton « La Plume et le Tampon » (feuilleton.php) : l'affiche, l'épisode (lecteur : petit-moyen.css), la liste.
+   Couche « page ». */
+
+/* ---------- L'affiche de l'épisode : un papier imprimé, le numéro en très grand ---------- */
+.affiche {
+  position: relative; display: grid; gap: var(--e-4); align-content: start;
+  min-height: min(600px, calc(var(--ecran) - var(--e-7) - var(--e-8))); padding: var(--e-7);
+  background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); transform: rotate(-.6deg);
+}
+.affiche::before { content: ""; position: absolute; inset: 12px; border: 1px solid var(--filet-fort); outline: 3px solid color-mix(in srgb, var(--laiton) 55%, transparent); outline-offset: 3px; pointer-events: none; }
+.affiche__haut { display: flex; justify-content: space-between; gap: var(--e-4); font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); }
+.affiche__numero { font: 500 clamp(7rem, 4rem + 9vw, 13rem)/.85 var(--mono); letter-spacing: -.06em; color: var(--encre); margin-top: var(--e-4); }
+.affiche__titre { font-size: var(--t-h2); font-weight: var(--g-titre); letter-spacing: var(--approche-titre); line-height: 1.08; text-wrap: balance; }
+.affiche__distribution { margin-top: auto; padding-top: var(--e-4); border-top: 1px solid var(--filet); color: var(--encre-2); font-size: var(--t-petit); max-width: 34em; }
+.affiche .tampon { position: absolute; right: var(--e-7); bottom: var(--e-10); }
+@media (max-width: 639px) { .affiche { padding: var(--e-6) var(--e-5); min-height: 0; } .affiche .tampon { position: relative; right: auto; bottom: auto; justify-self: end; font-size: 1.4rem; } }
+
+/* ---------- L'épisode : la colonne « précédemment » et le script ---------- */
+.episode-cote { display: grid; gap: var(--e-6); align-content: start; }
+.episode-cote .ecran__tete { margin-bottom: 0; }
+@media (min-width: 1024px) { .episode-cote { position: sticky; top: calc(var(--nav) + var(--e-5)); align-self: start; } }
+.precedemment { display: grid; gap: var(--e-3); padding: var(--e-5); background: var(--fond); border-left: 3px solid var(--rouge); }
+.precedemment--premier { color: var(--encre-2); font-style: italic; }
+.precedemment__titre { font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); }
+.distribution { display: grid; gap: var(--e-3); }
+.distribution dl { display: grid; border-top: 1px solid var(--filet-fort); }
+.distribution div { padding: var(--e-2) 0; border-bottom: 1px dotted var(--filet-fort); }
+.distribution dt { font-weight: var(--g-appui); font-size: var(--t-petit); }
+.distribution dd { margin: 0; font-size: var(--t-etiquette); color: var(--encre-2); }
+.episode { padding: var(--e-7); background: var(--fond); border-radius: var(--r-papier); }
+.episode .sketch-court { display: grid; gap: var(--e-4); }
+.episode__scene { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--e-3); margin-top: var(--e-6); padding-top: var(--e-4); border-top: 2px solid var(--encre); font-size: var(--t-h3); }
+.replique-annonce, .replique-suspense { padding: var(--e-4) 0; }
+.replique-suspense { border-top: 2px solid var(--encre); margin-top: var(--e-5); }
+.replique-suspense .replique-texte { font-style: italic; }
+@media (max-width: 1023px) { .episode { margin-top: var(--e-6); } }
+@media (max-width: 639px) { .episode { padding: var(--e-5) var(--e-4); } }
+
+/* ---------- Tous les épisodes : un classeur de douze fiches ---------- */
+.liste-episodes { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--filet-fort); border-left: 1px solid var(--filet-fort); }
+.liste-episodes li { display: flex; border-right: 1px solid var(--filet-fort); border-bottom: 1px solid var(--filet-fort); }
+.liste-episodes__lien { flex: 1; display: grid; gap: var(--e-3); align-content: start; justify-items: start; min-height: 168px; padding: var(--e-5); text-decoration: none; transition: background-color var(--d-out) var(--courbe); }
+.liste-episodes__lien:hover { background: var(--papier); transition-duration: var(--d-in); }
+.liste-episodes__lien[aria-current] { background: var(--papier); box-shadow: inset 0 3px 0 var(--rouge); }
+.liste-episodes__numero { font-size: var(--t-chiffre); line-height: 1; color: var(--rouge); }
+.liste-episodes__titre { font-size: var(--t-lead); font-weight: var(--g-appui); line-height: 1.25; }
+@media (max-width: 1023px) { .liste-episodes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .liste-episodes { grid-template-columns: 1fr; } .liste-episodes__lien { min-height: 0; } }

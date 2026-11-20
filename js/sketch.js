@@ -1,5 +1,6 @@
 // Le Petit Moyen : joue un sketch réplique par réplique, avec un temps d'arrêt avant la chute,
 // et (en option) les voix de synthèse du navigateur : conseiller grave et lent, stagiaire aigu et pressé.
+// Sert aussi au feuilleton « La Plume et le Tampon » (feuilleton.php) : voix des personnages dans data-reglages.
 // Sans JavaScript, le script complet reste affiché.
 (() => {
   const synthese = 'speechSynthesis' in window ? window.speechSynthesis : null;
@@ -17,10 +18,10 @@
   };
 
   /** Lit une réplique à voix haute ; se termine à la fin de la lecture (ou après un délai de sécurité). */
-  function dire(texte, qui) {
+  function dire(texte, reglage) {
     return new Promise((fin) => {
       const voix = voixFrancaises();
-      const reglage = REGLAGES[qui];
+
       const enonce = new SpeechSynthesisUtterance(texte.replace(/…/g, '... '));
       enonce.lang = 'fr-FR';
       if (voix.length) enonce.voice = voix[reglage.voix % voix.length];
@@ -40,6 +41,10 @@
     const bouton = sketch.querySelector('[data-jouer]');
     const caseVoix = sketch.querySelector('[data-voix]');
     const lignes = [...sketch.querySelectorAll('.sketch-court [data-qui]')];
+    // Voix propres à ce lecteur (feuilleton : un réglage par personnage, data-reglages en JSON) ajoutées aux voix du sketch
+    let reglages = REGLAGES;
+    try { reglages = { ...REGLAGES, ...JSON.parse(sketch.dataset.reglages || '{}') }; } catch { /* réglages par défaut */ }
+    const objet = bouton.dataset.jouer || 'la scène'; // « l'épisode » pour le feuilleton
     let seance = 0; // incrémenté à chaque lancement : arrête proprement une lecture en cours
 
     commandes.hidden = false;
@@ -50,7 +55,7 @@
       if (synthese) synthese.cancel();
       sketch.classList.remove('en-scene');
       lignes.forEach((l) => l.classList.remove('vu', 'parle'));
-      bouton.textContent = '▶ Jouer la scène';
+      bouton.textContent = `▶ Jouer ${objet}`;
     };
 
     bouton.addEventListener('click', async () => {
@@ -71,9 +76,9 @@
         if (ma !== seance) return;
         ligne.classList.add('vu');
         ligne.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        if (avecVoix && REGLAGES[qui]) {
+        if (avecVoix && reglages[qui]) {
           ligne.classList.add('parle');
-          await dire(texte, qui);
+          await dire(texte, reglages[qui]);
           ligne.classList.remove('parle');
           await pause(250);
         } else {
@@ -83,7 +88,7 @@
       if (ma === seance) {
         sketch.classList.remove('en-scene');
         lignes.forEach((l) => l.classList.remove('vu'));
-        bouton.textContent = '↻ Rejouer la scène';
+        bouton.textContent = `↻ Rejouer ${objet}`;
       }
     });
   }

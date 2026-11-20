@@ -9,6 +9,9 @@ if ($mot['jour'] !== null) {
     $date = 'Page ' . $mot['page'];
 }
 $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
+// Classes des boutons : nouveau gabarit « Le Guichet » (includes/ui) ou anciennes pages (css/style.css)
+$btn_jouer = function_exists('bouton') ? 'bouton bouton--secondaire bouton--compact' : 'btn btn-tampon btn-petit';
+$btn_partage = function_exists('bouton') ? 'bouton bouton--secondaire bouton--compact' : 'btn btn-clair btn-petit';
 ?>
 <article class="entree-mot">
   <p class="entree-date mono"><?= htmlspecialchars($date) ?></p>
@@ -44,7 +47,7 @@ $noms = ['conseiller' => 'Le conseiller', 'stagiaire' => 'Le stagiaire'];
 ?>
   <div class="sketch" data-sketch>
     <div class="sketch-commandes" hidden>
-      <button type="button" class="btn btn-tampon btn-petit" data-jouer>▶ Jouer la scène</button>
+      <button type="button" class="<?= $btn_jouer ?>" data-jouer>▶ Jouer la scène</button>
       <label class="sketch-voix"><input type="checkbox" data-voix> Avec les voix</label>
     </div>
     <div class="sketch-court">
@@ -87,7 +90,7 @@ $partage_url = $mot['jour'] === null ? 'petit-moyen.php?page=' . $mot['page'] . 
       <button type="button" class="vote" data-vote="moyen" aria-pressed="false">Moyen <span class="mono" data-compte="moyen">0</span></button>
       <button type="button" class="vote" data-vote="pas_moyen" aria-pressed="false">Pas moyen <span class="mono" data-compte="pas_moyen">0</span></button>
     </div>
-    <button type="button" class="btn btn-clair btn-petit" hidden data-partager="mot"
+    <button type="button" class="<?= $btn_partage ?>" hidden data-partager="mot"
       data-mot="<?= htmlspecialchars($mot['mot']) ?>" data-nature="<?= htmlspecialchars($mot['nature']) ?>"
       data-texte="<?= htmlspecialchars($partage_texte) ?>" data-detail="<?= htmlspecialchars($partage_detail) ?>"
       data-url="<?= htmlspecialchars($partage_url) ?>">Partager</button>

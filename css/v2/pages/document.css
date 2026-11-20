@@ -1,0 +1,48 @@
+/* Pages-documents du nouveau site : mentions légales, confidentialité, accessibilité, plan du site, développeurs,
+   application. Une tête de document, puis le texte en colonne de lecture avec son sommaire à gauche. Couche « page ». */
+
+/* ---------- Tête de document : référence, titre, chapeau, filet ---------- */
+.doc-entete { padding: var(--e-9) 0 var(--e-7); border-bottom: 1px solid var(--filet-fort); }
+.doc-entete .conteneur { display: grid; gap: var(--e-5); }
+.doc-entete h1 { max-width: 16ch; }
+.doc-entete .chapeau { color: var(--encre-2); }
+.doc-entete__meta { display: flex; flex-wrap: wrap; gap: var(--e-2) var(--e-6); font: 500 var(--t-etiquette)/1.4 var(--mono); color: var(--encre-2); }
+@media (max-width: 639px) { .doc-entete { padding: var(--e-8) 0 var(--e-6); } }
+
+/* ---------- Corps : sommaire collant (colonnes 1 à 3), texte (5 à 12) ---------- */
+.document { padding: var(--e-8) 0 var(--e-9); }
+.document__sommaire { grid-column: 1 / span 3; align-self: start; position: sticky; top: calc(var(--nav) + var(--e-5)); }
+.document__sommaire h2 { font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); margin-bottom: var(--e-3); }
+.document__sommaire ol { list-style: none; padding: 0; border-top: 1px solid var(--filet-fort); }
+.document__sommaire li { border-bottom: 1px solid var(--filet); }
+.document__sommaire a { display: flex; align-items: center; min-height: 40px; font-size: var(--t-petit); text-decoration: none; color: var(--encre-2); }
+.document__sommaire a:hover { color: var(--encre); }
+.document__texte { grid-column: 5 / -1; }
+.document__texte h2 { font-size: var(--t-h3); letter-spacing: -.02em; margin-top: var(--e-8); padding-top: var(--e-4); border-top: 2px solid var(--encre); scroll-margin-top: calc(var(--nav) + var(--e-4)); }
+.document__texte h2:first-child { margin-top: 0; }
+.document__texte h3 { font-size: var(--t-lead); margin-top: var(--e-6); }
+.document__texte > * + * { margin-top: 1em; }
+.document__texte ul, .document__texte ol { padding-left: 1.2em; }
+.document__texte li + li { margin-top: .5em; }
+.document__texte code { font: 500 .9em var(--mono); }
+@media (max-width: 1023px) {
+  .document__sommaire { position: static; grid-column: 1 / -1; margin-bottom: var(--e-6); }
+  .document__texte { grid-column: 1 / -1; }
+}
+
+/* ---------- Plan du site : l'arborescence en colonnes de classeur ---------- */
+.plan { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--encre); }
+.plan__colonne { padding: var(--e-5) var(--e-5) var(--e-6) 0; }
+.plan__colonne + .plan__colonne { padding-left: var(--e-5); border-left: 1px solid var(--filet); }
+.plan__colonne h2 { display: flex; align-items: center; gap: var(--e-2); font-size: var(--t-lead); margin-bottom: var(--e-4); }
+.plan__colonne ul { list-style: none; padding: 0; display: grid; }
+.plan__colonne li { border-bottom: 1px dotted var(--filet-fort); }
+.plan__colonne li > a, .plan__colonne li > span { display: block; padding: var(--e-2) 0; min-height: 40px; }
+.plan__colonne li > a { text-decoration: none; font-weight: var(--g-appui); }
+.plan__colonne li > a:hover { text-decoration: underline; text-underline-offset: .2em; }
+.plan__colonne li small { display: block; font-size: var(--t-etiquette); color: var(--encre-2); font-weight: var(--g-texte); }
+.plan__colonne ul ul { padding-left: var(--e-4); border-left: 1px solid var(--filet-fort); margin-bottom: var(--e-2); }
+.plan__colonne ul ul li:last-child { border-bottom: 0; }
+@media (max-width: 1023px) { .plan { grid-template-columns: repeat(2, minmax(0, 1fr)); } .plan__colonne:nth-child(3) { padding-left: 0; border-left: 0; } }
+@media (max-width: 639px) { .plan { grid-template-columns: 1fr; } .plan__colonne + .plan__colonne { padding-left: 0; border-left: 0; border-top: 1px solid var(--filet); } }
+.plan__colonne ul ul a { font-size: var(--t-petit); font-weight: var(--g-texte) !important; min-height: 36px; }

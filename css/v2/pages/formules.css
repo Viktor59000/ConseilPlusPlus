@@ -1,0 +1,53 @@
+/* Nos formules (produit.php) : la grille des tarifs du guichet, la fenêtre Premium, le comparatif, la FAQ. Couche « page ». */
+
+/* ---------- Grille des tarifs : un tableau d'affichage, trois colonnes bord à bord ---------- */
+.tarifs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 2px solid var(--encre); border-left: 1px solid var(--filet-fort); }
+.tarif { position: relative; display: flex; flex-direction: column; gap: var(--e-3); padding: var(--e-6) var(--e-5) var(--e-5); border-right: 1px solid var(--filet-fort); border-bottom: 1px solid var(--filet-fort); }
+.tarif--phare { background: var(--fond); box-shadow: inset 0 4px 0 var(--rouge); }
+.tarif__nom { font-size: var(--t-h3); }
+.tarif__prix { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--e-2); padding: var(--e-4) 0; border-bottom: 1px dotted var(--filet-fort); }
+.tarif__montant { font: 500 clamp(2.5rem, 1.8rem + 2.6vw, 4rem)/1 var(--mono); letter-spacing: -.04em; }
+.tarif__periode { color: var(--encre-2); font-size: var(--t-petit); }
+.tarif__lignes { list-style: none; padding: 0; display: grid; margin-bottom: var(--e-5); }
+.tarif__lignes li { display: flex; gap: var(--e-3); padding: var(--e-2) 0; border-bottom: 1px solid var(--filet); }
+.tarif__lignes li::before { content: ""; flex: none; width: 6px; height: 6px; margin-top: .6em; background: var(--encre); }
+.tarif__action { margin-top: auto; }
+.tarif__tampon { position: absolute; right: var(--e-4); top: calc(-1 * var(--e-5)); }
+@media (max-width: 1023px) {
+  .tarifs { grid-template-columns: 1fr; }
+  .tarif--phare { order: -1; }
+}
+
+/* ---------- La fenêtre du paiement refusé (dialog natif) : un avis sur papier ---------- */
+.dialogue {
+  width: min(520px, calc(100vw - 2 * var(--e-4))); padding: var(--e-7) var(--e-6) var(--e-6); border: 0; border-radius: var(--r-papier);
+  background: var(--papier); color: var(--encre); box-shadow: var(--ombre-papier-haute);
+}
+.dialogue::backdrop { background: rgba(24, 23, 21, .55); }
+.dialogue > * + * { margin-top: var(--e-4); }
+.dialogue h2 { font-size: var(--t-h2); }
+.dialogue .machine { color: var(--encre-2); }
+.dialogue__tampon { position: absolute; right: var(--e-5); top: var(--e-6); }
+.dialogue .boutons { margin-top: var(--e-6); }
+
+/* ---------- Comparatif ---------- */
+.tableau-defile { overflow-x: auto; }
+.comparatif { width: 100%; min-width: 520px; border-collapse: collapse; font-size: var(--t-petit); }
+.comparatif th, .comparatif td { padding: var(--e-3) var(--e-4); text-align: left; border-bottom: 1px solid var(--filet); }
+.comparatif thead th { font: 500 var(--t-etiquette)/1.3 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); border-bottom: 2px solid var(--encre); }
+.comparatif tbody th { font-weight: var(--g-appui); }
+.comparatif td { font-family: var(--mono); font-weight: 500; }
+
+/* ---------- Avis et FAQ ---------- */
+.avis { display: grid; gap: var(--e-5); }
+.temoignage { margin: 0; padding-left: var(--e-5); border-left: 3px solid var(--laiton); display: grid; gap: var(--e-2); }
+.temoignage blockquote { margin: 0; font-size: var(--t-lead); line-height: 1.45; }
+.temoignage figcaption { font-size: var(--t-petit); color: var(--encre-2); }
+.faq { border-top: 2px solid var(--encre); align-self: start; }
+.faq__item { border-bottom: 1px solid var(--filet-fort); }
+.faq__item summary { display: flex; align-items: center; gap: var(--e-3); min-height: 56px; padding: var(--e-2) 0; cursor: pointer; list-style: none; font-weight: var(--g-appui); }
+.faq__item summary::-webkit-details-marker { display: none; }
+.faq__item summary::before { content: ""; flex: none; width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform var(--d-in) var(--courbe); }
+.faq__item[open] summary::before { transform: rotate(45deg); }
+.faq__item p { padding: 0 0 var(--e-4) var(--e-5); color: var(--encre-2); max-width: var(--mesure); }
+@media (max-width: 1023px) { .faq { margin-top: var(--e-6); } }

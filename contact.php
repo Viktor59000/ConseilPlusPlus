@@ -1,11 +1,12 @@
 <?php
 /**
- * contact.php — Formulaire de contact.
+ * contact.php — Réclamations : le formulaire de contact du cabinet, accueilli par Mireille (son standard : standard.php).
  * La demande est envoyée en POST à l'API (api/contacts.php), qui la valide et l'enregistre
  * avec le statut « nouveau ». Le logiciel de gestion la récupère ensuite via l'API.
- * Client connecté : la demande lui est rattachée (id_utilisateur) pour qu'il lise la réponse dans compte.php.
+ * Client connecté : la demande lui est rattachée (id_utilisateur) pour qu'il lise la réponse dans Mon dossier (compte.php).
  */
 require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/includes/gabarit.php';
 require_once __DIR__ . '/includes/bdd.php';
 require_once __DIR__ . '/includes/contacts.php';
 require_once __DIR__ . '/includes/http.php';
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $reponse = appeler_api('POST', url_interne() . '/api/contacts.php', $valeurs, ['X-Client-IP: ' . $_SERVER['REMOTE_ADDR']]);
         if ($reponse['code'] === 201) {
             $id = (int) ($reponse['data']['id'] ?? 0);
-            // Client connecté : la demande rejoint « Mes demandes » (compte.php), où il lira la réponse du cabinet
+            // Client connecté : la demande rejoint Mon dossier (compte.php), où il lira la réponse du cabinet
             if (isset($_SESSION['user_id']) && $id) {
                 rattacher_contact(bdd(), $id, (int) $_SESSION['user_id']);
             }
@@ -53,90 +54,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$titre = 'Contact';
-$description = 'Contactez ConseilPlus+ : demande de conseil, réclamation ou devis Premium. Réponse sous 3 jours ou jamais.';
-$page = 'contact';
-include __DIR__ . '/includes/header.php';
+$types = ['' => 'Choisir…'] + array_combine(TYPES_DEMANDE, TYPES_DEMANDE);
+$delai = ucfirst(texte_hasard('delais'));
+
+page_debut([
+    'titre' => 'Réclamations',
+    'description' => 'Les Réclamations de ConseilPlus+ : une question, une réclamation, un devis Premium ? Mireille enregistre votre demande. Réponse sous 3 jours ou jamais.',
+    'page' => 'reclamations',
+    'css' => ['css/v2/pages/formulaire.css', 'css/v2/pages/reclamations.css'],
+]);
 ?>
-
-<section class="conteneur entete-page">
-  <p class="etiquette">Guichet n° 1</p>
-  <h1>Nous contacter</h1>
-  <p class="chapo">Une question, une réclamation, un besoin de conseil ? Remplissez le formulaire. Il sera lu. Un jour.</p>
+<section class="heros" data-enter aria-labelledby="heros-titre">
+  <div class="conteneur grille">
+    <div class="heros__texte">
+      <p class="reference"><span>Service des réclamations</span><span>Guichet n° 1</span></p>
+      <h1 id="heros-titre">Réclamations</h1>
+      <p class="heros__chapeau">Une question, une réclamation, un besoin de conseil ? Mireille enregistre votre demande, lui attribue un délai et la transmet au cabinet. Elle sera lue. Un jour.</p>
+      <div class="boutons">
+        <?= bouton('Écrire au cabinet', '#formulaire') ?>
+        <?= bouton('Joindre le standard', 'standard.php', ['variante' => 'secondaire', 'icone_html' => picto('telephone')]) ?>
+      </div>
+      <dl class="heros__faits">
+        <div><dt>Délai de réponse</dt><dd><?= e($delai) ?></dd></div>
+        <div><dt>Réclamations perdues</dt><dd>0 (en attente)</dd></div>
+      </dl>
+    </div>
+    <div class="heros__visuel">
+      <?= scene('standard', 'Le standard de Mireille : des fiches rouges branchées au hasard, un combiné décroché, une pile de formulaires, une sonnette et un café qui refroidit depuis 2009.', ['prioritaire' => true, 'tailles' => '(min-width: 1024px) 46vw, 100vw']) ?>
+      <div class="heros__pose accueil-mireille" data-papier>
+        <img src="assets/equipe/delais.webp" alt="" width="640" height="640" decoding="async">
+        <div>
+          <p class="machine">Accueil</p>
+          <p class="accueil-mireille__nom">Mireille</p>
+          <p class="accueil-mireille__role">Standardiste, responsable des délais</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<section class="conteneur guichets">
-  <form class="formulaire" action="contact.php" method="POST" novalidate aria-labelledby="titre-contact">
-    <?= csrf_champ() ?>
-    <!-- Champ piège : invisible pour les humains, rempli par les robots -->
-    <div class="piege" aria-hidden="true">
-      <label for="ct-site">Ne pas remplir</label>
-      <input id="ct-site" type="text" name="site_web" tabindex="-1" autocomplete="off">
-    </div>
-    <h2 id="titre-contact">Formulaire de demande</h2>
-    <p class="obligatoire">Tous les champs sont obligatoires.</p>
+<section class="ecran ecran--papier" id="formulaire" aria-labelledby="titre-contact">
+  <div class="conteneur grille">
+    <form class="c-7 formulaire" action="contact.php#formulaire" method="POST" novalidate aria-labelledby="titre-contact">
+      <?= csrf_champ() ?>
+      <!-- Champ piège : invisible pour les humains, rempli par les robots -->
+      <div class="piege" aria-hidden="true">
+        <label for="ct-site">Ne pas remplir</label>
+        <input id="ct-site" type="text" name="site_web" tabindex="-1" autocomplete="off">
+      </div>
+      <div class="ecran__tete">
+        <p class="reference"><span>Formulaire R-1</span><span>Demande au cabinet</span></p>
+        <h2 id="titre-contact">Formulaire de demande</h2>
+        <p class="muet">Tous les champs sont obligatoires.<?= isset($_SESSION['user_id']) ? ' Vous êtes connecté : la réponse arrivera aussi dans Mon dossier.' : '' ?></p>
+      </div>
 <?php if (isset($_GET['envoye'])): ?>
-    <?= alerte('Demande enregistrée sous le statut « nouveau ». Nous la traiterons avec la lenteur qui nous caractérise.'
-        . (isset($_SESSION['user_id']) ? ' Vous suivrez sa réponse dans « Mon compte ».' : ''), 'ok') ?>
+      <?= bloc_alerte('Demande enregistrée sous le statut « nouveau ». Nous la traiterons avec la lenteur qui nous caractérise.'
+          . (isset($_SESSION['user_id']) ? ' Vous suivrez sa réponse dans Mon dossier.' : ''), 'succes', ['titre' => 'Demande reçue']) ?>
 <?php elseif ($erreur_session): ?>
-    <?= alerte('Le formulaire a expiré. Merci de le renvoyer.') ?>
+      <?= bloc_alerte('Le formulaire a expiré. Merci de le renvoyer.', 'erreur', ['titre' => 'Formulaire expiré']) ?>
 <?php elseif ($trop_de_demandes): ?>
-    <?= alerte('Vous avez envoyé beaucoup de demandes en peu de temps. Même nous, nous avons des limites : réessayez dans une minute.') ?>
+      <?= bloc_alerte('Vous avez envoyé beaucoup de demandes en peu de temps. Même nous, nous avons des limites : réessayez dans une minute.', 'attention', ['titre' => 'Guichet saturé']) ?>
 <?php elseif ($erreur_api): ?>
-    <?= alerte('Notre guichet est momentanément fermé (service indisponible). Réessayez dans quelques instants.') ?>
+      <?= bloc_alerte('Notre guichet est momentanément fermé (service indisponible). Réessayez dans quelques instants.', 'erreur', ['titre' => 'Guichet fermé']) ?>
 <?php elseif ($erreurs): ?>
-    <?= alerte('Le formulaire contient ' . count($erreurs) . ' erreur(s). Corrigez les champs indiqués puis renvoyez-le.') ?>
+      <?= bloc_alerte('Le formulaire contient ' . count($erreurs) . ' erreur(s). Corrigez les champs indiqués puis renvoyez-le.', 'erreur', ['titre' => 'Dossier incomplet']) ?>
 <?php endif; ?>
-
-    <div class="<?= classe_champ($erreurs, 'nom') ?>">
-      <label for="ct-nom">Nom</label>
-      <input id="ct-nom" type="text" name="nom" maxlength="100" autocomplete="name" required value="<?= htmlspecialchars($valeurs['nom']) ?>"<?= aria_erreur($erreurs, 'nom') ?>>
-      <?= erreur_champ($erreurs, 'nom') ?>
-    </div>
-
-    <div class="<?= classe_champ($erreurs, 'email') ?>">
-      <label for="ct-email">Adresse email</label>
-      <input id="ct-email" type="email" name="email" maxlength="150" autocomplete="email" required value="<?= htmlspecialchars($valeurs['email']) ?>"<?= aria_erreur($erreurs, 'email') ?>>
-      <?= erreur_champ($erreurs, 'email') ?>
-    </div>
-
-    <div class="<?= classe_champ($erreurs, 'type_demande') ?>">
-      <label for="ct-type">Type de demande</label>
-      <select id="ct-type" name="type_demande" required<?= aria_erreur($erreurs, 'type_demande', 'type') ?>>
-        <option value="">Choisir…</option>
-<?php foreach (TYPES_DEMANDE as $type): ?>
-        <option<?= $valeurs['type_demande'] === $type ? ' selected' : '' ?>><?= htmlspecialchars($type) ?></option>
-<?php endforeach; ?>
-      </select>
-      <?= erreur_champ($erreurs, 'type_demande', 'type') ?>
-    </div>
-
-    <div class="<?= classe_champ($erreurs, 'message') ?>">
-      <label for="ct-message">Message</label>
-      <textarea id="ct-message" name="message" rows="6" required<?= aria_erreur($erreurs, 'message') ?>><?= htmlspecialchars($valeurs['message']) ?></textarea>
-      <?= erreur_champ($erreurs, 'message') ?>
-    </div>
-
-    <button class="btn btn-tampon" type="submit">Envoyer ma demande</button>
-  </form>
-
-  <aside class="formulaire formulaire-info" aria-label="Coordonnées">
-    <h2>Coordonnées</h2>
-    <dl class="coordonnees coordonnees-pile">
-      <div>
-        <dt class="mono">Courrier</dt>
-        <dd>12 bis, impasse du Consensus Mou<br>Bâtiment C, escalier D, au fond à gauche</dd>
+      <div class="formulaire__duo">
+        <?= champ('nom', 'Nom', $erreurs, ['id' => 'ct-nom', 'valeur' => $valeurs['nom'], 'requis' => true, 'maxlength' => 100, 'autocomplete' => 'name', 'officiel' => true]) ?>
+        <?= champ('email', 'Adresse email', $erreurs, ['id' => 'ct-email', 'type' => 'email', 'valeur' => $valeurs['email'], 'requis' => true, 'maxlength' => 150, 'autocomplete' => 'email', 'officiel' => true]) ?>
       </div>
-      <div>
-        <dt class="mono">Horaires</dt>
-        <dd>Du lundi au vendredi, de 14h12 à 14h47.<br>Fermé les jours de vent.</dd>
-      </div>
-      <div>
-        <dt class="mono">Délai de réponse</dt>
-        <dd><?= htmlspecialchars(ucfirst(texte_hasard('delais'))) ?>.</dd>
-      </div>
-    </dl>
-  </aside>
+      <?= champ('type_demande', 'Type de demande', $erreurs, ['id' => 'ct-type', 'type' => 'select', 'options' => $types, 'valeur' => $valeurs['type_demande'], 'requis' => true]) ?>
+      <?= champ('message', 'Message', $erreurs, ['id' => 'ct-message', 'type' => 'textarea', 'rows' => 6, 'valeur' => $valeurs['message'], 'requis' => true,
+          'aide' => 'Une réclamation à la fois : le cabinet n\'en lit qu\'une par jour, de préférence la vôtre.']) ?>
+      <div class="boutons"><?= bouton('Envoyer ma demande', null, ['type' => 'submit']) ?></div>
+    </form>
+
+    <aside class="d-9 coordonnees" aria-labelledby="titre-coordonnees">
+      <h2 id="titre-coordonnees" class="coordonnees__titre">Coordonnées</h2>
+      <dl>
+        <div><dt>Courrier</dt><dd>12 bis, impasse du Consensus Mou<br>Bâtiment C, escalier D, au fond à gauche</dd></div>
+        <div><dt>Horaires</dt><dd>Du lundi au vendredi, de 14h12 à 14h47.<br>Fermé les jours de vent.</dd></div>
+        <div><dt>Délai de réponse</dt><dd><?= e($delai) ?>.</dd></div>
+        <div><dt>Par téléphone</dt><dd><?= lien_fleche('Joindre le standard de Mireille', 'standard.php') ?></dd></div>
+      </dl>
+    </aside>
+  </div>
 </section>
-
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php page_fin(); ?>

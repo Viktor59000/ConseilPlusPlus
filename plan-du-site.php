@@ -1,65 +1,86 @@
 <?php
 /**
  * plan-du-site.php — Plan du site : second moyen de navigation exigé par le RGAA (critère 12.1).
+ * Arborescence de la nouvelle version (« Le Guichet ») : les anciennes adresses fusionnées redirigent (301) vers
+ * leur nouvelle page et n'y figurent plus qu'à travers elle. À tenir à jour avec sitemap.xml.
  */
 require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/includes/gabarit.php';
 $connecte = isset($_SESSION['user_id']);
 
-$titre = 'Plan du site';
-$description = 'Plan du site de ConseilPlus+ : toutes les pages du cabinet, rangées avec un soin moyen.';
-$page = 'autre';
-include __DIR__ . '/includes/header.php';
-?>
+// [pictogramme, titre de colonne, [[adresse, libellé, précision, [sous-pages]], …]]
+$plan = [
+    ['guichet', 'Services', [
+        ['index.php', 'Le Hall', 'Le conseil du jour, le ticket, l\'article du règlement'],
+        ['guichet.php', 'Le Guichet', 'Déposer une demande, prendre rendez-vous', [
+            ['stagiaire.php', 'Questions pour un stagiaire'],
+            ['duel.php', 'Le Duel'],
+            ['diagnostic.php', 'Quel client êtes-vous ?'],
+            ['attestation.php', 'Les attestations et le formulaire du jour'],
+        ]],
+        $connecte
+            ? ['compte.php', 'Mon dossier', 'Le suivi de vos demandes, vos conseils gardés', [['auth/logout.php', 'Déconnexion']]]
+            : ['login.php', 'Mon dossier', 'Connexion et ouverture d\'un dossier', [['mot-de-passe-oublie.php', 'Mot de passe oublié']]],
+    ]],
+    ['tampon', 'Le cabinet', [
+        ['cabinet.php', 'Le Personnel', 'L\'équipe, le circuit d\'un dossier, les valeurs'],
+        ['petit-moyen.php', 'Le Petit Moyen', 'Le mot (presque) du jour, le sigle, les archives', [
+            ['feuilleton.php', 'La Plume et le Tampon, le feuilleton'],
+        ]],
+        ['messmerde.php', 'Les expériences de Messmerde', 'Prédictions rétroactives, horoscope'],
+        ['produit.php', 'Nos formules', 'Les tarifs du guichet'],
+    ]],
+    ['telephone', 'Réclamations', [
+        ['contact.php', 'Réclamations', 'Le formulaire de demande, accueilli par Mireille'],
+        ['standard.php', 'Le standard', 'Joindre le cabinet par téléphone, ou presque'],
+    ]],
+    ['casier', 'Pratique', [
+        ['application.php', 'L\'application', 'Android, widget, notification du mot du jour'],
+        ['developpeurs.php', 'L\'API du cabinet', 'Documentation pour les développeurs'],
+        ['accessibilite.php', 'Accessibilité', 'Déclaration RGAA 4.1'],
+        ['mentions-legales.php', 'Mentions légales', null],
+        ['confidentialite.php', 'Confidentialité', null],
+        ['plan-du-site.php', 'Plan du site', 'Cette page'],
+    ]],
+];
 
-<section class="conteneur entete-page">
-  <h1>Plan du site</h1>
-  <p class="chapo">Toutes les pages du cabinet, sur une seule page. Pratique, pour une fois.</p>
+page_debut([
+    'titre' => 'Plan du site',
+    'description' => 'Plan du site de ConseilPlus+ : toutes les pages du cabinet, rangées avec un soin moyen.',
+    'css' => ['css/v2/pages/document.css'],
+]);
+?>
+<section class="doc-entete" data-enter aria-labelledby="doc-titre">
+  <div class="conteneur">
+    <p class="reference"><span>Classement général</span><span>Arborescence</span></p>
+    <h1 id="doc-titre">Plan du site</h1>
+    <p class="chapeau">Toutes les pages du cabinet, sur une seule page. Pratique, pour une fois.</p>
+  </div>
 </section>
 
-<div class="conteneur plan">
-  <section aria-labelledby="plan-cabinet">
-    <h2 id="plan-cabinet">Le cabinet</h2>
-    <ul>
-      <li><a href="index.php">Accueil : le conseil du jour</a></li>
-      <li><a href="cabinet.php">Le cabinet : l'équipe et les valeurs</a></li>
-      <li><a href="petit-moyen.php">Le Petit Moyen : le mot (presque) du jour</a></li>
-      <li><a href="produit.php">Nos formules</a></li>
-      <li><a href="messmerde.php">Les expériences de Messmerde (ses prédictions rétroactives et son horoscope)</a></li>
-      <li><a href="stagiaire.php">Questions pour un stagiaire</a></li>
-      <li><a href="standard.php">Le standard téléphonique</a></li>
-      <li><a href="diagnostic.php">Quel client êtes-vous ?</a></li>
-      <li><a href="attestation.php">Les attestations officielles (et le formulaire du jour)</a></li>
-      <li><a href="contact.php">Nous contacter</a></li>
-    </ul>
-  </section>
-  <section aria-labelledby="plan-client">
-    <h2 id="plan-client">Espace client</h2>
-    <ul>
-<?php if ($connecte): ?>
-      <li><a href="conseil.php">Mon conseil</a></li>
-      <li><a href="consultation.php">Consultation</a></li>
-      <li><a href="duel.php">Le Duel</a></li>
-      <li><a href="carnet.php">Mon carnet</a></li>
-      <li><a href="compte.php">Mon compte</a></li>
-      <li><a href="auth/logout.php">Déconnexion</a></li>
-<?php else: ?>
-      <li><a href="login.php">Connexion et création de compte</a></li>
-      <li><a href="mot-de-passe-oublie.php">Mot de passe oublié</a></li>
-      <li>Une fois connecté : Mon conseil, Consultation, Le Duel, Mon carnet, Mon compte</li>
+<div class="document">
+  <div class="conteneur">
+    <div class="plan">
+<?php foreach ($plan as $i => [$picto, $titre, $pages]): ?>
+      <section class="plan__colonne" aria-labelledby="plan-<?= $i ?>">
+        <h2 id="plan-<?= $i ?>"><?= picto($picto) ?><?= e($titre) ?></h2>
+        <ul>
+<?php foreach ($pages as $p): ?>
+          <li>
+            <a href="<?= e($p[0]) ?>"<?= $p[0] === 'plan-du-site.php' ? ' aria-current="page"' : '' ?>><?= e($p[1]) ?><?php if (!empty($p[2])): ?><small><?= e($p[2]) ?></small><?php endif; ?></a>
+<?php if (!empty($p[3])): ?>
+            <ul>
+<?php foreach ($p[3] as [$adresse, $libelle]): ?>
+              <li><a href="<?= e($adresse) ?>"><?= e($libelle) ?></a></li>
+<?php endforeach; ?>
+            </ul>
 <?php endif; ?>
-    </ul>
-  </section>
-  <section aria-labelledby="plan-pratique">
-    <h2 id="plan-pratique">Pratique</h2>
-    <ul>
-      <li><a href="application.php">L'application mobile</a></li>
-      <li><a href="developpeurs.php">L'API du cabinet (documentation pour développeurs)</a></li>
-      <li><a href="accessibilite.php">Accessibilité</a></li>
-      <li><a href="mentions-legales.php">Mentions légales</a></li>
-      <li><a href="confidentialite.php">Confidentialité</a></li>
-      <li><a href="plan-du-site.php" aria-current="page">Plan du site</a></li>
-    </ul>
-  </section>
+          </li>
+<?php endforeach; ?>
+        </ul>
+      </section>
+<?php endforeach; ?>
+    </div>
+  </div>
 </div>
-
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php page_fin(); ?>

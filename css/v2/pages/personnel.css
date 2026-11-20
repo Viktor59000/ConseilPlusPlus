@@ -1,0 +1,88 @@
+/* Le Personnel (cabinet.php) : la collection des agents, le circuit d'un dossier, les valeurs, le relevé.
+   Couche « page » (intégrée par page_debut()). */
+
+/* ---------- Portraits : cadre de collection, fond du dessin (papier légèrement bleuté des portraits) ---------- */
+.portrait { position: relative; margin: 0; aspect-ratio: 1; overflow: hidden; border-radius: var(--r-papier); background: #F2F3F6; }
+.portrait__image { width: 100%; height: 100%; object-fit: cover; transition: transform var(--d-image-out) var(--courbe); }
+:root[data-theme-effectif="sombre"] .portrait__image { filter: brightness(.86) contrast(1.04); }
+.portrait__monogramme { position: absolute; inset: 0; display: grid; place-items: center; background: var(--kraft-onglet); color: var(--encre-sur-kraft); }
+.portrait__monogramme > span:first-child { font: 500 clamp(5rem, 3rem + 6vw, 9rem)/1 var(--police); letter-spacing: -.05em; }
+.portrait__monogramme .tampon { position: absolute; right: 10%; bottom: 12%; }
+.portrait--vacant { display: grid; place-items: center; background: transparent; border: 1.5px dashed var(--filet-fort); }
+.portrait--vacant span { font: 500 clamp(4rem, 2.6rem + 4vw, 6.5rem)/1 var(--mono); color: var(--encre-2); }
+
+/* Héros : le fondateur en très grand, sa plaque de poste posée en bas à gauche */
+.portrait--heros { aspect-ratio: 1; max-height: calc(var(--ecran) - var(--e-7) - var(--e-8)); margin-left: auto; border-radius: var(--r-grand); }
+.personnel-plaque {
+  display: grid; gap: var(--e-1); width: min(300px, 80%); padding: var(--e-5); padding-right: var(--e-8);
+  background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier);
+}
+.personnel-plaque__nom { font-size: var(--t-lead); font-weight: var(--g-appui); line-height: 1.25; margin-top: var(--e-2); }
+.personnel-plaque__role { font-size: var(--t-petit); color: var(--encre-2); }
+.personnel-plaque .tampon { position: absolute; right: var(--e-4); top: var(--e-4); }
+
+/* ---------- La collection : fiches bord à bord sous filets fins (planche Cooper Hewitt) ---------- */
+.collection {
+  list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--filet-fort); border-left: 1px solid var(--filet-fort);
+}
+.fiche-agent {
+  display: flex; flex-direction: column; gap: var(--e-2); padding: var(--e-5);
+  border-right: 1px solid var(--filet-fort); border-bottom: 1px solid var(--filet-fort);
+}
+.fiche-agent .portrait { margin-bottom: var(--e-3); }
+.fiche-agent:hover .portrait__image { transform: scale(1.02); transition-duration: var(--d-image); }
+.fiche-agent__nom { font-size: var(--t-h3); }
+.fiche-agent__role { font-weight: var(--g-appui); font-size: var(--t-petit); }
+.fiche-agent__bio { font-size: var(--t-petit); color: var(--encre-2); }
+.fiche-agent__fiche { display: grid; margin-top: var(--e-2); border-top: 1px dotted var(--filet-fort); }
+.fiche-agent__fiche div { display: grid; grid-template-columns: minmax(0, 7.5em) minmax(0, 1fr); gap: var(--e-3); padding: var(--e-2) 0; border-bottom: 1px dotted var(--filet-fort); font-size: var(--t-etiquette); }
+.fiche-agent__fiche dt { color: var(--encre-2); }
+.fiche-agent__fiche dd { margin: 0; font-family: var(--mono); font-weight: 500; }
+.fiche-agent__liens { list-style: none; padding: 0; margin-top: auto; padding-top: var(--e-3); display: grid; gap: var(--e-2); }
+.fiche-agent__liens .lien-fleche { font-size: var(--t-petit); min-height: 32px; }
+.fiche-agent--vacant .fiche-agent__nom { color: var(--encre-2); }
+@media (max-width: 1199px) { .collection { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1023px) { .collection { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) {
+  .collection { grid-template-columns: 1fr; }
+  .fiche-agent .portrait { width: min(240px, 70%); }
+}
+
+/* ---------- Le circuit d'un dossier : cinq colonnes sous filets, numéros machine ---------- */
+.circuit { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 2px solid var(--encre); }
+.circuit__etape { display: flex; flex-direction: column; gap: var(--e-3); padding: var(--e-5) var(--e-5) var(--e-5) 0; }
+.circuit__etape + .circuit__etape { padding-left: var(--e-5); border-left: 1px solid var(--filet); }
+.circuit__numero { font-size: var(--t-chiffre); line-height: 1; color: var(--rouge); }
+.circuit__titre { font-size: var(--t-h3); }
+.circuit__texte { font-size: var(--t-petit); color: var(--encre-2); }
+.circuit__agents { font: 500 var(--t-etiquette)/1.45 var(--mono); text-transform: uppercase; letter-spacing: .04em; padding-top: var(--e-3); border-top: 1px dotted var(--filet-fort); }
+.circuit__lien { margin-top: auto; }
+@media (max-width: 1023px) {
+  .circuit { grid-template-columns: 1fr; }
+  .circuit__etape, .circuit__etape + .circuit__etape { display: grid; grid-template-columns: 4rem minmax(0, 1fr); column-gap: var(--e-4); padding: var(--e-5) 0; border-left: 0; border-bottom: 1px solid var(--filet); }
+  .circuit__etape > :not(.circuit__numero) { grid-column: 2; }
+  .circuit__numero { grid-row: 1 / span 5; }
+}
+
+/* ---------- Les valeurs : la phrase qui s'encre, puis quatre articles ---------- */
+#valeurs .conteneur { display: flex; flex-direction: column; justify-content: space-between; gap: var(--e-8); }
+.valeurs { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--colonne-gap); }
+.valeurs__item { display: grid; gap: var(--e-3); align-content: start; padding-top: var(--e-4); border-top: 1px solid var(--filet-fort); }
+.valeurs__nom { font-size: var(--t-h3); }
+.valeurs__texte { color: var(--encre-2); }
+@media (max-width: 1023px) { .valeurs { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--e-6); } }
+@media (max-width: 639px) { .valeurs { grid-template-columns: 1fr; } }
+
+/* ---------- Relevé et témoignages ---------- */
+.releve { display: grid; border-top: 2px solid var(--encre); }
+.releve div { display: flex; justify-content: space-between; align-items: baseline; gap: var(--e-5); padding: var(--e-4) 0; border-bottom: 1px solid var(--filet); }
+.releve dt { color: var(--encre-2); }
+.releve dd { margin: 0; font: 500 var(--t-lead)/1.3 var(--mono); text-align: right; }
+.releve__appel { margin-top: var(--e-6); }
+.temoignages { display: grid; gap: var(--e-5); align-content: start; }
+.temoignages__titre { font-size: var(--t-etiquette); font-family: var(--mono); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--encre-2); }
+.temoignage { margin: 0; padding: var(--e-5) 0 var(--e-5) var(--e-5); border-left: 3px solid var(--laiton); display: grid; gap: var(--e-3); }
+.temoignage blockquote { margin: 0; font-size: var(--t-lead); line-height: 1.45; }
+.temoignage figcaption { font-size: var(--t-petit); color: var(--encre-2); }
+@media (max-width: 1023px) { .temoignages { margin-top: var(--e-7); } }

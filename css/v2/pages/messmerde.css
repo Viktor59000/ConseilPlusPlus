@@ -1,0 +1,85 @@
+/* Messmerde (messmerde.php, js/messmerde.js) : séance d'expériences, crédibilité, prédictions rétroactives, horoscope en encart.
+   Couche « page ». */
+
+/* ---------- Héros : le portrait du mentaliste, le tampon « PRÉVU » posé dessus ---------- */
+.messmerde-portrait { margin: 0 0 0 auto; aspect-ratio: 1; max-height: calc(var(--ecran) - var(--e-7) - var(--e-8)); overflow: hidden; border-radius: var(--r-grand); background: #F2F3F6; }
+.messmerde-portrait img { width: 100%; height: 100%; object-fit: cover; }
+:root[data-theme-effectif="sombre"] .messmerde-portrait img { filter: brightness(.86) contrast(1.04); }
+.messmerde-hommage { font-size: var(--t-etiquette); color: var(--encre-2); }
+.heros__visuel .heros__pose { left: auto; right: var(--e-6); bottom: var(--e-6); }
+@media (max-width: 1023px) { .heros__visuel .heros__pose { position: absolute; right: var(--e-4); bottom: var(--e-4); margin: 0; } }
+
+/* ---------- La séance ---------- */
+.messmerde { align-items: start; }
+.experience { position: relative; min-height: 420px; padding: var(--e-7); background: var(--fond); border-radius: var(--r-papier); }
+.experience.nouvelle { animation: mm-apparition 320ms var(--courbe-entree); }
+@keyframes mm-apparition { from { opacity: 0; transform: translateY(8px); } }
+.experience__num { color: var(--encre-2); margin-bottom: var(--e-3); }
+.experience h2 { margin-bottom: var(--e-4); max-width: 16ch; }
+.experience__consigne { font-size: var(--t-lead); max-width: 40ch; }
+.experience__scene { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-3); margin: var(--e-5) 0; }
+.experience__scene:empty { margin: 0; }
+.experience__revelation { font-size: clamp(1.375rem, 1.1rem + 1.2vw, 2rem); font-weight: var(--g-titre); letter-spacing: -.02em; line-height: 1.2; min-height: 1.4em; margin: var(--e-5) 0 var(--e-3); max-width: 26ch; }
+.experience__revelation.concentre { color: var(--encre-2); font-style: italic; animation: mm-concentre 900ms ease-in-out infinite alternate; }
+@keyframes mm-concentre { to { opacity: .4; } }
+.experience__tampon { position: absolute; right: var(--e-7); top: var(--e-7); }
+.experience__avis { display: grid; gap: var(--e-3); margin-top: var(--e-6); padding-top: var(--e-4); border-top: 1px solid var(--filet-fort); }
+.experience__avis .machine { color: var(--encre-2); }
+.experience-question { flex-basis: 100%; font-size: var(--t-lead); font-weight: var(--g-appui); min-height: 1.5em; }
+.experience-champ { display: grid; gap: var(--e-2); flex: 1 1 220px; max-width: 320px; font-size: var(--t-petit); font-weight: var(--g-appui); }
+.experience-champ input { min-height: 48px; padding: var(--e-3) var(--e-4); border: 1px solid var(--contour); border-radius: var(--r-petit); background: var(--papier); color: var(--encre); font: 1rem var(--mono); }
+.experience-champ input:focus { outline: none; border-color: var(--encre); box-shadow: 0 0 0 3px color-mix(in srgb, var(--encre) 18%, transparent); }
+.cartes { display: flex; flex-wrap: wrap; gap: var(--e-4); }
+.carte-mystere {
+  width: 104px; height: 150px; border: 1.5px solid var(--encre); border-radius: var(--r-petit); cursor: pointer; color: var(--encre);
+  background: repeating-linear-gradient(45deg, var(--papier) 0 8px, var(--fond-2) 8px 16px);
+  font: 500 var(--t-etiquette) var(--mono); text-transform: uppercase; transition: transform var(--d-out) var(--courbe), opacity var(--d-out);
+}
+.carte-mystere:hover:not(:disabled) { transform: translateY(-2px); transition-duration: var(--d-in); }
+.carte-mystere.retournee { background: var(--papier); box-shadow: var(--ombre-papier); transform: translateY(-4px); }
+.carte-mystere.ecartee { opacity: .35; }
+.credibilite { position: sticky; top: calc(var(--nav) + var(--e-5)); display: grid; gap: var(--e-2); padding: var(--e-5) 0; border-top: 2px solid var(--encre); border-bottom: 1px solid var(--filet-fort); }
+.credibilite .machine { color: var(--encre-2); }
+.credibilite__valeur { font: 500 var(--t-chiffre)/1.1 var(--mono); }
+.credibilite__commentaire { font-size: var(--t-petit); color: var(--encre-2); }
+.credibilite.monte .credibilite__valeur { animation: mm-monte 320ms var(--courbe-entree); }
+@keyframes mm-monte { from { transform: translateY(6px); opacity: .4; } }
+@media (max-width: 1023px) { .credibilite { position: static; margin-top: var(--e-5); } }
+@media (max-width: 639px) {
+  .experience { padding: var(--e-6) var(--e-5) var(--e-9); }
+  .experience__tampon { top: auto; bottom: var(--e-5); right: var(--e-5); }
+}
+:root[data-regime="allege"] :is(.experience.nouvelle, .experience__revelation.concentre, .credibilite.monte .credibilite__valeur) { animation: none; }
+
+/* ---------- Le certificat de prédiction rétroactive ---------- */
+.certificat { position: relative; display: grid; gap: var(--e-5); padding: var(--e-7); background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); }
+.certificat::before { content: ""; position: absolute; inset: 12px; border: 1px solid var(--filet-fort); outline: 3px solid color-mix(in srgb, var(--laiton) 55%, transparent); outline-offset: 3px; pointer-events: none; }
+.certificat__entete { display: grid; gap: var(--e-1); padding-bottom: var(--e-4); border-bottom: 1px solid var(--filet); }
+.certificat__num { font-size: var(--t-etiquette); color: var(--encre-2); }
+.certificat__quand { font-weight: var(--g-appui); }
+.certificat__texte { margin: 0; font-size: clamp(1.375rem, 1.1rem + 1.2vw, 2rem); font-weight: var(--g-titre); letter-spacing: -.02em; line-height: 1.25; max-width: 30ch; }
+.certificat__dates { display: grid; }
+.certificat__dates div { display: grid; grid-template-columns: minmax(0, 13em) minmax(0, 1fr); gap: var(--e-4); padding: var(--e-2) 0; border-bottom: 1px dotted var(--filet-fort); font-size: var(--t-petit); }
+.certificat__dates dt { color: var(--encre-2); }
+.certificat__dates dd { margin: 0; }
+.certificat__tampon { justify-self: end; margin: calc(-1 * var(--e-3)) var(--e-3) 0 0; }
+@media (max-width: 639px) {
+  .certificat { padding: var(--e-6) var(--e-5); }
+  .certificat__entete { padding-right: 0; }
+  .certificat__dates div { grid-template-columns: 1fr; gap: 0; }
+  .certificat__tampon { position: static; justify-self: end; }
+}
+
+/* ---------- L'horoscope, en encart : une colonne de journal, filets fins ---------- */
+.encart { padding: var(--e-7); background: var(--papier); border: 1px solid var(--filet-fort); }
+.encart__tete { display: grid; gap: var(--e-3); max-width: 46rem; margin-bottom: var(--e-6); }
+.encart__tete h2 { font-size: var(--t-h3); letter-spacing: -.02em; }
+.horoscope { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 var(--colonne-gap); }
+.signe { display: grid; gap: var(--e-2); align-content: start; padding: var(--e-4) 0 var(--e-5); border-top: 1px solid var(--filet-fort); }
+.signe__nom { font-size: 1rem; line-height: 1.3; letter-spacing: 0; }
+.signe__dates { display: block; margin-top: 2px; font-size: var(--t-etiquette); color: var(--encre-2); }
+.signe__prediction { font-size: var(--t-petit); }
+.signe__infos { font-size: var(--t-etiquette); color: var(--encre-2); }
+.signe .bouton { justify-self: start; margin-top: var(--e-1); }
+@media (max-width: 1023px) { .horoscope { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .encart { padding: var(--e-5); } .horoscope { grid-template-columns: 1fr; } }

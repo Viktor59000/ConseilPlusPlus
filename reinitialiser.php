@@ -5,6 +5,7 @@
  * Le mot de passe est enregistré avec la même méthode que l'inscription du cours (includes/compte.php).
  */
 require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/includes/gabarit.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/compte.php';
 require_once __DIR__ . '/includes/formulaire.php';
@@ -35,51 +36,52 @@ if ($demande && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$titre = 'Nouveau mot de passe';
-$description = 'Choisissez un nouveau mot de passe pour votre compte ConseilPlus+.';
-$page = 'client';
-include __DIR__ . '/includes/header.php';
+page_debut([
+    'titre' => 'Nouveau mot de passe',
+    'description' => 'Choisissez un nouveau mot de passe pour votre compte ConseilPlus+.',
+    'page' => 'dossier',
+    'robots' => 'noindex',
+    'css' => ['css/v2/pages/formulaire.css'],
+]);
 ?>
-
-<section class="conteneur entete-page">
-  <p class="etiquette">Guichet n° 3 bis</p>
-  <h1>Nouveau mot de passe</h1>
+<section class="heros" data-enter aria-labelledby="heros-titre">
+  <div class="conteneur grille">
+    <div class="heros__texte">
+      <p class="reference"><span>Guichet n° 3 bis</span><span>Objets perdus</span></p>
+      <h1 id="heros-titre">Nouveau mot de passe</h1>
 <?php if ($demande): ?>
-  <p class="chapo">Bonjour <?= htmlspecialchars($demande['prenom']) ?>. Choisissez un mot de passe que vous oublierez moins vite.</p>
+      <p class="heros__chapeau">Bonjour <?= e($demande['prenom']) ?>. Choisissez un mot de passe que vous oublierez moins vite.</p>
 <?php else: ?>
-  <p class="chapo">Ce lien n'est plus valable : il a expiré (1 heure) ou a déjà servi.</p>
+      <p class="heros__chapeau">Ce lien n'est plus valable : il a expiré (1 heure) ou a déjà servi.</p>
 <?php endif; ?>
-</section>
-
-<section class="conteneur guichets">
+    </div>
+    <div class="heros__visuel">
 <?php if ($demande): ?>
-  <form class="formulaire" action="reinitialiser.php" method="POST" aria-labelledby="titre-nouveau">
-    <?= csrf_champ() ?>
-    <input type="hidden" name="jeton" value="<?= htmlspecialchars($jeton) ?>">
-    <h2 id="titre-nouveau">Votre nouveau mot de passe</h2>
-    <p class="obligatoire">Tous les champs sont obligatoires.</p>
+      <form class="guichet-feuille formulaire" action="reinitialiser.php" method="POST" aria-labelledby="titre-nouveau">
+        <?= csrf_champ() ?>
+        <input type="hidden" name="jeton" value="<?= e($jeton) ?>">
+        <div class="ecran__tete">
+          <p class="reference"><span>Formulaire P-1</span></p>
+          <h2 id="titre-nouveau">Votre nouveau mot de passe</h2>
+          <p class="muet">Tous les champs sont obligatoires.</p>
+        </div>
 <?php if (isset($erreurs['session'])): ?>
-    <?= alerte($erreurs['session']) ?>
+        <?= bloc_alerte($erreurs['session'], 'erreur', ['titre' => 'Formulaire expiré']) ?>
 <?php endif; ?>
-    <div class="<?= classe_champ($erreurs, 'mdp') ?>">
-      <label for="re-mdp">Nouveau mot de passe <span class="facultatif">(<?= MDP_LONGUEUR_MIN ?> caractères minimum)</span></label>
-      <input id="re-mdp" type="password" name="mdp" minlength="<?= MDP_LONGUEUR_MIN ?>" autocomplete="new-password" required<?= aria_erreur($erreurs, 'mdp') ?>>
-      <?= erreur_champ($erreurs, 'mdp') ?>
-    </div>
-    <div class="<?= classe_champ($erreurs, 'mdp2') ?>">
-      <label for="re-mdp2">Le même, une seconde fois</label>
-      <input id="re-mdp2" type="password" name="mdp2" minlength="<?= MDP_LONGUEUR_MIN ?>" autocomplete="new-password" required<?= aria_erreur($erreurs, 'mdp2') ?>>
-      <?= erreur_champ($erreurs, 'mdp2') ?>
-    </div>
-    <button class="btn btn-tampon" type="submit">Enregistrer le mot de passe</button>
-  </form>
+        <?= champ('mdp', 'Nouveau mot de passe', $erreurs, ['id' => 're-mdp', 'type' => 'password', 'requis' => true, 'autocomplete' => 'new-password',
+            'aide' => MDP_LONGUEUR_MIN . ' caractères minimum.', 'attributs' => ['minlength' => MDP_LONGUEUR_MIN]]) ?>
+        <?= champ('mdp2', 'Le même, une seconde fois', $erreurs, ['id' => 're-mdp2', 'type' => 'password', 'requis' => true, 'autocomplete' => 'new-password', 'attributs' => ['minlength' => MDP_LONGUEUR_MIN]]) ?>
+        <div class="boutons"><?= bouton('Enregistrer le mot de passe', null, ['type' => 'submit']) ?></div>
+      </form>
 <?php else: ?>
-  <div class="formulaire">
-    <h2>Lien expiré</h2>
-    <p>Demandez-en un nouveau : le cabinet en a d'autres.</p>
-    <a class="btn btn-tampon" href="mot-de-passe-oublie.php">Recevoir un nouveau lien</a>
-  </div>
+      <div class="guichet-feuille formulaire">
+        <h2>Lien expiré</h2>
+        <p>Demandez-en un nouveau : le cabinet en a d'autres.</p>
+        <?= tampon('Périmé', ['angle' => -8, 'mouvement' => 'au-chargement', 'decoratif' => true, 'classe' => 'feuille-tampon']) ?>
+        <div class="boutons"><?= bouton('Recevoir un nouveau lien', 'mot-de-passe-oublie.php') ?></div>
+      </div>
 <?php endif; ?>
+    </div>
+  </div>
 </section>
-
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php page_fin(); ?>

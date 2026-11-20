@@ -6,6 +6,7 @@
  * Au plus 3 demandes par compte et par heure.
  */
 require_once __DIR__ . '/includes/init.php';
+require_once __DIR__ . '/includes/gabarit.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/courriel.php';
 require_once __DIR__ . '/includes/formulaire.php';
@@ -46,36 +47,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$titre = 'Mot de passe oublié';
-$description = 'Mot de passe oublié : recevez un lien pour en choisir un nouveau. Le cabinet égare parfois les choses.';
-$page = 'client';
-include __DIR__ . '/includes/header.php';
+page_debut([
+    'titre' => 'Mot de passe oublié',
+    'description' => 'Mot de passe oublié : recevez un lien pour en choisir un nouveau. Le cabinet égare parfois les choses.',
+    'page' => 'dossier',
+    'css' => ['css/v2/pages/formulaire.css'],
+]);
 ?>
-
-<section class="conteneur entete-page">
-  <p class="etiquette">Guichet n° 3 bis</p>
-  <h1>Mot de passe oublié</h1>
-  <p class="chapo">Cela arrive aux meilleurs. Et à nous aussi, souvent.</p>
-</section>
-
-<section class="conteneur guichets">
-  <form class="formulaire" action="mot-de-passe-oublie.php" method="POST" novalidate aria-labelledby="titre-oubli">
-    <?= csrf_champ() ?>
-    <h2 id="titre-oubli">Recevoir un lien</h2>
+<section class="heros" data-enter aria-labelledby="heros-titre">
+  <div class="conteneur grille">
+    <div class="heros__texte">
+      <p class="reference"><span>Guichet n° 3 bis</span><span>Objets perdus</span></p>
+      <h1 id="heros-titre">Mot de passe oublié</h1>
+      <p class="heros__chapeau">Cela arrive aux meilleurs. Et à nous aussi, souvent. Indiquez l'adresse de votre compte : le cabinet vous envoie un lien, valable une heure, pour en choisir un nouveau.</p>
+      <p class="formulaire__aide"><?= lien_fleche('Retour à la connexion', 'login.php') ?></p>
+    </div>
+    <div class="heros__visuel">
+      <form class="guichet-feuille formulaire" action="mot-de-passe-oublie.php" method="POST" novalidate aria-labelledby="titre-oubli">
+        <?= csrf_champ() ?>
+        <div class="ecran__tete">
+          <p class="reference"><span>Formulaire P-0</span></p>
+          <h2 id="titre-oubli">Recevoir un lien</h2>
+        </div>
 <?php if ($envoye): ?>
-    <?= alerte('Si un compte existe avec cette adresse, un courriel vient de partir. Le lien est valable 1 heure. Pensez à regarder dans les indésirables.', 'ok') ?>
+        <?= bloc_alerte('Si un compte existe avec cette adresse, un courriel vient de partir. Le lien est valable 1 heure. Pensez à regarder dans les indésirables.', 'succes', ['titre' => 'Demande enregistrée']) ?>
 <?php else: ?>
 <?php if ($erreur): ?>
-    <?= alerte($erreur) ?>
+        <?= bloc_alerte($erreur, 'erreur', ['titre' => 'Demande incomplète']) ?>
 <?php endif; ?>
-    <div class="champ">
-      <label for="oubli-email">Adresse email du compte</label>
-      <input id="oubli-email" type="email" name="email" maxlength="191" autocomplete="email" required value="<?= htmlspecialchars($email) ?>">
+        <?= champ('email', 'Adresse email du compte', $erreur ? ['email' => $erreur] : [], ['id' => 'oubli-email', 'type' => 'email', 'valeur' => $email, 'requis' => true, 'maxlength' => 191, 'autocomplete' => 'email', 'officiel' => true]) ?>
+        <div class="boutons"><?= bouton('Envoyer le lien', null, ['type' => 'submit']) ?></div>
+<?php endif; ?>
+      </form>
     </div>
-    <button class="btn btn-tampon" type="submit">Envoyer le lien</button>
-<?php endif; ?>
-    <p class="aide"><a href="login.php">Retour à la connexion</a></p>
-  </form>
+  </div>
 </section>
-
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php page_fin(); ?>

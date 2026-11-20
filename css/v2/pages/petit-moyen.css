@@ -1,0 +1,162 @@
+/* Le Petit Moyen (petit-moyen.php) : la page du dictionnaire, ses entrées (includes/carte-mot.php), le lecteur de scènes
+   (js/sketch.js, partagé avec feuilleton.php qui charge aussi cette feuille), le sigle, les archives. Couche « page ». */
+
+/* ---------- Héros : l'entrée du jour posée comme une page de dictionnaire, le mot en très grand ---------- */
+.pm-vedette {
+  position: relative; display: grid; gap: var(--e-3); align-content: start; min-height: min(560px, calc(var(--ecran) - var(--e-7) - var(--e-8)));
+  padding: var(--e-8) var(--e-7) var(--e-7); background: var(--papier); color: var(--encre); text-decoration: none;
+  border-radius: var(--r-papier); box-shadow: var(--ombre-papier); transform: rotate(.6deg);
+  transition: transform var(--d-out) var(--courbe), box-shadow var(--d-out) var(--courbe);
+}
+/* La marge rouge du cahier, et les filets d'une page de dictionnaire */
+.pm-vedette::before { content: ""; position: absolute; top: 0; bottom: 0; left: var(--e-6); width: 1px; background: var(--rouge); opacity: .55; }
+.pm-vedette__date { font-size: var(--t-etiquette); color: var(--encre-2); text-transform: uppercase; letter-spacing: .06em; }
+.pm-vedette__mot { font-size: clamp(3rem, 1.6rem + 4.6vw, 6.5rem); font-weight: var(--g-titre); letter-spacing: -.045em; line-height: .95; overflow-wrap: anywhere; }
+.pm-vedette__nature { font-style: italic; color: var(--encre-2); font-size: var(--t-lead); }
+.pm-vedette__texte { font-size: var(--t-lead); line-height: 1.5; max-width: 30em; padding-top: var(--e-4); border-top: 1px solid var(--filet); }
+.pm-vedette__suite { display: inline-flex; align-items: center; gap: var(--e-2); margin-top: auto; padding-top: var(--e-5); font-weight: var(--g-appui); }
+.pm-vedette__suite .bouton__fleche { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--d-out) var(--courbe); }
+.pm-vedette .tampon { position: absolute; right: var(--e-6); bottom: var(--e-6); }
+@media (hover: hover) and (pointer: fine) {
+  .pm-vedette:hover { transform: rotate(.6deg) translateY(-2px); box-shadow: var(--ombre-papier-haute); transition-duration: var(--d-carte); }
+  .pm-vedette:hover .bouton__fleche { transform: translateX(3px); transition-duration: var(--d-in); }
+}
+@media (max-width: 639px) { .pm-vedette { padding: var(--e-7) var(--e-5) var(--e-5) var(--e-7); min-height: 0; } .pm-vedette::before { left: var(--e-5); } .pm-vedette .tampon { bottom: var(--e-4); right: var(--e-4); font-size: 1rem; } }
+
+/* ---------- Une entrée du dictionnaire (includes/carte-mot.php) : une feuille posée ---------- */
+.pm-entree { display: grid; gap: var(--e-5); align-content: start; }
+.entree-mot { position: relative; padding: var(--e-7); background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); }
+.ecran--papier .entree-mot { background: var(--fond); }
+.entree-date { font: 500 var(--t-etiquette)/1.3 var(--mono); color: var(--encre-2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: var(--e-3); }
+.entree-titre { font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem); letter-spacing: -.04em; margin-bottom: var(--e-3); }
+.entree-nature { font: italic 400 var(--t-lead) var(--police); letter-spacing: 0; color: var(--encre-2); margin-left: var(--e-2); }
+.entree-etymologie { margin-bottom: var(--e-4); color: var(--encre-2); font-size: var(--t-petit); max-width: var(--mesure); }
+.entree-etymologie::before { content: "[ "; } .entree-etymologie::after { content: " ]"; }
+.entree-etymologie-titre { font-size: var(--t-etiquette); margin-right: var(--e-1); }
+.entree-definition { font-size: var(--t-lead); font-weight: var(--g-appui); line-height: 1.5; margin-bottom: var(--e-3); }
+.entree-exemple { font-style: italic; color: var(--encre-2); }
+.entree-infos { display: flex; flex-wrap: wrap; gap: var(--e-2) var(--e-6); margin-top: var(--e-5); padding-top: var(--e-4); border-top: 1px solid var(--filet); font-size: var(--t-etiquette); }
+.entree-infos dt { display: inline; color: var(--encre-2); }
+.entree-infos dt::after { content: " : "; }
+.entree-infos dd { display: inline; margin: 0; }
+.entree-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-3) var(--e-4); margin-top: var(--e-5); }
+@media (max-width: 639px) { .entree-mot { padding: var(--e-6) var(--e-5); } }
+
+/* Votes « Moyen / Pas moyen » (js/votes.js) : deux cases de formulaire, la cochée à l'encre */
+.votes:not([hidden]) { display: inline-flex; border: 1px solid var(--filet-fort); border-radius: var(--r-petit); }
+.vote { display: inline-flex; align-items: center; gap: var(--e-2); min-height: 40px; padding: 0 var(--e-4); border: 0; background: none; color: var(--encre); font: var(--g-appui) var(--t-petit) var(--police); cursor: pointer; }
+.vote + .vote { border-left: 1px solid var(--filet-fort); }
+.vote:hover { background: color-mix(in srgb, var(--encre) 7%, transparent); }
+.vote[aria-pressed="true"] { background: var(--encre); color: var(--sur-encre); }
+.vote:disabled { cursor: progress; }
+
+/* ---------- Le lecteur de scènes (js/sketch.js) : un script, réplique par réplique ---------- */
+.sketch-commandes:not([hidden]) { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-3) var(--e-5); margin-bottom: var(--e-5); }
+.sketch-voix { display: inline-flex; align-items: center; gap: var(--e-2); min-height: 44px; font-size: var(--t-petit); font-weight: var(--g-appui); cursor: pointer; }
+.sketch-voix input { width: 20px; height: 20px; accent-color: var(--encre); }
+.sketch-script { list-style: none; padding: 0; display: grid; gap: var(--e-3); }
+.replique { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: var(--e-1) var(--e-4); align-items: baseline; }
+.replique-qui { font: 500 var(--t-etiquette)/1.4 var(--mono); text-transform: uppercase; letter-spacing: .04em; color: var(--encre-2); }
+.replique-jeu { font-style: italic; color: var(--encre-2); }
+.replique-chute .replique-texte { font-weight: var(--g-appui); font-size: var(--t-lead); }
+.replique-chute mark { background: linear-gradient(var(--surligneur), var(--surligneur)) no-repeat 0 62% / 100% .55em; color: inherit; }
+.replique-formule .replique-texte, .replique-annonce .replique-texte, .replique-suspense .replique-texte { font-weight: var(--g-appui); }
+.sketch-scene { font-style: italic; color: var(--encre-2); padding: var(--e-1) 0 var(--e-1) var(--e-4); border-left: 2px solid var(--laiton); }
+.sketch-decoupage {
+  display: inline-block; margin-top: var(--e-5); padding: var(--e-2) var(--e-4); transform: rotate(-1.5deg);
+  border: 3px double var(--rouge); border-radius: var(--r-petit); color: var(--rouge); font: 500 var(--t-etiquette)/1.4 var(--mono); text-transform: uppercase; letter-spacing: .06em;
+}
+.sketch-relance { margin-top: var(--e-4); color: var(--encre-2); }
+.sketch-relance .replique-qui { margin-right: var(--e-2); }
+.sketch.en-scene .sketch-court [data-qui]:not(.vu) { display: none; }
+.sketch.en-scene .vu { animation: pm-apparition 280ms var(--courbe-entree); }
+.replique.parle .replique-qui { color: var(--rouge); }
+@keyframes pm-apparition { from { opacity: 0; transform: translateY(6px); } }
+:root[data-regime="allege"] .sketch.en-scene .vu { animation: none; }
+@media (max-width: 639px) { .replique { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
+
+/* ---------- Volets (details) : rituel, glossaire, sommaire ---------- */
+.volet, .sketch-rituel { border-top: 1px solid var(--filet-fort); }
+.volet:last-child { border-bottom: 1px solid var(--filet-fort); }
+.sketch-rituel { margin-top: var(--e-5); }
+.volet > summary, .sketch-rituel > summary {
+  display: flex; align-items: center; gap: var(--e-3); min-height: 52px; cursor: pointer; list-style: none; font-weight: var(--g-appui);
+}
+.sketch-rituel > summary { color: var(--encre-2); font-size: var(--t-petit); }
+.volet > summary::-webkit-details-marker, .sketch-rituel > summary::-webkit-details-marker { display: none; }
+.volet > summary::before, .sketch-rituel > summary::before {
+  content: ""; flex: none; width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg); transition: transform var(--d-in) var(--courbe);
+}
+.volet[open] > summary::before, .sketch-rituel[open] > summary::before { transform: rotate(45deg); }
+.volet[open] { padding-bottom: var(--e-5); }
+.sketch-rituel .sketch-script { margin: var(--e-2) 0 var(--e-3); }
+.volet__intro { max-width: var(--mesure); margin-bottom: var(--e-4); color: var(--encre-2); }
+.glossaire { display: grid; }
+.glossaire div { padding: var(--e-3) 0; border-top: 1px dotted var(--filet-fort); }
+.glossaire dt { font-weight: var(--g-appui); }
+.glossaire dt span { font-weight: var(--g-texte); font-style: italic; margin-left: var(--e-2); }
+.glossaire dd { margin: 2px 0 0; color: var(--encre-2); max-width: var(--mesure); }
+.sommaire-liste { columns: 3 12ch; column-gap: var(--e-6); padding-left: 2.2em; font-size: var(--t-petit); }
+.sommaire-liste li { break-inside: avoid; padding: 3px 0; }
+.sommaire-liste a { text-decoration: none; }
+.sommaire-liste a:hover { text-decoration: underline; }
+.sommaire-liste a[aria-current="page"] { font-weight: var(--g-appui); color: var(--rouge); }
+
+/* ---------- Le sigle du jour : les lettres au tampon, en très grand ---------- */
+.sigle-jour { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--e-5) var(--e-8); align-items: center; padding: var(--e-7) 0; border-top: 2px solid var(--encre); margin-bottom: var(--e-6); }
+.sigle-jour__lettres {
+  padding: .1em .35em; border: .07em solid var(--rouge); outline: .03em solid var(--rouge); outline-offset: -.16em; border-radius: var(--r-petit);
+  color: var(--rouge); font: 500 clamp(3.5rem, 2rem + 6vw, 8rem)/1 var(--mono); letter-spacing: .06em; transform: rotate(-3deg);
+  mix-blend-mode: var(--tampon-melange); filter: url(#encre-tampon);
+}
+.sigle-jour__lettres abbr { text-decoration: none; }
+.sigle-jour__corps { display: grid; gap: var(--e-3); max-width: 40rem; }
+.sigle-jour__developpement { font-size: var(--t-h3); font-weight: var(--g-titre); letter-spacing: -.02em; line-height: 1.2; }
+.sigle-jour__definition { font-size: var(--t-lead); }
+.sigle-jour__exemple { color: var(--encre-2); font-style: italic; }
+.sigle-jour__exemple .machine { font-style: normal; margin-right: var(--e-2); }
+@media (max-width: 767px) { .sigle-jour { grid-template-columns: 1fr; } .sigle-jour__lettres { justify-self: start; } }
+
+/* ---------- Feuilleter : index des lettres ---------- */
+.pm-feuilleter { display: grid; gap: var(--e-5); align-content: start; }
+.pm-feuilleter .ecran__tete { margin-bottom: 0; }
+.lettrines { display: flex; flex-wrap: wrap; gap: 0; border-top: 1px solid var(--filet-fort); border-left: 1px solid var(--filet-fort); }
+.lettrines a {
+  display: grid; place-items: center; width: 44px; height: 44px; border-right: 1px solid var(--filet-fort); border-bottom: 1px solid var(--filet-fort);
+  font: 500 var(--t-petit) var(--mono); text-decoration: none; color: var(--encre);
+}
+.lettrines a:hover, .lettrines a:focus-visible { background: var(--encre); color: var(--sur-encre); }
+
+/* ---------- Le feuilleton : bande kraft, la chemise du cabinet ---------- */
+.ecran--kraft { background: var(--kraft-onglet); color: var(--encre-sur-kraft); }
+.ecran--kraft :is(.reference, .chapeau, .muet) { color: var(--encre-sur-kraft); }
+.ecran--kraft .ecran__tete::before { background: var(--encre-sur-kraft); }
+.ecran--kraft .bouton--principal { --b-fond: var(--encre-sur-kraft); --b-bord: var(--encre-sur-kraft); --b-texte: var(--kraft-onglet); }
+.ecran--kraft :focus-visible { outline-color: var(--encre-sur-kraft); }
+.pm-episode { display: grid; gap: var(--e-4); align-self: center; padding: var(--e-7); background: var(--papier); color: var(--encre); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); transform: rotate(-.5deg); }
+.pm-episode__heraut { margin: 0; font-size: var(--t-lead); line-height: 1.6; }
+@media (max-width: 1023px) { .pm-episode { margin-top: var(--e-6); } }
+@media (max-width: 639px) { .pm-episode { padding: var(--e-5); } }
+
+/* ---------- Palmarès et archives : la collection des jours ---------- */
+.palmares { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--colonne-gap); padding: var(--e-5) 0; margin-bottom: var(--e-6); border-top: 2px solid var(--encre); }
+.palmares__titre { font-size: var(--t-lead); }
+.palmares__liste { list-style: none; padding: 0; display: grid; }
+.palmares__liste li { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; gap: var(--e-4); align-items: baseline; padding: var(--e-2) 0; border-bottom: 1px solid var(--filet); }
+.palmares__rang { color: var(--rouge); }
+@media (max-width: 767px) { .palmares { grid-template-columns: 1fr; } .palmares__liste li { grid-template-columns: 2.5rem minmax(0, 1fr); } .palmares__liste li > :last-child { grid-column: 2; } }
+.archives { list-style: none; padding: 0; border-top: 1px solid var(--filet-fort); }
+.archive { border-bottom: 1px solid var(--filet-fort); }
+.archive > summary {
+  display: grid; grid-template-columns: 8.5rem minmax(8rem, 14rem) minmax(0, 1fr); gap: var(--e-1) var(--e-5); align-items: baseline;
+  min-height: 56px; padding: var(--e-4) 0; cursor: pointer; list-style: none;
+}
+.archive > summary::-webkit-details-marker { display: none; }
+.archive > summary:hover .archive__mot { text-decoration: underline; text-underline-offset: .2em; }
+.archive__date { color: var(--encre-2); font-size: var(--t-etiquette); text-transform: uppercase; }
+.archive__mot { font-weight: var(--g-appui); font-size: var(--t-lead); }
+.archive__extrait { color: var(--encre-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.archive[open] .archive__extrait { visibility: hidden; }
+.archive .entree-mot { margin-bottom: var(--e-5); background: var(--papier); }
+@media (max-width: 639px) { .archive > summary { grid-template-columns: minmax(0, 1fr); } .archive__extrait { white-space: normal; } }

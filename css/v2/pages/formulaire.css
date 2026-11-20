@@ -1,0 +1,26 @@
+/* Pages à formulaire du nouveau site : Réclamations (contact.php), connexion et inscription (login.php),
+   mot de passe oublié (mot-de-passe-oublie.php, reinitialiser.php). Couche « page ». */
+
+.formulaire { display: grid; gap: var(--e-5); align-content: start; }
+.formulaire .ecran__tete { margin-bottom: var(--e-2); }
+.formulaire .boutons { margin-top: var(--e-2); }
+.formulaire__duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-5); }
+@media (max-width: 639px) { .formulaire__duo { grid-template-columns: 1fr; } }
+.formulaire__aide { font-size: var(--t-petit); color: var(--encre-2); }
+/* Champ piège des robots : hors de la vue et du clavier */
+.piege { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* Guichets de compte : deux formulaires côte à côte sur des feuilles (connexion / ouverture de dossier) */
+.guichets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--colonne-gap); align-items: start; }
+.guichet-feuille { position: relative; padding: var(--e-7); background: var(--papier); border-radius: var(--r-papier); box-shadow: var(--ombre-papier); }
+.guichet-feuille--seule { max-width: 640px; }
+.guichet-feuille .ecran__tete::before { display: none; }
+.guichet-feuille h2 { font-size: var(--t-h3); }
+@media (max-width: 1023px) { .guichets { grid-template-columns: 1fr; } }
+@media (max-width: 639px) { .guichet-feuille { padding: var(--e-6) var(--e-5); } }
+
+/* Connexion : la chemise vide sous l'ouverture de dossier */
+.login-scene { margin-top: var(--e-5); }
+.login-scene .scene { aspect-ratio: 4 / 3; }
+@media (max-width: 1023px) { .login-scene { display: none; } .guichet-feuille.d-7 { margin-top: var(--e-2); } }
+.feuille-tampon { position: absolute; right: var(--e-6); top: var(--e-6); }
