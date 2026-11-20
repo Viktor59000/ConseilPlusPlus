@@ -242,6 +242,102 @@ if ($local) {
 } else {
     echo "      (base distante : suppression d'une demande d'autrui non testée)\n";
 }
+// --- Rendez-vous au guichet (api/inscriptions.php) : dépôt par un client connecté (session + jeton CSRF), lecture et
+// statuts par Le Bureau (clé), annulation par le client. Un client provisoire est créé en base puis effacé.
+$r = appeler_api('GET', "$base/inscriptions.php?creneaux=1");
+verifier('GET inscriptions.php?creneaux=1 (public)', 200, $r);
+$creneaux = $r['data']['jours'] ?? [];
+constater('créneaux : 10 jours ouvrés à venir', count($creneaux) === 10 && min(array_keys($creneaux) ?: ['0']) > date('Y-m-d'));
+verifier('GET inscriptions sans clé', 401, appeler_api('GET', "$base/inscriptions.php?statut=nouveau"));
+verifier('PATCH inscription sans clé', 401, appeler_api('PATCH', "$base/inscriptions.php?id=1", ['statut' => 'confirme']));
+verifier('GET inscriptions statut inconnu', 400, appeler_api('GET', "$base/inscriptions.php?statut=perdu", null, $cle));
+verifier('GET inscriptions jour invalide', 400, appeler_api('GET', "$base/inscriptions.php?jour=2026-02-30", null, $cle));
+if ($local) {
+    require_once __DIR__ . '/../includes/bdd.php';
+    require_once __DIR__ . '/../includes/compte.php'; // empreinte_comme_le_cours()
+    $suffixe = bin2hex(random_bytes(4));
+    $mdp = bin2hex(random_bytes(8));
+    $client_rdv = 0;
+    /** Appel de l'API avec la session du navigateur $ch (cookie) et le jeton CSRF $jeton (en-tête X-CSRF-Token). */
+    $session_api = function (CurlHandle $ch, string $methode, string $url, ?array $corps, string $jeton) use ($ip_test): array {
+        curl_setopt_array($ch, [CURLOPT_URL => $url, CURLOPT_CUSTOMREQUEST => $methode, CURLOPT_POSTFIELDS => $corps === null ? '' : json_encode($corps),
+            CURLOPT_HTTPHEADER => array_merge(['Content-Type: application/json', "X-CSRF-Token: $jeton"], $ip_test)]);
+        $brut = (string) curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_setopt_array($ch, [CURLOPT_CUSTOMREQUEST => null, CURLOPT_HTTPHEADER => []]);
+        return ['code' => $code, 'data' => json_decode($brut, true)];
+    };
+    try {
+        bdd()->prepare('INSERT INTO utilisateurs (prenom, nom, mail, mdp) VALUES (?, ?, ?, ?)')
+            ->execute(['Test', 'Rendez-vous', "test-rdv-$suffixe@site.test", empreinte_comme_le_cours($mdp)]);
+        $client_rdv = (int) bdd()->lastInsertId();
+        $c = navigateur();
+        $page = visiter($c, "$site/login.php");
+        visiter($c, "$site/auth/connexion.php", ['email' => "test-rdv-$suffixe@site.test", 'mdp' => $mdp, 'csrf' => $page['jeton']]);
+        $jeton = visiter($c, "$site/compte.php")['jeton'];
+        constater('client du rendez-vous connecté', $jeton !== '');
+
+        // Premier créneau libre
+        [$jour, $horaire] = [null, null];
+        foreach ($creneaux as $j => $libres) {
+            if ($libres) {
+                [$jour, $horaire] = [$j, $libres[0]];
+                break;
+            }
+        }
+        $rdv = ['telephone' => '+33 6 12 34 56 78', 'jour' => $jour, 'horaire' => $horaire, 'message' => 'Mon agrafeuse refuse les documents du lundi.'];
+        verifier('POST inscription sans jeton CSRF', 403, $session_api($c, 'POST', "$base/inscriptions.php", $rdv, 'faux'));
+        $r = $session_api($c, 'POST', "$base/inscriptions.php", ['telephone' => '12', 'jour' => date('Y-m-d', strtotime('-1 day')), 'horaire' => '14:00'], $jeton);
+        verifier('POST inscription invalide', 422, $r);
+        constater('erreurs : téléphone, jour, horaire', isset($r['data']['champs']['telephone'], $r['data']['champs']['jour'], $r['data']['champs']['horaire']));
+        $r = $session_api($c, 'POST', "$base/inscriptions.php", $rdv, $jeton);
+        verifier('POST inscription valide', 201, $r);
+        $id_rdv = (int) ($r['data']['id'] ?? 0);
+        verifier('POST même créneau (déjà pris)', 409, $session_api($c, 'POST', "$base/inscriptions.php", $rdv, $jeton));
+        $libres = appeler_api('GET', "$base/inscriptions.php?creneaux=1")['data']['jours'][$jour] ?? [];
+        constater('créneau pris retiré des créneaux libres', !in_array($horaire, $libres, true));
+
+        // Le Bureau : lecture, filtres, pagination, statuts
+        $r = appeler_api('GET', "$base/inscriptions.php?id=$id_rdv", null, $cle);
+        verifier("GET inscriptions.php?id=$id_rdv", 200, $r);
+        constater('nom du compte, téléphone normalisé, statut nouveau', ($r['data']['nom'] ?? '') === 'Rendez-vous'
+            && ($r['data']['telephone'] ?? '') === '06 12 34 56 78' && ($r['data']['statut'] ?? '') === 'nouveau' && ($r['data']['horaire'] ?? '') === $horaire);
+        $r = appeler_api('GET', "$base/inscriptions.php?statut=nouveau&jour=$jour", null, $cle);
+        constater('filtres statut + jour', $r['code'] === 200 && in_array($id_rdv, array_column($r['data']['inscriptions'] ?? [], 'id')));
+        $r = appeler_api('GET', "$base/inscriptions.php?statut=confirme&jour=$jour", null, $cle);
+        constater('filtre statut=confirme l\'exclut', $r['code'] === 200 && !in_array($id_rdv, array_column($r['data']['inscriptions'] ?? [], 'id')));
+        $r = appeler_api('GET', "$base/inscriptions.php?du=$jour&page=1&par_page=1", null, $cle);
+        constater('pagination (par_page=1)', $r['code'] === 200 && ($r['data']['par_page'] ?? 0) === 1 && count($r['data']['inscriptions'] ?? []) === 1);
+        verifier('GET inscriptions avec clé lecture', 200, appeler_api('GET', "$base/inscriptions.php?id=$id_rdv", null, $lecture));
+        verifier('PATCH inscription avec clé lecture (refusé)', 403, appeler_api('PATCH', "$base/inscriptions.php?id=$id_rdv", ['statut' => 'importe'], $lecture));
+        verifier('PATCH inscription (→ importe)', 200, appeler_api('PATCH', "$base/inscriptions.php?id=$id_rdv", ['statut' => 'importe'], $cle));
+        verifier('PATCH inscription statut invalide', 422, appeler_api('PATCH', "$base/inscriptions.php?id=$id_rdv", ['statut' => 'reporte'], $cle));
+        verifier('PATCH inscription inexistante', 404, appeler_api('PATCH', "$base/inscriptions.php?id=999999999", ['statut' => 'importe'], $cle));
+        $reponse_rdv = 'Rendez-vous confirmé. Venez avec votre agrafeuse.';
+        verifier('PATCH inscription (→ confirme + réponse)', 200, appeler_api('PATCH', "$base/inscriptions.php?id=$id_rdv",
+            ['statut' => 'confirme', 'reponse' => $reponse_rdv], $cle));
+        $r = appeler_api('GET', "$base/inscriptions.php?id=$id_rdv", null, $cle);
+        constater('statut confirme et réponse enregistrés', ($r['data']['statut'] ?? '') === 'confirme' && ($r['data']['reponse'] ?? '') === $reponse_rdv);
+
+        // Le client annule : le créneau se libère ; une seconde annulation est refusée
+        verifier('DELETE inscription inconnue (client)', 404, $session_api($c, 'DELETE', "$base/inscriptions.php?id=999999999", null, $jeton));
+        $r = $session_api($c, 'DELETE', "$base/inscriptions.php?id=$id_rdv", null, $jeton);
+        verifier('DELETE inscription (annulation client)', 200, $r);
+        constater('statut annule', ($r['data']['statut'] ?? '') === 'annule');
+        verifier('DELETE inscription déjà annulée', 409, $session_api($c, 'DELETE', "$base/inscriptions.php?id=$id_rdv", null, $jeton));
+        $libres = appeler_api('GET', "$base/inscriptions.php?creneaux=1")['data']['jours'][$jour] ?? [];
+        constater('créneau libéré après annulation', in_array($horaire, $libres, true));
+        curl_close($c);
+    } finally {
+        if ($client_rdv) {
+            bdd()->prepare('DELETE FROM inscriptions WHERE id_utilisateur = ?')->execute([$client_rdv]);
+            bdd()->prepare('DELETE FROM utilisateurs WHERE id = ?')->execute([$client_rdv]);
+        }
+    }
+} else {
+    echo "      (base distante : dépôt d'un rendez-vous par un client connecté non testé)\n";
+}
+
 verifier('DELETE cles.php (révocation)', 204, appeler_api('DELETE', "$base/cles.php?id=$id_cle", null, $cle));
 verifier('GET avec clé révoquée', 401, appeler_api('GET', "$base/contacts.php?id=$id", null, $lecture));
 verifier('DELETE cles.php (effacement)', 204, appeler_api('DELETE', "$base/cles.php?id=$id_cle", null, $cle));

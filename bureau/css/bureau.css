@@ -154,3 +154,23 @@ textarea { line-height: 1.5; resize: vertical; }
 .confirmer { display: flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; }
 .confirmer input { width: 20px; height: 20px; min-height: 0; padding: 0; accent-color: var(--rouge); }
 @media (max-width: 860px) { .colonnes-egales { grid-template-columns: minmax(0, 1fr); } }
+
+/* Onglets secondaires (services existants, sous les onglets du tableau de la séance) */
+.nav-second { max-width: 1200px; margin: 0 auto; padding: 0 24px 8px; }
+.nav-second a { font-size: .85rem; font-weight: 500; padding: 6px 10px; color: var(--encre-2); }
+
+/* Inscriptions aux rendez-vous : planning de la semaine, pastilles de statut */
+.pastille-confirme { background: var(--surface-2); border-color: transparent; }
+.pastille-annule { background: transparent; color: var(--encre-2); text-decoration: line-through; }
+.defile { overflow-x: auto; }
+.planning { min-width: 640px; table-layout: fixed; }
+.planning th[scope="row"] { width: 6.5rem; font: 600 .9rem var(--mono); color: var(--encre); border-bottom: 1px solid var(--filet); }
+.planning td { border-left: 1px solid var(--filet); }
+.planning .aujourdhui { color: var(--encre); text-decoration: underline; text-decoration-color: var(--rouge); text-decoration-thickness: 3px; text-underline-offset: .35em; }
+.planning ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.planning .libre { color: var(--encre-2); }
+.semaines { display: flex; flex-wrap: wrap; gap: 8px; }
+.jours-liste { display: grid; gap: 8px; }
+.jours-liste h3 { font-size: 1rem; margin: 12px 0 4px; }
+.reponse-rapide { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.reponse-rapide .btn { padding: 6px 14px; font-size: .9rem; }

@@ -1,5 +1,5 @@
 <?php
-// En-tête des pages du Bureau. Attend $titre et, si un agent est connecté, $agent et $page (tableau | dossiers | petit-moyen | journal | statistiques | cles).
+// En-tête des pages du Bureau. Attend $titre et, si un agent est connecté, $agent et $page (planning | inscrits | synchro | export | tableau | dossiers | petit-moyen | journal | statistiques | cles).
 $agent ??= null;
 $page ??= '';
 require_once __DIR__ . '/../../includes/theme.php';
@@ -29,21 +29,29 @@ envoyer_csp();
     </a>
     <?= theme_bouton() ?>
 <?php if ($agent): ?>
-    <nav class="nav" aria-label="Navigation du Bureau">
-      <a href="tableau.php"<?= $page === 'tableau' ? ' aria-current="page"' : '' ?>>Tableau de bord</a>
-      <a href="dossiers.php"<?= $page === 'dossiers' ? ' aria-current="page"' : '' ?>>Dossiers</a>
-      <a href="petit-moyen.php"<?= $page === 'petit-moyen' ? ' aria-current="page"' : '' ?>>Petit Moyen</a>
-      <a href="journal.php"<?= $page === 'journal' ? ' aria-current="page"' : '' ?>>Relevés</a>
-      <a href="statistiques.php"<?= $page === 'statistiques' ? ' aria-current="page"' : '' ?>>Statistiques</a>
-      <a href="cles.php"<?= $page === 'cles' ? ' aria-current="page"' : '' ?>>Clés</a>
+    <!-- Onglets du tableau de la séance (Planning, Inscrits, Synchro, Export, Déconnexion), puis les autres services -->
+    <nav class="nav" aria-label="Onglets du Bureau">
+<?php foreach (['planning' => 'Planning', 'inscrits' => 'Inscrits', 'synchro' => 'Synchro', 'export' => 'Export'] as $onglet => $libelle): ?>
+      <a href="<?= $onglet === 'export' ? 'export-inscrits' : $onglet ?>.php"<?= $page === $onglet ? ' aria-current="page"' : '' ?>><?= $libelle ?></a>
+<?php endforeach; ?>
     </nav>
     <form class="agent" method="post" action="deconnexion.php">
       <?= csrf_champ() ?>
       <span class="mono">Agent : <?= htmlspecialchars($agent['nom']) ?></span>
-      <button class="lien" type="submit">Se déconnecter</button>
+      <button class="lien" type="submit">Déconnexion</button>
     </form>
 <?php endif; ?>
   </div>
+<?php if ($agent): ?>
+  <nav class="nav nav-second" aria-label="Autres services du Bureau">
+    <a href="tableau.php"<?= $page === 'tableau' ? ' aria-current="page"' : '' ?>>Tableau de bord</a>
+    <a href="dossiers.php"<?= $page === 'dossiers' ? ' aria-current="page"' : '' ?>>Dossiers</a>
+    <a href="petit-moyen.php"<?= $page === 'petit-moyen' ? ' aria-current="page"' : '' ?>>Petit Moyen</a>
+    <a href="journal.php"<?= $page === 'journal' ? ' aria-current="page"' : '' ?>>Journal</a>
+    <a href="statistiques.php"<?= $page === 'statistiques' ? ' aria-current="page"' : '' ?>>Statistiques</a>
+    <a href="cles.php"<?= $page === 'cles' ? ' aria-current="page"' : '' ?>>Clés</a>
+  </nav>
+<?php endif; ?>
 </header>
 <main class="page">
 <?php if ($a = annonce()): ?>

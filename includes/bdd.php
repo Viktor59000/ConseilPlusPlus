@@ -1,7 +1,8 @@
 <?php
 /**
  * Connexion à la base du site (chargée par db.php). Une seule connexion par requête, même si db.php est inclus plusieurs fois.
- * Identifiants : variables d'environnement DB_* (Render, CI), sinon valeurs WAMP par défaut (root sans mot de passe).
+ * Identifiants : variables d'environnement DB_* (Render, CI), sinon constantes DB_* de config.php (MAMP…),
+ * sinon valeurs WAMP par défaut (root sans mot de passe).
  * Les tables sont créées ou migrées automatiquement quand le schéma change (includes/schema.php).
  */
 
@@ -23,11 +24,17 @@ function bdd(): PDO
 
 function connecter_bdd(): PDO
 {
-    $hote = getenv('DB_HOST') ?: 'localhost';
-    $port = getenv('DB_PORT') ?: '3306';
-    $base = getenv('DB_NAME') ?: 'site';
-    $utilisateur = getenv('DB_USER') ?: 'root';
-    $mdp = getenv('DB_PASS') ?: '';
+    // Réglage : variable d'environnement, sinon constante de config.php (installation locale, ex. MAMP : port 8889,
+    // root / root), sinon valeur WAMP par défaut. config.php est facultatif ici (tests, pages sans clé).
+    if (is_file(__DIR__ . '/../config.php')) {
+        require_once __DIR__ . '/../config.php';
+    }
+    $reglage = fn (string $nom, string $defaut) => getenv($nom) ?: (defined($nom) ? (string) constant($nom) : $defaut);
+    $hote = $reglage('DB_HOST', 'localhost');
+    $port = $reglage('DB_PORT', '3306');
+    $base = $reglage('DB_NAME', 'site');
+    $utilisateur = $reglage('DB_USER', 'root');
+    $mdp = $reglage('DB_PASS', '');
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         // MySQL suit le même fuseau que PHP (un serveur distant est souvent en UTC)

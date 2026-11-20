@@ -1,6 +1,6 @@
 <?php
-// bureau/tableau.php — Tableau de bord : chiffres du jour, relevé du courrier, mes dossiers, dossiers en retard,
-// dossiers à traiter, purge des anciens dossiers.
+// bureau/tableau.php — Page d'arrivée du Bureau : inscriptions (à synchroniser, à traiter, rendez-vous du jour),
+// puis chiffres des dossiers, relevé du courrier, mes dossiers, dossiers en retard, à traiter, purge des anciens dossiers.
 require_once __DIR__ . '/includes/amorce.php';
 
 $compte = $bdd->query("SELECT statut, COUNT(*) AS n FROM dossiers GROUP BY statut")->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -11,11 +11,17 @@ $mes_dossiers = array_slice(array_filter($mes_dossiers, fn ($d) => $d['statut'] 
 $en_retard = filtrer_dossiers($bdd, criteres_dossiers(['vue' => 'retard', 'tri' => 'echeance']), $agent['id'], 8);
 $nb_retard = (int) $bdd->query('SELECT COUNT(*) FROM dossiers d WHERE ' . SQL_EN_RETARD)->fetchColumn();
 $purgeables = (int) $bdd->query('SELECT COUNT(*) FROM dossiers WHERE ' . SQL_PURGEABLES)->fetchColumn();
-$dernier = $bdd->query("SELECT * FROM releves ORDER BY date_releve DESC LIMIT 1")->fetch();
+$dernier = $bdd->query("SELECT * FROM releves WHERE nature = 'releve' ORDER BY date_releve DESC LIMIT 1")->fetch();
 // Palmarès des votes du public, lu par l'API publique du site (le Bureau ne touche pas à sa base)
 $palmares = api('GET', 'votes.php?palmares=5', null, false);
 $palmares = $palmares['code'] === 200 && is_array($palmares['data']) ? $palmares['data'] : null;
 $total = array_sum($compte);
+// Inscriptions aux rendez-vous : en attente sur le site (total lu par l'API), à traiter et rendez-vous du jour (base du Bureau)
+$attente = api('GET', 'inscriptions.php?statut=nouveau&page=1&par_page=1', null, true, 5);
+$a_synchroniser = $attente['code'] === 200 ? (int) ($attente['data']['total'] ?? 0) : null;
+$inscris_a_traiter = (int) $bdd->query("SELECT COUNT(*) FROM inscris WHERE statut = 'a_traiter' AND jour >= CURDATE()")->fetchColumn();
+$rdv_du_jour = filtrer_inscris($bdd, criteres_inscris(['jour' => date('Y-m-d')]), 50);
+$rdv_du_jour = array_values(array_filter($rdv_du_jour, fn ($i) => $i['statut'] !== 'annule'));
 
 $titre = 'Tableau de bord';
 $page = 'tableau';
@@ -32,6 +38,35 @@ require __DIR__ . '/includes/haut.php';
     <button class="btn btn-tampon" type="submit">Relever le courrier</button>
   </form>
 </div>
+
+<section class="carte" aria-labelledby="titre-inscriptions">
+  <div class="entete-page">
+    <div>
+      <h2 id="titre-inscriptions">Inscriptions au guichet</h2>
+      <p class="aide"><?= $a_synchroniser === null ? htmlspecialchars(message_erreur_api($attente)) . ' : inscriptions en attente inconnues.'
+          : "$a_synchroniser inscription(s) à synchroniser sur le site." ?>
+        <?= $inscris_a_traiter ?> rendez-vous à venir à traiter (<a href="inscrits.php?statut=a_traiter">voir</a>).</p>
+    </div>
+    <form method="post" action="synchro.php">
+      <?= csrf_champ() ?>
+      <button class="btn btn-tampon" type="submit">Lancer la synchro</button>
+    </form>
+  </div>
+  <h3>Rendez-vous du jour</h3>
+<?php if (!$rdv_du_jour): ?>
+  <p class="aide">Aucun rendez-vous aujourd'hui. Le guichet reste ouvert, par principe.</p>
+<?php else: ?>
+  <ul class="historique">
+<?php foreach ($rdv_du_jour as $i): ?>
+    <li><span class="mono"><?= horaire_court($i['horaire']) ?></span>
+      <a href="inscrits.php?id=<?= (int) $i['id'] ?>"><?= htmlspecialchars($i['prenom'] . ' ' . $i['nom']) ?></a>
+      <span class="mono petit"><?= htmlspecialchars($i['telephone']) ?></span>
+      <span class="pastille pastille-<?= $i['statut'] ?>"><?= STATUTS_INSCRIS[$i['statut']] ?></span></li>
+<?php endforeach; ?>
+  </ul>
+<?php endif; ?>
+  <p><a class="lien-fort" href="planning.php">Planning de la semaine</a></p>
+</section>
 
 <section class="chiffres" aria-label="Chiffres du Bureau">
   <div class="chiffre"><span class="chiffre-valeur"><?= (int) ($compte['a_traiter'] ?? 0) ?></span><span class="chiffre-libelle">à traiter</span></div>

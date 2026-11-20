@@ -65,6 +65,20 @@ la description OpenAPI. Une future version incompatible vivrait sous `/api/v2/` 
 dans « Mon compte » s'il était connecté en écrivant). `reponse` est obligatoire avec `repondu` (5 000 caractères au plus,
 sinon `422`) ; `date_reponse` est remplie par le site ; un autre statut efface la réponse.
 
+### Inscriptions à un rendez-vous (`/inscriptions.php`)
+
+- **Dépôt** (`POST`) et **annulation** (`DELETE ?id=`) : client connecté au site uniquement (cookie de session + en-tête
+  `X-CSRF-Token`). L'identifiant du client est lu dans la session, **jamais dans le corps** : un tiers ne peut pas
+  inscrire quelqu'un d'autre. La page du Guichet appelle la route côté serveur avec `deposer_inscription()`
+  (`includes/inscriptions.php`), qui présente la session du visiteur (la session est refermée pendant l'appel pour ne
+  pas rester verrouillée), ou en JavaScript (`fetch` avec le jeton).
+- **Créneaux** (`GET ?creneaux=1`, public) : 10 jours ouvrés à venir × horaires du guichet (09:07, 10:41, 14:12,
+  14:27, 14:47, 16:58) ; un créneau retenu disparaît. Unicité garantie par la base : index unique
+  `(jour, horaire, occupe)`, `occupe` passant à `NULL` à l'annulation (`409` si deux dépôts se croisent).
+- **Gestion** (clé) : `GET` (lecture ; filtres `statut`, `jour`, `du`, pagination), `PATCH` (écriture ; `statut`
+  + `reponse` facultative, 500 caractères).
+- Statuts : `nouveau` → `importe` (Synchro du Bureau) → `confirme` ou `annule` (Bureau ou client).
+
 ## Parcours importants (curl)
 
 Remplacer `VOTRE_CLE` par la clé maîtresse ou une clé d'application ; en ligne, remplacer

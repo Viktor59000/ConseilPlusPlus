@@ -69,7 +69,24 @@ try {
             date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             INDEX (id_dossier)
         );
+
+        CREATE TABLE IF NOT EXISTS inscris (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            remote_id INT NOT NULL UNIQUE,
+            nom VARCHAR(100) NOT NULL,
+            prenom VARCHAR(100) NOT NULL,
+            email VARCHAR(150) NOT NULL,
+            telephone VARCHAR(20) NOT NULL,
+            jour DATE NOT NULL,
+            horaire TIME NOT NULL,
+            create_at DATETIME NOT NULL,
+            statut ENUM('a_traiter', 'confirme', 'annule') NOT NULL DEFAULT 'a_traiter',
+            INDEX (jour, horaire)
+        );
     ");
+    // Table inscris : les colonnes du tableau de la séance (Id, remote_Id, Nom, prénom, email, Téléphone, jour, horaire,
+    // create_at, Statut), écrites en minuscules sans accent. remote_id = id de l'inscription sur le site (unique :
+    // la Synchro ne crée jamais de doublon) ; create_at = date du dépôt sur le site. Voir bureau/includes/inscris.php.
 
     // Migration : suivi de l'envoi de la réponse par email (envoye | archive | echec)
     if (!$bdd->query("SHOW COLUMNS FROM dossiers LIKE 'envoi'")->fetch()) {

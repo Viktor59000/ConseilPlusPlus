@@ -123,7 +123,31 @@ function installer_schema(PDO $bdd): void
             date_demande DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
         );
+
+        CREATE TABLE IF NOT EXISTS inscriptions (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            id_utilisateur INT NOT NULL,
+            nom VARCHAR(100) NOT NULL,
+            prenom VARCHAR(100) NOT NULL,
+            email VARCHAR(150) NOT NULL,
+            telephone VARCHAR(20) NOT NULL,
+            jour DATE NOT NULL,
+            horaire TIME NOT NULL,
+            statut ENUM('nouveau', 'importe', 'confirme', 'annule') NOT NULL DEFAULT 'nouveau',
+            occupe TINYINT(1) NULL DEFAULT 1,
+            message TEXT NULL,
+            reponse TEXT NULL,
+            date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY un_creneau (jour, horaire, occupe),
+            INDEX (statut),
+            FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
+        );
     ");
+
+    // Table inscriptions (rendez-vous au guichet, includes/inscriptions.php) : occupe vaut 1 tant que le créneau est
+    // retenu, NULL une fois le rendez-vous annulé. L'index unique (jour, horaire, occupe) interdit deux rendez-vous
+    // actifs sur le même créneau, même validés à la même seconde (plusieurs NULL restent permis).
+    // Les colonnes ajoutées plus tard à cette table suivront la règle ci-dessous (une colonne par ALTER).
 
     // Migrations : un test par colonne et une modification par instruction (TiDB refuse plusieurs changements liés
     // dans un même ALTER, et une migration interrompue reprend ainsi là où elle s'est arrêtée)

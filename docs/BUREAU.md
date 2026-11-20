@@ -1,7 +1,8 @@
 # Le Bureau — logiciel de gestion
 
 Deuxième application du projet (attendu du cours) : le back-office du cabinet. Elle **ne lit jamais la base du site** :
-les demandes de contact arrivent uniquement par l'API REST (`api/contacts.php`, clé `X-API-Key`).
+les demandes de contact et les inscriptions aux rendez-vous arrivent uniquement par l'API REST (`api/contacts.php`,
+`api/inscriptions.php`, clé `X-API-Key`).
 
 - En local : http://localhost/Site/bureau/
 - En ligne : https://conseilplus.onrender.com/bureau/
@@ -42,6 +43,42 @@ les demandes de contact arrivent uniquement par l'API REST (`api/contacts.php`, 
 
 Statuts d'un dossier : `a_traiter` → `en_cours` → `classe` (réouverture possible).
 
+## Inscriptions aux rendez-vous
+
+Exigence du tableau de la séance : le site vitrine recueille des inscriptions à un rendez-vous au guichet (client
+connecté : nom, prénom, email, téléphone, jour, horaire) ; la Gestion les synchronise dans sa table `inscris`.
+Onglets en tête de la navigation : **Planning, Inscrits, Synchro, Export, Déconnexion** ; les services existants
+(tableau de bord, dossiers, Petit Moyen, journal, statistiques, clés) suivent sur une seconde ligne.
+Page d'arrivée (`tableau.php`) : bloc « Inscriptions au guichet » (à synchroniser, à traiter, rendez-vous du jour).
+
+1. **Synchro** (`synchro.php`, bouton) : `GET /api/inscriptions.php?statut=nouveau` → insertion sans doublon
+   (`remote_id` unique, `INSERT IGNORE`) → `PATCH /api/inscriptions.php?id=…` `{ "statut": "importe" }`. Puis
+   `GET …?statut=annule&du=<aujourd'hui>` : les rendez-vous annulés par les clients passent `annule`. Compte rendu
+   (importées, déjà présentes, annulations reportées, erreurs) et trace au journal (`releves`, nature `synchro`).
+   Un marquage échoué laisse l'inscription « nouveau » sur le site : la synchro suivante la re-marque sans la recréer.
+2. **Planning** (`planning.php`) : vue semaine (jours en colonnes, créneaux en lignes ; horaires du guichet lus par
+   l'API publique des créneaux), semaine précédente / suivante, puis la même semaine en liste (lecture linéaire).
+3. **Inscrits** (`inscrits.php`) : tableau filtrable (statut, jour, recherche nom / prénom / email / téléphone),
+   boutons Confirmer / Annuler (réponse type), fiche `?id=` avec le problème déposé (lu par l'API, non copié) et une
+   réponse modifiable. La décision part au site (`PATCH` statut + `reponse`, 500 caractères) ; le statut local ne
+   change que si le site l'a reçue (ou si l'inscription n'y existe plus : `404`).
+4. **Export** (`export-inscrits.php`) : CSV des inscrits (mêmes filtres ; BOM UTF-8, séparateur `;`, en-têtes = colonnes
+   du tableau). **Déconnexion** : la déconnexion existante (POST + CSRF), retour à la connexion.
+
+Statuts : Gestion `a_traiter` → `confirme` ou `annule` ; côté site `nouveau` → `importe` → `confirme` ou `annule`
+(correspondance : `a_traiter` = `importe`).
+
+Table `inscris` (colonnes du tableau, en minuscules sans accent) :
+
+| Tableau | Colonne | Type |
+|---|---|---|
+| Id | `id` | INT, clé primaire |
+| remote_Id | `remote_id` | INT, unique (id de l'inscription sur le site) |
+| Nom, prénom, email, Téléphone | `nom`, `prenom`, `email`, `telephone` | VARCHAR |
+| jour, horaire | `jour`, `horaire` | DATE, TIME |
+| create_at | `create_at` | DATETIME (dépôt sur le site) |
+| Statut | `statut` | ENUM `a_traiter`, `confirme`, `annule` |
+
 ## Envoi des réponses par email (Brevo)
 
 Render bloque le SMTP (ports 25, 465, 587) sur l'offre gratuite depuis septembre 2025 : les réponses partent donc par
@@ -79,7 +116,8 @@ Réimport : phpMyAdmin → base vide → *Importer*. Testé : réimport sans err
 | `agents` | Comptes du Bureau (mot de passe `password_hash`) |
 | `dossiers` | Demandes importées (`id_site` = id de la demande sur le site), statut, réponse, `id_agent` (dernier intervenant), `id_responsable`, `echeance`, `date_purge` |
 | `notes` | Notes internes des dossiers (`id_dossier`, `id_agent`, `texte`, `date`) |
-| `releves` | Journal du Bureau : relevés de courrier et purges (colonne `nature` : `releve` ou `purge`) |
+| `releves` | Journal du Bureau : relevés de courrier, synchros des inscriptions et purges (colonne `nature` : `releve`, `synchro` ou `purge`) |
+| `inscris` | Inscriptions aux rendez-vous synchronisées depuis le site (voir « Inscriptions aux rendez-vous ») |
 
 Les colonnes et tables ajoutées après coup sont créées par des migrations idempotentes (`bureau/includes/bdd.php`).
 Pas de clé étrangère sur les nouvelles colonnes : la base locale (WAMP) crée des tables MyISAM.
@@ -88,6 +126,9 @@ Pas de clé étrangère sur les nouvelles colonnes : la base locale (WAMP) crée
 
 - **En local** : copier `bureau/config.example.php` en `bureau/config.php` et y mettre la même clé d'API que le site
   (`API_KEY` de `config.php`). La base `gestion` se crée au premier chargement.
+- **MAMP** (localhost:8888, MySQL localhost:8889, root / root) : dans `bureau/config.php`, `BUREAU_API_URL`
+  = `http://localhost:8888/<dossier>/api`, `BUREAU_DB_PORT` = `'8889'`, `BUREAU_DB_PASS` = `'root'` (README,
+  « Installer chez le professeur »).
 - **En ligne** : rien à faire. Le Dockerfile crée `bureau/config.php`, qui lit `API_KEY` et `DB_*` dans Render ;
   le Bureau appelle l'API à l'intérieur du conteneur (`URL_INTERNE`).
 - **Premier agent** : à la première ouverture, la page de connexion propose de créer le compte ; elle demande la

@@ -80,6 +80,31 @@ return [
             'parametres' => [],
             'reponses' => ['204' => 'supprimée', '403' => 'droit insuffisant', '404' => 'demande inconnue']],
     ],
+    'Rendez-vous au guichet (site → logiciel de gestion)' => [
+        ['methode' => 'GET', 'chemin' => '/inscriptions.php?creneaux=1', 'acces' => 'public', 'essayer' => 'inscriptions.php?creneaux=1', 'cle_facultative' => true,
+            'role' => 'Public, avec creneaux=1 : les créneaux encore libres au guichet (les 10 prochains jours ouvrés, aux horaires précis du cabinet ; un créneau retenu n\'est plus proposé). '
+                . 'Sans creneaux, avec une clé (droit « lecture ») : le logiciel de gestion liste les inscriptions (par exemple statut=nouveau pour la synchro) ; avec page, '
+                . 'la liste est paginée (en-têtes Link et X-Total-Count).',
+            'parametres' => ['creneaux' => '1 : les créneaux libres (public)', 'statut' => 'avec clé, facultatif : nouveau, importe, confirme ou annule',
+                'jour' => 'avec clé, facultatif, AAAA-MM-JJ : un jour précis', 'du' => 'avec clé, facultatif, AAAA-MM-JJ : à partir de ce jour',
+                'page' => 'avec clé, facultatif, 1 ou plus : active la pagination', 'par_page' => 'avec clé, facultatif, 1 à 100 (20 par défaut)',
+                'id' => 'avec clé, ou bien : le détail d\'une inscription'],
+            'reponses' => ['200' => '{ horaires[], jours: { AAAA-MM-JJ: [horaires libres] } } ; avec clé : { total, inscriptions[] }, { total, page, par_page, pages, inscriptions[] } ou l\'inscription',
+                '400' => 'filtre ou pagination invalide', '401' => 'liste ou détail : clé absente ou invalide', '403' => 'droit « lecture » manquant', '404' => 'inscription inconnue']],
+        ['methode' => 'POST · DELETE', 'chemin' => '/inscriptions.php', 'acces' => 'session',
+            'role' => 'Le client connecté prend rendez-vous (statut « nouveau ») ou annule le sien (DELETE ?id=, statut « annule », créneau libéré). '
+                . 'L\'identifiant du client vient de la session du site, jamais du corps : jeton CSRF dans l\'en-tête X-CSRF-Token. 5 dépôts par minute, 3 rendez-vous à venir au plus.',
+            'parametres' => ['telephone' => 'numéro français (06 12 34 56 78, +33 6…)', 'jour' => 'AAAA-MM-JJ, un jour proposé', 'horaire' => 'HH:MM, un horaire du guichet',
+                'nom, prenom, email' => 'facultatifs : ceux du compte par défaut', 'message' => 'facultatif : le problème déposé (1 000 caractères au plus)', 'id' => 'DELETE : le rendez-vous à annuler'],
+            'reponses' => ['201' => '{ id, statut, jour, horaire }', '200' => 'DELETE : { id, statut: annule }', '401' => 'non connecté', '403' => 'jeton CSRF invalide',
+                '404' => 'DELETE : rendez-vous d\'un autre client ou inconnu', '409' => 'créneau déjà pris, trop de rendez-vous, ou déjà annulé / passé',
+                '422' => 'champs invalides (détail par champ)', '429' => 'trop de dépôts']],
+        ['methode' => 'PATCH', 'chemin' => '/inscriptions.php?id=42', 'acces' => 'cle',
+            'role' => 'Marque une inscription importée par le logiciel de gestion, ou renvoie sa décision (confirme, annule) avec une courte réponse, que le client lit dans « Mon dossier » (droit « ecriture »).',
+            'parametres' => ['statut' => 'facultatif : importe (défaut), nouveau, confirme ou annule', 'reponse' => 'facultatif : 500 caractères au plus (absente : inchangée ; vide : effacée)'],
+            'reponses' => ['200' => '{ id, statut, reponse }', '403' => 'droit insuffisant', '404' => 'inscription inconnue',
+                '409' => 'réactivation impossible : créneau repris entre-temps', '422' => 'statut ou réponse invalide']],
+    ],
     'Espace client' => [
         ['methode' => 'GET · POST · DELETE', 'chemin' => '/mes-conseils.php', 'acces' => 'session',
             'role' => 'Le carnet du client connecté : lister, classer un conseil, en retirer un. Écriture avec le jeton CSRF (en-tête X-CSRF-Token).',

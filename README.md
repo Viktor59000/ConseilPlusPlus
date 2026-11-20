@@ -61,6 +61,7 @@ et la réponse s'affiche dans « Mon compte ». Les autres la reçoivent seuleme
 | **API REST : méthodes, codes, clé** | [`api/contacts.php`](api/contacts.php) (`POST` 201/422, `GET` 200/400/401, `PATCH` 200/404/422, `DELETE` 204/404) ; squelette commun [`includes/api.php`](includes/api.php) (`X-API-Key`, journal, limite de débit) | [`tests/test_api.php`](tests/test_api.php) : 201, 422, 401 sans clé, 403 avec une clé en lecture seule, 404, 204 |
 | **Logiciel de gestion séparé qui consomme l'API** | [`bureau/`](bureau/), sa propre base `gestion` ; seul lien avec le site : [`bureau/includes/api.php`](bureau/includes/api.php) | [`docs/BUREAU.md`](docs/BUREAU.md) ; captures [tableau de bord](docs/captures/bureau.webp) et [fiche dossier](docs/captures/bureau-dossier.webp) |
 | **Statut `nouveau` → `importe`** (puis `repondu`) | `relever_courrier()` et `publier_reponse()` dans [`bureau/includes/metier.php`](bureau/includes/metier.php) | `tests/test_api.php` : « PATCH (→ importe) » et « PATCH (→ repondu + réponse) » ; page Relevés du Bureau ([`bureau/journal.php`](bureau/journal.php)) |
+| **Inscriptions à un rendez-vous (tableau de la séance)** | site : table `inscriptions` ([`includes/schema.php`](includes/schema.php)), règles [`includes/inscriptions.php`](includes/inscriptions.php), API [`api/inscriptions.php`](api/inscriptions.php) ; Gestion : table `inscris`, Synchro, Planning, Inscrits, Export ([`bureau/includes/inscris.php`](bureau/includes/inscris.php)) | `tests/test_api.php` : dépôt connecté 201/403/409/422, `PATCH` → `importe` / `confirme`, annulation ; [docs/BUREAU.md](docs/BUREAU.md#inscriptions-aux-rendez-vous) |
 | **Sécurité** | CSRF ([`includes/csrf.php`](includes/csrf.php)), requêtes préparées, CSP ([`includes/theme.php`](includes/theme.php)), clés hachées et droits ([`api/cles.php`](api/cles.php)), limite des essais ([`includes/limite-connexion.php`](includes/limite-connexion.php)), cookies ([`docker/securite.ini`](docker/securite.ini)), en-têtes ([`docker/apache.conf`](docker/apache.conf)) | `tests/test_api.php` (401, 403, clé révoquée) ; `tests/test_pages.php` (CSP sur chaque page) ; [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md#sécurité-en-ligne) |
 | **Tests automatiques** | [`.github/workflows/tests.yml`](.github/workflows/tests.yml) : syntaxe PHP, site lancé avec une vraie base MySQL | badge « Tests » ci-dessus ; [`tests/test_pages.php`](tests/test_pages.php), [`tests/test_api.php`](tests/test_api.php), [`tests/test_push.php`](tests/test_push.php) |
 | **Documentation (OpenAPI, développeurs)** | une seule source, [`data/api.php`](data/api.php) → [`developpeurs.php`](developpeurs.php) (bouton « Essayer ») et [`api/openapi.php`](api/openapi.php) (OpenAPI 3.1) | `tests/test_api.php` : « GET /v1/ (description OpenAPI) » ; [capture de la documentation](docs/captures/api.webp) ; [docs/API.md](docs/API.md) |
@@ -141,7 +142,7 @@ La liste des routes n'est écrite qu'à un seul endroit, [`data/api.php`](data/a
 - la description **OpenAPI 3.1** (à importer dans Postman, Insomnia ou Swagger UI) :
   [en ligne](https://conseilplus.onrender.com/api/openapi.php) ou `/api/v1/` en local.
 
-Ressources : contacts, conseils, mot du jour (et modération du mot de demain), horoscope, widget, votes, notifications,
+Ressources : contacts, inscriptions aux rendez-vous, conseils, mot du jour (et modération du mot de demain), horoscope, widget, votes, notifications,
 carnet du client, statistiques, sauvegarde, clés d'application. Principes (clés et droits, journal, limites de débit,
 versions, pagination) et exemples `curl` des parcours importants : [docs/API.md](docs/API.md).
 
@@ -173,6 +174,29 @@ curl https://conseilplus.onrender.com/api/conseils.php
 
 Mise en ligne, variables d'environnement et sauvegardes : [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md).
 Reprendre le projet sur un autre PC : [docs/REPRISE.md](docs/REPRISE.md). Où en est-on : [docs/JOURNAL.md](docs/JOURNAL.md).
+
+## Installer chez le professeur (MAMP)
+
+MAMP : Apache sur `localhost:8888`, MySQL sur `localhost:8889`, utilisateur `root`, mot de passe `root`.
+Rien à changer dans le code : tout se règle dans les deux fichiers de configuration (ignorés par Git).
+
+1. Copier le dossier du projet dans `htdocs` (ici `htdocs/Site` ; un autre nom marche aussi).
+2. `config.php` (copie de `config.example.php`) : choisir une clé `API_KEY`, puis décommenter
+   `define('DB_PORT', '8889');` et `define('DB_PASS', 'root');` (base du site vitrine).
+3. `bureau/config.php` (copie de `bureau/config.example.php`), pour le logiciel de gestion :
+   - `BUREAU_API_URL` : `http://localhost:8888/Site/api` ;
+   - `BUREAU_API_KEY` : la même clé que `API_KEY` ;
+   - `BUREAU_DB_PORT` : `'8889'` et `BUREAU_DB_PASS` : `'root'`.
+4. Ouvrir `http://localhost:8888/Site/` : la base du site (`site`) et ses tables se créent seules. Puis
+   `http://localhost:8888/Site/bureau/` : la base de gestion (`gestion`, table `inscris` comprise) se crée, et la page
+   de connexion propose de créer le premier agent (la clé `API_KEY` est demandée).
+5. Parcours du tableau : sur le site, un client connecté prend rendez-vous au Guichet (`POST /api/inscriptions.php`) ; dans la
+   Gestion, onglet **Synchro** (les inscriptions passent `nouveau` → `importe`), **Planning**, **Inscrits** (confirmer
+   ou annuler : le statut et la réponse reviennent au site), **Export** (CSV), **Déconnexion**.
+
+Variante sans toucher aux fichiers : les variables d'environnement `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`
+(lues en priorité par les deux applications), par exemple `SetEnv DB_PORT 8889` dans la configuration d'Apache.
+
 
 ## Soutenance : démo en 5 minutes
 
