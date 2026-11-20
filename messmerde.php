@@ -78,6 +78,7 @@ include __DIR__ . '/includes/header.php';
   <p class="visuellement-cache" role="status" data-retro-statut></p>
   <div class="actions">
     <button type="button" class="btn btn-tampon" data-retro-autre hidden>Une autre prédiction</button>
+    <a class="btn btn-clair" href="attestation.php?document=prediction">Faire certifier la prédiction</a>
   </div>
 </section>
 

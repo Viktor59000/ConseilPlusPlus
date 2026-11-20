@@ -14,6 +14,7 @@
   const elJury = $('[data-jury]');
   const elVerdict = $('[data-verdict]');
   const suivante = $('[data-suivante]');
+  const diplome = $('[data-diplome]');
   const annonce = $('[data-annonce]');
   const tableau = document.querySelector('[data-score]');
   const NB = 10;
@@ -96,6 +97,7 @@
     elReponse.hidden = true;
     elVerdict.textContent = auHasard(banque.bilans[cle]);
     suivante.textContent = 'Nouvelle partie';
+    if (diplome) diplome.hidden = false;
     suivante.hidden = false;
     elQuestion.focus({ preventScroll: true });
     annonce.textContent = `Fin de la partie. ${elQuestion.textContent} ${elVerdict.textContent}`;
@@ -106,6 +108,7 @@
     partie = melanger(banque.questions).slice(0, NB);
     n = 0;
     points = { bon_sens: 0, stagiaire: 0 };
+    if (diplome) diplome.hidden = true;
     afficherScore();
     poser(avecFocus);
   }

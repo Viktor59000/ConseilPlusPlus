@@ -58,6 +58,7 @@ include __DIR__ . '/includes/header.php';
     <p class="plateau-verdict" data-verdict></p>
     <div class="actions">
       <button type="button" class="btn btn-tampon" data-suivante hidden>Question suivante</button>
+      <a class="btn btn-clair" href="attestation.php?document=patience" data-diplome hidden>Retirer mon diplôme de patience administrative</a>
     </div>
     <p class="visuellement-cache" aria-live="polite" data-annonce></p>
   </div>

@@ -4,11 +4,14 @@
  * Avant toute attestation, Bertrand fait remplir le formulaire du jour (data/formulaires.php, tiré par date) ;
  * le tampon valide ensuite quoi qu'on y ait écrit. Le document est dessiné dans le navigateur (js/attestation.js) :
  * ni le nom ni les cases ne sont envoyés au serveur (aucun champ n'a d'attribut name). Modèles : data/attestations.php.
+ * ?document=<clé> présélectionne un modèle (liens depuis le diagnostic, Questions pour un stagiaire et Messmerde).
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/textes.php';
 $modeles = require __DIR__ . '/data/attestations.php';
 $formulaire = formulaire_du_jour();
+// ?document=… : un autre service du cabinet (diagnostic, stagiaire, Messmerde) envoie vers son attestation
+$choisi = isset($modeles[$_GET['document'] ?? '']) ? $_GET['document'] : null;
 $donnees = [
     'modeles' => $modeles,
     'formulaire' => $formulaire['code'],
@@ -60,7 +63,7 @@ include __DIR__ . '/includes/header.php';
     <label for="att-type">Document demandé</label>
     <select id="att-type" data-type>
 <?php foreach ($modeles as $cle => $m): ?>
-      <option value="<?= $cle ?>"><?= htmlspecialchars($m['titre']) ?></option>
+      <option value="<?= $cle ?>"<?= $cle === $choisi ? ' selected' : '' ?>><?= htmlspecialchars($m['titre']) ?></option>
 <?php endforeach; ?>
     </select>
     <label for="att-nom">Au nom de</label>

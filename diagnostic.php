@@ -54,6 +54,7 @@ include __DIR__ . '/includes/header.php';
         data-titre="<?= htmlspecialchars($profil[0]) ?>" data-texte="<?= htmlspecialchars($profil[1]) ?>"
         data-detail="Taux de moyenneté : <?= $moyennete ?> %." data-etiquette="Diagnostic officiel du conseiller moyen"
         data-url="diagnostic.php">Partager mon résultat</button>
+      <a class="btn btn-clair" href="attestation.php?document=client-moyen">Obtenir mon certificat de client moyen</a>
       <a class="btn btn-clair" href="diagnostic.php">Refaire le diagnostic</a>
     </div>
   </div>
