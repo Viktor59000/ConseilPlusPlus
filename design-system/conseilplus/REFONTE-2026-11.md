@@ -96,3 +96,11 @@ Elles priment sur tout le reste du concept.
   configurable sans toucher au code (variables / config), documenté dans le README.
 - Le formulaire de contact actuel reste, pour les Réclamations ; les fonctions existantes du Bureau (dossiers, réponses,
   relecture du mot, statistiques, clés) restent, en second plan derrière les onglets du tableau.
+
+## Le Bureau en ligne : une application à part (décision du 20/11/2026)
+Solution gratuite : un second service Render, même dépôt, `docker/bureau/Dockerfile` (racine web = bureau/), adresse
+du type `https://conseilplus-bureau.onrender.com` (nom choisi à la création). Il ne parle au site que par l'API
+(`BUREAU_API_URL` = https://conseilplus.onrender.com/api) et garde sa base « gestion ». Seul le site vitrine reste
+éveillé (UptimeRobot) ; le Bureau s'endort quand personne ne l'utilise (≈ 50 s de réveil), pour rester sous les 750 h
+gratuites par mois. À la mise en ligne de la refonte : `/bureau/` du site vitrine redirige (301) vers la nouvelle adresse.
+Création du service et saisie des secrets (API_KEY, DB_*, BREVO_API_KEY…) : par l'auteur, guidé par docs/DEPLOIEMENT.md.
